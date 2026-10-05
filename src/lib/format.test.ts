@@ -1,13 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatDuration,
+  formatEuro,
+  formatFraction,
   formatInput,
   formatInteger,
+  formatMoney,
   formatPowerOfTen,
   formatRational,
   formatSeconds,
   GROUP_SEPARATOR as S,
   MINUS,
+  NO_BREAK_SPACE,
   toSuperscript,
 } from './format';
 import { rational } from './rational';
@@ -118,5 +122,38 @@ describe('formatPowerOfTen', () => {
     expect(formatPowerOfTen(9)).toBe('10⁹');
     expect(formatPowerOfTen(24)).toBe('10²⁴');
     expect(formatPowerOfTen(-2)).toBe('10⁻²');
+  });
+});
+
+describe('formatMoney', () => {
+  it.each([
+    [rational(45n), '45'],
+    [rational(51n, 2n), '25,50'],
+    [rational(1157n, 100n), '11,57'],
+    [rational(2000n), '2000'],
+    [rational(15_000n), `15${S}000`],
+  ])('formats %o as %s', (value, expected) => {
+    expect(formatMoney(value)).toBe(expected);
+  });
+
+  it('rejects fractions of a cent', () => {
+    expect(() => formatMoney(rational(1n, 8n))).toThrow(RangeError);
+    expect(() => formatMoney(rational(1n, 3n))).toThrow(RangeError);
+  });
+});
+
+describe('formatEuro', () => {
+  it('puts the euro sign and a no-break space before the amount', () => {
+    expect(NO_BREAK_SPACE).toBe('\u{a0}');
+    expect(formatEuro(rational(51n, 2n))).toBe(`€${NO_BREAK_SPACE}25,50`);
+    expect(formatEuro(rational(60n))).toBe(`€${NO_BREAK_SPACE}60`);
+  });
+});
+
+describe('formatFraction', () => {
+  it('writes numerator and denominator with a slash', () => {
+    expect(formatFraction(rational(25n, 2n))).toBe('25/2');
+    expect(formatFraction(rational(-3n, 4n))).toBe(`${MINUS}3/4`);
+    expect(formatFraction(rational(7n))).toBe('7/1');
   });
 });

@@ -3,7 +3,7 @@ import { decimalPlaces, type Rational } from './rational';
 /** Typographic minus sign (U+2212). */
 export const MINUS = '−';
 /** Narrow no-break space (U+202F): a thin space for digit grouping that never wraps (spec §8). */
-export const GROUP_SEPARATOR = ' ';
+export const GROUP_SEPARATOR = '\u{202f}';
 
 const MAX_DECIMALS = 20;
 
@@ -65,4 +65,25 @@ export function toSuperscript(exponent: number): string {
 /** 10 with a superscript exponent, e.g. 10⁹ (spec §5.14). */
 export function formatPowerOfTen(exponent: number): string {
   return `10${toSuperscript(exponent)}`;
+}
+
+/** No-break space (U+00A0): keeps '€' and the amount on one line. */
+export const NO_BREAK_SPACE = '\u{a0}';
+
+/** Euro amounts: whole euros without decimals, otherwise exactly two ('25,50'). Spec §8. */
+export function formatMoney(value: Rational): string {
+  const decimals = decimalPlaces(value);
+  if (decimals === null || decimals > 2) throw new RangeError('Not a whole number of cents');
+  const text = formatRational(value);
+  return decimals === 1 ? `${text}0` : text;
+}
+
+/** '€ 25,50' with a no-break space. */
+export function formatEuro(value: Rational): string {
+  return `€${NO_BREAK_SPACE}${formatMoney(value)}`;
+}
+
+/** '25/2'. The sign goes on the numerator, because the denominator is always positive. */
+export function formatFraction(value: Rational): string {
+  return `${formatInteger(value.num)}/${formatInteger(value.den)}`;
 }
