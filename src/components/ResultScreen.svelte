@@ -132,6 +132,7 @@
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
     padding-top: 0.5rem;
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
     background: var(--bg);
   }
 </style>

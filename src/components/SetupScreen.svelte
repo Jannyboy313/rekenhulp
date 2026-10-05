@@ -84,8 +84,13 @@
     gap: 0.5rem;
   }
 
+  label {
+    position: relative;
+  }
+
   input {
     position: absolute;
+    inset: 0;
     opacity: 0;
     pointer-events: none;
   }
