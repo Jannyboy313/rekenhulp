@@ -50,3 +50,19 @@ export function formatDuration(ms: number): string {
 export function formatSeconds(ms: number): string {
   return `${(ms / 1000).toFixed(1).replace('.', ',')} s`;
 }
+
+// Indexed by digit; every character is a single UTF-16 code unit.
+const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+/** Superscript minus (U+207B). */
+const SUPERSCRIPT_MINUS = '⁻';
+
+/** Writes an integer exponent in superscript: 12 → '¹²', −1 → '⁻¹'. */
+export function toSuperscript(exponent: number): string {
+  if (!Number.isSafeInteger(exponent)) throw new RangeError(`Not a safe integer: ${exponent}`);
+  const digits = [...String(Math.abs(exponent))].map((digit) => SUPERSCRIPT_DIGITS[Number(digit)]);
+  return (exponent < 0 ? SUPERSCRIPT_MINUS : '') + digits.join('');
+}
+
+export function formatPowerOfTen(exponent: number): string {
+  return `10${toSuperscript(exponent)}`;
+}

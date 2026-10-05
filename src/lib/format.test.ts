@@ -3,10 +3,12 @@ import {
   formatDuration,
   formatInput,
   formatInteger,
+  formatPowerOfTen,
   formatRational,
   formatSeconds,
   GROUP_SEPARATOR as S,
   MINUS,
+  toSuperscript,
 } from './format';
 import { rational } from './rational';
 
@@ -76,5 +78,36 @@ describe('formatSeconds', () => {
   it('formats with one decimal and a comma', () => {
     expect(formatSeconds(4230)).toBe('4,2 s');
     expect(formatSeconds(0)).toBe('0,0 s');
+  });
+});
+
+describe('toSuperscript', () => {
+  it.each([
+    [0, '⁰'],
+    [3, '³'],
+    [12, '¹²'],
+    [24, '²⁴'],
+    [-1, '⁻¹'],
+    [1234567890, '¹²³⁴⁵⁶⁷⁸⁹⁰'],
+  ])('writes %i as %s', (exponent, expected) => {
+    expect(toSuperscript(exponent)).toBe(expected);
+  });
+
+  it('uses the Unicode superscript code points', () => {
+    expect([...toSuperscript(1234)].map((char) => char.codePointAt(0))).toEqual([
+      0xb9, 0xb2, 0xb3, 0x2074,
+    ]);
+    expect(toSuperscript(-5).codePointAt(0)).toBe(0x207b);
+  });
+
+  it('rejects non-integers', () => {
+    expect(() => toSuperscript(1.5)).toThrow(RangeError);
+  });
+});
+
+describe('formatPowerOfTen', () => {
+  it('writes the base 10 with a superscript exponent', () => {
+    expect(formatPowerOfTen(9)).toBe('10⁹');
+    expect(formatPowerOfTen(24)).toBe('10²⁴');
   });
 });
