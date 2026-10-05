@@ -14,6 +14,33 @@ Every other set gets its own implementation plan; do not start one until the use
 set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.
 
+## Roadmap: practice sets
+
+All sets (spec §4.1). Every set except Tafels mixes in 15% tables. Build them in this order, one
+implementation plan per step:
+
+| # | Set | Topics (spec section) | New infrastructure needed | Version | Status |
+|---|---|---|---|---|---|
+| 0 | **Tafels** | `tables` (§5.1) | — (beta foundation) | v1 | ✅ done |
+| 1 | **Meten** | `volume`, `area`, `length`, `mass`, `time` (§5.10) | One shared conversion engine; number input + unit suffix only | v1 | planned |
+| 2 | **Verhoudingen** (v1 part) | `percentages` (§5.12), `ratios` (§5.13) | Number input only | v1 | planned |
+| 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (see follow-ups); `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` parser (`×`, `^`) | v1 | planned |
+| 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, rewrite checker; `expression` answer kind; negative literals; two-step questions | v1 | planned |
+| 5 | **Verhoudingen** (v2 part) | `fractionConversion`, `fractionArithmetic` (§12) | `fraction` answer kind (`/` key on keypad) | v2 | later |
+| 6 | **Toepassingen** | `speed`, `scale`, `average`, `geometry` (§12) | Context/word problems | v3 | later |
+
+Why this order: 1 and 2 add useful sets quickly without changing the architecture. 3 introduces
+the answer-kind refactor and the first parser pieces, which 4 then extends.
+
+Workflow per set (new session each time):
+1. Read this file, the spec and the beta plan, the reference for structure and level of detail.
+2. Ask the user about open spec assumptions affecting the set (spec §11). Update and commit the spec.
+3. Write `docs/superpowers/plans/<date>-<set>.md` in the beta plan's style: TDD, complete code, one
+   commit per task. Then stop for the user's review. No implementation without approval.
+4. After approval, execute with subagents. Run per-task (or per-bundle) spec and quality reviews,
+   then a final review that also checks `dist/sw.js`.
+5. Update the Status column above when the set is done.
+
 Known follow-ups for the next plans:
 - **Before adding the `boolean`/`expression`/`factorization` answer kinds:** `QuestionView` hard-codes
   number input (`parseDutchNumber` as `canSubmit`, always the number `Keypad`), and `Step` has no
