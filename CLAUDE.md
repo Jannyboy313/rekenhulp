@@ -57,6 +57,7 @@ src/
   components/           StartScreen, QuestionView, Keypad, Feedback, ResultScreen
   lib/
     random.ts           seedable RNG; every generator takes an rng argument
+    sets.ts             practice sets (config): topics + weights + tables share
     session.ts          builds a session: quotas, shuffle, de-duplication
     format.ts           Dutch number/expression formatting
     rational.ts         exact bigint fractions (expressions, unit conversions, input parsing)
@@ -65,7 +66,8 @@ src/
 ```
 
 - A topic generator is a pure function `(rng) => Question`. `Question.check(input)` returns
-  `{ correct, expected, explanation? }`. Adding a topic = adding a generator + quota entry.
+  `{ correct, expected, explanation? }`. Adding a topic = adding a generator, registering it in
+  `topics/index.ts` and adding it to a set in `sets.ts`.
 - Keep `lib/` free of Svelte imports so it is unit-testable in plain Node.
 
 ## Domain rules (do not get these wrong)
