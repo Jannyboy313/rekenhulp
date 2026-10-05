@@ -21,9 +21,8 @@ export function formatInteger(value: number | bigint): string {
 /** Formats a terminating decimal in Dutch notation; throws for e.g. 1/3 (fractions come in v2). */
 export function formatRational(value: Rational): string {
   const decimals = decimalPlaces(value);
-  if (decimals === null || decimals > MAX_DECIMALS) {
-    throw new RangeError('Value has no finite decimal representation');
-  }
+  if (decimals === null) throw new RangeError('Value has no finite decimal representation');
+  if (decimals > MAX_DECIMALS) throw new RangeError(`Too many decimals: ${decimals}`);
   const negative = value.num < 0n;
   const absolute = negative ? -value.num : value.num;
   const scaled = (absolute * 10n ** BigInt(decimals)) / value.den;
@@ -63,6 +62,7 @@ export function toSuperscript(exponent: number): string {
   return (exponent < 0 ? SUPERSCRIPT_MINUS : '') + digits.join('');
 }
 
+/** 10 with a superscript exponent, e.g. 10⁹ (spec §5.14). */
 export function formatPowerOfTen(exponent: number): string {
   return `10${toSuperscript(exponent)}`;
 }

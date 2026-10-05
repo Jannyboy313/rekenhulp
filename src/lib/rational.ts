@@ -51,7 +51,7 @@ export function divide(a: Rational, b: Rational): Rational {
 }
 
 /** −1, 0 or 1. Denominators are always positive, so cross-multiplying keeps the order. */
-export function compare(a: Rational, b: Rational): number {
+export function compare(a: Rational, b: Rational): -1 | 0 | 1 {
   const difference = a.num * b.den - b.num * a.den;
   return difference < 0n ? -1 : difference > 0n ? 1 : 0;
 }

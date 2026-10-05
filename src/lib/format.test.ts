@@ -81,6 +81,12 @@ describe('formatSeconds', () => {
   });
 });
 
+describe('formatRational limits', () => {
+  it('rejects values with too many decimals', () => {
+    expect(() => formatRational(rational(1n, 2n ** 21n))).toThrow(/Too many decimals/);
+  });
+});
+
 describe('toSuperscript', () => {
   it.each([
     [0, '⁰'],
@@ -102,6 +108,8 @@ describe('toSuperscript', () => {
 
   it('rejects non-integers', () => {
     expect(() => toSuperscript(1.5)).toThrow(RangeError);
+    expect(() => toSuperscript(NaN)).toThrow(RangeError);
+    expect(() => toSuperscript(Number.MAX_SAFE_INTEGER + 1)).toThrow(RangeError);
   });
 });
 
@@ -109,5 +117,6 @@ describe('formatPowerOfTen', () => {
   it('writes the base 10 with a superscript exponent', () => {
     expect(formatPowerOfTen(9)).toBe('10⁹');
     expect(formatPowerOfTen(24)).toBe('10²⁴');
+    expect(formatPowerOfTen(-2)).toBe('10⁻²');
   });
 });

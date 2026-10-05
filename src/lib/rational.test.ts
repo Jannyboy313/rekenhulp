@@ -77,7 +77,7 @@ describe('divide', () => {
   });
 
   it('rejects division by zero', () => {
-    expect(() => divide(rational(1n), rational(0n))).toThrow(RangeError);
+    expect(() => divide(rational(1n), rational(0n))).toThrow(/Division by zero/);
   });
 });
 
@@ -117,6 +117,10 @@ describe('decimalPlaces', () => {
     ['0,001', rational(1n, 1000n), 3],
   ])('needs the right number of decimals for %s', (_label, value, expected) => {
     expect(decimalPlaces(value)).toBe(expected);
+  });
+
+  it('needs no decimals for zero', () => {
+    expect(decimalPlaces(rational(0n))).toBe(0);
   });
 
   it('returns null for values that do not terminate', () => {
