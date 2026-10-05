@@ -7,6 +7,8 @@ import {
   divide,
   equals,
   fromInteger,
+  multiply,
+  parseDutchNumber,
   rational,
   subtract,
   type Rational,
@@ -145,7 +147,7 @@ describe('partExplanation', () => {
     ['2', 500, '1% = 500 : 100 = 5 → 2% = 2 × 5 = 10'],
     ['120', 80, '10% = 80 : 10 = 8 → 120% = 12 × 8 = 96'],
     ['150', 80, '50% = 80 : 2 = 40 → 150% = 3 × 40 = 120'],
-  ])('explains %s%% of %i', (label, whole, expected) => {
+  ])('explains %s percent of %i', (label, whole, expected) => {
     expect(partExplanation(percentage(label), fromInteger(whole))).toBe(expected);
   });
 
@@ -164,7 +166,7 @@ describe('wholeExplanation', () => {
     ['12½', 48, '12½% = 6 → 100% = 8 × 6 = 48'],
     ['1', 500, '1% = 5 → 100% = 100 × 5 = 500'],
     ['150', 80, '150% = 120 → 50% = 40 → 100% = 2 × 40 = 80'],
-  ])('explains back to 100%% from %s%% of %i', (label, whole, expected) => {
+  ])('explains back to the whole from %s percent of %i', (label, whole, expected) => {
     expect(wholeExplanation(percentage(label), fromInteger(whole))).toBe(expected);
   });
 });
@@ -223,6 +225,10 @@ describe('part of a whole', () => {
         `${formatPercentage(p.value)}% van ${formatRational(whole)} = ?`,
       );
       expect(equals(answerOf(question), percentOf(p.value, whole))).toBe(true);
+      // Independent check: answer / whole = p / 100.
+      expect(equals(multiply(answerOf(question), fromInteger(100)), multiply(p.value, whole))).toBe(
+        true,
+      );
       expect(stepOf(question).check('').explanation).toBe(partExplanation(p, whole));
     }
   });
@@ -248,6 +254,13 @@ describe('what percentage', () => {
         `${formatRational(part)} is ?% van ${formatRational(whole)}`,
       );
       expect(equals(answerOf(question), p.value)).toBe(true);
+      // Independent check, parsing the numbers from the prompt: shown part × 100 = answer × shown whole.
+      const [shownPart, shownWhole] = stepOf(question)
+        .prompt.split(' is ?% van ')
+        .map((text) => parseDutchNumber(text)!);
+      expect(
+        equals(multiply(shownPart!, fromInteger(100)), multiply(answerOf(question), shownWhole!)),
+      ).toBe(true);
       expect(stepOf(question).check('').explanation).toBe(partExplanation(p, whole));
     }
   });
@@ -280,6 +293,11 @@ describe('discount and increase', () => {
       expect(equals(answerOf(question), increase ? add(price, change) : subtract(price, change))).toBe(
         true,
       );
+      // Independent check: answer × 100 = price × (100 ∓ p).
+      const factor = increase ? add(fromInteger(100), p.value) : subtract(fromInteger(100), p.value);
+      expect(equals(multiply(answerOf(question), fromInteger(100)), multiply(price, factor))).toBe(
+        true,
+      );
       expect(expectedOf(question)).toBe(formatMoney(answerOf(question)));
       expect(step.check('').explanation).toBe(priceChangeExplanation(p, price, increase));
     }
@@ -302,7 +320,7 @@ describe('discount and increase', () => {
     ['15', 40, true, '10% = 4, 5% = 2 → 15% = 6 → 40 + 6 = 46'],
     ['15', 30, false, '10% = 3, 5% = 1,50 → 15% = 4,50 → 30 − 4,50 = 25,50'],
     ['12½', 20, true, '12½% = 20 : 8 = 2,50 → 20 + 2,50 = 22,50'],
-  ])('explains %s%% on € %i (increase: %s)', (label, price, increase, expected) => {
+  ])('explains %s percent on € %i (increase: %s)', (label, price, increase, expected) => {
     expect(priceChangeExplanation(percentage(label), fromInteger(price), increase)).toBe(expected);
   });
 });
@@ -319,6 +337,12 @@ describe('back to 100%', () => {
         `${formatPercentage(p.value)}% is ${formatRational(part)}. Hoeveel is 100%?`,
       );
       expect(equals(answerOf(question), whole)).toBe(true);
+      // Independent check, parsing the part from the prompt: part × 100 = p × answer.
+      const shownText = stepOf(question).prompt.split('% is ')[1]!.split('. Hoeveel')[0]!;
+      const shownPart = parseDutchNumber(shownText)!;
+      expect(equals(multiply(shownPart, fromInteger(100)), multiply(p.value, answerOf(question)))).toBe(
+        true,
+      );
       expect(stepOf(question).check('').explanation).toBe(wholeExplanation(p, whole));
     }
   });
@@ -328,5 +352,45 @@ describe('back to 100%', () => {
     const share = integerShare(parts);
     expect(share).toBeGreaterThan(0.72);
     expect(share).toBeLessThan(0.88);
+  });
+});
+
+describe('every percentage and whole', () => {
+  const wholes = NICE_WHOLES.map(fromInteger);
+  const atMostTwoDecimals = (value: Rational) => (decimalPlaces(value) ?? Infinity) <= 2;
+
+  it('has explainable parts, both integer and non-integer, for every percentage', () => {
+    for (const p of PERCENTAGES) {
+      const parts = wholes.filter((whole) => atMostTwoDecimals(percentOf(p.value, whole)));
+      expect(parts.length, formatPercentage(p.value)).toBeGreaterThan(0);
+      const isInteger = (whole: Rational) => percentOf(p.value, whole).den === 1n;
+      expect(parts.some(isInteger), `${formatPercentage(p.value)} integer`).toBe(true);
+      expect(parts.some((whole) => !isInteger(whole)), `${formatPercentage(p.value)} other`).toBe(
+        true,
+      );
+      for (const whole of parts) {
+        expect(() => partExplanation(p, whole)).not.toThrow();
+        expect(() => wholeExplanation(p, whole)).not.toThrow();
+      }
+    }
+  });
+
+  it('has explainable price changes, both integer and non-integer, for every percentage', () => {
+    for (const increase of [false, true]) {
+      for (const p of increase ? INCREASE_PERCENTAGES : DISCOUNT_PERCENTAGES) {
+        const prices = wholes.filter((price) => {
+          const change = percentOf(p.value, price);
+          return atMostTwoDecimals(increase ? add(price, change) : subtract(price, change));
+        });
+        const name = `${formatPercentage(p.value)} (increase: ${increase})`;
+        expect(prices.length, name).toBeGreaterThan(0);
+        const isInteger = (price: Rational) => percentOf(p.value, price).den === 1n;
+        expect(prices.some(isInteger), `${name} integer`).toBe(true);
+        expect(prices.some((price) => !isInteger(price)), `${name} other`).toBe(true);
+        for (const price of prices) {
+          expect(() => priceChangeExplanation(p, price, increase)).not.toThrow();
+        }
+      }
+    }
   });
 });

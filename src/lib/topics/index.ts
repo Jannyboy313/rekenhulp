@@ -30,5 +30,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   mass: 'Gewicht (mg t/m ton)',
   time: 'Tijd (s, min, uur, dag)',
   numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
-  percentages: 'Procenten (deel, percentage, korting, terug naar 100%)',
+  percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
 };
