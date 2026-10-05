@@ -183,7 +183,7 @@ describe('randomScaleConversion (custom limits)', () => {
   it('rejects a maxShift larger than maxValueExponent', () => {
     expect(() =>
       randomScaleConversion(createRng(1), MASS_UNITS, { maxShift: 6, maxValueExponent: 5 }),
-    ).toThrow(RangeError);
+    ).toThrow(/maxShift must not exceed maxValueExponent/);
   });
 });
 
