@@ -116,7 +116,7 @@ exercises.
 | **Tafels**            | `tables`                                                                         | 100%   | v1      |
 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares`                | 15%    | v1      |
 | **Bewerkingen**       | `orderOfOperations`, `properties` (weight 0.5), `smartCalculation`               | 15%    | v1      |
-| **Meten**             | `volume`, `area`, `length`, `mass`, `time`                                       | 15%    | v1      |
+| **Meten**             | `volume`, `area`, `length`, `mass`, `time`, `numberUnits`                        | 15%    | v1      |
 | **Verhoudingen**      | `percentages`, `ratios` (v1); `fractionConversion`, `fractionArithmetic` (v2)    | 15%    | v1 + v2 |
 | **Toepassingen**      | `speed`, `scale`, `average`, `geometry`                                          | 15%    | v3      |
 
@@ -155,6 +155,8 @@ Examples with `n = 15`:
 - **Getallen & delers:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is
   chosen at random.
 - **Verhoudingen (v1):** `r = 13` over 2 topics, so 7 + 6.
+- **Meten:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is chosen at
+  random.
 
 ## 5. Topics
 
@@ -277,7 +279,8 @@ the rewrite.
 ### 5.10 Measurement (`volume`, `area`, `length`, `mass`, `time`)
 
 There is one shared conversion engine (`topics/measurement.ts`) with one topic per dimension.
-The exercise is always a conversion, e.g. `3,5 L = … cm³`.
+The exercise is always a conversion, e.g. `3,5 L = ? cm³`. The target unit is also shown as the
+input suffix (§6).
 
 | Topic    | Units                                          | Steps                                                  |
 |----------|------------------------------------------------|--------------------------------------------------------|
@@ -289,15 +292,29 @@ The exercise is always a conversion, e.g. `3,5 L = … cm³`.
 
 Value rules for metric dimensions:
 
+- Unit pairs: any two different units of the dimension whose sizes differ by at most a factor
+  10⁶, in both directions. So `m³ ↔ cm³` occurs, `m³ ↔ mm³` (10⁹) does not. Within `volume`,
+  capacity and cubic units mix freely, including the factor-1 links `ml ↔ cm³` and `L ↔ dm³`.
 - The source value has 1 to 3 significant digits.
-- The answer lies in `[0,001; 10 000 000]`, has at most 3 decimals and at most 7 significant
+- The source value and the answer both lie in `[0,001; 10 000 000]` and have at most 3
+  decimals. Because every factor is a power of 10, the answer also has at most 3 significant
   digits.
 
 Value rules for `time`:
 
-- The answer is exact and has at most 2 decimals, e.g. `135 min = 2,25 uur` or
-  `3,5 dag = 84 uur`.
+- Unit pairs: `s ↔ min`, `min ↔ uur`, `uur ↔ dag`, `s ↔ uur` and `min ↔ dag`, in both
+  directions. `s ↔ dag` (factor 86 400) is left out.
+- The value in the larger unit is a whole number, a half, a quarter or a tenth (each
+  denominator equally likely) and at most 100. The value in the smaller unit is a whole number
+  of at most 10 000. As a result both values have at most 2 decimals, e.g.
+  `135 min = 2,25 uur` or `3,5 dag = 84 uur`.
 - Prompts never contain mixed notation such as `1 uur 45 min`.
+
+Explanation on error: the conversion fact, followed by the calculation:
+
+- `1 L = 1000 cm³ → 3,5 × 1000 = 3500`
+- `1 uur = 60 min → 135 : 60 = 2,25`
+- for factor-1 links only the fact: `1 dm³ = 1 L`
 
 General rules:
 
@@ -377,6 +394,46 @@ There are three forms, each picked with equal probability:
 
 - Answers are integers. Ratio terms are in `[1, 12]`.
 - Explanation on error: a ratio table, e.g. `4 → 300, 2 → 150, 6 → 450`.
+
+### 5.14 Large numbers (`numberUnits`)
+
+Part of the set Meten. The names of large numbers and their powers of 10, following the Dutch
+**long scale**:
+
+| Name          | Value | Name          | Value |
+|---------------|-------|---------------|-------|
+| `duizend`     | 10³   | `biljard`     | 10¹⁵  |
+| `miljoen`     | 10⁶   | `triljoen`    | 10¹⁸  |
+| `miljard`     | 10⁹   | `triljard`    | 10²¹  |
+| `biljoen`     | 10¹²  | `quadriljoen` | 10²⁴  |
+
+- Note: `biljoen` is 10¹², not 10⁹ (the English *billion* is a `miljard`).
+- `tien` and `honderd` are not used; the topic starts at `duizend`.
+- Large numbers are never written out with all their zeros. A prompt uses a power of 10
+  instead, e.g. `2,5 × 10⁹`.
+
+There are three forms, each picked with equal probability:
+
+| Form           | Example                                    | Answer |
+|----------------|--------------------------------------------|--------|
+| Name → power   | `1 biljard = 10ⁿ. n = ?`                   | 15     |
+|                | `250 miljoen = 2,5 × 10ⁿ. n = ?`           | 8      |
+| Name ↔ name    | `3,5 biljoen = ? miljard`                  | 3500   |
+| Power → name   | `2,5 × 10⁹ = ? miljoen`                    | 2500   |
+
+- **Name → power:** in 40% of these the value is 1. Otherwise it is an integer in `[1, 999]`
+  with 1 to 3 significant digits. The right-hand side writes the value in scientific notation
+  `c × 10ⁿ` with `c ∈ [1, 10)`; for the value 1 it is just `10ⁿ`.
+- **Name ↔ name:** the metric rules of §5.10 apply (factor at most 10⁶, source value and answer
+  in `[0,001; 10 000 000]` with at most 3 decimals). Because the names are 10³ apart, the
+  factor is 1000 or 1 000 000.
+- **Power → name:** `c ∈ [1, 10)` with 1 to 3 significant digits (`c = 1` is written as just
+  `10⁹`), the exponent is at least 3, and the answer follows the metric value rules.
+- Explanation on error:
+  - name → power: `1 miljard = 1000 miljoen = 10⁹`, `1 duizend = 1000 = 10³`,
+    `250 miljoen = 2,5 × 10² × 10⁶ = 2,5 × 10⁸`, `7 miljard = 7 × 10⁹`
+  - name ↔ name: as in §5.10, `1 biljoen = 1000 miljard → 3,5 × 1000 = 3500`
+  - power → name: `10⁹ = 1000 miljoen → 2,5 × 1000 = 2500`, or `10⁵ = 0,1 miljoen → 2,5 × 0,1 = 0,25`
 
 ## 6. Input (keypad)
 
@@ -510,6 +567,7 @@ src/
       smartCalculation.ts
       properties.ts
       measurement.ts        conversion engine + volume, area, length, mass, time
+      numberUnits.ts        large numbers: names and powers of 10 (reuses the engine)
       percentages.ts
       ratios.ts
 ```
@@ -522,7 +580,7 @@ type AnswerKind = 'number' | 'boolean' | 'expression' | 'factorization';
 type Topic =
   | 'tables' | 'lcm' | 'gcd' | 'prime' | 'factorization' | 'divisibility' | 'squares'
   | 'orderOfOperations' | 'smartCalculation' | 'properties'
-  | 'volume' | 'area' | 'length' | 'mass' | 'time'
+  | 'volume' | 'area' | 'length' | 'mass' | 'time' | 'numberUnits'
   | 'percentages' | 'ratios';
 
 interface CheckResult {
@@ -593,8 +651,9 @@ These are assumptions made while writing the spec. Each one is easy to change.
    confusion. It could be added as a deliberate trick question.
 9. The divisors for divisibility are `{2, 3, 4, 5, 6, 8, 9, 11}`. 10 and 25 are left out
    because they are trivial.
-10. The length units are `mm, cm, dm, m, km` without `dam`/`hm`, and the mass units are
-    `mg, g, kg, ton` without `cg`/`dg`.
+10. ~~Units~~ — confirmed: length `mm, cm, dm, m, km` without `dam`/`hm`, mass
+    `mg, g, kg, ton` without `cg`/`dg`. Metric conversions span at most a factor 10⁶, and time
+    leaves out `s ↔ dag` (§5.10). Large numbers (§5.14) were added to Meten.
 11. ~~Default set~~ — confirmed: the app opens on the set overview, with no set preselected.
     Choosing a set leads to a separate setup screen (§3.1, §3.2).
 

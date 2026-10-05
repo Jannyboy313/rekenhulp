@@ -22,7 +22,7 @@ implementation plan per step:
 | # | Set | Topics (spec section) | New infrastructure needed | Version | Status |
 |---|---|---|---|---|---|
 | 0 | **Tafels** | `tables` (§5.1) | — (beta foundation) | v1 | ✅ done |
-| 1 | **Meten** | `volume`, `area`, `length`, `mass`, `time` (§5.10) | One shared conversion engine; number input + unit suffix only | v1 | planned |
+| 1 | **Meten** | `volume`, `area`, `length`, `mass`, `time` (§5.10), `numberUnits` (§5.14) | One shared conversion engine; number input + unit suffix only; superscript powers of 10 in prompts | v1 | planned |
 | 2 | **Verhoudingen** (v1 part) | `percentages` (§5.12), `ratios` (§5.13) | Number input only | v1 | planned |
 | 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (see follow-ups); `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` parser (`×`, `^`) | v1 | planned |
 | 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, rewrite checker; `expression` answer kind; negative literals; two-step questions | v1 | planned |
