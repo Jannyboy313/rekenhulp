@@ -65,6 +65,13 @@ describe('formatDuration', () => {
   });
 });
 
+describe('spec code points (§8)', () => {
+  it('uses U+2212 for minus and U+202F for digit grouping', () => {
+    expect([...MINUS].map((c) => c.codePointAt(0))).toEqual([0x2212]);
+    expect([...S].map((c) => c.codePointAt(0))).toEqual([0x202f]);
+  });
+});
+
 describe('formatSeconds', () => {
   it('formats with one decimal and a comma', () => {
     expect(formatSeconds(4230)).toBe('4,2 s');

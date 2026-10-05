@@ -43,6 +43,7 @@ describe('parseDutchNumber', () => {
     ['0,250', rational(1n, 4n)],
     ['  2,5 ', rational(5n, 2n)],
     ['-0', rational(0n)],
+    [String.fromCodePoint(0x2212) + '7', rational(-7n)],
   ])('parses %j', (input, expected) => {
     expect(parseDutchNumber(input)).toEqual(expected);
   });
