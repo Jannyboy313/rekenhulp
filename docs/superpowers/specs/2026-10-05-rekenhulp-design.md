@@ -377,10 +377,32 @@ There are four forms, each picked with equal probability:
 | Back to 100%        | `20% is 14. Hoeveel is 100%?`             | 70     |
 
 - `p ∈ {1, 2, 5, 10, 12½, 15, 20, 25, 30, 40, 50, 60, 75, 80, 90, 120, 150}`
-- Base amounts are chosen so that the answer has at most 2 decimals. 80% of answers are
-  integers.
-- Explanation on error: a strategy via 1%, 10% or a simple fraction, e.g.
-  `10% = 8, 5% = 4 → 15% = 12`, or `25% = ¼ → 60 − 15 = 45`.
+  - `12½` is written with the fraction glyph in prompts: `12½% van 80 = ?`.
+  - Discount uses only `p < 100`; increase uses only `p ≤ 50`.
+- The whole (the 100% amount, or the price) is an integer in `[10, 1000]` with at most 2
+  significant digits: `85`, `470` and `1000`, but not `487`.
+- Answers have at most 2 decimals. Per form:
+  - **Part of a whole** and **discount / increase:** 80% of the answers are integers.
+  - **What percentage:** the part and the whole are integers. The answer is `p`, so it is an
+    integer except for `12½`. This form uses the `fraction` answer kind (§6): `12,5` and
+    `25/2` are both correct, and so is any other equal value. All exercises of this form use it,
+    so the `/` key does not give away the answer.
+  - **Back to 100%:** the answer is the whole, so it is always an integer. In 80% of the
+    exercises the given part is an integer as well; otherwise it has 1 or 2 decimals, e.g.
+    `15% is 4,5. Hoeveel is 100%?`.
+- Money (discount / increase): the prompt reads `€ 60 na 25% korting = ?`, `€` is the input
+  prefix (§6), and the correct answer is shown with 2 decimals when it is not whole (`25,50`).
+- Explanation on error: a strategy via 1%, 10% or a simple base percentage. Each `p` has a fixed
+  base: `1%` for 1 and 2, `5%` for 5 and 15, `10%` for 10, 20, 30, 40, 60, 80, 90 and 120,
+  `12½%`, `25%` for 25 and 75, and `50%` for 50 and 150.
+  - Part of a whole: `10% = 80 : 10 = 8 → 30% = 3 × 8 = 24`, `25% = 80 : 4 = 20`. 5% and 15%
+    go via 10%: `10% = 8, 5% = 4 → 15% = 12`.
+  - Discount / increase: the same, followed by the price step:
+    `25% = 60 : 4 = 15 → 60 − 15 = 45`, `10% = 4, 5% = 2 → 15% = 6 → 40 + 6 = 46`.
+  - What percentage: the part-of-a-whole explanation for the answer, e.g.
+    `25% = 120 : 4 = 30`.
+  - Back to 100%: from the part via the base: `20% = 14 → 10% = 7 → 100% = 10 × 7 = 70`, or
+    `25% = 14 → 100% = 4 × 14 = 56`.
 
 ### 5.13 Ratios (`ratios`)
 
@@ -392,8 +414,23 @@ There are three forms, each picked with equal probability:
 | Scaling            | `Voor 4 personen: 300 g pasta. Hoeveel g voor 6 personen?`      | 450    |
 | Dividing in ratio  | `Verdeel 60 in de verhouding 2 : 3. Hoe groot is het grootste deel?` | 36 |
 
-- Answers are integers. Ratio terms are in `[1, 12]`.
-- Explanation on error: a ratio table, e.g. `4 → 300, 2 → 150, 6 → 450`.
+- Answers are integers. The given ratio has terms in `[1, 12]`.
+- **Missing term:** a simplified ratio `p : q` with `p ≠ q`. The left side is `m × (p : q)` with
+  terms ≤ 12, so it need not be simplified (`4 : 6 = 10 : ?`). The right side is
+  `n × (p : q)` with `n ≠ m` and terms ≤ 100. The unknown is in any of the four positions, each
+  equally likely.
+- **Scaling:** counts `a ≠ b` in `[2, 12]`. There are three contexts: pasta (g) and milk (ml)
+  for a number of people, and the price of notebooks (`€`, input prefix). The amount has at
+  most 2 significant digits and is at most 1000 (at most `€ 100` for prices). The amount for
+  `gcd(a, b)` is an integer, and the answer is at most 2000.
+- **Dividing in ratio:** a simplified ratio `a : b` with `a ≠ b`, terms in `[1, 12]`. The total
+  is `(a + b) × k` with `k ≥ 2` and is at most 500. The exercise asks for the largest or the
+  smallest part, each equally likely.
+- Explanation on error:
+  - missing term: `3 : 5 = 12 : 20 (× 4)`, `12 : 20 = 3 : 5 (: 4)` or `4 : 6 = 2 : 3 = 10 : 15`
+  - scaling: a ratio table via `gcd(a, b)`, e.g. `4 → 300, 2 → 150, 6 → 450`, or
+    `4 → 300, 8 → 600`
+  - dividing: `2 + 3 = 5 delen → 1 deel = 60 : 5 = 12 → 3 delen = 36`
 
 ### 5.14 Large numbers (`numberUnits`)
 
@@ -444,6 +481,7 @@ The keypad is custom. The system keyboard is never opened.
 | Answer kind        | Keys                                                           |
 |--------------------|----------------------------------------------------------------|
 | number             | `0–9`, `,`, `−`, `⌫`, `OK`                                      |
+| fraction           | number keys plus `/`                                           |
 | boolean            | two large buttons: `Ja` / `Nee`                                |
 | expression         | number keys plus `+ − × : ( ) ^`                               |
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
@@ -453,8 +491,11 @@ The keypad is custom. The system keyboard is never opened.
 - `OK` is disabled while the input is empty.
 - An unparsable expression gives an inline error ("Ongeldige som") and does **not** count as
   the attempt.
-- Units (`€`, `%`, `cm³`, …) are shown as a fixed suffix next to the input field. The user
-  never types them.
+- Units are shown next to the input field, and the user never types them. `€` is a fixed
+  prefix (`€ 45`); other units (`%`, `cm³`, …) are a fixed suffix.
+- **Fraction input** (introduced with Verhoudingen v1 for `12½%`): the user types `a/b`, e.g.
+  `25/2`, or a decimal (`12,5`). `/` is allowed once, after a digit, and not together with a
+  comma. Mixed numbers (`12 1/2`) cannot be typed. Any value equal to the answer is correct.
 
 ## 7. Expression engine (`lib/expr`)
 
@@ -526,6 +567,9 @@ Required test cases (accept ✔ / reject ✘):
     i.e. a thin space that never wraps
   - no separator for 4-digit numbers (`1000`)
   - the minus sign is shown as `−` (U+2212)
+  - money: `€`, a no-break space (U+00A0), then the amount; whole euros without decimals,
+    otherwise 2 decimals (`€ 45`, `€ 25,50`)
+  - half percentages use the fraction glyph: `12½%`
 - **Language:** UI text is in Dutch. Code, comments, tests and documentation are in English.
 
 ## 9. Code structure
@@ -577,7 +621,7 @@ src/
 Core types:
 
 ```ts
-type AnswerKind = 'number' | 'boolean' | 'expression' | 'factorization';
+type AnswerKind = 'number' | 'fraction' | 'boolean' | 'expression' | 'factorization';
 
 type Topic =
   | 'tables' | 'lcm' | 'gcd' | 'prime' | 'factorization' | 'divisibility' | 'squares'
@@ -594,7 +638,8 @@ interface CheckResult {
 interface Step {
   kind: AnswerKind;
   prompt: string;
-  suffix?: string;  // fixed unit shown next to the input, e.g. 'cm³', '%', '€'
+  prefix?: string;  // fixed unit shown before the input: '€'
+  suffix?: string;  // fixed unit shown after the input, e.g. 'cm³', '%'
   check(input: string): CheckResult;
 }
 
@@ -658,13 +703,18 @@ These are assumptions made while writing the spec. Each one is easy to change.
     leaves out `s ↔ dag` (§5.10). Large numbers (§5.14) were added to Meten.
 11. ~~Default set~~ — confirmed: the app opens on the set overview, with no set preselected.
     Choosing a set leads to a separate setup screen (§3.1, §3.2).
+12. ~~Verhoudingen v1~~ — confirmed: `€` is an input prefix and money answers show 2 decimals
+    when not whole. `12½` is written as a fraction in prompts, and as an answer both `25/2`
+    and `12,5` are correct, which brings the `fraction` input (`/` key) forward from v2.
+    Discount uses `p < 100` and increase `p ≤ 50`. A missing ratio term can be in any of the
+    four positions (§5.12, §5.13).
 
 ## 12. Roadmap (not in v1)
 
 - **v2 — Fractions** (in set *Verhoudingen*)
-  - New answer kind `fraction`: the number keypad gets a `/` key, and answers are compared
-    exactly via `rational.ts`. Both the simplified and the unsimplified form are judged
-    explicitly per exercise.
+  - The answer kind `fraction` (number keypad plus `/`, exact comparison via `rational.ts`)
+    already exists since Verhoudingen v1 (§6). v2 adds per-exercise judging of the simplified
+    and the unsimplified form.
   - `fractionConversion`: fraction ↔ decimal ↔ percentage, e.g. `3/8 = ?`, `0,125 = ?%`,
     `40% = ?/?`.
   - `fractionArithmetic`: `2/3 + 1/4`, `3/4 × 2/5`, `vereenvoudig 18/24`.
