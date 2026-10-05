@@ -1,7 +1,7 @@
 import type { Rng } from './random';
 
-/** Beta: numeric answers only. Later plans add 'boolean' | 'expression' | 'factorization'. */
-export type AnswerKind = 'number';
+/** Later plans add 'boolean' | 'expression' | 'factorization' (spec §6). */
+export type AnswerKind = 'number' | 'fraction';
 
 /** Topics of the implemented sets. Each later plan adds the topics of its set (spec §4.1). */
 export type Topic = 'tables' | 'volume' | 'area' | 'length' | 'mass' | 'time' | 'numberUnits';
@@ -16,7 +16,9 @@ export interface CheckResult {
 export interface Step {
   kind: AnswerKind;
   prompt: string;
-  /** Fixed unit shown next to the input, e.g. 'cm³'. */
+  /** Fixed unit shown before the input: '€'. */
+  prefix?: string;
+  /** Fixed unit shown after the input, e.g. 'cm³' or '%'. */
   suffix?: string;
   check(input: string): CheckResult;
 }
