@@ -7,6 +7,7 @@ import {
   generateVolume,
 } from './measurement';
 import { generateNumberUnits } from './numberUnits';
+import { generatePercentages } from './percentages';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -17,6 +18,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   mass: generateMass,
   time: generateTime,
   numberUnits: generateNumberUnits,
+  percentages: generatePercentages,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -28,4 +30,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   mass: 'Gewicht (mg t/m ton)',
   time: 'Tijd (s, min, uur, dag)',
   numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
+  percentages: 'Procenten (deel, percentage, korting, terug naar 100%)',
 };

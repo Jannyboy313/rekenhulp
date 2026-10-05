@@ -1,14 +1,28 @@
 import { describe, expect, it } from 'vitest';
-import { formatMoney } from '../format';
-import { divide, fromInteger, rational } from '../rational';
+import { formatEuro, formatMoney, formatRational } from '../format';
+import { createRng } from '../random';
+import {
+  add,
+  decimalPlaces,
+  divide,
+  equals,
+  fromInteger,
+  rational,
+  subtract,
+  type Rational,
+} from '../rational';
+import { parseAnswer } from '../steps';
+import type { Question, Step } from '../types';
 import {
   DISCOUNT_PERCENTAGES,
   formatPercentage,
+  generatePercentages,
   INCREASE_PERCENTAGES,
   NICE_WHOLES,
   partExplanation,
   PERCENTAGES,
   percentOf,
+  priceChangeExplanation,
   wholeExplanation,
   type Percentage,
 } from './percentages';
@@ -21,6 +35,47 @@ function percentage(label: string): Percentage {
 
 function labels(percentages: readonly Percentage[]): string[] {
   return percentages.map((p) => formatPercentage(p.value));
+}
+
+const SAMPLES = 4000;
+
+function sample(seed: number, count = SAMPLES): Question[] {
+  const rng = createRng(seed);
+  return Array.from({ length: count }, () => generatePercentages(rng));
+}
+
+function stepOf(question: Question): Step {
+  return question.steps[0]!;
+}
+
+function expectedOf(question: Question): string {
+  // `expected` does not depend on the input.
+  return stepOf(question).check('').expected;
+}
+
+/** What the user types: a fraction step shows '12,5 of 25/2', the user types one of them. */
+function typed(question: Question): string {
+  return expectedOf(question).split(' of ')[0]!;
+}
+
+function answerOf(question: Question): Rational {
+  return parseAnswer(stepOf(question).kind, typed(question))!;
+}
+
+function formOf(question: Question): string {
+  return question.key.split(':')[1]!;
+}
+
+function percentageOf(question: Question): Percentage {
+  return percentage(question.key.split(':')[2]!);
+}
+
+function wholeOf(question: Question): Rational {
+  return fromInteger(Number(question.key.split(':')[3]));
+}
+
+function integerShare(values: readonly Rational[]): number {
+  return values.filter((value) => value.den === 1n).length / values.length;
 }
 
 describe('PERCENTAGES', () => {
@@ -111,5 +166,167 @@ describe('wholeExplanation', () => {
     ['150', 80, '150% = 120 → 50% = 40 → 100% = 2 × 40 = 80'],
   ])('explains back to 100%% from %s%% of %i', (label, whole, expected) => {
     expect(wholeExplanation(percentage(label), fromInteger(whole))).toBe(expected);
+  });
+});
+
+describe('generatePercentages', () => {
+  const questions = sample(21);
+
+  it('creates single-step questions that accept their own answer', () => {
+    for (const question of questions) {
+      expect(question.topic).toBe('percentages');
+      expect(question.key.startsWith('percentages:')).toBe(true);
+      expect(question.steps).toHaveLength(1);
+      const result = stepOf(question).check(typed(question));
+      expect(result.correct).toBe(true);
+      expect(result.explanation).toBeTruthy();
+    }
+  });
+
+  it('uses the four forms about equally often', () => {
+    const count = (...forms: string[]) => questions.filter((q) => forms.includes(formOf(q))).length;
+    for (const forms of [['of'], ['what'], ['discount', 'increase'], ['back']]) {
+      const share = count(...forms) / SAMPLES;
+      expect(share).toBeGreaterThan(0.21);
+      expect(share).toBeLessThan(0.29);
+    }
+  });
+
+  it('uses nice wholes and every percentage', () => {
+    for (const question of questions) {
+      expect(NICE_WHOLES).toContain(Number(wholeOf(question).num));
+    }
+    const used = new Set(questions.map((q) => formatPercentage(percentageOf(q).value)));
+    expect(used.size).toBe(PERCENTAGES.length);
+  });
+
+  it('keeps answers to at most 2 decimals', () => {
+    for (const question of questions) {
+      expect(decimalPlaces(answerOf(question))).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('is deterministic for a fixed seed', () => {
+    const keys = (seed: number) => sample(seed, 50).map((question) => question.key);
+    expect(keys(5)).toEqual(keys(5));
+  });
+});
+
+describe('part of a whole', () => {
+  const questions = sample(22).filter((q) => formOf(q) === 'of');
+
+  it('asks for p% of the whole', () => {
+    for (const question of questions) {
+      const [p, whole] = [percentageOf(question), wholeOf(question)];
+      expect(stepOf(question).kind).toBe('number');
+      expect(stepOf(question).prompt).toBe(
+        `${formatPercentage(p.value)}% van ${formatRational(whole)} = ?`,
+      );
+      expect(equals(answerOf(question), percentOf(p.value, whole))).toBe(true);
+      expect(stepOf(question).check('').explanation).toBe(partExplanation(p, whole));
+    }
+  });
+
+  it('has an integer answer in about 80% of the cases', () => {
+    const share = integerShare(questions.map(answerOf));
+    expect(share).toBeGreaterThan(0.72);
+    expect(share).toBeLessThan(0.88);
+  });
+});
+
+describe('what percentage', () => {
+  const questions = sample(23).filter((q) => formOf(q) === 'what');
+
+  it('asks which percentage of the whole the part is', () => {
+    for (const question of questions) {
+      const [p, whole] = [percentageOf(question), wholeOf(question)];
+      const part = percentOf(p.value, whole);
+      expect(part.den).toBe(1n);
+      expect(stepOf(question).kind).toBe('fraction');
+      expect(stepOf(question).suffix).toBe('%');
+      expect(stepOf(question).prompt).toBe(
+        `${formatRational(part)} is ?% van ${formatRational(whole)}`,
+      );
+      expect(equals(answerOf(question), p.value)).toBe(true);
+      expect(stepOf(question).check('').explanation).toBe(partExplanation(p, whole));
+    }
+  });
+
+  it('accepts 12½ as a fraction or a decimal', () => {
+    const half = questions.find((q) => q.key.startsWith('percentages:what:12½:'))!;
+    expect(expectedOf(half)).toBe('12,5 of 25/2');
+    for (const input of ['25/2', '50/4', '12,5']) {
+      expect(stepOf(half).check(input).correct).toBe(true);
+    }
+  });
+});
+
+describe('discount and increase', () => {
+  const questions = sample(24).filter((q) => ['discount', 'increase'].includes(formOf(q)));
+
+  it('changes a whole-euro price by p%', () => {
+    for (const question of questions) {
+      const increase = formOf(question) === 'increase';
+      const [p, price] = [percentageOf(question), wholeOf(question)];
+      expect(increase ? INCREASE_PERCENTAGES : DISCOUNT_PERCENTAGES).toContain(p);
+      const step = stepOf(question);
+      expect(step.kind).toBe('number');
+      expect(step.prefix).toBe('€');
+      expect(step.suffix).toBeUndefined();
+      expect(step.prompt).toBe(
+        `${formatEuro(price)} na ${formatPercentage(p.value)}% ${increase ? 'verhoging' : 'korting'} = ?`,
+      );
+      const change = percentOf(p.value, price);
+      expect(equals(answerOf(question), increase ? add(price, change) : subtract(price, change))).toBe(
+        true,
+      );
+      expect(expectedOf(question)).toBe(formatMoney(answerOf(question)));
+      expect(step.check('').explanation).toBe(priceChangeExplanation(p, price, increase));
+    }
+  });
+
+  it('uses discounts and increases about equally often', () => {
+    const share = questions.filter((q) => formOf(q) === 'increase').length / questions.length;
+    expect(share).toBeGreaterThan(0.43);
+    expect(share).toBeLessThan(0.57);
+  });
+
+  it('has an integer answer in about 80% of the cases', () => {
+    const share = integerShare(questions.map(answerOf));
+    expect(share).toBeGreaterThan(0.72);
+    expect(share).toBeLessThan(0.88);
+  });
+
+  it.each([
+    ['25', 60, false, '25% = 60 : 4 = 15 → 60 − 15 = 45'],
+    ['15', 40, true, '10% = 4, 5% = 2 → 15% = 6 → 40 + 6 = 46'],
+    ['15', 30, false, '10% = 3, 5% = 1,50 → 15% = 4,50 → 30 − 4,50 = 25,50'],
+    ['12½', 20, true, '12½% = 20 : 8 = 2,50 → 20 + 2,50 = 22,50'],
+  ])('explains %s%% on € %i (increase: %s)', (label, price, increase, expected) => {
+    expect(priceChangeExplanation(percentage(label), fromInteger(price), increase)).toBe(expected);
+  });
+});
+
+describe('back to 100%', () => {
+  const questions = sample(25).filter((q) => formOf(q) === 'back');
+
+  it('asks for the whole from a given part', () => {
+    for (const question of questions) {
+      const [p, whole] = [percentageOf(question), wholeOf(question)];
+      const part = percentOf(p.value, whole);
+      expect(decimalPlaces(part)).toBeLessThanOrEqual(2);
+      expect(stepOf(question).prompt).toBe(
+        `${formatPercentage(p.value)}% is ${formatRational(part)}. Hoeveel is 100%?`,
+      );
+      expect(equals(answerOf(question), whole)).toBe(true);
+      expect(stepOf(question).check('').explanation).toBe(wholeExplanation(p, whole));
+    }
+  });
+
+  it('gives an integer part in about 80% of the cases', () => {
+    const parts = questions.map((q) => percentOf(percentageOf(q).value, wholeOf(q)));
+    const share = integerShare(parts);
+    expect(share).toBeGreaterThan(0.72);
+    expect(share).toBeLessThan(0.88);
   });
 });

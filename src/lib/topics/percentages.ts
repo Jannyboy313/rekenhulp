@@ -1,5 +1,19 @@
-import { formatInteger, formatRational } from '../format';
-import { compare, divide, equals, fromInteger, multiply, rational, type Rational } from '../rational';
+import { formatEuro, formatInteger, formatMoney, formatRational, MINUS } from '../format';
+import { pick, type Rng } from '../random';
+import {
+  add,
+  compare,
+  decimalPlaces,
+  divide,
+  equals,
+  fromInteger,
+  multiply,
+  rational,
+  subtract,
+  type Rational,
+} from '../rational';
+import { fractionStep, numberStep } from '../steps';
+import type { Question, Step } from '../types';
 
 export interface Percentage {
   value: Rational;
@@ -107,4 +121,158 @@ export function wholeExplanation(p: Percentage, whole: Rational): string {
   if (equals(p.value, p.base)) return `${known} → 100% = ${factor} × ${part} = ${total}`;
   const baseValue = formatRational(percentOf(p.base, whole));
   return `${known} → ${percentLabel(p.base)} = ${baseValue} → 100% = ${factor} × ${baseValue} = ${total}`;
+}
+
+/** Share of integer answers (spec §5.12); the rest has 1 or 2 decimals. */
+export const INTEGER_SHARE = 0.8;
+const MAX_DECIMALS = 2;
+
+const WHOLES: readonly Rational[] = NICE_WHOLES.map(fromInteger);
+
+type PercentageForm = 'partOfWhole' | 'whatPercentage' | 'priceChange' | 'backToWhole';
+const FORMS: readonly PercentageForm[] = [
+  'partOfWhole',
+  'whatPercentage',
+  'priceChange',
+  'backToWhole',
+];
+
+export function generatePercentages(rng: Rng): Question {
+  switch (pick(rng, FORMS)) {
+    case 'partOfWhole':
+      return partOfWhole(rng);
+    case 'whatPercentage':
+      return whatPercentage(rng);
+    case 'priceChange':
+      return priceChange(rng);
+    case 'backToWhole':
+      return backToWhole(rng);
+  }
+}
+
+function isInteger(value: Rational): boolean {
+  return value.den === 1n;
+}
+
+function hasAtMostTwoDecimals(value: Rational): boolean {
+  const decimals = decimalPlaces(value);
+  return decimals !== null && decimals <= MAX_DECIMALS;
+}
+
+/** An integer-valued candidate with probability INTEGER_SHARE, otherwise a non-integer one. */
+function pickByIntegerShare<T>(
+  rng: Rng,
+  candidates: readonly T[],
+  valueOf: (candidate: T) => Rational,
+): T {
+  const integers = candidates.filter((candidate) => isInteger(valueOf(candidate)));
+  const others = candidates.filter((candidate) => !isInteger(valueOf(candidate)));
+  const preferred = rng() < INTEGER_SHARE ? integers : others;
+  return pick(rng, preferred.length > 0 ? preferred : candidates);
+}
+
+/** Every nice whole whose p% has at most 2 decimals. */
+function partsOf(p: Percentage): { whole: Rational; part: Rational }[] {
+  return WHOLES.map((whole) => ({ whole, part: percentOf(p.value, whole) })).filter(({ part }) =>
+    hasAtMostTwoDecimals(part),
+  );
+}
+
+function percentagesQuestion(form: string, p: Percentage, whole: Rational, step: Step): Question {
+  return {
+    key: `percentages:${form}:${formatPercentage(p.value)}:${whole.num}`,
+    topic: 'percentages',
+    steps: [step],
+  };
+}
+
+/** `15% van 80 = ?` */
+function partOfWhole(rng: Rng): Question {
+  const p = pick(rng, PERCENTAGES);
+  const { whole, part } = pickByIntegerShare(rng, partsOf(p), (candidate) => candidate.part);
+  return percentagesQuestion(
+    'of',
+    p,
+    whole,
+    numberStep({
+      prompt: `${percentLabel(p.value)} van ${formatRational(whole)} = ?`,
+      answer: part,
+      explanation: partExplanation(p, whole),
+    }),
+  );
+}
+
+/**
+ * `30 is ?% van 120`. Always a fraction step, so `12½` can be typed as `25/2` and the `/` key
+ * does not give the answer away.
+ */
+function whatPercentage(rng: Rng): Question {
+  const p = pick(rng, PERCENTAGES);
+  const { whole, part } = pick(
+    rng,
+    partsOf(p).filter((candidate) => isInteger(candidate.part)),
+  );
+  return percentagesQuestion(
+    'what',
+    p,
+    whole,
+    fractionStep({
+      prompt: `${formatRational(part)} is ?% van ${formatRational(whole)}`,
+      answer: p.value,
+      suffix: '%',
+      explanation: partExplanation(p, whole),
+    }),
+  );
+}
+
+function changedPrice(p: Percentage, price: Rational, increase: boolean): Rational {
+  const change = percentOf(p.value, price);
+  return increase ? add(price, change) : subtract(price, change);
+}
+
+/** '25% = 60 : 4 = 15 → 60 − 15 = 45', with money formatting. */
+export function priceChangeExplanation(p: Percentage, price: Rational, increase: boolean): string {
+  const change = formatMoney(percentOf(p.value, price));
+  const answer = formatMoney(changedPrice(p, price, increase));
+  const operator = increase ? '+' : MINUS;
+  return `${partExplanation(p, price, formatMoney)} → ${formatMoney(price)} ${operator} ${change} = ${answer}`;
+}
+
+/** `€ 60 na 25% korting = ?` or `€ 40 na 15% verhoging = ?` */
+function priceChange(rng: Rng): Question {
+  const increase = rng() < 0.5;
+  const p = pick(rng, increase ? INCREASE_PERCENTAGES : DISCOUNT_PERCENTAGES);
+  const candidates = WHOLES.map((price) => ({
+    price,
+    answer: changedPrice(p, price, increase),
+  })).filter(({ answer }) => hasAtMostTwoDecimals(answer));
+  const { price, answer } = pickByIntegerShare(rng, candidates, (candidate) => candidate.answer);
+  return percentagesQuestion(
+    increase ? 'increase' : 'discount',
+    p,
+    price,
+    numberStep({
+      prompt: `${formatEuro(price)} na ${percentLabel(p.value)} ${increase ? 'verhoging' : 'korting'} = ?`,
+      answer,
+      prefix: '€',
+      expected: formatMoney(answer),
+      explanation: priceChangeExplanation(p, price, increase),
+    }),
+  );
+}
+
+/** `20% is 14. Hoeveel is 100%?` The answer is the whole, so it is always an integer. */
+function backToWhole(rng: Rng): Question {
+  const p = pick(rng, PERCENTAGES);
+  const { whole, part } = pickByIntegerShare(rng, partsOf(p), (candidate) => candidate.part);
+  return percentagesQuestion(
+    'back',
+    p,
+    whole,
+    numberStep({
+      prompt: `${percentLabel(p.value)} is ${formatRational(part)}. Hoeveel is 100%?`,
+      answer: whole,
+      explanation: wholeExplanation(p, whole),
+    }),
+  );
 }

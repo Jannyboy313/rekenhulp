@@ -4,7 +4,15 @@ import type { Rng } from './random';
 export type AnswerKind = 'number' | 'fraction';
 
 /** Topics of the implemented sets. Each later plan adds the topics of its set (spec §4.1). */
-export type Topic = 'tables' | 'volume' | 'area' | 'length' | 'mass' | 'time' | 'numberUnits';
+export type Topic =
+  | 'tables'
+  | 'volume'
+  | 'area'
+  | 'length'
+  | 'mass'
+  | 'time'
+  | 'numberUnits'
+  | 'percentages';
 
 export interface CheckResult {
   correct: boolean;
