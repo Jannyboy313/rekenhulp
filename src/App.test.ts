@@ -50,4 +50,14 @@ describe('App', () => {
     await click('Opnieuw');
     expect(screen.getByText('1 / 15')).toBeTruthy();
   });
+
+  it('offers Meten with its topics and the tables share', async () => {
+    render(App);
+    await click(/Meten/);
+    expect(screen.getByRole('heading', { name: 'Meten' })).toBeTruthy();
+    expect(screen.getByText('Grote getallen (duizend t/m quadriljoen)')).toBeTruthy();
+    expect(screen.getByText('15% tafels')).toBeTruthy();
+    await click('Start');
+    expect(screen.getByText('1 / 15')).toBeTruthy();
+  });
 });

@@ -12,8 +12,23 @@ export const TABLES_SET: PracticeSet = {
   tablesPercent: 100,
 };
 
-/** Beta: only Tafels. Later plans append their set here (spec §4.1). */
-export const PRACTICE_SETS: readonly PracticeSet[] = [TABLES_SET];
+export const MEASUREMENT_SET: PracticeSet = {
+  id: 'meten',
+  name: 'Meten',
+  description: 'Eenheden en grote getallen omrekenen',
+  topics: [
+    { topic: 'volume', weight: 1 },
+    { topic: 'area', weight: 1 },
+    { topic: 'length', weight: 1 },
+    { topic: 'mass', weight: 1 },
+    { topic: 'time', weight: 1 },
+    { topic: 'numberUnits', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
+/** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
+export const PRACTICE_SETS: readonly PracticeSet[] = [TABLES_SET, MEASUREMENT_SET];
 
 export function describeSetTopics(set: PracticeSet): string[] {
   if (set.tablesPercent === 100) return [TOPIC_LABELS.tables];
