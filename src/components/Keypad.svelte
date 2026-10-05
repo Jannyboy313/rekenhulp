@@ -1,13 +1,15 @@
 <script lang="ts">
   import type { KeypadKey } from '../lib/keypadInput';
+  import type { AnswerKind } from '../lib/types';
 
   interface Props {
+    kind: AnswerKind;
     canSubmit: boolean;
     onkey: (key: KeypadKey) => void;
     onsubmit: () => void;
   }
 
-  let { canSubmit, onkey, onsubmit }: Props = $props();
+  let { kind, canSubmit, onkey, onsubmit }: Props = $props();
 
   const KEYS: { key: KeypadKey; label: string; ariaLabel?: string }[] = [
     { key: '7', label: '7' },
@@ -32,7 +34,16 @@
     </button>
   {/each}
   <button type="button" class="key" aria-label="wissen" onclick={() => onkey('backspace')}>⌫</button>
-  <button type="button" class="key ok" disabled={!canSubmit} onclick={onsubmit}>OK</button>
+  {#if kind === 'fraction'}
+    <button type="button" class="key" aria-label="breukstreep" onclick={() => onkey('/')}>/</button>
+  {/if}
+  <button
+    type="button"
+    class="key ok"
+    class:wide={kind !== 'fraction'}
+    disabled={!canSubmit}
+    onclick={onsubmit}>OK</button
+  >
 </div>
 
 <style>
@@ -53,9 +64,12 @@
   }
 
   .ok {
-    grid-column: span 2;
     background: var(--primary);
     color: var(--primary-text);
     font-weight: 600;
+  }
+
+  .wide {
+    grid-column: span 2;
   }
 </style>

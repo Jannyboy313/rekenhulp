@@ -1,7 +1,7 @@
 <script lang="ts">
   import { formatInput } from '../lib/format';
   import { applyKey, type KeypadKey } from '../lib/keypadInput';
-  import { parseDutchNumber } from '../lib/rational';
+  import { parseAnswer } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
   import Keypad from './Keypad.svelte';
 
@@ -13,7 +13,7 @@
   let { step, onanswer }: Props = $props();
 
   let value = $state('');
-  const canSubmit = $derived(parseDutchNumber(value) !== null);
+  const canSubmit = $derived(parseAnswer(step.kind, value) !== null);
 
   function handleKey(key: KeypadKey) {
     value = applyKey(value, key);
@@ -27,11 +27,11 @@
 <div class="question">
   <p class="prompt">{step.prompt}</p>
   <output class="answer" aria-label="Jouw antwoord" aria-live="off"
-    >{value === '' ? '?' : formatInput(value)}{#if step.suffix}<span class="suffix"
-        >{step.suffix}</span
-      >{/if}</output
+    >{#if step.prefix}<span class="prefix">{step.prefix}</span>{/if}{value === ''
+      ? '?'
+      : formatInput(value)}{#if step.suffix}<span class="suffix">{step.suffix}</span>{/if}</output
   >
-  <Keypad {canSubmit} onkey={handleKey} onsubmit={submit} />
+  <Keypad kind={step.kind} {canSubmit} onkey={handleKey} onsubmit={submit} />
 </div>
 
 <style>
@@ -63,6 +63,11 @@
 
   .suffix {
     margin-left: 0.5rem;
+    color: var(--muted);
+  }
+
+  .prefix {
+    margin-right: 0.5rem;
     color: var(--muted);
   }
 </style>

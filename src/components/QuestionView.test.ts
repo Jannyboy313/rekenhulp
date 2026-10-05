@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
-import { fromInteger } from '../lib/rational';
-import { numberStep } from '../lib/steps';
+import { fromInteger, rational } from '../lib/rational';
+import { fractionStep, numberStep } from '../lib/steps';
 import QuestionView from './QuestionView.svelte';
 
 const step = numberStep({ prompt: '3 × 4 = ?', answer: fromInteger(12) });
@@ -51,5 +51,44 @@ describe('QuestionView', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'wissen' }));
     expect(answerText()).toBe('−');
     expect(okButton().disabled).toBe(true);
+  });
+
+  it('shows the euro prefix before the answer', () => {
+    const money = numberStep({
+      prompt: '€ 60 na 25% korting = ?',
+      answer: fromInteger(45),
+      prefix: '€',
+    });
+    render(QuestionView, { props: { step: money, onanswer: vi.fn() } });
+    expect(answerText()).toBe('€?');
+  });
+
+  it('offers the fraction slash only for fraction steps', () => {
+    render(QuestionView, { props: { step, onanswer: vi.fn() } });
+    expect(screen.queryByRole('button', { name: 'breukstreep' })).toBeNull();
+  });
+
+  it('accepts a typed fraction for a fraction step', async () => {
+    const onanswer = vi.fn();
+    const percent = fractionStep({
+      prompt: '10 is ?% van 80',
+      answer: rational(25n, 2n),
+      suffix: '%',
+    });
+    render(QuestionView, { props: { step: percent, onanswer } });
+    for (const name of ['2', '5', 'breukstreep']) {
+      await fireEvent.click(screen.getByRole('button', { name }));
+    }
+    expect(answerText()).toBe('25/%');
+    expect(okButton().disabled).toBe(true);
+
+    await fireEvent.click(screen.getByRole('button', { name: '2' }));
+    expect(answerText()).toBe('25/2%');
+    expect(okButton().disabled).toBe(false);
+    await fireEvent.click(okButton());
+    expect(onanswer).toHaveBeenCalledWith(
+      '25/2',
+      expect.objectContaining({ correct: true, expected: '12,5 of 25/2' }),
+    );
   });
 });
