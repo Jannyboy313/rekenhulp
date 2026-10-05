@@ -33,4 +33,25 @@ describe('applyKey', () => {
     expect(applyKey(full, ',')).toBe(full);
     expect(applyKey(full, '-')).toBe(`-${full}`);
   });
+
+  it('allows a single fraction slash directly after a digit', () => {
+    expect(type(['2', '5', '/', '2'])).toBe('25/2');
+    expect(type(['2', '/', '/'])).toBe('2/');
+    expect(type(['/'])).toBe('');
+    expect(type(['-', '/'])).toBe('-');
+    expect(type(['-', '3', '/', '4'])).toBe('-3/4');
+  });
+
+  it('does not mix the slash and the decimal comma', () => {
+    expect(type(['1', ',', '5', '/'])).toBe('1,5');
+    expect(type(['1', '/', '2', ','])).toBe('1/2');
+  });
+
+  it('counts the slash toward the length limit', () => {
+    const full = '9'.repeat(MAX_INPUT_LENGTH);
+    expect(applyKey(full, '/')).toBe(full);
+    const almost = '9'.repeat(MAX_INPUT_LENGTH - 1);
+    expect(applyKey(almost, '/')).toBe(`${almost}/`);
+    expect(applyKey(`${almost}/`, '1')).toBe(`${almost}/`);
+  });
 });
