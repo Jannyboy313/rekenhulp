@@ -16,6 +16,16 @@ function okButton(): HTMLButtonElement {
 }
 
 describe('QuestionView', () => {
+  it('shows the unit suffix next to the answer', () => {
+    const withUnit = numberStep({
+      prompt: '3,5 L = ? cm³',
+      answer: fromInteger(3500),
+      suffix: 'cm³',
+    });
+    render(QuestionView, { props: { step: withUnit, onanswer: vi.fn() } });
+    expect(answerText()).toBe('?cm³');
+  });
+
   it('shows the prompt, an empty answer and a disabled OK', () => {
     render(QuestionView, { props: { step, onanswer: vi.fn() } });
     expect(screen.getByText('3 × 4 = ?')).toBeTruthy();

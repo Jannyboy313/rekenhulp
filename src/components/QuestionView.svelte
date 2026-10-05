@@ -47,6 +47,7 @@
     font-size: 2.5rem;
     font-weight: 600;
     text-align: center;
+    text-wrap: balance;
   }
 
   .answer {
