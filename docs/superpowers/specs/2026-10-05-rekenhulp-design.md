@@ -114,7 +114,10 @@ All prompts are in Dutch. Ranges are chosen so that everything can be done menta
 
 ### 5.1 Multiplication tables (`tables`)
 
-- Factors `a, b ∈ [2, 15]`
+- Factors `a, b ∈ {2, …, 15} \ {10}` (13 values each, 169 combinations)
+  - No table of 1, so ×1 never occurs.
+  - No table of 10. The exclusion applies to both factors, so `7 × 10` and `70 : 10` never
+    occur either.
 - There are three forms, each picked with equal probability:
   - product: `13 × 7 = ?`
   - division: `91 : 7 = ?`, where the dividend is always `a × b`
@@ -398,7 +401,7 @@ interface Question {
 
 These are assumptions made while writing the spec. Each one is easy to change.
 
-1. Tables use both factors in `[2, 15]`, not `table × [1, 10]`.
+1. ~~Table ranges~~ — confirmed: factors `{2, …, 15} \ {10}` (see §5.1).
 2. Quotas are 35% tables and 30% number theory; the rest is optional topics.
 3. Basis property exercises require the *useful* property. A different valid property is
    rejected with a hint.
