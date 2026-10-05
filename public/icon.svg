@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#1d4ed8"/>
+  <g fill="#ffffff">
+    <!-- plus -->
+    <rect x="96" y="156" width="120" height="32" rx="16"/>
+    <rect x="140" y="112" width="32" height="120" rx="16"/>
+    <!-- minus -->
+    <rect x="296" y="156" width="120" height="32" rx="16"/>
+    <!-- times -->
+    <g transform="rotate(45 156 356)">
+      <rect x="96" y="340" width="120" height="32" rx="16"/>
+      <rect x="140" y="296" width="32" height="120" rx="16"/>
+    </g>
+    <!-- divide -->
+    <rect x="296" y="340" width="120" height="32" rx="16"/>
+    <circle cx="356" cy="304" r="18"/>
+    <circle cx="356" cy="408" r="18"/>
+  </g>
+</svg>
