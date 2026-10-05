@@ -54,9 +54,13 @@ Everything else from the global allowlist still applies (no `git push`, `git che
 ```
 src/
   App.svelte            state machine: sets → setup → playing → results
-  components/           SetOverview, SetupScreen, QuestionView, Keypad, Feedback, ResultScreen
+  components/           SetOverview, SetupScreen, PlayScreen, QuestionView, Keypad, Feedback,
+                        ResultScreen
   lib/
     random.ts           seedable RNG; every generator takes an rng argument
+    steps.ts            step factories (numberStep) — all answer checking goes through here
+    keypadInput.ts      pure key → input reducer
+    results.ts          question records + session summary
     sets.ts             practice sets (config): topics + weights + tables share
     session.ts          builds a session: quotas, shuffle, de-duplication
     format.ts           Dutch number/expression formatting

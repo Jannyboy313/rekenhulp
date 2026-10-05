@@ -127,8 +127,9 @@ the others.
 
 Given a set and a session size `n`:
 
-1. `tablesCount = round(tablesShare × n)`, using `Math.round`. For the Tafels set,
-   `tablesShare = 1`.
+1. `tablesCount = Math.round(tablesPercent × n / 100)`. The share is stored as an integer
+   percentage to avoid float artefacts: `0.15 × 50` must give exactly 7.5, so it rounds to 8.
+   For the Tafels set, `tablesPercent = 100` and `topics` is empty.
 2. The remaining `r = n − tablesCount` exercises are distributed over the set's topics in
    proportion to their weights, using the **largest remainder method**:
    - Each topic first gets `floor(r × wᵢ / Σw)`.
@@ -462,7 +463,8 @@ Required test cases (accept ✔ / reject ✘):
   `+`/`−` (equal priority, left to right).
 - **Number formatting:**
   - decimal comma
-  - thin-space thousands separator from 10 000 onwards (`2 500 000`)
+  - thousands separator from 10 000 onwards (`2 500 000`): a narrow no-break space (U+202F),
+    i.e. a thin space that never wraps
   - no separator for 4-digit numbers (`1000`)
   - the minus sign is shown as `−` (U+2212)
 - **Language:** UI text is in Dutch. Code, comments, tests and documentation are in English.
@@ -476,6 +478,7 @@ src/
   components/
     SetOverview.svelte      start screen: set cards
     SetupScreen.svelte      topics of the chosen set + count selector + Start
+    PlayScreen.svelte       header (progress, timer, Stop) + question/feedback loop
     QuestionView.svelte     renders prompt + input for any answer kind
     Keypad.svelte           layout chosen by answer kind
     Feedback.svelte
@@ -484,6 +487,9 @@ src/
     random.ts               seedable PRNG (e.g. mulberry32), helpers: int, pick, shuffle
     rational.ts             exact bigint fractions; Dutch decimal parsing; used everywhere
     format.ts
+    steps.ts                step factories, e.g. numberStep (shared answer checking)
+    keypadInput.ts          pure key → input-string reducer used by Keypad
+    results.ts              per-question records + session summary
     sets.ts                 practice set definitions (§4.1)
     session.ts              quota algorithm (§4.2), generation, shuffle, de-duplication
     types.ts                Question, Step, AnswerKind, CheckResult, Topic, PracticeSet
@@ -542,8 +548,8 @@ interface PracticeSet {
   id: string;
   name: string;           // Dutch, e.g. 'Getallen & delers'
   description: string;    // Dutch, one line
-  topics: { topic: Topic; weight: number }[];
-  tablesShare: number;    // 1 for Tafels, 0.15 otherwise
+  topics: { topic: Topic; weight: number }[];   // excludes the mixed-in tables
+  tablesPercent: number;  // 100 for Tafels, 15 otherwise
 }
 ```
 
