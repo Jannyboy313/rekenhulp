@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { createRng } from './random';
 import { allocateQuotas, buildSession, MAX_UNIQUE_ATTEMPTS, tablesCount } from './session';
 import { SESSION_SIZES, TABLES_SET } from './sets';
+import { GENERATORS } from './topics';
 import type { Generator, Question } from './types';
 
 describe('tablesCount', () => {
@@ -118,7 +119,10 @@ describe('buildSession', () => {
   it('accepts duplicates after the retry limit instead of looping forever', () => {
     const constant: Question = { key: 'same', topic: 'tables', steps: [] };
     const generate = vi.fn<Generator>(() => constant);
-    const questions = buildSession(TABLES_SET, 15, createRng(1), { tables: generate });
+    const questions = buildSession(TABLES_SET, 15, createRng(1), {
+      ...GENERATORS,
+      tables: generate,
+    });
     expect(questions).toHaveLength(15);
     expect(generate).toHaveBeenCalledTimes(1 + 14 * MAX_UNIQUE_ATTEMPTS);
   });

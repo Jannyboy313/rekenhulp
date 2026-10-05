@@ -10,10 +10,16 @@ import {
   rational,
   type Rational,
 } from '../rational';
+import type { Generator, Question } from '../types';
 import {
   AREA_UNITS,
   conversionExplanation,
   conversionPairs,
+  conversionQuestion,
+  generateArea,
+  generateLength,
+  generateMass,
+  generateVolume,
   isNiceValue,
   LENGTH_UNITS,
   MASS_UNITS,
@@ -33,6 +39,21 @@ function significantDigits(value: Rational): number {
 
 function symbols(units: readonly ScaleUnit[]): string[] {
   return units.map((unit) => unit.symbol);
+}
+
+function expectedOf(question: Question): string {
+  // `expected` does not depend on the input.
+  return question.steps[0]!.check('').expected;
+}
+
+/** What the user types for a formatted number: the keypad has no group separator. */
+function typed(formatted: string): string {
+  return formatted.replaceAll(S, '');
+}
+
+function sample(generate: Generator, seed: number, count = SAMPLES): Question[] {
+  const rng = createRng(seed);
+  return Array.from({ length: count }, () => generate(rng));
 }
 
 describe('unit scales', () => {
@@ -212,5 +233,78 @@ describe('conversionExplanation', () => {
 
   it('rejects units that do not differ by an integer factor', () => {
     expect(() => conversionExplanation('a', 'b', fromInteger(2), fromInteger(3))).toThrow(RangeError);
+  });
+});
+
+describe('conversionQuestion', () => {
+  it('asks for the value in the target unit, which is also the suffix', () => {
+    const question = conversionQuestion('volume', 'L', 'cm³', rational(7n, 2n), fromInteger(3500));
+    expect(question.key).toBe('volume:L>cm³:7/2');
+    expect(question.topic).toBe('volume');
+    expect(question.steps).toHaveLength(1);
+    const step = question.steps[0]!;
+    expect(step.kind).toBe('number');
+    expect(step.prompt).toBe('3,5 L = ? cm³');
+    expect(step.suffix).toBe('cm³');
+    expect(step.check('3500')).toEqual({
+      correct: true,
+      expected: '3500',
+      explanation: '1 L = 1000 cm³ → 3,5 × 1000 = 3500',
+    });
+    expect(step.check('350').correct).toBe(false);
+  });
+});
+
+describe.each([
+  ['volume', generateVolume, VOLUME_UNITS],
+  ['area', generateArea, AREA_UNITS],
+  ['length', generateLength, LENGTH_UNITS],
+  ['mass', generateMass, MASS_UNITS],
+] as const)('%s generator', (topic, generate, units) => {
+  const questions = sample(generate, 11);
+
+  it('creates single-step conversions on its topic', () => {
+    for (const question of questions) {
+      expect(question.topic).toBe(topic);
+      expect(question.key.startsWith(`${topic}:`)).toBe(true);
+      expect(question.steps).toHaveLength(1);
+      const step = question.steps[0]!;
+      expect(step.kind).toBe('number');
+      expect(symbols(units)).toContain(step.suffix);
+      expect(step.prompt.endsWith(` = ? ${step.suffix}`)).toBe(true);
+    }
+  });
+
+  it('accepts its own expected answer and explains it', () => {
+    for (const question of questions) {
+      const result = question.steps[0]!.check(typed(expectedOf(question)));
+      expect(result.correct).toBe(true);
+      expect(result.explanation?.startsWith('1 ')).toBe(true);
+    }
+  });
+
+  it('uses every unit as source and as target', () => {
+    const from = new Set<string>();
+    const to = new Set<string>();
+    for (const { key } of questions) {
+      const [source, target] = key.split(':')[1]!.split('>');
+      from.add(source!);
+      to.add(target!);
+    }
+    expect([...from].sort()).toEqual(symbols(units).sort());
+    expect([...to].sort()).toEqual(symbols(units).sort());
+  });
+
+  it('is deterministic for a fixed seed', () => {
+    const keys = (seed: number) => sample(generate, seed, 50).map((question) => question.key);
+    expect(keys(5)).toEqual(keys(5));
+  });
+});
+
+describe('volume generator', () => {
+  it('includes the factor-1 links between capacity and cubic units', () => {
+    const pairs = new Set(sample(generateVolume, 12).map(({ key }) => key.split(':')[1]));
+    expect(pairs.has('ml>cm³') || pairs.has('cm³>ml')).toBe(true);
+    expect(pairs.has('L>dm³') || pairs.has('dm³>L')).toBe(true);
   });
 });

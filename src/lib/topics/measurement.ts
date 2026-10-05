@@ -10,6 +10,8 @@ import {
   powerOfTen,
   type Rational,
 } from '../rational';
+import { numberStep } from '../steps';
+import type { Generator, Question, Topic } from '../types';
 
 /** A unit on a decimal scale: one unit is 10^exponent base units (spec §5.10, §5.14). */
 export interface ScaleUnit {
@@ -160,3 +162,37 @@ export function conversionExplanation(
   const factor = formatInteger(ratio.den);
   return `1 ${to} = ${factor} ${from} → ${shownValue} : ${factor} = ${shownAnswer}`;
 }
+
+/** `3,5 L = ? cm³`, with the target unit as input suffix (spec §5.10). */
+export function conversionQuestion(
+  topic: Topic,
+  from: string,
+  to: string,
+  value: Rational,
+  answer: Rational,
+): Question {
+  return {
+    key: `${topic}:${from}>${to}:${value.num}/${value.den}`,
+    topic,
+    steps: [
+      numberStep({
+        prompt: `${formatRational(value)} ${from} = ? ${to}`,
+        answer,
+        suffix: to,
+        explanation: conversionExplanation(from, to, value, answer),
+      }),
+    ],
+  };
+}
+
+function scaleGenerator(topic: Topic, units: readonly ScaleUnit[]): Generator {
+  return (rng) => {
+    const { from, to, value, answer } = randomScaleConversion(rng, units);
+    return conversionQuestion(topic, from.symbol, to.symbol, value, answer);
+  };
+}
+
+export const generateVolume = scaleGenerator('volume', VOLUME_UNITS);
+export const generateArea = scaleGenerator('area', AREA_UNITS);
+export const generateLength = scaleGenerator('length', LENGTH_UNITS);
+export const generateMass = scaleGenerator('mass', MASS_UNITS);

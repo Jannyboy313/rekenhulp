@@ -3,8 +3,8 @@ import type { Rng } from './random';
 /** Beta: numeric answers only. Later plans add 'boolean' | 'expression' | 'factorization'. */
 export type AnswerKind = 'number';
 
-/** Beta: tables only. Each later plan adds the topics of its set (spec §4.1). */
-export type Topic = 'tables';
+/** Topics of the implemented sets. Each later plan adds the topics of its set (spec §4.1). */
+export type Topic = 'tables' | 'volume' | 'area' | 'length' | 'mass';
 
 export interface CheckResult {
   correct: boolean;
