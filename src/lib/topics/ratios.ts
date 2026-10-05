@@ -12,6 +12,8 @@ export const MAX_SCALED_TERM = 100;
 export const MIN_COUNT = 2;
 export const MAX_SCALED_ANSWER = 2000;
 export const MAX_TOTAL = 500;
+/** One part is at least 2, so dividing is never trivial (spec §5.13, k ≥ 2). */
+export const MIN_PART = 2;
 
 type Terms = readonly [number, number, number, number];
 type Pair = readonly [number, number];
@@ -111,6 +113,8 @@ function missingTerm(rng: Rng): Question {
 /**
  * From the complete side to the side with the answer, via the simplified ratio when neither side
  * is simplified: '3 : 5 = 12 : 20 (× 4)', '12 : 20 = 3 : 5 (: 4)', '4 : 6 = 2 : 3 = 10 : 15'.
+ * Precondition: the terms must be k×(p : q) on both sides with different multipliers (as
+ * generated), otherwise the stated factors are meaningless.
  */
 export function missingTermExplanation(terms: Terms, position: number): string {
   const [a, b, c, d] = terms;
@@ -163,7 +167,7 @@ export function scalingExplanation(a: number, amount: number, b: number): string
 /** `Verdeel 60 in de verhouding 2 : 3. Hoe groot is het grootste deel?` */
 function divideInRatio(rng: Rng): Question {
   const [a, b] = randomSimplifiedRatio(rng);
-  const unit = randomInt(rng, 2, Math.floor(MAX_TOTAL / (a + b)));
+  const unit = randomInt(rng, MIN_PART, Math.floor(MAX_TOTAL / (a + b)));
   const total = (a + b) * unit;
   const largest = rng() < 0.5;
   const asked = largest ? Math.max(a, b) : Math.min(a, b);

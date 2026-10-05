@@ -10,6 +10,8 @@ import {
   MAX_SCALED_ANSWER,
   MAX_SCALED_TERM,
   MAX_TOTAL,
+  MIN_COUNT,
+  MIN_PART,
   missingTermExplanation,
   SCALING_CONTEXTS,
   scalingExplanation,
@@ -217,5 +219,85 @@ describe('dividing in ratio', () => {
     [40, 1, 4, 1, '1 + 4 = 5 delen → 1 deel = 40 : 5 = 8'],
   ])('explains dividing %i in %i : %i', (total, a, b, asked, expected) => {
     expect(divideExplanation(total, a, b, asked)).toBe(expected);
+  });
+});
+
+describe('every reachable case', () => {
+  it('explains every missing-term exercise consistently', () => {
+    let cases = 0;
+    for (let p = 1; p <= MAX_RATIO_TERM; p++) {
+      for (let q = 1; q <= MAX_RATIO_TERM; q++) {
+        if (p === q || gcd(p, q) !== 1) continue;
+        const largest = Math.max(p, q);
+        for (let m = 1; m <= Math.floor(MAX_RATIO_TERM / largest); m++) {
+          for (let n = 1; n <= Math.floor(MAX_SCALED_TERM / largest); n++) {
+            if (n === m) continue;
+            const terms = [p * m, q * m, p * n, q * n] as const;
+            for (const position of [0, 1, 2, 3]) {
+              cases++;
+              const text = missingTermExplanation(terms, position);
+              const pairs = [...text.matchAll(/(\d+) : (\d+)/g)].map(
+                (match) => [Number(match[1]), Number(match[2])] as const,
+              );
+              const message = `${terms.join(':')} at ${position}: ${text}`;
+              expect(pairs.length, message).toBeGreaterThanOrEqual(2);
+              for (const [x, y] of pairs) expect(x * q, message).toBe(y * p);
+              const first = pairs[0]!;
+              const last = pairs[pairs.length - 1]!;
+              const side = position < 2 ? [terms[0], terms[1]] : [terms[2], terms[3]];
+              expect([...last], message).toEqual(side);
+              const times = /\(× (\d+)\)$/.exec(text);
+              if (times) {
+                expect(last, message).toEqual([first[0] * Number(times[1]), first[1] * Number(times[1])]);
+              }
+              const divided = /\(: (\d+)\)$/.exec(text);
+              if (divided) {
+                expect(last[0] * Number(divided[1]), message).toBe(first[0]);
+                expect(last[1] * Number(divided[1]), message).toBe(first[1]);
+              }
+            }
+          }
+        }
+      }
+    }
+    expect(cases).toBeGreaterThan(1000);
+  });
+
+  it('explains every scaling exercise with a consistent ratio table', () => {
+    for (let a = MIN_COUNT; a <= MAX_RATIO_TERM; a++) {
+      for (let b = MIN_COUNT; b <= MAX_RATIO_TERM; b++) {
+        if (a === b) continue;
+        for (const { id, maxAmount } of SCALING_CONTEXTS) {
+          const amounts = NICE_WHOLES.filter(
+            (amount) =>
+              amount <= maxAmount &&
+              (amount * gcd(a, b)) % a === 0 &&
+              (amount * b) / a <= MAX_SCALED_ANSWER,
+          );
+          expect(amounts.length, `${id} ${a} → ${b}`).toBeGreaterThan(0);
+          for (const amount of amounts) {
+            const text = scalingExplanation(a, amount, b);
+            const message = `${id} ${a} ${amount} ${b}: ${text}`;
+            const rows = text.split(', ').map((row) => {
+              const match = /^(\d+) → (\d+)$/.exec(row);
+              expect(match, message).not.toBeNull();
+              return [Number(match![1]), Number(match![2])] as const;
+            });
+            for (const [count, value] of rows) expect(value * a, message).toBe(amount * count);
+            expect([...rows[0]!], message).toEqual([a, amount]);
+            expect([...rows[rows.length - 1]!], message).toEqual([b, (amount * b) / a]);
+          }
+        }
+      }
+    }
+  });
+
+  it('can always divide in a simplified ratio with at least the minimum part', () => {
+    for (let a = 1; a <= MAX_RATIO_TERM; a++) {
+      for (let b = 1; b <= MAX_RATIO_TERM; b++) {
+        if (a === b || gcd(a, b) !== 1) continue;
+        expect(Math.floor(MAX_TOTAL / (a + b)), `${a} : ${b}`).toBeGreaterThanOrEqual(MIN_PART);
+      }
+    }
   });
 });
