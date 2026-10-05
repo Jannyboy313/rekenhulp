@@ -6,6 +6,7 @@ import {
   generateTime,
   generateVolume,
 } from './measurement';
+import { generateNumberUnits } from './numberUnits';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -15,6 +16,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   length: generateLength,
   mass: generateMass,
   time: generateTime,
+  numberUnits: generateNumberUnits,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -25,4 +27,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   length: 'Lengte (mm t/m km)',
   mass: 'Gewicht (mg t/m ton)',
   time: 'Tijd (s, min, uur, dag)',
+  numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
 };
