@@ -30,7 +30,7 @@ an overview at the end.
 | Quality    | `svelte-check`, Prettier                                               |
 | Hosting    | Self-hosted by the user, as static files                                |
 
-Rationale for not using SvelteKit: the app has three screens driven by a state machine and
+Rationale for not using SvelteKit: the app has four screens driven by a state machine and
 needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface minimal.
 
 ### PWA requirements
