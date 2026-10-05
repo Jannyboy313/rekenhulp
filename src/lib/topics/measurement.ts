@@ -224,20 +224,29 @@ export const MAX_SMALLER_TIME_VALUE = 10_000;
 /** Whole numbers, halves, quarters and tenths in the larger unit. */
 export const TIME_DENOMINATORS: readonly number[] = [1, 2, 4, 10];
 
+/** How many smaller units make one larger unit. */
+function timeFactor(larger: TimeUnit, smaller: TimeUnit): Rational {
+  return fromInteger(larger.seconds / smaller.seconds);
+}
+
 /**
- * Values in the larger unit with exactly this denominator, at most 100, that give a whole number
- * of at most 10 000 in the smaller unit.
+ * Values in the larger unit at most 100 that belong to this denominator group, i.e. this is the first
+ * denominator of TIME_DENOMINATORS that their reduced denominator divides (so the group of 10 also
+ * holds fifths, e.g. 0,2). Only values that give a whole number of at most 10 000 in the smaller
+ * unit are included.
  */
 export function largerTimeValues(
   larger: TimeUnit,
   smaller: TimeUnit,
   denominator: number,
 ): Rational[] {
-  const factor = fromInteger(larger.seconds / smaller.seconds);
+  const factor = timeFactor(larger, smaller);
+  const earlier = TIME_DENOMINATORS.slice(0, TIME_DENOMINATORS.indexOf(denominator));
   const values: Rational[] = [];
   for (let numerator = 1; numerator <= MAX_LARGER_TIME_VALUE * denominator; numerator++) {
     const value = rational(BigInt(numerator), BigInt(denominator));
-    if (value.den !== BigInt(denominator)) continue;
+    if (BigInt(denominator) % value.den !== 0n) continue;
+    if (earlier.some((d) => BigInt(d) % value.den === 0n)) continue;
     const smallerValue = multiply(value, factor);
     if (smallerValue.den === 1n && smallerValue.num <= BigInt(MAX_SMALLER_TIME_VALUE)) {
       values.push(value);
@@ -257,7 +266,7 @@ export function generateTime(rng: Rng): Question {
   const index = randomInt(rng, 0, TIME_PAIRS.length - 1);
   const [larger, smaller] = TIME_PAIRS[index]!;
   const largerValue = pick(rng, pick(rng, TIME_VALUE_GROUPS[index]!));
-  const smallerValue = multiply(largerValue, fromInteger(larger.seconds / smaller.seconds));
+  const smallerValue = multiply(largerValue, timeFactor(larger, smaller));
   return rng() < 0.5
     ? conversionQuestion('time', larger.symbol, smaller.symbol, largerValue, smallerValue)
     : conversionQuestion('time', smaller.symbol, larger.symbol, smallerValue, largerValue);

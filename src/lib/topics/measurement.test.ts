@@ -346,6 +346,12 @@ describe('largerTimeValues', () => {
     expect(largerTimeValues(unit('uur'), unit('min'), 4)).toContainEqual(rational(9n, 4n));
   });
 
+  it('includes even tenths, which have a reduced denominator of 5', () => {
+    const values = largerTimeValues(unit('uur'), unit('min'), 10);
+    expect(values).toContainEqual(rational(1n, 5n));
+    expect(values).not.toContainEqual(rational(1n, 2n));
+  });
+
   it('has no tenths of a day, because 2,4 uur is not whole', () => {
     expect(largerTimeValues(unit('dag'), unit('uur'), 10)).toEqual([]);
   });
@@ -354,7 +360,10 @@ describe('largerTimeValues', () => {
     for (const [larger, smaller] of TIME_PAIRS) {
       for (const denominator of TIME_DENOMINATORS) {
         for (const value of largerTimeValues(larger, smaller, denominator)) {
-          expect(value.den).toBe(BigInt(denominator));
+          expect(BigInt(denominator) % value.den).toBe(0n);
+          for (const earlier of TIME_DENOMINATORS.slice(0, TIME_DENOMINATORS.indexOf(denominator))) {
+            expect(BigInt(earlier) % value.den).not.toBe(0n);
+          }
           expect(compare(value, fromInteger(MAX_LARGER_TIME_VALUE))).toBeLessThanOrEqual(0);
           const smallerValue = multiply(value, fromInteger(larger.seconds / smaller.seconds));
           expect(smallerValue.den).toBe(1n);
@@ -388,6 +397,8 @@ describe('generateTime', () => {
       const step = question.steps[0]!;
       expect(step.kind).toBe('number');
       expect(step.suffix).toBe(parts(question).to);
+      expect(step.prompt.endsWith(` = ? ${step.suffix}`)).toBe(true);
+      expect(step.check('').explanation?.startsWith('1 ')).toBe(true);
       expect(step.check(typed(expectedOf(question))).correct).toBe(true);
     }
   });
@@ -427,6 +438,6 @@ describe('generateTime', () => {
       const { from, to, value, answer } = parts(question);
       denominators.add((seconds.get(from)! > seconds.get(to)! ? value : answer).den);
     }
-    expect([...denominators].sort((a, b) => Number(a - b))).toEqual([1n, 2n, 4n, 10n]);
+    expect([...denominators].sort((a, b) => Number(a - b))).toEqual([1n, 2n, 4n, 5n, 10n]);
   });
 });

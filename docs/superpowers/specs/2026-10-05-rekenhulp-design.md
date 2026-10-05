@@ -304,9 +304,9 @@ Value rules for `time`:
 
 - Unit pairs: `s ↔ min`, `min ↔ uur`, `uur ↔ dag`, `s ↔ uur` and `min ↔ dag`, in both
   directions. `s ↔ dag` (factor 86 400) is left out.
-- The value in the larger unit is a whole number, a half, a quarter or a tenth (each
-  denominator equally likely) and at most 100. The value in the smaller unit is a whole number
-  of at most 10 000. As a result both values have at most 2 decimals, e.g.
+- The value in the larger unit is at most 100 and is a whole number, a half, a quarter, or a
+  number of tenths such as 0,2 or 0,7 (these four groups equally likely). The value in the
+  smaller unit is a whole number of at most 10 000. As a result both values have at most 2 decimals, e.g.
   `135 min = 2,25 uur` or `3,5 dag = 84 uur`.
 - Prompts never contain mixed notation such as `1 uur 45 min`.
 
