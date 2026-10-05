@@ -27,6 +27,14 @@
   const question = $derived(questions[questionIndex]!);
   const step = $derived(question.steps[stepIndex]!);
 
+  const announcement = $derived(
+    feedback === null
+      ? ''
+      : feedback.result.correct
+        ? 'Goed!'
+        : `Fout. Juist antwoord: ${feedback.result.expected}`,
+  );
+
   $effect(() => {
     const interval = setInterval(() => (now = Date.now()), 1000);
     return () => clearInterval(interval);
@@ -55,7 +63,11 @@
     }
   }
 
+  let finished = false;
+
   function finish() {
+    if (finished) return;
+    finished = true;
     onfinish(records, Date.now() - sessionStart);
   }
 </script>
@@ -65,8 +77,10 @@
     <span class="set-name">{set.name}</span>
     <span class="progress">{questionIndex + 1} / {questions.length}</span>
     <span class="timer">{formatDuration(now - sessionStart)}</span>
-    <button type="button" class="secondary stop" onclick={finish}>Stop</button>
+    <button type="button" class="secondary" onclick={finish}>Stop</button>
   </header>
+
+  <p class="sr-only" role="status" aria-live="polite">{announcement}</p>
 
   {#if feedback}
     <Feedback
@@ -102,9 +116,5 @@
   .set-name {
     font-weight: 600;
     color: var(--text);
-  }
-
-  .stop {
-    min-height: 2.75rem;
   }
 </style>

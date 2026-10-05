@@ -53,6 +53,25 @@ describe('PlayScreen', () => {
     expect(screen.getByText('01:05')).toBeTruthy();
   });
 
+  it('announces the result in a live region', async () => {
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    await press('6', 'OK');
+    expect(screen.getByRole('status').textContent?.trim()).toBe('Goed!');
+    await vi.advanceTimersByTimeAsync(600);
+    await press('9', 'OK');
+    expect(screen.getByRole('status').textContent?.trim()).toBe('Fout. Juist antwoord: 20');
+  });
+
+  it('calls onfinish at most once when Stop is pressed during the final auto-advance', async () => {
+    const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
+    render(PlayScreen, {
+      props: { set: TABLES_SET, questions: [questions[0]!], onfinish },
+    });
+    await press('6', 'OK', 'Stop');
+    await vi.advanceTimersByTimeAsync(600);
+    expect(onfinish).toHaveBeenCalledOnce();
+  });
+
   it('Stop finishes with only the answered questions', async () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });

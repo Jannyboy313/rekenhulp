@@ -15,6 +15,12 @@
 
   let { prompt, input, result, onnext }: Props = $props();
 
+  let nextButton: HTMLButtonElement | undefined = $state();
+
+  $effect(() => {
+    if (!result.correct) nextButton?.focus();
+  });
+
   $effect(() => {
     if (!result.correct) return;
     const timer = setTimeout(onnext, CORRECT_FEEDBACK_MS);
@@ -24,7 +30,7 @@
 
 <div class="feedback" class:correct={result.correct} class:wrong={!result.correct}>
   <p class="prompt">{prompt}</p>
-  <div role="status" aria-live="polite" class="details">
+  <div class="details">
     {#if result.correct}
       <p class="verdict">Goed!</p>
     {:else}
@@ -41,7 +47,7 @@
     {/if}
   </div>
   {#if !result.correct}
-    <button type="button" class="primary next" onclick={onnext}>Verder</button>
+    <button type="button" class="primary next" bind:this={nextButton} onclick={onnext}>Verder</button>
   {/if}
 </div>
 

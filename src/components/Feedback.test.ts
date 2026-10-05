@@ -34,6 +34,8 @@ describe('Feedback', () => {
     expect(screen.getByText('13')).toBeTruthy();
     expect(screen.getByText('13 × 7 = 91')).toBeTruthy();
 
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Verder' }));
+
     await vi.advanceTimersByTimeAsync(5000);
     expect(onnext).not.toHaveBeenCalled();
 
