@@ -60,4 +60,17 @@ describe('App', () => {
     await click('Start');
     expect(screen.getByText('1 / 15')).toBeTruthy();
   });
+
+  it('offers Verhoudingen with its topics and the tables share', async () => {
+    render(App);
+    await click(/Verhoudingen/);
+    expect(screen.getByRole('heading', { name: 'Verhoudingen' })).toBeTruthy();
+    expect(
+      screen.getByText('Procenten (deel, percentage, korting/verhoging, terug naar 100%)'),
+    ).toBeTruthy();
+    expect(screen.getByText('Verhoudingen (ontbrekend getal, herschalen, verdelen)')).toBeTruthy();
+    expect(screen.getByText('15% tafels')).toBeTruthy();
+    await click('Start');
+    expect(screen.getByText('1 / 15')).toBeTruthy();
+  });
 });

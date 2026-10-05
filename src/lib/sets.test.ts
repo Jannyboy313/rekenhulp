@@ -4,6 +4,7 @@ import {
   describeSetTopics,
   MEASUREMENT_SET,
   PRACTICE_SETS,
+  PROPORTIONS_SET,
   SESSION_SIZES,
   TABLES_SET,
 } from './sets';
@@ -11,7 +12,16 @@ import type { PracticeSet } from './types';
 
 describe('practice sets', () => {
   it('offers the implemented sets in roadmap order', () => {
-    expect(PRACTICE_SETS.map((set) => set.id)).toEqual(['tafels', 'meten']);
+    expect(PRACTICE_SETS.map((set) => set.id)).toEqual(['tafels', 'meten', 'verhoudingen']);
+  });
+
+  it('makes Verhoudingen two equally weighted topics with 15% tables', () => {
+    expect(PROPORTIONS_SET.name).toBe('Verhoudingen');
+    expect(PROPORTIONS_SET.tablesPercent).toBe(15);
+    expect(PROPORTIONS_SET.topics).toEqual([
+      { topic: 'percentages', weight: 1 },
+      { topic: 'ratios', weight: 1 },
+    ]);
   });
 
   it('makes Meten six equally weighted topics with 15% tables', () => {
@@ -61,6 +71,14 @@ describe('describeSetTopics', () => {
       'Gewicht (mg t/m ton)',
       'Tijd (s, min, uur, dag)',
       'Grote getallen (duizend t/m quadriljoen)',
+      '15% tafels',
+    ]);
+  });
+
+  it('describes the Verhoudingen set', () => {
+    expect(describeSetTopics(PROPORTIONS_SET)).toEqual([
+      'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
+      'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
       '15% tafels',
     ]);
   });

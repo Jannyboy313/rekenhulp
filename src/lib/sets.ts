@@ -27,8 +27,24 @@ export const MEASUREMENT_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+/** v1 topics only; v2 adds fractionConversion and fractionArithmetic (spec §4.1, §12). */
+export const PROPORTIONS_SET: PracticeSet = {
+  id: 'verhoudingen',
+  name: 'Verhoudingen',
+  description: 'Procenten en verhoudingen',
+  topics: [
+    { topic: 'percentages', weight: 1 },
+    { topic: 'ratios', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
-export const PRACTICE_SETS: readonly PracticeSet[] = [TABLES_SET, MEASUREMENT_SET];
+export const PRACTICE_SETS: readonly PracticeSet[] = [
+  TABLES_SET,
+  MEASUREMENT_SET,
+  PROPORTIONS_SET,
+];
 
 export function describeSetTopics(set: PracticeSet): string[] {
   if (set.tablesPercent === 100) return [TOPIC_LABELS.tables];
