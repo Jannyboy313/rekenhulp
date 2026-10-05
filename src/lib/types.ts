@@ -12,7 +12,8 @@ export type Topic =
   | 'mass'
   | 'time'
   | 'numberUnits'
-  | 'percentages';
+  | 'percentages'
+  | 'ratios';
 
 export interface CheckResult {
   correct: boolean;

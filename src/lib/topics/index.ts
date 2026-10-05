@@ -8,6 +8,7 @@ import {
 } from './measurement';
 import { generateNumberUnits } from './numberUnits';
 import { generatePercentages } from './percentages';
+import { generateRatios } from './ratios';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -19,6 +20,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   time: generateTime,
   numberUnits: generateNumberUnits,
   percentages: generatePercentages,
+  ratios: generateRatios,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -31,4 +33,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   time: 'Tijd (s, min, uur, dag)',
   numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
+  ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
 };
