@@ -23,7 +23,7 @@ const pwa = VitePWA({
     background_color: '#f8fafc',
   },
   workbox: {
-    globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+    globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
   },
 });
 

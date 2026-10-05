@@ -72,7 +72,7 @@
   }
 </script>
 
-<div class="play">
+<main class="play">
   <header>
     <span class="set-name">{set.name}</span>
     <span class="progress">{questionIndex + 1} / {questions.length}</span>
@@ -94,7 +94,7 @@
       <QuestionView {step} onanswer={handleAnswer} />
     {/key}
   {/if}
-</div>
+</main>
 
 <style>
   .play {

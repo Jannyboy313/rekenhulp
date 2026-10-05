@@ -26,7 +26,7 @@
 
 <div class="question">
   <p class="prompt">{step.prompt}</p>
-  <output class="answer" aria-label="Jouw antwoord"
+  <output class="answer" aria-label="Jouw antwoord" aria-live="off"
     >{value === '' ? '?' : formatInput(value)}{#if step.suffix}<span class="suffix"
         >{step.suffix}</span
       >{/if}</output
