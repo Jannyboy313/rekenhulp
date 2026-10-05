@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  add,
   compare,
   decimalPlaces,
   divide,
@@ -7,8 +8,10 @@ import {
   fromInteger,
   multiply,
   parseDutchNumber,
+  parseFraction,
   powerOfTen,
   rational,
+  subtract,
 } from './rational';
 
 describe('rational', () => {
@@ -127,4 +130,37 @@ describe('decimalPlaces', () => {
     expect(decimalPlaces(rational(1n, 3n))).toBeNull();
     expect(decimalPlaces(rational(1n, 60n))).toBeNull();
   });
+});
+
+describe('add and subtract', () => {
+  it('adds exactly and normalises', () => {
+    expect(add(rational(1n, 2n), rational(1n, 3n))).toEqual(rational(5n, 6n));
+    expect(add(fromInteger(100), rational(25n, 2n))).toEqual(rational(225n, 2n));
+  });
+
+  it('subtracts exactly and normalises', () => {
+    expect(subtract(fromInteger(100), rational(25n, 2n))).toEqual(rational(175n, 2n));
+    expect(subtract(rational(1n, 4n), rational(1n, 4n))).toEqual(rational(0n));
+    expect(subtract(rational(1n, 4n), rational(1n, 2n))).toEqual(rational(-1n, 4n));
+  });
+});
+
+describe('parseFraction', () => {
+  it.each([
+    ['25/2', rational(25n, 2n)],
+    ['50/4', rational(25n, 2n)],
+    ['-3/4', rational(-3n, 4n)],
+    ['−3/4', rational(-3n, 4n)],
+    [' 7/1 ', rational(7n)],
+    ['0/5', rational(0n)],
+  ])('parses %j', (input, expected) => {
+    expect(parseFraction(input)).toEqual(expected);
+  });
+
+  it.each(['', '25', '12,5', '25/', '/2', '1/0', '1,5/2', '1/2/3', '2/-3', '1 1/2'])(
+    'rejects %j',
+    (input) => {
+      expect(parseFraction(input)).toBeNull();
+    },
+  );
 });

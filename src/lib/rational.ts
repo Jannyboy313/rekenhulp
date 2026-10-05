@@ -77,3 +77,25 @@ export function decimalPlaces(value: Rational): number | null {
   }
   return den === 1n ? Math.max(twos, fives) : null;
 }
+
+export function add(a: Rational, b: Rational): Rational {
+  return rational(a.num * b.den + b.num * a.den, a.den * b.den);
+}
+
+export function subtract(a: Rational, b: Rational): Rational {
+  return rational(a.num * b.den - b.num * a.den, a.den * b.den);
+}
+
+// Optional ASCII or typographic minus, then numerator/denominator.
+const FRACTION = /^([-−])?(\d+)\/(\d+)$/;
+
+/** Parses a fraction such as "25/2" or "−3/4". Returns null for anything else, incl. "1/0". */
+export function parseFraction(input: string): Rational | null {
+  const match = FRACTION.exec(input.trim());
+  if (!match) return null;
+  const [, sign, numerator = '', denominator = ''] = match;
+  const den = BigInt(denominator);
+  if (den === 0n) return null;
+  const num = BigInt(numerator);
+  return rational(sign ? -num : num, den);
+}
