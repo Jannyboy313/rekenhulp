@@ -163,6 +163,30 @@ describe.each([
   });
 });
 
+describe('randomScaleConversion (custom limits)', () => {
+  const limits = { maxShift: 3, maxValueExponent: 5 };
+  const rng = createRng(9);
+  const conversions = Array.from({ length: SAMPLES }, () =>
+    randomScaleConversion(rng, MASS_UNITS, limits),
+  );
+
+  it('respects the custom shift and value range', () => {
+    for (const { from, to, value, answer } of conversions) {
+      const shift = from.exponent - to.exponent;
+      expect(Math.abs(shift)).toBeLessThanOrEqual(3);
+      expect(isNiceValue(value, 5)).toBe(true);
+      expect(isNiceValue(answer, 5)).toBe(true);
+      expect(equals(answer, multiply(value, powerOfTen(shift)))).toBe(true);
+    }
+  });
+
+  it('rejects a maxShift larger than maxValueExponent', () => {
+    expect(() =>
+      randomScaleConversion(createRng(1), MASS_UNITS, { maxShift: 6, maxValueExponent: 5 }),
+    ).toThrow(RangeError);
+  });
+});
+
 describe('conversionExplanation', () => {
   it('multiplies when converting to a smaller unit', () => {
     expect(conversionExplanation('L', 'cm³', rational(7n, 2n), fromInteger(3500))).toBe(

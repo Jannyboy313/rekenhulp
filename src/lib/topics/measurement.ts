@@ -61,7 +61,10 @@ export const MASS_UNITS: readonly ScaleUnit[] = [
 export interface ScaleLimits {
   /** Largest factor between the two units, as a power of 10. */
   maxShift: number;
-  /** Source values and answers are at most 10^maxValueExponent. */
+  /**
+   * Source values and answers are at most 10^maxValueExponent.
+   * maxShift must not exceed this, otherwise some mantissas have no valid exponent.
+   */
   maxValueExponent: number;
 }
 
@@ -118,6 +121,9 @@ export function randomScaleConversion(
   units: readonly ScaleUnit[],
   limits: ScaleLimits = METRIC_LIMITS,
 ): ScaleConversion {
+  if (limits.maxShift > limits.maxValueExponent) {
+    throw new RangeError('maxShift must not exceed maxValueExponent');
+  }
   const [from, to] = pick(rng, conversionPairs(units, limits.maxShift));
   const factor = powerOfTen(from.exponent - to.exponent);
   const mantissa = fromInteger(randomMantissa(rng));
@@ -135,6 +141,7 @@ export function randomScaleConversion(
 /**
  * "1 L = 1000 cm³ → 3,5 × 1000 = 3500" or "1 uur = 60 min → 135 : 60 = 2,25" (spec §5.10).
  * The two units must differ by an integer factor, in either direction.
+ * `value` must be non-zero; the factor is derived from answer / value.
  */
 export function conversionExplanation(
   from: string,
