@@ -424,11 +424,13 @@ There are three forms, each picked with equal probability:
 - **Name → power:** in 40% of these the value is 1. Otherwise it is an integer in `[1, 999]`
   with 1 to 3 significant digits. The right-hand side writes the value in scientific notation
   `c × 10ⁿ` with `c ∈ [1, 10)`; for the value 1 it is just `10ⁿ`.
-- **Name ↔ name:** the metric rules of §5.10 apply (factor at most 10⁶, source value and answer
-  in `[0,001; 10 000 000]` with at most 3 decimals). Because the names are 10³ apart, the
-  factor is 1000 or 1 000 000.
+- **Name ↔ name:** only neighbouring names (factor 1000), in both directions. The source value
+  has 1 to 3 significant digits; the source value and the answer lie in `[0,001; 100 000]` with
+  at most 3 decimals. This is stricter than §5.10, so a prompt never shows something like
+  `3 000 000 duizend`.
 - **Power → name:** `c ∈ [1, 10)` with 1 to 3 significant digits (`c = 1` is written as just
-  `10⁹`), the exponent is at least 3, and the answer follows the metric value rules.
+  `10⁹`), the exponent is at least 3, and the answer lies in `[0,001; 100 000]` with at most 3
+  decimals.
 - Explanation on error:
   - name → power: `1 miljard = 1000 miljoen = 10⁹`, `1 duizend = 1000 = 10³`,
     `250 miljoen = 2,5 × 10² × 10⁶ = 2,5 × 10⁸`, `7 miljard = 7 × 10⁹`
