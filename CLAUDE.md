@@ -53,8 +53,8 @@ Everything else from the global allowlist still applies (no `git push`, `git che
 
 ```
 src/
-  App.svelte            state machine: start → playing → results
-  components/           StartScreen, QuestionView, Keypad, Feedback, ResultScreen
+  App.svelte            state machine: sets → setup → playing → results
+  components/           SetOverview, SetupScreen, QuestionView, Keypad, Feedback, ResultScreen
   lib/
     random.ts           seedable RNG; every generator takes an rng argument
     sets.ts             practice sets (config): topics + weights + tables share

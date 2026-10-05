@@ -52,23 +52,34 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 
 ## 3. Session flow
 
-The app is a state machine in `App.svelte` with three states: `start → playing → results`.
-"Opnieuw" moves from `results` back to `playing`, and "Menu" moves to `start`.
+The app is a state machine in `App.svelte` with four states:
+`sets → setup → playing → results`.
 
-### 3.1 Start screen
+- "Terug" moves from `setup` back to `sets`.
+- "Opnieuw" moves from `results` back to `playing`, with the same set and count.
+- "Menu" moves from `results` to `sets`.
 
-- **Practice set:** a list of cards, one per available set (§4). Each card shows the set's
-  name and a one-line description of its topics. Exactly one set can be selected; the default
-  is **Tafels**.
+### 3.1 Set overview (start screen)
+
+- The app always opens on this screen, with no set preselected.
+- It shows a list of cards, one per available set (§4). Each card shows the set's name and a
+  one-line description of its topics.
+- Tapping a card opens the setup screen for that set.
+- Sets whose topics are not implemented yet (v2/v3) are not shown.
+
+### 3.2 Setup screen
+
+- The header shows the set name and a **Terug** button.
+- Below it is a list of the set's topics. For every set except Tafels, the list includes
+  "15% tafels".
 - **Count:** 15, 25, 50, 75 or 100 exercises. The default is 15.
 - A **Start** button.
-- The previous choices are kept in memory only while the app stays open; nothing is persisted.
-- Sets whose topics are not implemented yet (v2/v3) are not shown.
+- The chosen count is kept in memory only while the app stays open; nothing is persisted.
 
 Note: the 3-minute target corresponds to roughly 15 exercises (~12 s each). Larger counts are
 deliberate longer sessions.
 
-### 3.2 Playing
+### 3.3 Playing
 
 - The header shows the set name, progress (`7 / 15`), the elapsed time (`mm:ss`, counting up,
   no time limit) and a **Stop** button.
@@ -77,7 +88,7 @@ deliberate longer sessions.
 - The time spent on each exercise is recorded, measured from when it is shown until the final
   submission.
 
-### 3.3 Feedback per exercise
+### 3.4 Feedback per exercise
 
 - **Correct:** green confirmation for 600 ms, then automatically on to the next exercise. With
   reduced motion, a static colour is shown instead of an animation.
@@ -85,7 +96,7 @@ deliberate longer sessions.
   `91 = 7 × 13`). The user moves on by tapping **Verder**.
 - Each exercise allows exactly one attempt (two steps for property exercises, §5.11).
 
-### 3.4 Results
+### 3.5 Results
 
 - Score `x / n` and percentage
 - Total time, and average time per exercise
@@ -463,7 +474,8 @@ src/
   App.svelte
   main.ts
   components/
-    StartScreen.svelte      set cards + count selector
+    SetOverview.svelte      start screen: set cards
+    SetupScreen.svelte      topics of the chosen set + count selector + Start
     QuestionView.svelte     renders prompt + input for any answer kind
     Keypad.svelte           layout chosen by answer kind
     Feedback.svelte
@@ -577,7 +589,8 @@ These are assumptions made while writing the spec. Each one is easy to change.
    because they are trivial.
 10. The length units are `mm, cm, dm, m, km` without `dam`/`hm`, and the mass units are
     `mg, g, kg, ton` without `cg`/`dg`.
-11. The default set on the start screen is **Tafels**.
+11. ~~Default set~~ — confirmed: the app opens on the set overview, with no set preselected.
+    Choosing a set leads to a separate setup screen (§3.1, §3.2).
 
 ## 12. Roadmap (not in v1)
 
@@ -594,4 +607,4 @@ These are assumptions made while writing the spec. Each one is easy to change.
   - `average`: mean, median and mode of a short list
   - `geometry`: compute the perimeter, area or volume of rectangles and boxes, including unit
     conversion
-- **Optional later:** an "Alles gemengd" set, and topic toggles on the start screen.
+- **Optional later:** an "Alles gemengd" set, and topic toggles on the setup screen.
