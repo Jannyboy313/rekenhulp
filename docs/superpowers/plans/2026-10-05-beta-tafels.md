@@ -2977,7 +2977,9 @@ const pwa = VitePWA({
     background_color: '#f8fafc',
   },
   workbox: {
-    globPatterns: ['**/*.{js,css,html,svg,png,ico,webmanifest}'],
+    // No 'webmanifest' here: the plugin precaches the manifest itself; a second entry with a
+    // different revision makes Workbox throw at SW startup (found in the final review).
+    globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
   },
 });
 

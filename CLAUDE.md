@@ -9,8 +9,24 @@ Read it before changing behaviour. If code and spec disagree, ask which one is w
 
 ## Status
 
-Implementing the beta (Tafels set only) via `docs/superpowers/plans/2026-10-05-beta-tafels.md`.
-Other sets come later, each with its own plan; do not start those until the user says so.
+Beta: only the **Tafels** set is implemented (plan: `docs/superpowers/plans/2026-10-05-beta-tafels.md`).
+Every other set gets its own implementation plan; do not start one until the user says so. To add a
+set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
+`lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.
+
+Known follow-ups for the next plans:
+- **Before adding the `boolean`/`expression`/`factorization` answer kinds:** `QuestionView` hard-codes
+  number input (`parseDutchNumber` as `canSubmit`, always the number `Keypad`), and `Step` has no
+  "invalid input, attempt not consumed" path (spec §6 "Ongeldige som"). Introduce a per-kind input
+  model (keys, reducer, validate, display) and let `QuestionView` pick it by `step.kind` first.
+- Focus falls back to `body` after a screen or question change (keyboard/screen-reader users only).
+- Android splash uses the light `background_color` in dark mode (cosmetic).
+
+## PWA pitfalls
+
+- Do not add `webmanifest` to `workbox.globPatterns`: vite-plugin-pwa already precaches the manifest,
+  and a second entry with a different revision makes Workbox throw at SW startup (no offline mode).
+  After `npm run build`, `dist/sw.js` must contain exactly one `manifest.webmanifest` entry.
 
 ## Stack
 
