@@ -8,6 +8,7 @@ import {
   fromInteger,
   multiply,
   powerOfTen,
+  rational,
   type Rational,
 } from '../rational';
 import { numberStep } from '../steps';
@@ -196,3 +197,68 @@ export const generateVolume = scaleGenerator('volume', VOLUME_UNITS);
 export const generateArea = scaleGenerator('area', AREA_UNITS);
 export const generateLength = scaleGenerator('length', LENGTH_UNITS);
 export const generateMass = scaleGenerator('mass', MASS_UNITS);
+
+export interface TimeUnit {
+  symbol: string;
+  seconds: number;
+}
+
+const SECOND: TimeUnit = { symbol: 's', seconds: 1 };
+const MINUTE: TimeUnit = { symbol: 'min', seconds: 60 };
+const HOUR: TimeUnit = { symbol: 'uur', seconds: 3600 };
+const DAY: TimeUnit = { symbol: 'dag', seconds: 86_400 };
+
+export const TIME_UNITS: readonly TimeUnit[] = [SECOND, MINUTE, HOUR, DAY];
+
+/** [larger, smaller]. s ↔ dag (factor 86 400) is left out (spec §5.10). */
+export const TIME_PAIRS: readonly (readonly [TimeUnit, TimeUnit])[] = [
+  [MINUTE, SECOND],
+  [HOUR, MINUTE],
+  [DAY, HOUR],
+  [HOUR, SECOND],
+  [DAY, MINUTE],
+];
+
+export const MAX_LARGER_TIME_VALUE = 100;
+export const MAX_SMALLER_TIME_VALUE = 10_000;
+/** Whole numbers, halves, quarters and tenths in the larger unit. */
+export const TIME_DENOMINATORS: readonly number[] = [1, 2, 4, 10];
+
+/**
+ * Values in the larger unit with exactly this denominator, at most 100, that give a whole number
+ * of at most 10 000 in the smaller unit.
+ */
+export function largerTimeValues(
+  larger: TimeUnit,
+  smaller: TimeUnit,
+  denominator: number,
+): Rational[] {
+  const factor = fromInteger(larger.seconds / smaller.seconds);
+  const values: Rational[] = [];
+  for (let numerator = 1; numerator <= MAX_LARGER_TIME_VALUE * denominator; numerator++) {
+    const value = rational(BigInt(numerator), BigInt(denominator));
+    if (value.den !== BigInt(denominator)) continue;
+    const smallerValue = multiply(value, factor);
+    if (smallerValue.den === 1n && smallerValue.num <= BigInt(MAX_SMALLER_TIME_VALUE)) {
+      values.push(value);
+    }
+  }
+  return values;
+}
+
+// Per pair: the candidate values per denominator, without empty groups. Computed once.
+const TIME_VALUE_GROUPS: readonly Rational[][][] = TIME_PAIRS.map(([larger, smaller]) =>
+  TIME_DENOMINATORS.map((denominator) => largerTimeValues(larger, smaller, denominator)).filter(
+    (group) => group.length > 0,
+  ),
+);
+
+export function generateTime(rng: Rng): Question {
+  const index = randomInt(rng, 0, TIME_PAIRS.length - 1);
+  const [larger, smaller] = TIME_PAIRS[index]!;
+  const largerValue = pick(rng, pick(rng, TIME_VALUE_GROUPS[index]!));
+  const smallerValue = multiply(largerValue, fromInteger(larger.seconds / smaller.seconds));
+  return rng() < 0.5
+    ? conversionQuestion('time', larger.symbol, smaller.symbol, largerValue, smallerValue)
+    : conversionQuestion('time', smaller.symbol, larger.symbol, smallerValue, largerValue);
+}

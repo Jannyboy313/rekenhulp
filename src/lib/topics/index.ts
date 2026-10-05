@@ -1,5 +1,11 @@
 import type { Generator, Topic } from '../types';
-import { generateArea, generateLength, generateMass, generateVolume } from './measurement';
+import {
+  generateArea,
+  generateLength,
+  generateMass,
+  generateTime,
+  generateVolume,
+} from './measurement';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -8,6 +14,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   area: generateArea,
   length: generateLength,
   mass: generateMass,
+  time: generateTime,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -17,4 +24,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   area: 'Oppervlakte (mm² t/m km², are, ha)',
   length: 'Lengte (mm t/m km)',
   mass: 'Gewicht (mg t/m ton)',
+  time: 'Tijd (s, min, uur, dag)',
 };

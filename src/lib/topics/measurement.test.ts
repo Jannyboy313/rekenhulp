@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import { GROUP_SEPARATOR as S } from '../format';
 import { createRng } from '../random';
 import {
+  compare,
   decimalPlaces,
   equals,
   fromInteger,
   multiply,
+  parseDutchNumber,
   powerOfTen,
   rational,
   type Rational,
@@ -19,13 +21,20 @@ import {
   generateArea,
   generateLength,
   generateMass,
+  generateTime,
   generateVolume,
   isNiceValue,
+  largerTimeValues,
   LENGTH_UNITS,
   MASS_UNITS,
+  MAX_LARGER_TIME_VALUE,
+  MAX_SMALLER_TIME_VALUE,
   METRIC_LIMITS,
   randomMantissa,
   randomScaleConversion,
+  TIME_DENOMINATORS,
+  TIME_PAIRS,
+  TIME_UNITS,
   VOLUME_UNITS,
   type ScaleUnit,
 } from './measurement';
@@ -306,5 +315,118 @@ describe('volume generator', () => {
     const pairs = new Set(sample(generateVolume, 12).map(({ key }) => key.split(':')[1]));
     expect(pairs.has('ml>cm³') || pairs.has('cm³>ml')).toBe(true);
     expect(pairs.has('L>dm³') || pairs.has('dm³>L')).toBe(true);
+  });
+});
+
+describe('time units', () => {
+  it('lists the units with their length in seconds', () => {
+    expect(TIME_UNITS.map((unit) => [unit.symbol, unit.seconds])).toEqual([
+      ['s', 1],
+      ['min', 60],
+      ['uur', 3600],
+      ['dag', 86_400],
+    ]);
+  });
+
+  it('converts between all units except s and dag', () => {
+    expect(TIME_PAIRS.map(([larger, smaller]) => `${larger.symbol}>${smaller.symbol}`)).toEqual([
+      'min>s',
+      'uur>min',
+      'dag>uur',
+      'uur>s',
+      'dag>min',
+    ]);
+  });
+});
+
+describe('largerTimeValues', () => {
+  const unit = (symbol: string) => TIME_UNITS.find((candidate) => candidate.symbol === symbol)!;
+
+  it('allows quarters of an hour', () => {
+    expect(largerTimeValues(unit('uur'), unit('min'), 4)).toContainEqual(rational(9n, 4n));
+  });
+
+  it('has no tenths of a day, because 2,4 uur is not whole', () => {
+    expect(largerTimeValues(unit('dag'), unit('uur'), 10)).toEqual([]);
+  });
+
+  it('keeps every candidate within the value rules', () => {
+    for (const [larger, smaller] of TIME_PAIRS) {
+      for (const denominator of TIME_DENOMINATORS) {
+        for (const value of largerTimeValues(larger, smaller, denominator)) {
+          expect(value.den).toBe(BigInt(denominator));
+          expect(compare(value, fromInteger(MAX_LARGER_TIME_VALUE))).toBeLessThanOrEqual(0);
+          const smallerValue = multiply(value, fromInteger(larger.seconds / smaller.seconds));
+          expect(smallerValue.den).toBe(1n);
+          expect(smallerValue.num).toBeLessThanOrEqual(BigInt(MAX_SMALLER_TIME_VALUE));
+        }
+      }
+    }
+  });
+});
+
+describe('generateTime', () => {
+  const questions = sample(generateTime, 13);
+  const seconds = new Map(TIME_UNITS.map((unit) => [unit.symbol, unit.seconds]));
+
+  function parts(question: Question) {
+    const [, pair, fraction] = question.key.split(':');
+    const [from, to] = pair!.split('>') as [string, string];
+    const [num, den] = fraction!.split('/');
+    return {
+      from,
+      to,
+      value: rational(BigInt(num!), BigInt(den!)),
+      answer: parseDutchNumber(typed(expectedOf(question)))!,
+    };
+  }
+
+  it('creates single-step time conversions that accept their own answer', () => {
+    for (const question of questions) {
+      expect(question.topic).toBe('time');
+      expect(question.steps).toHaveLength(1);
+      const step = question.steps[0]!;
+      expect(step.kind).toBe('number');
+      expect(step.suffix).toBe(parts(question).to);
+      expect(step.check(typed(expectedOf(question))).correct).toBe(true);
+    }
+  });
+
+  it('converts exactly', () => {
+    for (const question of questions) {
+      const { from, to, value, answer } = parts(question);
+      expect(
+        equals(
+          multiply(value, fromInteger(seconds.get(from)!)),
+          multiply(answer, fromInteger(seconds.get(to)!)),
+        ),
+      ).toBe(true);
+    }
+  });
+
+  it('uses the ten directed pairs and never s ↔ dag', () => {
+    const pairs = new Set(questions.map((question) => `${parts(question).from}>${parts(question).to}`));
+    expect(pairs.size).toBe(10);
+    expect(pairs.has('s>dag')).toBe(false);
+    expect(pairs.has('dag>s')).toBe(false);
+  });
+
+  it('keeps both values to at most 2 decimals and the smaller-unit value whole', () => {
+    for (const question of questions) {
+      const { from, to, value, answer } = parts(question);
+      expect(decimalPlaces(value)!).toBeLessThanOrEqual(2);
+      expect(decimalPlaces(answer)!).toBeLessThanOrEqual(2);
+      const smallerValue = seconds.get(from)! < seconds.get(to)! ? value : answer;
+      expect(smallerValue.den).toBe(1n);
+    }
+  });
+
+  it('uses whole numbers, halves, quarters and tenths in the larger unit', () => {
+    const denominators = new Set<bigint>();
+    for (const question of questions) {
+      const { from, to, value, answer } = parts(question);
+      denominators.add((seconds.get(from)! > seconds.get(to)! ? value : answer).den);
+    }
+    expect([...denominators].sort((a, b) => Number(a - b))).toEqual([1n, 2n, 4n, 10n]);
   });
 });
