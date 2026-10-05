@@ -9,7 +9,8 @@ Read it before changing behaviour. If code and spec disagree, ask which one is w
 
 ## Status
 
-Design phase. The spec is being iterated on; do not start implementation until the user says so.
+Implementing the beta (Tafels set only) via `docs/superpowers/plans/2026-10-05-beta-tafels.md`.
+Other sets come later, each with its own plan; do not start those until the user says so.
 
 ## Stack
 
@@ -23,9 +24,10 @@ Design phase. The spec is being iterated on; do not start implementation until t
 ```bash
 npm install     # install dependencies
 npm test        # run Vitest once
+npm run check   # svelte-check (type check)
+npm run build   # production build incl. service worker
 npm run dev     # dev server (not pre-approved, ask first)
-npm run build   # production build incl. service worker (not pre-approved, ask first)
-npm run check   # svelte-check (not pre-approved, ask first)
+npm run preview # serve dist/ (not pre-approved, ask first)
 ```
 
 ## Command allowlist override (this project only)
@@ -35,6 +37,7 @@ with the commands below, so work can proceed autonomously. Authorised by the use
 
 - `npm install` (incl. adding packages)
 - `npm test`
+- `npm run check`, `npm run build` (authorised 2026-10-05, for autonomous verification)
 - `git init`
 - `git add`
 - `git commit`

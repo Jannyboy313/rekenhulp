@@ -44,7 +44,8 @@ Later plans widen these unions.
 
 - Node.js 22 LTS or newer.
 - Pre-approved in this repo (`.claude/settings.json`): `npm install`, `npm test`, `git init`, `git add`, `git commit`.
-- **Not pre-approved:** `npm run check`, `npm run build`, `npm run preview`. Steps that use them are marked **⚠ approval**. Ask the user to run them, or to approve them, before continuing.
+- Also pre-approved (added 2026-10-05): `npm run check` and `npm run build`. Steps still marked **⚠ approval** for these two may simply be run.
+- **Not pre-approved:** `npm run dev` and `npm run preview`. Do not run them; they are only for the user's manual check.
 - **Never** use `npx`, `node`, `npm create` or `npm init`. Write every config file by hand, as shown below.
 - Every commit message ends with the trailer `Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>`. The commands below pass it via a second `-m`.
 
@@ -3059,7 +3060,8 @@ Replace:
 ```markdown
 ## Status
 
-Design phase. The spec is being iterated on; do not start implementation until the user says so.
+Implementing the beta (Tafels set only) via `docs/superpowers/plans/2026-10-05-beta-tafels.md`.
+Other sets come later, each with its own plan; do not start those until the user says so.
 ```
 with:
 ```markdown
