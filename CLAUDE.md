@@ -31,7 +31,7 @@ implementation plan per step:
 | 5 | **Verhoudingen** (v2 part) | `fractionConversion`, `fractionArithmetic` (§12) | Judging simplified vs unsimplified fractions (the `fraction` input exists since set 2) | v2 | later |
 | 6 | **Toepassingen** | `speed`, `scale`, `average`, `geometry` (§12) | Context/word problems | v3 | later |
 
-Why this order: 1 and 2 add useful sets quickly without changing the architecture. 3 introduces
+Why this order: 1 and 2 add useful sets quickly with only small infrastructure additions. 3 introduces
 the answer-kind refactor and the first parser pieces, which 4 then extends.
 
 Workflow per set (new session each time):
@@ -110,7 +110,8 @@ src/
                         ResultScreen
   lib/
     random.ts           seedable RNG; every generator takes an rng argument
-    steps.ts            step factories (numberStep) — all answer checking goes through here
+    steps.ts            step factories (numberStep, fractionStep) and parseAnswer — all answer
+                        parsing and checking goes through here
     keypadInput.ts      pure key → input reducer
     results.ts          question records + session summary
     sets.ts             practice sets (config): topics + weights + tables share
