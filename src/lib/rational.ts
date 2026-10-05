@@ -40,3 +40,40 @@ export function parseDutchNumber(input: string): Rational | null {
   const den = 10n ** BigInt(fractionPart.length);
   return rational(sign ? -digits : digits, den);
 }
+
+export function multiply(a: Rational, b: Rational): Rational {
+  return rational(a.num * b.num, a.den * b.den);
+}
+
+export function divide(a: Rational, b: Rational): Rational {
+  if (b.num === 0n) throw new RangeError('Division by zero');
+  return rational(a.num * b.den, a.den * b.num);
+}
+
+/** −1, 0 or 1. Denominators are always positive, so cross-multiplying keeps the order. */
+export function compare(a: Rational, b: Rational): number {
+  const difference = a.num * b.den - b.num * a.den;
+  return difference < 0n ? -1 : difference > 0n ? 1 : 0;
+}
+
+export function powerOfTen(exponent: number): Rational {
+  if (!Number.isSafeInteger(exponent)) throw new RangeError(`Not a safe integer: ${exponent}`);
+  const power = 10n ** BigInt(Math.abs(exponent));
+  return exponent >= 0 ? rational(power) : rational(1n, power);
+}
+
+/** Decimals needed to write the value exactly, or null when it does not terminate (1/3). */
+export function decimalPlaces(value: Rational): number | null {
+  let den = value.den;
+  let twos = 0;
+  let fives = 0;
+  while (den % 2n === 0n) {
+    den /= 2n;
+    twos++;
+  }
+  while (den % 5n === 0n) {
+    den /= 5n;
+    fives++;
+  }
+  return den === 1n ? Math.max(twos, fives) : null;
+}

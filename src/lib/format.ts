@@ -1,4 +1,4 @@
-import type { Rational } from './rational';
+import { decimalPlaces, type Rational } from './rational';
 
 /** Typographic minus sign (U+2212). */
 export const MINUS = '−';
@@ -20,12 +20,9 @@ export function formatInteger(value: number | bigint): string {
 
 /** Formats a terminating decimal in Dutch notation; throws for e.g. 1/3 (fractions come in v2). */
 export function formatRational(value: Rational): string {
-  let decimals = 0;
-  while (10n ** BigInt(decimals) % value.den !== 0n) {
-    decimals++;
-    if (decimals > MAX_DECIMALS) {
-      throw new RangeError('Value has no finite decimal representation');
-    }
+  const decimals = decimalPlaces(value);
+  if (decimals === null || decimals > MAX_DECIMALS) {
+    throw new RangeError('Value has no finite decimal representation');
   }
   const negative = value.num < 0n;
   const absolute = negative ? -value.num : value.num;
