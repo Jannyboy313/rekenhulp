@@ -4,6 +4,7 @@ import { parse } from '../expr/parser';
 import { formatInteger as f } from '../format';
 import { createRng } from '../random';
 import { fromInteger, parseDutchNumber } from '../rational';
+import { numberStep } from '../steps';
 import type { Question } from '../types';
 import {
   buildExercise,
@@ -309,14 +310,77 @@ describe('smart calculation tips', () => {
   });
 
   it('checks a complement', () => {
-    expect(complementTip(463, 1000)(fromInteger(547))).toBe('463 + 547 = 1010, niet 1000.');
-    expect(complementTip(463, 1000)(parseDutchNumber('5,5')!)).toBeUndefined();
+    expect(complementTip(463, 1000, 537)(fromInteger(547))).toBe('463 + 547 = 1010, niet 1000.');
+    expect(complementTip(463, 1000, 537)(parseDutchNumber('5,5')!)).toBeUndefined();
   });
 
-  it('gives the compensation and complement strategies a diagnosis', () => {
+  it('leaves a complement 10ᵏ times the correct one to the factor-of-ten tip', () => {
+    expect(complementTip(463, 1000, 537)(fromInteger(5370))).toBeUndefined();
+    expect(complementTip(463, 1000, 537)(fromInteger(53_700))).toBeUndefined();
+    const step = numberStep({
+      prompt: '1000 − 463 = ?',
+      answer: fromInteger(537),
+      diagnose: complementTip(463, 1000, 537),
+    });
+    expect(step.check('5370').tip).toContain('10 keer te groot');
+  });
+
+  const numbersIn = (prompt: string) =>
+    [...prompt.matchAll(/\d[\d ]*/g)].map((m) => Number(m[0].replace(/\D/g, '')));
+  const sign = (offset: number) => `${offset < 0 ? '−' : '+'} ${Math.abs(offset)}`;
+  const nearestRound = (value: number) => Math.round(value / 10) * 10;
+  const compensationText = (value: number, offset: number, correction: number) =>
+    `${f(value)} = ${f(value - offset)} ${sign(offset)}, dus compenseer met ${sign(correction)}, niet met ${sign(-correction)}.`;
+
+  it('names the wrong compensation of a sum', () => {
     const rng = createRng(9);
-    for (const strategy of ['compensateAdd', 'compensateSubtract', 'complement'] as const) {
-      for (let i = 0; i < 100; i++) expect(buildExercise(rng, strategy).diagnose).toBeDefined();
+    for (let i = 0; i < 300; i++) {
+      const { prompt, diagnose } = buildExercise(rng, 'compensateAdd');
+      const [a, b] = numbersIn(prompt) as [number, number];
+      const round = nearestRound(a);
+      expect(diagnose!(fromInteger(2 * round - a + b))).toBe(
+        compensationText(a, a - round, a - round),
+      );
     }
+  });
+
+  it('names the wrong compensation of a difference', () => {
+    const rng = createRng(10);
+    for (let i = 0; i < 300; i++) {
+      const { prompt, diagnose } = buildExercise(rng, 'compensateSubtract');
+      const [a, b] = numbersIn(prompt) as [number, number];
+      const round = nearestRound(b);
+      expect(diagnose!(fromInteger(a - 2 * round + b))).toBe(
+        compensationText(b, b - round, round - b),
+      );
+    }
+  });
+
+  it('shows the sum of a wrong complement', () => {
+    const rng = createRng(11);
+    for (let i = 0; i < 300; i++) {
+      const { prompt, answer, diagnose } = buildExercise(rng, 'complement');
+      const [total, b] = numbersIn(prompt) as [number, number];
+      const wrong = answer + 1;
+      expect(diagnose!(fromInteger(wrong))).toBe(
+        `${f(b)} + ${f(wrong)} = ${f(b + wrong)}, niet ${f(total)}.`,
+      );
+    }
+  });
+
+  it('reaches the learner through generateSmartCalculation', () => {
+    const rng = createRng(12);
+    let seen = 0;
+    for (let i = 0; i < 1000; i++) {
+      const step = generateSmartCalculation(rng).steps[0]!;
+      const [a, b] = numbersIn(step.prompt) as [number, number];
+      if (step.prompt.includes(' + ')) {
+        const round = nearestRound(a);
+        const tip = step.check(String(2 * round - a + b)).tip;
+        expect(tip).toBe(compensationText(a, a - round, a - round));
+        seen++;
+      }
+    }
+    expect(seen).toBeGreaterThan(100);
   });
 });

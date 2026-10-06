@@ -193,9 +193,10 @@ const MISCONCEPTION_TIPS: readonly (readonly [Misconception, string])[] = [
 /** Spec §3.4.1: the answer equals what a known misconception gives, and that is wrong. */
 export function orderOfOperationsTip(expr: Expr): Diagnose {
   const answer = evaluate(expr);
+  if (answer === null) return () => undefined;
   const mistakes = MISCONCEPTION_TIPS.flatMap(([misconception, tip]) => {
     const value = evaluateMisconception(expr, misconception);
-    return value === null || answer === null || equals(value, answer) ? [] : [{ value, tip }];
+    return value === null || equals(value, answer) ? [] : [{ value, tip }];
   });
   return (given) => mistakes.find(({ value }) => equals(given, value))?.tip;
 }

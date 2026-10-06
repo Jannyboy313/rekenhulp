@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
+import { formatInteger } from '../format';
 import { fromInteger, parseDutchNumber } from '../rational';
+import { numberStep } from '../steps';
 import type { Question } from '../types';
 import { generateTables, neighbourRowTip, productCheckTip, TABLE_FACTORS } from './tables';
 
@@ -106,8 +108,78 @@ describe('table tips', () => {
   });
 
   it('shows the product a division or missing-factor answer gives', () => {
-    expect(productCheckTip(7, 56, true)(fromInteger(9))).toBe('9 × 7 = 63, niet 56.');
-    expect(productCheckTip(7, 56, false)(fromInteger(9))).toBe('7 × 9 = 63, niet 56.');
-    expect(productCheckTip(7, 56, true)(parseDutchNumber('2,5')!)).toBeUndefined();
+    expect(productCheckTip(7, 56, 8, true)(fromInteger(9))).toBe('9 × 7 = 63, niet 56.');
+    expect(productCheckTip(7, 56, 8, false)(fromInteger(9))).toBe('7 × 9 = 63, niet 56.');
+    expect(productCheckTip(7, 56, 8, true)(parseDutchNumber('2,5')!)).toBeUndefined();
+  });
+
+  it('has no cap on the size of the answer', () => {
+    expect(productCheckTip(7, 56, 8, true)(fromInteger(2000))).toBe(
+      '2000 × 7 = 14\u{202f}000, niet 56.',
+    );
+  });
+
+  it('leaves an answer 10ᵏ times the correct one to the factor-of-ten tip', () => {
+    for (const given of [80, 800]) {
+      expect(productCheckTip(7, 56, 8, true)(fromInteger(given))).toBeUndefined();
+    }
+    expect(productCheckTip(7, 56, 8, true)(parseDutchNumber('0,8')!)).toBeUndefined();
+    const step = numberStep({
+      prompt: '56 : 7 = ?',
+      answer: fromInteger(8),
+      diagnose: productCheckTip(7, 56, 8, true),
+    });
+    expect(step.check('80').tip).toContain('10 keer te groot');
+  });
+});
+
+describe('table tips end to end', () => {
+  const f = formatInteger;
+  const NINE = 9;
+
+  it('wires the right tip into every form', () => {
+    const rng = createRng(31);
+    const seen = { product: 0, division: 0, missingLeft: 0, missingRight: 0, tenfold: 0 };
+    for (let i = 0; i < 1000; i++) {
+      const question = generateTables(rng);
+      const step = question.steps[0]!;
+      const [, form, first, second] = question.key.split(/[:x]/) as [
+        string,
+        string,
+        string,
+        string,
+      ];
+      if (form === 'product') {
+        const a = Number(first);
+        const b = Number(second);
+        const typed = a * (b + 1);
+        const neighbours = [
+          [a, b - 1],
+          [a, b + 1],
+          [a - 1, b],
+          [a + 1, b],
+        ] as const;
+        const [x, y] = neighbours.find(([nx, ny]) => nx * ny === typed)!;
+        expect(step.check(String(typed)).tip).toBe(
+          `${f(x * y)} = ${f(x)} × ${f(y)}: je zit één rij ernaast.`,
+        );
+        seen.product++;
+        continue;
+      }
+      const answer = Number(expectedOf(question));
+      if (answer !== NINE) {
+        // Keys: division:<product>:<b>, missingLeft:<b>:<product>, missingRight:<a>:<product>.
+        const product = Number(form === 'division' ? first : second);
+        const known = Number(form === 'division' ? second : first);
+        const [x, y] = form === 'missingRight' ? [known, NINE] : [NINE, known];
+        expect(step.check(String(NINE)).tip).toBe(
+          `${f(x)} × ${f(y)} = ${f(x * y)}, niet ${f(product)}.`,
+        );
+        seen[form as 'division' | 'missingLeft' | 'missingRight']++;
+      }
+      expect(step.check(String(answer * 10)).tip).toContain('10 keer te groot');
+      seen.tenfold++;
+    }
+    for (const count of Object.values(seen)) expect(count).toBeGreaterThan(50);
   });
 });

@@ -2,7 +2,7 @@ import { formatInteger as f } from '../format';
 import { pick, randomInt, randomIntWhere, type Rng } from '../random';
 import { equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
-import { positiveInteger, type Diagnose } from '../tips';
+import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Smart calculation (spec §5.9).
@@ -57,11 +57,16 @@ export function compensationTip(near: NearRound, compensation: number, answer: n
   return (given) => (equals(given, mistaken) ? tip : undefined);
 }
 
-/** Shows what the answer adds up to: '463 + 547 = 1010, niet 1000.' */
-export function complementTip(b: number, total: number): Diagnose {
+/**
+ * Shows what the answer adds up to: '463 + 547 = 1010, niet 1000.' An answer 10ᵏ times the
+ * correct one is left to the factor-of-ten fallback (spec §3.4.1).
+ */
+export function complementTip(b: number, total: number, answer: number): Diagnose {
+  const correct = fromInteger(answer);
   return (given) => {
     const value = positiveInteger(given);
-    return value === null ? undefined : `${f(b)} + ${f(value)} = ${f(b + value)}, niet ${f(total)}.`;
+    if (value === null || powerOfTenShift(given, correct) !== null) return undefined;
+    return `${f(b)} + ${f(value)} = ${f(b + value)}, niet ${f(total)}.`;
   };
 }
 
@@ -120,7 +125,7 @@ const BUILDERS: Record<Strategy, (rng: Rng) => Exercise> = {
       prompt: `${f(total)} − ${f(b)}`,
       answer,
       explanation: `${f(b)} + ${f(answer)} = ${f(total)}`,
-      diagnose: complementTip(b, total),
+      diagnose: complementTip(b, total, answer),
     };
   },
   // 48 × 25 → 48 : 4 × 100

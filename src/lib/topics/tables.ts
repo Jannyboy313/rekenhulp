@@ -2,7 +2,7 @@ import { formatInteger } from '../format';
 import { pick, type Rng } from '../random';
 import { equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
-import { positiveInteger, type Diagnose } from '../tips';
+import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 /** Tables 2 to 15 without 1 and 10 (spec §5.1). The exclusion applies to both factors. */
@@ -27,12 +27,20 @@ export function neighbourRowTip(a: number, b: number): Diagnose {
   };
 }
 
-/** Division or missing factor: the product the answer gives, e.g. '9 × 7 = 63, niet 56.' */
-export function productCheckTip(known: number, product: number, unknownFirst: boolean): Diagnose {
+/**
+ * Division or missing factor: the product the answer gives, e.g. '9 × 7 = 63, niet 56.' An answer
+ * 10ᵏ times the correct one is left to the factor-of-ten fallback (spec §3.4.1).
+ */
+export function productCheckTip(
+  known: number,
+  product: number,
+  answer: number,
+  unknownFirst: boolean,
+): Diagnose {
+  const correct = fromInteger(answer);
   return (given) => {
     const value = positiveInteger(given);
-    // Larger numbers get the factor-of-ten fallback.
-    if (value === null || value > 1000) return undefined;
+    if (value === null || powerOfTenShift(given, correct) !== null) return undefined;
     const [x, y] = unknownFirst ? [value, known] : [known, value];
     return `${formatInteger(x)} × ${formatInteger(y)} = ${formatInteger(x * y)}, niet ${formatInteger(product)}.`;
   };
@@ -58,7 +66,7 @@ export function generateTables(rng: Rng): Question {
         `division:${product}:${b}`,
         `${fp} : ${fb} = ?`,
         a,
-        productCheckTip(b, product, true),
+        productCheckTip(b, product, a, true),
         fact,
       );
     case 'missingFactor':
@@ -67,14 +75,14 @@ export function generateTables(rng: Rng): Question {
             `missingLeft:${b}:${product}`,
             `? × ${fb} = ${fp}`,
             a,
-            productCheckTip(b, product, true),
+            productCheckTip(b, product, a, true),
             fact,
           )
         : tableQuestion(
             `missingRight:${a}:${product}`,
             `${fa} × ? = ${fp}`,
             b,
-            productCheckTip(a, product, false),
+            productCheckTip(a, product, b, false),
             fact,
           );
   }

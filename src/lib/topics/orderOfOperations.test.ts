@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import { evaluate } from '../expr/evaluate';
 import { formatExpr } from '../expr/format';
 import { parse, type Expr } from '../expr/parser';
+import { evaluateMisconception } from '../expr/misconceptions';
 import { formatRational } from '../format';
 import { createRng } from '../random';
-import { parseDutchNumber } from '../rational';
+import { decimalPlaces, equals, parseDutchNumber, type Rational } from '../rational';
 import {
   CUBE_SHARE,
   generateExpression,
@@ -210,5 +211,36 @@ describe('orderOfOperationsTip', () => {
 
   it('gives nothing for other answers', () => {
     expect(orderOfOperationsTip(parse('2+3×4')!)(parseDutchNumber('15')!)).toBeUndefined();
+  });
+});
+
+describe('order-of-operations tips end to end', () => {
+  const POWER_TIP = 'Een macht is herhaald vermenigvuldigen: 3² = 3 × 3, niet 3 × 2.';
+  const LEFT_TO_RIGHT_TIP =
+    'Je hebt van links naar rechts gerekend. Eerst machten, dan × en :, daarna pas + en −.';
+  /** Keypad input: ASCII minus, decimal comma, no digit grouping. */
+  const typed = (value: Rational) =>
+    formatRational(value).replace('−', '-').replaceAll('\u{202f}', '');
+
+  it('names the left-to-right mistake in the generated questions', () => {
+    // generateOrderOfOperations only draws through generateExpression, so equal seeds stay aligned.
+    const questionRng = createRng(41);
+    const expressionRng = createRng(41);
+    let seen = 0;
+    for (let i = 0; i < 1000; i++) {
+      const step = generateOrderOfOperations(questionRng).steps[0]!;
+      const expr = generateExpression(expressionRng);
+      expect(step.prompt).toBe(`${formatExpr(expr)} = ?`);
+      const answer = evaluate(expr)!;
+      const leftToRight = evaluateMisconception(expr, 'leftToRight');
+      if (leftToRight === null || decimalPlaces(leftToRight) === null) continue;
+      if (equals(leftToRight, answer)) continue;
+      const asProduct = evaluateMisconception(expr, 'powerAsProduct');
+      const powerFirst =
+        asProduct !== null && !equals(asProduct, answer) && equals(asProduct, leftToRight);
+      expect(step.check(typed(leftToRight)).tip).toBe(powerFirst ? POWER_TIP : LEFT_TO_RIGHT_TIP);
+      seen++;
+    }
+    expect(seen).toBeGreaterThan(200);
   });
 });
