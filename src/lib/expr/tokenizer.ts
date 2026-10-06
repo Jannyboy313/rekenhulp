@@ -12,7 +12,7 @@ export type Token =
 // Integers and Dutch decimals: '12', '3,5'.
 const NUMBER = /^\d+(?:,\d+)?/;
 // Superscript exponents as written in prompts: '5²' reads as '5^2' (spec §7).
-const SUPERSCRIPT = /^[⁰¹²³⁴⁵⁶⁷⁸⁹]+/;
+const SUPERSCRIPT = new RegExp(`^[${SUPERSCRIPT_DIGITS}]+`);
 
 const OPERATORS = new Map<string, Operator>([
   ['+', '+'],

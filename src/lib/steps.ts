@@ -90,7 +90,7 @@ export function parseFactorization(input: string): Factor[] | null {
   const expr = parse(input);
   if (expr === null) return null;
   const factors: Factor[] = [];
-  // Non-negative integers only: the parser now also reads negative literals.
+  // The parser also reads negative literals; factors must be non-negative integers.
   const integer = (node: Expr): bigint | null =>
     node.type === 'number' && node.value.den === 1n && node.value.num >= 0n
       ? node.value.num

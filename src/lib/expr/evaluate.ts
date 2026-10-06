@@ -1,7 +1,7 @@
 import { add, divide, multiply, power, subtract, type Rational } from '../rational';
 import type { Expr } from './parser';
 
-/** Larger exponents never occur in an exercise; the cap keeps a typed 2^999999 cheap. */
+/** Exercises use exponents 2 and 3; spec §7 gives anything outside [0, 10] no value. */
 export const MAX_EXPONENT = 10;
 
 /**

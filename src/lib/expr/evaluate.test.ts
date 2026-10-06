@@ -19,6 +19,7 @@ describe('evaluate', () => {
     ['-3^2', 9n],
     ['2^3', 8n],
     ['5^0', 1n],
+    ['2^10', 1024n],
   ])('%s = %s', (input, expected) => {
     expect(value(input)).toEqual(rational(expected));
   });

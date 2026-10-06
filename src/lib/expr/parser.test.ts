@@ -64,6 +64,8 @@ describe('parse', () => {
     expect(parse('-7-(-12)')).toEqual(bin('−', num(-7n), num(-12n)));
     expect(parse('5×(−3)+8')).toEqual(bin('+', bin('×', num(5n), num(-3n)), num(8n)));
     expect(parse('(−3+5)×2')).toEqual(bin('×', group(bin('+', num(-3n), num(5n))), num(2n)));
+    // Parentheses around just a negative literal are its notation, at any depth.
+    expect(parse('((−3))')).toEqual(num(-3n));
   });
 
   it('raises a negative literal as a whole', () => {
@@ -77,6 +79,7 @@ describe('parse', () => {
       bin('−', pow(group(bin('+', num(2n), num(3n))), num(2n)), num(4n)),
     );
     expect(parse('2^(1+1)')).toEqual(pow(num(2n), group(bin('+', num(1n), num(1n)))));
+    expect(parse('2^(−1)')).toEqual(pow(num(2n), num(-1n)));
   });
 
   it.each([
