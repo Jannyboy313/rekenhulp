@@ -144,7 +144,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `numberUnits`, name → power | English short scale (biljoen → 10⁹) | "Een biljoen is 10¹²; 10⁹ is een miljard (Engels: billion)." |
 | `numberUnits`, name → power | shift of the coefficient forgotten | "250 = 2,5 × 10²: tel 2 op bij 6." |
 | `percentages`, part of whole | the rest (100% − p%) | "Dat is wat er overblijft; gevraagd is 25% zelf." |
-| `percentages`, what percentage | the ratio as a decimal (0,25) | "Dat is het deel als kommagetal; × 100 geeft het percentage." |
+| `percentages`, what percentage | the ratio part : whole (0,25 or 1/4) | "Dat is deel : geheel, nog geen percentage; × 100 geeft het percentage." |
 | `percentages`, what percentage | whole : part (or × 100) | "Je hebt het geheel door het deel gedeeld; reken deel : geheel." |
 | `percentages`, price change | the change itself | "Dat is de korting zelf; trek die nog af van de prijs." (verhoging: tel op) |
 | `percentages`, price change | change in the wrong direction | "Bij korting wordt de prijs lager: trek de korting af." (verhoging: hoger, tel op) |
@@ -166,7 +166,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `factorization` | primes with another product | "Het product van je factoren is 90, niet 84." Above one million: "… is groter dan 84." |
 | `squares`, n² | n × 2 | "17² is 17 × 17, niet 17 × 2." |
 | `squares`, √ | half the square | "√196 is het getal dat keer zichzelf 196 geeft, niet de helft." |
-| `squares`, √ | another positive integer | "15 × 15 = 225, niet 196." |
+| `squares`, √ | another positive integer, not 10ᵏ × the root (that gets the factor-of-ten tip) | "15 × 15 = 225, niet 196." |
 | `orderOfOperations` | a power as base × exponent | "Een macht is herhaald vermenigvuldigen: 3² = 3 × 3, niet 3 × 2." |
 | `orderOfOperations` | strictly left to right | "Je hebt van links naar rechts gerekend. Eerst machten, dan × en :, daarna pas + en −." |
 | `orderOfOperations` | × before : | "× en : zijn even sterk: reken die van links naar rechts." |
