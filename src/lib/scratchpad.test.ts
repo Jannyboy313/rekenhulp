@@ -38,34 +38,33 @@ describe('scratchpad', () => {
   it.each<[string, string, string]>([
     ['separates items with a space', '12 7 84', '12 7 84'],
     ['writes a sum with its result', '12×7=84', '12×7=84'],
-    ['writes all operators and parentheses', '(3+4)×2-6:3', '(3+4)×2-6:3'],
+    ['writes all operators', '3+4×2-6:3', '3+4×2-6:3'],
     ['ignores a space in an empty cell', ' 5', '5'],
     ['ignores a second space in a row', '5  6', '5 6'],
-    ['ignores a space after an operator, = or (', '5+ 6=( ', '5+6=('],
-    ['allows a space after )', '(1) 2', '(1) 2'],
+    ['ignores a space after an operator or =', '5+ 6= ', '5+6='],
     ['ignores a space after a comma', '5, ', '5,'],
+    ['ignores a space after ^ or /', '2^ 3 4/ 5', '2^3 4/5'],
     ['starts an item with a minus sign', '-5 -6', '-5 -6'],
-    ['makes - the operator after a number or )', '5-(1)-2', '5-(1)-2'],
-    ['allows a minus sign after ( and =', '(-3) 3-8=-5', '(-3) 3-8=-5'],
+    ['makes - the operator after a number', '5-1-2', '5-1-2'],
+    ['allows a minus sign after =', '3-8=-5', '3-8=-5'],
     ['ignores a minus after an operator or a minus sign', '3×-2 --4', '3×2 -4'],
+    ['ignores a minus after ^ or /', '2^-3 1/-4', '2^3 1/4'],
     ['ignores +, × and : without a number before them', '+×:5', '5'],
     ['ignores a second operator in a row', '5+×:6', '5+6'],
-    [
-      'opens ( at the start, after an operator, (, = or a minus sign',
-      '((1)) 2=(3) -(4)',
-      '((1)) 2=(3) -(4)',
-    ],
-    ['ignores ( after a number, ) or a comma', '5(1 (2)( 3,(', '51 (2) 3,'],
-    ['ignores ) without an open (', ')5) (1))', '5 (1)'],
-    ['ignores ) after an operator', '(5+)', '(5+'],
-    ['ignores ) directly after (', '(()', '(('],
-    ['ignores a digit or comma directly after )', '(1)2,', '(1)'],
+    ['writes a power with its result', '2^3=8 0,5^2', '2^3=8 0,5^2'],
+    ['ignores ^ without a number before it', '^2 3+^', '2 3+'],
+    ['ignores ^ in an exponent or a denominator', '2^3^4 3/4^2', '2^34 3/42'],
+    ['writes fractions, also signed and in sums', '3/4 -3/4 1+3/4=7/4', '3/4 -3/4 1+3/4=7/4'],
+    ['ignores / without a number before it', '/2 3+/', '2 3+'],
+    ['ignores / after a number with a comma', '0,5/2', '0,52'],
+    ['ignores / in a denominator or an exponent', '3/4/5 2^3/4', '3/45 2^34'],
+    ['ignores a comma in an exponent or a denominator', '2^,3, 3/,4,', '2^3 3/4'],
+    ['ignores ^ and / after a comma', '5,^/', '5,'],
     ['allows one = per item', '1=1=1 2=2', '1=11 2=2'],
-    ['ignores = without a number or ) before it', '=5 (=', '5 ('],
+    ['ignores = without a number before it', '=5 6+=', '5 6+'],
     ['allows one comma per number', '0,5+1,,5 ,5', '0,5+1,5 ,5'],
-    ['counts parentheses per item', '(1 2)', '(1 2'],
     ['deletes a space like any other character', '5 <6', '56'],
-    ['ignores keys that are not on the kladblok keypad', '5/^', '5'],
+    ['ignores parentheses, which are not on the kladblok keypad', '(5)', '5'],
   ])('%s', (_, keys, expected) => {
     expect(typeText(keys)).toBe(expected);
   });
@@ -81,7 +80,9 @@ describe('scratchpad', () => {
     const start = '1 '.repeat(19);
     const full = typeText(`${start}12`);
     expect(full).toHaveLength(MAX_NOTE_LENGTH);
-    for (const key of ['3', '+', '=', ' ', ',']) expect(typeText(`${start}12${key}`)).toBe(full);
+    for (const key of ['3', '+', '=', ' ', ',', '^', '/']) {
+      expect(typeText(`${start}12${key}`)).toBe(full);
+    }
     expect(typeText(`${start}12<`)).toBe(full.slice(0, -1));
   });
 
@@ -92,13 +93,13 @@ describe('scratchpad', () => {
     expect(EMPTY_NOTES).toEqual(['', '', '', '', '', '']);
   });
 
-  it('lays out the expression keys plus comma, = and a spatie in 5 full rows of 4', () => {
+  it('swaps the parentheses for ^ and breuk and adds comma, = and a spatie, in 5 rows of 4', () => {
     expect(NOTE_COLUMNS).toBe(4);
     expect(NOTE_KEYS.map(({ key }) => key)).toEqual([
       '7', '8', '9', '+',
       '4', '5', '6', '-',
       '1', '2', '3', '×',
-      '(', '0', ')', ':',
+      '^', '0', '/', ':',
       'backspace', ',', '=', ' ',
     ]);
   });

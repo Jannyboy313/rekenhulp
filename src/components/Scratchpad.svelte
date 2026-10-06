@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { formatInput } from '../lib/format';
+  import { formatNote } from '../lib/format';
   import { press } from './press';
 
   interface Props {
@@ -20,9 +20,9 @@
       type="button"
       class="cell"
       class:active={index === active}
-      aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatInput(note)}`}
+      aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNote(note)}`}
       aria-pressed={index === active}
-      use:press={() => onselect(index)}>{formatInput(note)}</button
+      use:press={() => onselect(index)}>{formatNote(note)}</button
     >
   {/each}
 </div>

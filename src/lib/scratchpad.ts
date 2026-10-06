@@ -1,4 +1,4 @@
-import { endsWithOperand, MAX_INPUT_LENGTH, openParentheses, type KeypadKey } from './keypadInput';
+import { MAX_INPUT_LENGTH, type KeypadKey } from './keypadInput';
 import { keyDefs, type KeyDef } from './keys';
 import type { AnswerKind, Topic } from './types';
 
@@ -11,15 +11,16 @@ export const MAX_NOTE_LENGTH = 40;
 export const EMPTY_NOTES: readonly string[] = Object.freeze(Array<string>(NOTE_COUNT).fill(''));
 
 /**
- * The expression keypad plus comma, = and a spatie in the place of OK (spec §3.6). Listed on its
- * own, so a change to the expression keypad does not break this layout.
+ * The expression keypad with ^ and breuk instead of the parentheses, plus comma, = and a spatie in
+ * the place of OK (spec §3.6). Listed on its own, so a change to the expression keypad does not
+ * break this layout.
  */
 // prettier-ignore
 export const NOTE_KEYS: readonly KeyDef[] = keyDefs(
   '7', '8', '9', '+',
   '4', '5', '6', '-',
   '1', '2', '3', '×',
-  '(', '0', ')', ':',
+  '^', '0', '/', ':',
   'backspace', ',', '=', ' ',
 );
 
@@ -38,31 +39,31 @@ export function applyNote(note: string, key: KeypadKey): string {
 
 /** The text a key appends to the last item of a note; empty when the key is ignored. */
 function noteKeyText(item: string, key: KeypadKey): string {
-  const afterOperand = endsWithOperand(item);
-  // Where a number may start: the item start, after an operator, '(', '=' or a minus sign.
-  const operandStart = /(^|[-+×:(=])$/.test(item);
+  const afterDigit = /\d$/.test(item);
   const number = /[\d,]*$/.exec(item)?.[0] ?? '';
   const numberFull = number.length >= MAX_INPUT_LENGTH;
+  // An exponent or a denominator: integer digits only, and no ^ or breuk after it.
+  const numberIsPart = /[\^/]$/.test(item.slice(0, item.length - number.length));
   switch (key) {
     case ' ':
     case '+':
     case '×':
     case ':':
-      return afterOperand ? key : '';
+      return afterDigit ? key : '';
     case '-':
-      // The operator after a number or ')'; otherwise the sign, but never after an operator.
-      return afterOperand || /(^|[(=])$/.test(item) ? key : '';
+      // The operator after a number; otherwise the sign, only at the item start or after '='.
+      return afterDigit || /(^|=)$/.test(item) ? key : '';
     case '=':
-      return afterOperand && !item.includes('=') ? key : '';
-    case '(':
-      return operandStart ? key : '';
-    case ')':
-      return afterOperand && openParentheses(item) > 0 ? key : '';
+      return afterDigit && !item.includes('=') ? key : '';
+    case '^':
+      return afterDigit && !numberIsPart ? key : '';
+    case '/':
+      return afterDigit && !numberIsPart && !number.includes(',') ? key : '';
     case ',':
-      return !item.endsWith(')') && !number.includes(',') && !numberFull ? key : '';
+      return !numberIsPart && !number.includes(',') && !numberFull ? key : '';
     default:
       // Only digits are appended; any other key is ignored until handled explicitly above.
-      return /^\d$/.test(key) && !item.endsWith(')') && !numberFull ? key : '';
+      return /^\d$/.test(key) && !numberFull ? key : '';
   }
 }
 

@@ -107,6 +107,12 @@ export function formatFactorizationInput(raw: string): string {
     .replaceAll('×', ' × ');
 }
 
+/** A kladblok note '2^3=8 -3/4' as '2³=8 −3/4', compact. A '^' without exponent stays visible. */
+export function formatNote(raw: string): string {
+  const powers = raw.replace(/\^(\d+)/g, (_match, digits: string) => superscriptDigits(digits));
+  return formatInput(powers);
+}
+
 /** Expression keypad input '7×(13+87)' as '7 × (13 + 87)'; every '-' is the minus operator. */
 export function formatExpressionInput(raw: string): string {
   return raw.replace(/[-+×:]/g, (operator) => ` ${operator === '-' ? MINUS : operator} `);

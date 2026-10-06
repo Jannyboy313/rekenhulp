@@ -37,6 +37,13 @@ describe('Scratchpad', () => {
     ]);
   });
 
+  it('shows exponents in superscript and fractions inline', () => {
+    render(Scratchpad, { props: { notes: ['2^3=8 -3/4'], active: 0, onselect: vi.fn() } });
+    const cell = screen.getByRole('button');
+    expect(cell.textContent).toBe('2³=8 −3/4');
+    expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 2³=8 −3/4');
+  });
+
   it('keeps a trailing space, so a typed spatie shows', () => {
     render(Scratchpad, { props: { notes: ['12 '], active: 0, onselect: vi.fn() } });
     expect(screen.getByRole('button').textContent).toBe('12 ');

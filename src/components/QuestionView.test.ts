@@ -368,18 +368,21 @@ describe('QuestionView', () => {
         props: { step: percent, scratchpad: true, onanswer: vi.fn() },
       });
       await press('breuk', '1', /^Kladblok vak 1:/);
-      expect(screen.queryByRole('button', { name: 'breuk' })).toBeNull();
+      expect(screen.getByRole('button', { name: 'spatie' })).toBeTruthy();
+      await press('3', 'breuk', '4');
+      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 3/4');
       await press('Naar antwoordveld');
-      expect(screen.getByRole('button', { name: 'breuk' })).toBeTruthy();
+      expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
       expect(answerText()).toBe('1/…%');
       unmount();
 
       const factorization = factorizationStep({ prompt: 'Ontbind 84 in priemfactoren', value: 84 });
       render(QuestionView, { props: { step: factorization, scratchpad: true, onanswer: vi.fn() } });
       await press(/^Kladblok vak 1:/);
-      expect(screen.queryByRole('button', { name: 'tot de macht' })).toBeNull();
-      await press('min', '2', 'komma', '5', 'plus', '1');
-      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5+1');
+      expect(screen.getByRole('button', { name: 'spatie' })).toBeTruthy();
+      await press('min', '2', 'komma', '5', 'plus', '1', 'spatie', '2', 'tot de macht', '3');
+      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5+1 2³');
+      expect(answerText()).toBe('…');
     });
 
     it('shows the kladblok keys in 4 columns with the spatie in the last one', async () => {

@@ -8,6 +8,7 @@ import {
   formatInput,
   formatInteger,
   formatMoney,
+  formatNote,
   formatPowerOfTen,
   formatPrimeFactors,
   formatRational,
@@ -201,6 +202,20 @@ describe('formatFactorizationInput', () => {
 
   it('writes exponents of any length digit by digit', () => {
     expect(formatFactorizationInput(`2^${'9'.repeat(18)}`)).toBe(`2${'⁹'.repeat(18)}`);
+  });
+});
+
+describe('formatNote', () => {
+  it.each([
+    ['', ''],
+    ['12×7=84 3,5 ', '12×7=84 3,5 '],
+    ['-5 3-8=-5', `${MINUS}5 3${MINUS}8=${MINUS}5`],
+    ['2^', '2^'],
+    ['2^3=8 0,5^2', '2³=8 0,5²'],
+    ['2^10-1', `2¹⁰${MINUS}1`],
+    ['-3/4+1', `${MINUS}3/4+1`],
+  ])('shows %j as %j', (raw, expected) => {
+    expect(formatNote(raw)).toBe(expected);
   });
 });
 
