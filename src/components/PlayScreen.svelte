@@ -77,7 +77,7 @@
     <span class="set-name">{set.name}</span>
     <span class="progress">{questionIndex + 1} / {questions.length}</span>
     <span class="timer">{formatDuration(now - sessionStart)}</span>
-    <button type="button" class="secondary" onclick={finish}>Stop</button>
+    <button type="button" class="stop" onclick={finish}>Stop</button>
   </header>
 
   <p class="sr-only" role="status" aria-live="polite">{announcement}</p>
@@ -117,5 +117,13 @@
   .set-name {
     font-weight: 600;
     color: var(--text);
+  }
+
+  /* Light red, so ending the session stands apart from the neutral buttons (spec §3.3). */
+  .stop {
+    padding: 0 1rem;
+    background: var(--wrong-bg);
+    color: var(--wrong);
+    font-weight: 600;
   }
 </style>
