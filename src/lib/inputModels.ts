@@ -1,5 +1,7 @@
-import { formatFactorizationInput, formatInput } from './format';
+import { parse } from './expr/parser';
+import { formatExpressionInput, formatFactorizationInput, formatInput } from './format';
 import {
+  applyExpressionKey,
   applyFactorizationKey,
   applyFractionKey,
   applyKey,
@@ -34,8 +36,10 @@ export type FieldSegment =
 
 /** Everything that differs per answer kind on the keypad (spec §6). S is the typing state. */
 export interface InputModel<S> {
-  /** Keys in reading order on a 3-column grid; OK fills the rest of the last row. */
+  /** Keys in reading order; OK fills the rest of the last row. */
   keys: readonly KeyDef[];
+  /** Keypad columns; 3 when absent. Only the expression keypad has 4 (spec §6). */
+  columns?: number;
   /** The state before the first key press. */
   empty: S;
   apply(state: S, key: KeypadKey): S;
@@ -60,10 +64,12 @@ export type KeypadKind = Exclude<AnswerKind, 'boolean'>;
 interface KeypadStates {
   number: string;
   fraction: FractionInput;
+  expression: string;
   factorization: string;
 }
 
 export const INVALID_NUMBER = 'Ongeldig getal';
+export const INVALID_EXPRESSION = 'Ongeldige som';
 export const INVALID_FACTORIZATION = 'Ongeldige ontbinding';
 
 const digit = (key: DigitKey): KeyDef => ({ key, label: key });
@@ -77,6 +83,30 @@ const NUMBER_KEYS: readonly KeyDef[] = [
   { key: '-', label: '−', ariaLabel: 'min' },
   digit('0'),
   { key: ',', label: ',', ariaLabel: 'komma' },
+  BACKSPACE,
+];
+
+/**
+ * Digits in the usual three columns, operators in a fourth (spec §6). Rewrites need no comma,
+ * power or negative number, so '-' is only the operator.
+ */
+const EXPRESSION_KEYS: readonly KeyDef[] = [
+  digit('7'),
+  digit('8'),
+  digit('9'),
+  { key: '+', label: '+', ariaLabel: 'plus' },
+  digit('4'),
+  digit('5'),
+  digit('6'),
+  { key: '-', label: '−', ariaLabel: 'min' },
+  digit('1'),
+  digit('2'),
+  digit('3'),
+  { key: '×', label: '×', ariaLabel: 'keer' },
+  { key: '(', label: '(', ariaLabel: 'haakje openen' },
+  digit('0'),
+  { key: ')', label: ')', ariaLabel: 'haakje sluiten' },
+  { key: ':', label: ':', ariaLabel: 'gedeeld door' },
   BACKSPACE,
 ];
 
@@ -132,6 +162,15 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
     view: viewFraction,
     select: selectFractionSlot,
   },
+  expression: {
+    ...textModel(
+      EXPRESSION_KEYS,
+      applyExpressionKey,
+      (input) => (parse(input) === null ? INVALID_EXPRESSION : null),
+      formatExpressionInput,
+    ),
+    columns: 4,
+  },
   factorization: textModel(
     [
       ...DIGIT_ROWS,
@@ -151,7 +190,7 @@ export function displayAnswer(kind: AnswerKind, input: string): string {
   return kind === 'boolean' ? input : INPUT_MODELS[kind].display(input);
 }
 
-/** Columns that OK spans, so that it fills the last row of the 3-column keypad. */
-export function okSpan(keys: readonly KeyDef[]): number {
-  return 3 - (keys.length % 3);
+/** Columns that OK spans, so that it fills the last row of the keypad. */
+export function okSpan(keys: readonly KeyDef[], columns = 3): number {
+  return columns - (keys.length % columns);
 }

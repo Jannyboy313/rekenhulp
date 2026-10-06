@@ -26,4 +26,28 @@ describe('Keypad', () => {
     await fireEvent.pointerDown(space, { button: 0 });
     expect(onkey).toHaveBeenCalledWith(' ');
   });
+
+  it('uses 3 columns unless told otherwise', () => {
+    const { container } = render(Keypad, {
+      props: { keys, canSubmit: true, onkey: vi.fn(), onsubmit: vi.fn() },
+    });
+    const grid = container.querySelector<HTMLElement>('.keypad')!;
+    expect(grid.style.getPropertyValue('--columns')).toBe('3');
+    expect(screen.getByRole('button', { name: 'OK' }).style.gridColumn).toBe('span 2');
+  });
+
+  it('lays out the expression keys in 4 columns with OK over the last 3', () => {
+    const { container } = render(Keypad, {
+      props: {
+        keys: INPUT_MODELS.expression.keys,
+        columns: 4,
+        canSubmit: true,
+        onkey: vi.fn(),
+        onsubmit: vi.fn(),
+      },
+    });
+    const grid = container.querySelector<HTMLElement>('.keypad')!;
+    expect(grid.style.getPropertyValue('--columns')).toBe('4');
+    expect(screen.getByRole('button', { name: 'OK' }).style.gridColumn).toBe('span 3');
+  });
 });

@@ -3,9 +3,17 @@ import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { fromInteger, rational } from '../lib/rational';
 import { booleanStep, factorizationStep, fractionStep, numberStep } from '../lib/steps';
+import type { Step } from '../lib/types';
 import QuestionView from './QuestionView.svelte';
 
 const step = numberStep({ prompt: '3 × 4 = ?', answer: fromInteger(12) });
+
+// A stand-in rewrite step; the real factory (rewriteStep) follows in the next task.
+const rewrite: Step = {
+  kind: 'expression',
+  prompt: 'Vereenvoudig in één stap: 7 × 98',
+  check: (input) => ({ correct: input === '7×100-7×2', expected: '7 × 100 − 7 × 2' }),
+};
 
 function answerText(): string {
   return screen.getByLabelText('Jouw antwoord').textContent?.trim() ?? '';
@@ -95,6 +103,8 @@ describe('QuestionView', () => {
     expect(screen.queryByRole('button', { name: 'breuk' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'keer' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'tot de macht' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'plus' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'haakje openen' })).toBeNull();
   });
 
   describe('fraction input', () => {
@@ -203,6 +213,28 @@ describe('QuestionView', () => {
     expect(onanswer).toHaveBeenCalledWith(
       '2^2×3×7',
       expect.objectContaining({ correct: true, expected: '2² × 3 × 7' }),
+    );
+  });
+
+  it('types an expression and rejects an incomplete one inline', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step: rewrite, onanswer } });
+    expect(screen.queryByRole('button', { name: 'komma' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'tot de macht' })).toBeNull();
+
+    await press('7', 'keer', 'haakje openen', '1', '0', '0', 'min', '2');
+    expect(answerText()).toBe('7 × (100 − 2');
+    await press('OK');
+    expect(errorText()).toBe('Ongeldige som');
+    expect(onanswer).not.toHaveBeenCalled();
+
+    await press('haakje sluiten');
+    expect(errorText()).toBe('');
+    expect(answerText()).toBe('7 × (100 − 2)');
+    await press('OK');
+    expect(onanswer).toHaveBeenCalledWith(
+      '7×(100-2)',
+      expect.objectContaining({ correct: false, expected: '7 × 100 − 7 × 2' }),
     );
   });
 
@@ -340,5 +372,16 @@ describe('QuestionView', () => {
       expect(screen.queryByRole('button', { name: 'keer' })).toBeNull();
       await press('min', '2', 'komma', '5');
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5');
-    });  });
+    });
+
+    it('swaps the 4-column expression keys for the 3-column number keys', async () => {
+      render(QuestionView, { props: { step: rewrite, scratchpad: true, onanswer: vi.fn() } });
+      expect(screen.getByRole('button', { name: 'OK' }).style.gridColumn).toBe('span 3');
+      await press(/^Kladblok vak 1:/);
+      expect(screen.queryByRole('button', { name: 'plus' })).toBeNull();
+      expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('span 2');
+      await press('Naar antwoordveld');
+      expect(screen.getByRole('button', { name: 'plus' })).toBeTruthy();
+    });
+  });
 });

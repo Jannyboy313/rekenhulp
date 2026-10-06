@@ -91,6 +91,7 @@
 <p class="error" role="alert">{error ?? ''}</p>
 <Keypad
   keys={inNote ? NOTE_KEYS : model.keys}
+  columns={inNote ? undefined : model.columns}
   canSubmit={model.canSubmit(value)}
   onkey={handleKey}
   onsubmit={inNote ? undefined : submit}

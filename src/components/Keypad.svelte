@@ -6,16 +6,18 @@
 
   interface Props {
     keys: readonly KeyDef[];
+    /** Grid columns; only the expression keypad has 4 (spec §6). */
+    columns?: number;
     canSubmit: boolean;
     onkey: (key: KeypadKey) => void;
     /** Without it there is no OK: the kladblok puts its spatie there (spec §3.6). */
     onsubmit?: () => void;
   }
 
-  let { keys, canSubmit, onkey, onsubmit }: Props = $props();
+  let { keys, columns = 3, canSubmit, onkey, onsubmit }: Props = $props();
 </script>
 
-<div class="keypad">
+<div class="keypad" style:--columns={columns}>
   {#each keys as { key, label, ariaLabel, icon, span } (key)}
     <button
       type="button"
@@ -35,7 +37,7 @@
     <button
       type="button"
       class="key ok"
-      style:grid-column="span {okSpan(keys)}"
+      style:grid-column="span {okSpan(keys, columns)}"
       disabled={!canSubmit}
       onclick={onsubmit}>OK</button
     >
@@ -45,7 +47,7 @@
 <style>
   .keypad {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(var(--columns), 1fr);
     gap: 0.5rem;
   }
 

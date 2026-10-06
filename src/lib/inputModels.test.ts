@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   displayAnswer,
   INPUT_MODELS,
+  INVALID_EXPRESSION,
   INVALID_FACTORIZATION,
   INVALID_NUMBER,
   okSpan,
@@ -45,6 +46,31 @@ describe('INPUT_MODELS keys', () => {
     expect(okSpan(INPUT_MODELS.fraction.keys)).toBe(1);
     expect(okSpan(INPUT_MODELS.factorization.keys)).toBe(2);
   });
+
+  it('lays out the expression keypad in 4 columns, operators on the right', () => {
+    expect(labels('expression')).toEqual([
+      '7', '8', '9', '+',
+      '4', '5', '6', '−',
+      '1', '2', '3', '×',
+      '(', '0', ')', ':',
+      '⌫',
+    ]);
+    expect(ariaLabels('expression').filter((label) => !/^\d$/.test(label))).toEqual([
+      'plus',
+      'min',
+      'keer',
+      'haakje openen',
+      'haakje sluiten',
+      'gedeeld door',
+      'wissen',
+    ]);
+    expect(INPUT_MODELS.expression.columns).toBe(4);
+    expect(INPUT_MODELS.number.columns).toBeUndefined();
+  });
+
+  it('lets OK fill the last row of the 4-column expression grid', () => {
+    expect(okSpan(INPUT_MODELS.expression.keys, 4)).toBe(3);
+  });
 });
 
 describe('text input models', () => {
@@ -55,6 +81,8 @@ describe('text input models', () => {
     expect(INPUT_MODELS.factorization.apply('2', '^')).toBe('2^');
     expect(INPUT_MODELS.factorization.apply('2', ',')).toBe('2');
     expect(INPUT_MODELS.number.toInput('-12,5')).toBe('-12,5');
+    expect(INPUT_MODELS.expression.apply('7', '×')).toBe('7×');
+    expect(INPUT_MODELS.expression.apply('7', ',')).toBe('7');
   });
 
   it('enable OK for any non-empty input', () => {
@@ -118,6 +146,10 @@ describe('INPUT_MODELS validation and display', () => {
     ['factorization', '84', null],
     ['factorization', '2×', INVALID_FACTORIZATION],
     ['factorization', '2^', INVALID_FACTORIZATION],
+    ['expression', '7×(13+87)', null],
+    ['expression', '7×100-7×2', null],
+    ['expression', '2×', INVALID_EXPRESSION],
+    ['expression', '(2+3', INVALID_EXPRESSION],
   ] as const)('validates %s input %j as %j', (kind, value, expected) => {
     expect(INPUT_MODELS[kind].validate(value)).toBe(expected);
   });
@@ -125,12 +157,14 @@ describe('INPUT_MODELS validation and display', () => {
   it('uses the Dutch messages from the spec', () => {
     expect(INVALID_NUMBER).toBe('Ongeldig getal');
     expect(INVALID_FACTORIZATION).toBe('Ongeldige ontbinding');
+    expect(INVALID_EXPRESSION).toBe('Ongeldige som');
   });
 
   it('pretty-prints a submitted input', () => {
     expect(INPUT_MODELS.number.display('-12,5')).toBe('−12,5');
     expect(INPUT_MODELS.fraction.display('-12 1/2')).toBe('−12 1/2');
     expect(INPUT_MODELS.factorization.display('2^2×3')).toBe('2² × 3');
+    expect(INPUT_MODELS.expression.display('7×100-7×2')).toBe('7 × 100 − 7 × 2');
   });
 });
 
@@ -140,5 +174,6 @@ describe('displayAnswer', () => {
     expect(displayAnswer('fraction', '-3/4')).toBe('−3/4');
     expect(displayAnswer('factorization', '2^2×21')).toBe('2² × 21');
     expect(displayAnswer('boolean', 'Ja')).toBe('Ja');
+    expect(displayAnswer('expression', '7×(13+87)')).toBe('7 × (13 + 87)');
   });
 });
