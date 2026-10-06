@@ -31,13 +31,14 @@ describe('QuestionView', () => {
       suffix: 'cm³',
     });
     render(QuestionView, { props: { step: withUnit, onanswer: vi.fn() } });
-    expect(answerText()).toBe('?cm³');
+    expect(answerText()).toBe('…cm³');
   });
 
-  it('shows the prompt, an empty answer, no error and a disabled OK', () => {
+  it('shows the prompt, a grey placeholder, no error and a disabled OK', () => {
     render(QuestionView, { props: { step, onanswer: vi.fn() } });
     expect(screen.getByText('3 × 4 = ?')).toBeTruthy();
-    expect(answerText()).toBe('?');
+    expect(answerText()).toBe('…');
+    expect(screen.getByLabelText('Jouw antwoord').querySelector('.placeholder')).not.toBeNull();
     expect(errorText()).toBe('');
     expect(okButton().disabled).toBe(true);
   });
@@ -59,7 +60,7 @@ describe('QuestionView', () => {
     expect(answerText()).toBe('−');
     expect(okButton().disabled).toBe(false);
     await press('wissen');
-    expect(answerText()).toBe('?');
+    expect(answerText()).toBe('…');
     expect(okButton().disabled).toBe(true);
   });
 
@@ -86,46 +87,70 @@ describe('QuestionView', () => {
       prefix: '€',
     });
     render(QuestionView, { props: { step: money, onanswer: vi.fn() } });
-    expect(answerText()).toBe('€?');
+    expect(answerText()).toBe('€…');
   });
 
-  it('offers the fraction slash and the factorization keys only for their kinds', () => {
+  it('offers the breuk key and the factorization keys only for their kinds', () => {
     render(QuestionView, { props: { step, onanswer: vi.fn() } });
-    expect(screen.queryByRole('button', { name: 'breukstreep' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'breuk' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'keer' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'tot de macht' })).toBeNull();
   });
 
-  it('accepts a typed fraction and rejects an incomplete one inline', async () => {
-    const onanswer = vi.fn();
+  describe('fraction input', () => {
     const percent = fractionStep({
       prompt: '10 is ?% van 80',
       answer: rational(25n, 2n),
       suffix: '%',
     });
-    render(QuestionView, { props: { step: percent, onanswer } });
-    await press('2', '5', 'breukstreep');
-    expect(answerText()).toBe('25/%');
-    await press('OK');
-    expect(errorText()).toBe('Ongeldig getal');
-    expect(onanswer).not.toHaveBeenCalled();
 
-    await press('2');
-    expect(answerText()).toBe('25/2%');
-    await press('OK');
-    expect(onanswer).toHaveBeenCalledWith(
-      '25/2',
-      expect.objectContaining({ correct: true, expected: '12,5 of 25/2' }),
-    );
-  });
+    it('builds a fraction in the template and rejects an incomplete one inline', async () => {
+      const onanswer = vi.fn();
+      render(QuestionView, { props: { step: percent, onanswer } });
+      await press('breuk');
+      expect(answerText()).toBe('…/…%');
+      expect(okButton().disabled).toBe(true);
 
-  it('rejects a zero denominator inline', async () => {
-    const onanswer = vi.fn();
-    const fraction = fractionStep({ prompt: '1 : 2 = ?', answer: rational(1n, 2n) });
-    render(QuestionView, { props: { step: fraction, onanswer } });
-    await press('1', 'breukstreep', '0', 'OK');
-    expect(errorText()).toBe('Ongeldig getal');
-    expect(onanswer).not.toHaveBeenCalled();
+      await press('2', '5', 'breuk');
+      expect(answerText()).toBe('25/…%');
+      await press('OK');
+      expect(errorText()).toBe('Ongeldig getal');
+      expect(onanswer).not.toHaveBeenCalled();
+
+      await press('2');
+      expect(answerText()).toBe('25/2%');
+      await press('OK');
+      expect(onanswer).toHaveBeenCalledWith(
+        '25/2',
+        expect.objectContaining({ correct: true, expected: '12,5 of 25/2' }),
+      );
+    });
+
+    it('builds a mixed number after a whole number', async () => {
+      const onanswer = vi.fn();
+      render(QuestionView, { props: { step: percent, onanswer } });
+      await press('1', '2', 'breuk', '1', 'breuk', '2');
+      expect(answerText()).toBe('121/2%');
+      await press('OK');
+      expect(onanswer).toHaveBeenCalledWith('12 1/2', expect.objectContaining({ correct: true }));
+    });
+
+    it('moves the cursor to a tapped slot', async () => {
+      render(QuestionView, { props: { step: percent, onanswer: vi.fn() } });
+      await press('breuk', '1', 'noemer', '4');
+      expect(answerText()).toBe('1/4%');
+      await press('teller', '3');
+      expect(answerText()).toBe('13/4%');
+    });
+
+    it('rejects a zero denominator inline', async () => {
+      const onanswer = vi.fn();
+      const half = fractionStep({ prompt: '1 : 2 = ?', answer: rational(1n, 2n) });
+      render(QuestionView, { props: { step: half, onanswer } });
+      await press('breuk', '1', 'breuk', '0', 'OK');
+      expect(errorText()).toBe('Ongeldig getal');
+      expect(onanswer).not.toHaveBeenCalled();
+    });
   });
 
   it('types a factorization with × and ^ and shows it pretty-printed', async () => {

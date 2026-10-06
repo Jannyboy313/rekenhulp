@@ -1,27 +1,30 @@
 <script lang="ts">
-  import { okSpan, type InputModel } from '../lib/inputModels';
+  import { okSpan, type KeyDef } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
+  import Fraction from './Fraction.svelte';
 
   interface Props {
-    model: InputModel;
+    keys: readonly KeyDef[];
     canSubmit: boolean;
     onkey: (key: KeypadKey) => void;
     onsubmit: () => void;
   }
 
-  let { model, canSubmit, onkey, onsubmit }: Props = $props();
+  let { keys, canSubmit, onkey, onsubmit }: Props = $props();
 </script>
 
 <div class="keypad">
-  {#each model.keys as { key, label, ariaLabel } (key)}
+  {#each keys as { key, label, ariaLabel, icon } (key)}
     <button type="button" class="key" aria-label={ariaLabel ?? label} onclick={() => onkey(key)}>
-      {label}
+      {#if icon === 'fraction'}<Fraction
+          >{#snippet numerator()}□{/snippet}{#snippet denominator()}□{/snippet}</Fraction
+        >{:else}{label}{/if}
     </button>
   {/each}
   <button
     type="button"
     class="key ok"
-    style:grid-column="span {okSpan(model)}"
+    style:grid-column="span {okSpan(keys)}"
     disabled={!canSubmit}
     onclick={onsubmit}>OK</button
   >
