@@ -379,22 +379,27 @@ the rewrite.
 
 - "Close to round" means within ±1 to ±3 of a multiple of 10, 100 or 1000.
 - Answers are integers in `[1, 10 000]`.
-- The six strategies are equally likely. Values per strategy (a draw outside the answer range is
-  redrawn):
-  - **Compensating (+):** a magnitude `m ∈ {10, 100, 1000}`, a round `R = k·m` (`k ∈ [2, 9]`
-    for `m = 10`, otherwise `[1, 9]`) and `a = R ± d` with `d ∈ [1, 3]`. `b ∈ [m + 1, 10m − 1]`
-    and not a multiple of 10. The near-round number comes first.
-  - **Compensating (−):** `b = R ± d` as above, and `a ∈ [b + 1, 10m − 1]`.
-    Explanation `a − R + d` or `a − R − d`.
-  - **Complement:** `100 − b` with `b ∈ [11, 99]`, or `1000 − b` with `b ∈ [101, 999]`, each
-    equally likely; `b` is not a multiple of 10.
+- The six strategies are equally likely. Values per strategy:
+  - **Compensating (+):** a magnitude `m ∈ {10, 100, 1000}` (equally likely), a round
+    `R = k·m` (`k ∈ [2, 8]` for `m = 10`, otherwise `[1, 8]`) and `a = R ± d` with
+    `d ∈ [1, 3]`. `b ∈ [m + 1, min(10m − 1, 10 000 − a)]` and not a multiple of 10, so the
+    answer never exceeds 10 000 and no redraw skews the mix of magnitudes. The near-round
+    number comes first.
+  - **Compensating (−):** `b = R ± d` as above, and `a ∈ [R + m, 10m − 1]`: `a` lies beyond
+    the next round number, so the difference is not tiny and the explanation never goes below
+    zero. Explanation `a − R + d` or `a − R − d`.
+  - **Complement:** `100 − b` with `b ∈ [11, 89]`, or `1000 − b` with `b ∈ [101, 989]`, each
+    equally likely; `b` is not a multiple of 10, and the answer is at least 11.
   - **Split (×):** `a × 25` with `a = 4k`, `k ∈ [3, 25]`; `a × 50` with `a = 2k`,
-    `k ∈ [6, 50]`; `a × 125` with `a = 8k`, `k ∈ [2, 10]`. Explanations `a : 4 × 100`,
-    `a : 2 × 100` and `a : 8 × 1000`.
-  - **Double / halve:** `a = 10j + 5` with `j ∈ [1, 9]`, and an even `b ∈ [12, 98]` that is not
-    a multiple of 10. Explanation `2a × b/2`.
+    `k ∈ [6, 50]`; `a × 125` with `a = 8k`, `k ∈ [2, 10]`; `a` is never a multiple of 10
+    (`100 × 25` is not smart calculation). Explanations `a : 4 × 100`, `a : 2 × 100` and
+    `a : 8 × 1000`.
+  - **Double / halve:** `a ∈ {15, 25, …, 75}` and `b = 2h` with `h ∈ [6, 15]`, not a multiple
+    of 5. Explanation `2a × h`, which is a table fact times 10: `35 × 18 → 70 × 9`.
   - **Split (:):** quotient `q ∈ [13, 99]` for 4 and 8, `[13, 199]` for 5, `[5, 99]` for 25,
     and `a = b × q`. Explanations `a : 2 : 2`, `a : 2 : 2 : 2`, `a × 2 : 10` and `a × 4 : 100`.
+- The de-duplication key is the prompt itself, so `1000 − 998` cannot appear twice in a session
+  as both complement and compensating.
 
 ### 5.10 Measurement (`volume`, `area`, `length`, `mass`, `time`)
 
