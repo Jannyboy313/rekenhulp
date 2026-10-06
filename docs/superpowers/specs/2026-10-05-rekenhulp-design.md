@@ -496,6 +496,11 @@ The seven templates are equally likely. Values:
 - The products that must be round use the pairs `25·4`, `50·2`, `20·5` (100) and `125·8`
   (1000), in either order. The third factor is in `[11, 49]` and not a multiple of 10, so the
   property is worth using (`5 × 3 × 20` is not).
+- Only the intended pair is round, so the useful step is unique and Basis never rejects an
+  equally handy step: in `a + b + c` and `(a + b) + c` the free number does not end in the
+  same digit as either other number (so no other pair adds up to a multiple of 10); in
+  `a × b × c` and `(a × b) × c` the free factor times either other factor is not a multiple
+  of 100 (so no `2 × 12 × 50` or `(12 × 25) × 4`).
 - The de-duplication key is the expression, so the same expression never appears twice in a
   session, not even once as Basis and once as Gevorderd.
 
