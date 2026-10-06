@@ -6,6 +6,7 @@ import type { Expr } from './parser';
  * parentheses, whole exponents in superscript. A negative literal gets parentheses
  * (`5 × (−3)`), except as the first term of the expression or of a group, where unary minus is
  * allowed (`−7 − (−12)`, `(−3 + 5)`). As a power base it always gets them: `(−4)²` (§5.8).
+ * Expects the parser's shape: precedence and right nesting are explicit group nodes.
  */
 export function formatExpr(expr: Expr): string {
   return write(expr, true);
@@ -20,7 +21,8 @@ function write(expr: Expr, first: boolean): string {
     case 'group':
       return `(${write(expr.inner, true)})`;
     case 'power':
-      return write(expr.base, first && !isNegative(expr.base)) + exponentText(expr.exponent);
+      // A negative base always gets parentheses; any other base is a number or a group.
+      return write(expr.base, false) + exponentText(expr.exponent);
     case 'binary':
       return `${write(expr.left, first)} ${expr.operator} ${write(expr.right, false)}`;
   }

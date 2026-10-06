@@ -27,6 +27,11 @@ function collect(
     case 'number':
       return;
     case 'group':
+      if (expr.inner.type === 'number') {
+        // '(3)': dropping the parentheses is a step of its own.
+        found.push({ node: expr, depth: depth + 1, rank: POWER_RANK + 1, replace: rebuild });
+        return;
+      }
       // Once its content is a number, the group disappears: '(3 − 5)' becomes '−2'.
       collect(
         expr.inner,
@@ -61,7 +66,9 @@ function collect(
 /**
  * The expression after each single operation, ending with its value (spec §5.8): innermost
  * parentheses first, then powers, then × and : from left to right, then + and − from left to
- * right. Throws for an expression without a value.
+ * right. Throws for an expression without a value. `explainEvaluation` also throws (via
+ * formatRational) when an intermediate value has no finite decimal, which exact divisions
+ * (§5.8) rule out.
  */
 export function evaluationSteps(expr: Expr): Expr[] {
   const steps: Expr[] = [];

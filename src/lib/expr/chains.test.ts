@@ -71,6 +71,7 @@ describe('sameChains', () => {
     expect(sameChains(chains('0,5'), chains('0,50'))).toBe(true);
     expect(sameChains(chains('2+3'), chains('3+2'))).toBe(false);
     expect(sameChains(chains('2+3'), chains('2−3'))).toBe(false);
+    expect(sameChains(chains('2+3'), chains('2×3'))).toBe(false);
     expect(sameChains(chains('(2+3)'), chains('2+3'))).toBe(false);
     expect(sameChains(chains('2+3+4'), chains('2+3'))).toBe(false);
     expect(sameChains(chains('2^2'), chains('2^3'))).toBe(false);

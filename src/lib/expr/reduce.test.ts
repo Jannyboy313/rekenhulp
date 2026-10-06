@@ -15,6 +15,9 @@ const CASES: [string, string][] = [
   ['2×(3-5)', '2 × (3 − 5) = 2 × (−2) = −4'],
   ['(3-5)^2', '(3 − 5)² = (−2)² = 4'],
   ['7×100-7×2', '7 × 100 − 7 × 2 = 700 − 7 × 2 = 700 − 14 = 686'],
+  ['2×(3)', '2 × (3) = 2 × 3 = 6'],
+  ['(5)+3', '(5) + 3 = 5 + 3 = 8'],
+  ['2^(1+1)', '2^(1 + 1) = 2² = 4'],
 ];
 
 describe('explainEvaluation', () => {
@@ -32,5 +35,6 @@ describe('evaluationSteps', () => {
 
   it('throws for an expression without a value', () => {
     expect(() => evaluationSteps(parse('1:0+3')!)).toThrow(RangeError);
+    expect(() => evaluationSteps(parse('2^(3-5)')!)).toThrow(RangeError);
   });
 });
