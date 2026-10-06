@@ -55,7 +55,7 @@ export function checkRewrite(
   }
   const reordered = from.type === 'binary' && isPermutation(numbers(from), numbers(to));
   if (reordered) return reject('notForMinusOrDivide');
-  if (isRewrittenNumber(from, to)) return reject('noProperty');
+  if (isOnlyRewrittenOrWorkedOut(from, to)) return reject('noProperty');
   return reject('multipleSteps');
 }
 
@@ -100,10 +100,12 @@ function dropRedundantGroups(
 }
 
 /**
- * A single number written differently: `98` → `(100 − 2)`, or `98` → `49 × 2` within a chain.
+ * A single number written differently, or a single part worked out into a number; no property
+ * applied yet. Written differently: `98` → `(100 − 2)`, or `98` → `49 × 2` within a chain.
+ * Worked out: `(40 + 3)` → `43`, or `37 × 4` → `148` within a chain (`25 × 37 × 4` → `25 × 148`).
  */
-function isRewrittenNumber(from: ChainExpr, to: ChainExpr): boolean {
-  if (from.type === 'number') return true;
+function isOnlyRewrittenOrWorkedOut(from: ChainExpr, to: ChainExpr): boolean {
+  if (from.type === 'number' || to.type === 'number') return true;
   if (from.type !== 'chain' || to.type !== 'chain' || from.operator !== to.operator) return false;
   const shortest = Math.min(from.operands.length, to.operands.length);
   let prefix = 0;
@@ -120,8 +122,11 @@ function isRewrittenNumber(from: ChainExpr, to: ChainExpr): boolean {
   ) {
     suffix++;
   }
-  const remaining = from.operands.slice(prefix, from.operands.length - suffix);
-  return remaining.length === 1 && remaining[0]!.type === 'number';
+  const remainsOneNumber = (operands: readonly ChainExpr[]) => {
+    const remaining = operands.slice(prefix, operands.length - suffix);
+    return remaining.length === 1 && remaining[0]!.type === 'number';
+  };
+  return remainsOneNumber(from.operands) || remainsOneNumber(to.operands);
 }
 
 /** The AST without parentheses: what remains is the order of evaluation. */

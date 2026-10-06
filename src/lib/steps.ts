@@ -149,7 +149,7 @@ export const REWRITE_MESSAGES: Record<Exclude<RewriteReason, 'otherProperty'>, s
   unchanged: 'Er is niets veranderd.',
   valueChanged: 'Deze stap verandert de uitkomst.',
   noProperty: 'Hier is nog geen eigenschap toegepast.',
-  multipleSteps: 'Dit zijn meerdere stappen.',
+  multipleSteps: 'Dit zijn meerdere stappen: pas één eigenschap per keer toe.',
   notForMinusOrDivide: 'Deze eigenschap geldt niet voor − en :.',
 };
 

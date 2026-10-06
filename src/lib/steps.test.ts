@@ -248,7 +248,7 @@ describe('rewriteStep', () => {
     ['(7×98)', 'Er is niets veranderd.'],
     ['7×100-7×3', 'Deze stap verandert de uitkomst.'],
     ['7×(100-2)', 'Hier is nog geen eigenschap toegepast.'],
-    ['7×100-14', 'Dit zijn meerdere stappen.'],
+    ['7×100-14', 'Dit zijn meerdere stappen: pas één eigenschap per keer toe.'],
   ])('explains why %j is rejected', (input, explanation) => {
     expect(step.check(input)).toEqual({ correct: false, expected: example, explanation });
   });

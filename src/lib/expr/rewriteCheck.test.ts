@@ -73,6 +73,9 @@ describe('checkRewrite', () => {
     ['((17 + 25)) + 75', 'associative', '17 + (25 + 75)', null],
     ['7 × 98', 'distributive', '(686)', 'valueOnly'],
     ['20 − 5 − 3', 'any', '20 − (5 − 3)', 'valueChanged'],
+    ['6 × (40 + 3)', 'distributive', '6 × 43', 'noProperty'],
+    ['25 × 37 × 4', 'commutative', '25 × 148', 'noProperty'],
+    ['(17 + 25) + 75', 'associative', '42 + 75', 'noProperty'],
   ])('handles %s, %s: %s', (...row) => {
     expectCase(row);
   });
