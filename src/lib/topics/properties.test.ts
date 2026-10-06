@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate } from '../expr/evaluate';
 import { parse } from '../expr/parser';
-import { checkRewrite } from '../expr/rewriteCheck';
+import { checkRewrite, type Property } from '../expr/rewriteCheck';
 import { formatInteger } from '../format';
 import { createRng } from '../random';
 import {
@@ -76,7 +76,7 @@ const SHAPES: { pattern: RegExp; check: (numbers: number[]) => void }[] = [
   {
     pattern: /^\((\d+) × (\d+)\) × (\d+)$/,
     check: ([a = NaN, b = NaN, c = NaN]) => {
-      expectFree(a, 3, 49);
+      expectFree(a, 11, 49);
       expectRoundPair(b, c);
     },
   },
@@ -92,7 +92,7 @@ const SHAPES: { pattern: RegExp; check: (numbers: number[]) => void }[] = [
     pattern: /^(\d+) × (\d+) × (\d+)$/,
     check: ([a = NaN, b = NaN, c = NaN]) => {
       expectRoundPair(a, c);
-      expectFree(b, 3, 49);
+      expectFree(b, 11, 49);
       expect(b).not.toBe(c);
     },
   },
@@ -154,7 +154,7 @@ describe('propertyQuestion', () => {
 
   it('asks Basis to simplify and hints at the useful property', () => {
     const question = propertyQuestion(timesNinetyEight, 'basis', 'distributive');
-    expect(question.key).toBe('properties:basis:distributive:7 × 98');
+    expect(question.key).toBe('properties:7 × 98');
     expect(question.topic).toBe('properties');
     const [rewrite, value] = question.steps;
     expect(rewrite!.prompt).toBe('Vereenvoudig in één stap: 7 × 98');
@@ -170,7 +170,7 @@ describe('propertyQuestion', () => {
 
   it('names the asked property in Gevorderd and still explains with the useful rewrite', () => {
     const question = propertyQuestion(timesNinetyEight, 'gevorderd', 'commutative');
-    expect(question.key).toBe('properties:gevorderd:commutative:7 × 98');
+    expect(question.key).toBe('properties:7 × 98');
     const [rewrite, value] = question.steps;
     expect(rewrite!.prompt).toBe('Pas de commutatieve eigenschap toe: 7 × 98');
     expect(rewrite!.check('98×7')).toEqual({ correct: true, expected: '98 × 7' });
@@ -193,7 +193,7 @@ describe('generateProperties', () => {
       expect(question.steps.map((step) => step.kind)).toEqual(['expression', 'number']);
       const text = prompt.exec(rewrite!.prompt)?.[1] ?? '';
       expect(value!.prompt).toBe(`${text} = ?`);
-      expect(question.key.endsWith(`:${text}`)).toBe(true);
+      expect(question.key).toBe(`properties:${text}`);
 
       const example = rewrite!.check('').expected;
       expect(rewrite!.check(example).correct, example).toBe(true);
@@ -205,15 +205,20 @@ describe('generateProperties', () => {
   });
 
   it('splits Basis and Gevorderd evenly and asks every property in Gevorderd', () => {
-    const variants = questions.map((question) => question.key.split(':')[1]);
-    const basis = variants.filter((variant) => variant === 'basis').length / SAMPLES;
-    expect(basis).toBeGreaterThan(0.47);
-    expect(basis).toBeLessThan(0.53);
-    const asked = new Set(
-      questions
-        .filter((question) => question.key.startsWith('properties:gevorderd:'))
-        .map((question) => question.key.split(':')[2]),
-    );
-    expect([...asked].sort()).toEqual(['associative', 'commutative', 'distributive']);
+    const asked: Record<string, Property> = {
+      commutatieve: 'commutative',
+      associatieve: 'associative',
+      distributieve: 'distributive',
+    };
+    const prompts = questions.map((question) => question.steps[0]!.prompt);
+    const basis = prompts.filter((prompt) => prompt.startsWith('Vereenvoudig in één stap: '));
+    expect(basis.length / SAMPLES).toBeGreaterThan(0.47);
+    expect(basis.length / SAMPLES).toBeLessThan(0.53);
+    const gevorderd = prompts.flatMap((prompt) => {
+      const adjective = /^Pas de (\w+) eigenschap toe: /.exec(prompt)?.[1];
+      return adjective === undefined ? [] : [asked[adjective]];
+    });
+    expect(basis.length + gevorderd.length).toBe(SAMPLES);
+    expect([...new Set(gevorderd)].sort()).toEqual(['associative', 'commutative', 'distributive']);
   });
 });

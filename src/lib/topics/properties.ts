@@ -67,9 +67,12 @@ function freeTerm(rng: Rng, other: number): number {
   return randomIntWhere(rng, 11, 99, (value) => notRound(value) && value !== other);
 }
 
-/** The free factor of a round-product template, unequal to the operand it may be swapped with. */
+/**
+ * The free factor of a round-product template, unequal to the operand it may be swapped with.
+ * At least 11, so the property is worth using (`5 × 3 × 20` is not).
+ */
 function freeFactor(rng: Rng, other: number): number {
-  return randomIntWhere(rng, 3, 49, (value) => notRound(value) && value !== other);
+  return randomIntWhere(rng, 11, 49, (value) => notRound(value) && value !== other);
 }
 
 /** The seven templates of spec §5.11, each equally likely. */
@@ -183,7 +186,8 @@ export function propertyQuestion(
     throw new RangeError(`Invalid property exercise: ${text}`);
   }
   return {
-    key: `properties:${variant}:${property}:${text}`,
+    // The expression alone: never twice in a session, not even as Basis and Gevorderd (§5.11).
+    key: `properties:${text}`,
     topic: 'properties',
     steps: [
       rewriteStep({
