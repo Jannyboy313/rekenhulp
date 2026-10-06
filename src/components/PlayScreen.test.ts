@@ -100,4 +100,41 @@ describe('PlayScreen', () => {
     await press('Verder');
     expect(onfinish).toHaveBeenCalledOnce();
   });
+
+  it('keeps the kladblok across the steps of a question and clears it at the next', async () => {
+    const twoSteps: Question = {
+      key: 'two-steps',
+      topic: 'percentages',
+      steps: [
+        numberStep({ prompt: '10% van 90 = ?', answer: fromInteger(9) }),
+        numberStep({ prompt: '20% van 90 = ?', answer: fromInteger(18) }),
+      ],
+    };
+    const next: Question = {
+      key: 'next',
+      topic: 'percentages',
+      steps: [numberStep({ prompt: '50% van 8 = ?', answer: fromInteger(4) })],
+    };
+    render(PlayScreen, {
+      props: { set: TABLES_SET, questions: [twoSteps, next], onfinish: vi.fn() },
+    });
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Kladblok vak 1: leeg' }));
+    await press('9', 'Naar antwoordveld', '9', 'OK');
+    expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(screen.getByText('20% van 90 = ?')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Kladblok vak 1: 9' })).toBeTruthy();
+    await press('1', '8', 'OK');
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(screen.getByText('50% van 8 = ?')).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Kladblok vak 1: leeg' })).toBeTruthy();
+  });
+
+  it('shows no kladblok for table questions', () => {
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+  });
 });

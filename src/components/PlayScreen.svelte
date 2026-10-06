@@ -1,6 +1,7 @@
 <script lang="ts">
   import { formatDuration } from '../lib/format';
   import type { QuestionRecord, StepAttempt } from '../lib/results';
+  import { EMPTY_NOTES, showsScratchpad } from '../lib/scratchpad';
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
   import QuestionView from './QuestionView.svelte';
@@ -18,6 +19,8 @@
   let questionIndex = $state(0);
   let stepIndex = $state(0);
   let feedback = $state.raw<StepAttempt | null>(null);
+  // The kladblok belongs to the question: it survives its steps and the feedback in between.
+  let notes = $state.raw<readonly string[]>(EMPTY_NOTES);
 
   // Bookkeeping that the template never reads, so plain variables are enough.
   let questionStart = sessionStart;
@@ -26,6 +29,7 @@
 
   const question = $derived(questions[questionIndex]!);
   const step = $derived(question.steps[stepIndex]!);
+  const scratchpad = $derived(showsScratchpad(question.topic, step.kind));
 
   const announcement = $derived(
     feedback === null
@@ -57,6 +61,7 @@
       questionIndex++;
       stepIndex = 0;
       attempts = [];
+      notes = EMPTY_NOTES;
       questionStart = Date.now();
     } else {
       finish();
@@ -92,7 +97,7 @@
     />
   {:else}
     {#key `${questionIndex}-${stepIndex}`}
-      <QuestionView {step} onanswer={handleAnswer} />
+      <QuestionView {step} {scratchpad} bind:notes onanswer={handleAnswer} />
     {/key}
   {/if}
 </main>
