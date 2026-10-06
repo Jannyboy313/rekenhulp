@@ -159,8 +159,8 @@ describe('generateFromTemplate', () => {
       const options = max - MIN_POWER_BASE + 1;
       for (let base = MIN_POWER_BASE; base <= max; base++) {
         const share = bases.filter((value) => value === BigInt(base)).length / bases.length;
-        expect(share, `base ${base}, exponent ${exponent}`).toBeGreaterThan(0.5 / options);
-        expect(share, `base ${base}, exponent ${exponent}`).toBeLessThan(1.5 / options);
+        expect(share, `base ${base}, exponent ${exponent}`).toBeGreaterThan(0.75 / options);
+        expect(share, `base ${base}, exponent ${exponent}`).toBeLessThan(1.25 / options);
       }
     }
   });
