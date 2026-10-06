@@ -3,7 +3,9 @@ import {
   applyFactorizationKey,
   applyFractionKey,
   applyKey,
+  applyExpressionKey,
   EMPTY_FRACTION_INPUT,
+  MAX_EXPRESSION_LENGTH,
   fractionInputToString,
   MAX_FACTORIZATION_LENGTH,
   MAX_INPUT_LENGTH,
@@ -180,5 +182,56 @@ describe('fractionInputToString', () => {
     expect(fractionInputToString(EMPTY_FRACTION_INPUT)).toBe('');
     expect(fractionText(['/'])).toBe('/');
     expect(fractionText(['-', '1', '2', '/', '1', '/', '2'])).toBe('-12 1/2');
+  });
+});
+
+describe('applyExpressionKey', () => {
+  const typeExpression = (keys: KeypadKey[], start = '') => keys.reduce(applyExpressionKey, start);
+
+  it('builds an expression with operators and parentheses', () => {
+    expect(typeExpression(['7', '×', '(', '1', '3', '+', '8', '7', ')'])).toBe('7×(13+87)');
+    expect(typeExpression(['7', '×', '1', '0', '0', '-', '7', '×', '2'])).toBe('7×100-7×2');
+    expect(typeExpression(['(', '(', '1', '+', '2', ')', ':', '3', ')'])).toBe('((1+2):3)');
+  });
+
+  it('allows an operator only after a number or )', () => {
+    expect(typeExpression(['+'])).toBe('');
+    expect(typeExpression(['-'])).toBe('');
+    expect(typeExpression(['2', '×', ':'])).toBe('2×');
+    expect(typeExpression(['(', '×'])).toBe('(');
+    expect(typeExpression(['(', '2', ')', ':'])).toBe('(2):');
+  });
+
+  it('opens a parenthesis only at the start, after an operator or after (', () => {
+    expect(typeExpression(['2', '('])).toBe('2');
+    expect(typeExpression(['(', '1', ')', '('])).toBe('(1)');
+    expect(typeExpression(['2', '+', '(', '('])).toBe('2+((');
+  });
+
+  it('closes a parenthesis only after an operand while one is open', () => {
+    expect(typeExpression(['2', ')'])).toBe('2');
+    expect(typeExpression(['(', ')'])).toBe('(');
+    expect(typeExpression(['(', '2', '+', ')'])).toBe('(2+');
+    expect(typeExpression(['(', '2', ')', ')'])).toBe('(2)');
+  });
+
+  it('allows no digit directly after )', () => {
+    expect(typeExpression(['(', '2', ')', '3'])).toBe('(2)');
+  });
+
+  it('ignores keys that are not expression keys', () => {
+    expect(typeExpression(['2', ',', '^', '/', ' '])).toBe('2');
+  });
+
+  it('deletes the last character', () => {
+    expect(applyExpressionKey('7×(13', 'backspace')).toBe('7×(1');
+    expect(applyExpressionKey('', 'backspace')).toBe('');
+  });
+
+  it(`stops at ${MAX_EXPRESSION_LENGTH} characters`, () => {
+    const full = '1+'.repeat(MAX_EXPRESSION_LENGTH / 2 - 1) + '12';
+    expect(full).toHaveLength(MAX_EXPRESSION_LENGTH);
+    expect(applyExpressionKey(full, '3')).toBe(full);
+    expect(applyExpressionKey(full, 'backspace')).toBe(full.slice(0, -1));
   });
 });

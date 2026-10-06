@@ -106,3 +106,8 @@ export function formatFactorizationInput(raw: string): string {
     .replace(/\^(\d+)/g, (_match, digits: string) => superscriptDigits(digits))
     .replaceAll('×', ' × ');
 }
+
+/** Expression keypad input '7×(13+87)' as '7 × (13 + 87)'; every '-' is the minus operator. */
+export function formatExpressionInput(raw: string): string {
+  return raw.replace(/[-+×:]/g, (operator) => ` ${operator === '-' ? MINUS : operator} `);
+}

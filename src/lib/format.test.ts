@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   formatDuration,
   formatEuro,
+  formatExpressionInput,
   formatFactorizationInput,
   formatFraction,
   formatInput,
@@ -200,5 +201,14 @@ describe('formatFactorizationInput', () => {
 
   it('writes exponents of any length digit by digit', () => {
     expect(formatFactorizationInput(`2^${'9'.repeat(18)}`)).toBe(`2${'⁹'.repeat(18)}`);
+  });
+});
+
+describe('formatExpressionInput', () => {
+  it('spaces the operators and shows a typographic minus', () => {
+    expect(formatExpressionInput('7×(13+87)')).toBe('7 × (13 + 87)');
+    expect(formatExpressionInput('7×100-7×2')).toBe(`7 × 100 ${MINUS} 7 × 2`);
+    expect(formatExpressionInput('12:3')).toBe('12 : 3');
+    expect(formatExpressionInput('2×')).toBe('2 × ');
   });
 });

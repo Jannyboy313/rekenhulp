@@ -1,6 +1,18 @@
 export type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 /** ' ' is the kladblok's spatie; the answer reducers ignore it. */
-export type KeypadKey = DigitKey | ',' | '-' | '/' | '×' | '^' | ' ' | 'backspace';
+export type KeypadKey =
+  | DigitKey
+  | ','
+  | '-'
+  | '+'
+  | '×'
+  | ':'
+  | '^'
+  | '('
+  | ')'
+  | '/'
+  | ' '
+  | 'backspace';
 
 /** Maximum number of digits and comma; the sign is not counted. */
 export const MAX_INPUT_LENGTH = 12;
@@ -121,4 +133,35 @@ export function fractionInputToString({ negative, whole, template }: FractionInp
   const fraction = template === null ? '' : `${template.num}/${template.den}`;
   const separator = whole !== '' && template !== null ? ' ' : '';
   return (negative ? '-' : '') + whole + separator + fraction;
+}
+
+/** The longest useful rewrite is 19×1000-19×3 (12 characters); 30 leaves room. */
+export const MAX_EXPRESSION_LENGTH = 30;
+
+const EXPRESSION_OPERATORS: ReadonlySet<KeypadKey> = new Set<KeypadKey>(['+', '-', '×', ':']);
+
+/**
+ * Expression input (spec §6): integers, + − × : and parentheses, with '-' always the operator.
+ * An operator only after a number or ')'; '(' only at the start, after an operator or after '(';
+ * ')' only after a number or ')' while a '(' is open; a digit not directly after ')'.
+ */
+export function applyExpressionKey(value: string, key: KeypadKey): string {
+  if (key === 'backspace') return value.slice(0, -1);
+  if (value.length >= MAX_EXPRESSION_LENGTH) return value;
+  const afterOperand = /[\d)]$/.test(value);
+  if (/^\d$/.test(key)) return value.endsWith(')') ? value : value + key;
+  if (EXPRESSION_OPERATORS.has(key)) return afterOperand ? value + key : value;
+  if (key === '(') return afterOperand ? value : value + key;
+  if (key === ')') return afterOperand && openParentheses(value) > 0 ? value + key : value;
+  // The comma, ^, the breuk key and the spatie are not expression keys.
+  return value;
+}
+
+function openParentheses(value: string): number {
+  let open = 0;
+  for (const char of value) {
+    if (char === '(') open++;
+    else if (char === ')') open--;
+  }
+  return open;
 }
