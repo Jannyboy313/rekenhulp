@@ -51,8 +51,8 @@ export function formatSeconds(ms: number): string {
   return `${(ms / 1000).toFixed(1).replace('.', ',')} s`;
 }
 
-// Indexed by digit; every character is a single UTF-16 code unit.
-const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
+/** Indexed by digit; every character is a single UTF-16 code unit. */
+export const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
 /** Superscript minus (U+207B). */
 const SUPERSCRIPT_MINUS = '⁻';
 

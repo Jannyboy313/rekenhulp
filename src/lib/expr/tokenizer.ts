@@ -1,4 +1,5 @@
-import { parseDutchNumber, type Rational } from '../rational';
+import { SUPERSCRIPT_DIGITS } from '../format';
+import { parseDutchNumber, rational, type Rational } from '../rational';
 
 export type Operator = '+' | '−' | '×' | ':' | '^';
 
@@ -10,6 +11,8 @@ export type Token =
 
 // Integers and Dutch decimals: '12', '3,5'.
 const NUMBER = /^\d+(?:,\d+)?/;
+// Superscript exponents as written in prompts: '5²' reads as '5^2' (spec §7).
+const SUPERSCRIPT = /^[⁰¹²³⁴⁵⁶⁷⁸⁹]+/;
 
 const OPERATORS = new Map<string, Operator>([
   ['+', '+'],
@@ -30,6 +33,16 @@ export function tokenize(input: string): Token[] | null {
     if (number) {
       tokens.push({ type: 'number', value: parseDutchNumber(number[0])! });
       rest = rest.slice(number[0].length);
+      continue;
+    }
+    const superscript = SUPERSCRIPT.exec(rest);
+    if (superscript) {
+      const digits = [...superscript[0]].map((char) => SUPERSCRIPT_DIGITS.indexOf(char)).join('');
+      tokens.push(
+        { type: 'operator', operator: '^' },
+        { type: 'number', value: rational(BigInt(digits)) },
+      );
+      rest = rest.slice(superscript[0].length);
       continue;
     }
     const char = rest[0]!;

@@ -7,9 +7,11 @@ import {
   equals,
   fromInteger,
   multiply,
+  negate,
   parseDutchNumber,
   parseFraction,
   parseMixedNumber,
+  power,
   powerOfTen,
   rational,
   subtract,
@@ -184,4 +186,26 @@ describe('parseMixedNumber', () => {
       expect(parseMixedNumber(input)).toBeNull();
     },
   );
+});
+
+describe('negate', () => {
+  it('flips the sign', () => {
+    expect(negate(rational(3n, 4n))).toEqual(rational(-3n, 4n));
+    expect(negate(rational(-7n))).toEqual(rational(7n));
+    expect(negate(rational(0n))).toEqual(rational(0n));
+  });
+});
+
+describe('power', () => {
+  it('raises exactly', () => {
+    expect(power(rational(-4n), 2)).toEqual(rational(16n));
+    expect(power(rational(-2n), 3)).toEqual(rational(-8n));
+    expect(power(rational(2n, 3n), 3)).toEqual(rational(8n, 27n));
+    expect(power(rational(5n), 0)).toEqual(rational(1n));
+  });
+
+  it('rejects negative and fractional exponents', () => {
+    expect(() => power(rational(2n), -1)).toThrow(RangeError);
+    expect(() => power(rational(2n), 1.5)).toThrow(RangeError);
+  });
 });

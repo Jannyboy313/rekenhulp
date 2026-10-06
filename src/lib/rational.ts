@@ -116,3 +116,17 @@ export function parseMixedNumber(input: string): Rational | null {
   const value = add(rational(BigInt(whole)), rational(BigInt(numerator), den));
   return sign ? rational(-value.num, value.den) : value;
 }
+
+/** −value. */
+export function negate(value: Rational): Rational {
+  return rational(-value.num, value.den);
+}
+
+/** value^exponent for an integer exponent ≥ 0. */
+export function power(value: Rational, exponent: number): Rational {
+  if (!Number.isSafeInteger(exponent) || exponent < 0) {
+    throw new RangeError(`Invalid exponent: ${exponent}`);
+  }
+  const big = BigInt(exponent);
+  return rational(value.num ** big, value.den ** big);
+}

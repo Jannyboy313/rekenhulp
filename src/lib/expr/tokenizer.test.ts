@@ -37,4 +37,19 @@ describe('tokenize', () => {
   it.each(['2 x 3', '2*3', 'a', '2.5', '1/2', ',', '2,'])('rejects %j', (input) => {
     expect(tokenize(input)).toBeNull();
   });
+
+  it('reads superscript digits as a power, as written in prompts', () => {
+    expect(tokenize('5²')).toEqual([
+      { type: 'number', value: rational(5n) },
+      { type: 'operator', operator: '^' },
+      { type: 'number', value: rational(2n) },
+    ]);
+    expect(tokenize('2¹⁰ − 1')).toEqual([
+      { type: 'number', value: rational(2n) },
+      { type: 'operator', operator: '^' },
+      { type: 'number', value: rational(10n) },
+      { type: 'operator', operator: '−' },
+      { type: 'number', value: rational(1n) },
+    ]);
+  });
 });
