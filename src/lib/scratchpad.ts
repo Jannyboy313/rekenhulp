@@ -1,4 +1,4 @@
-import { MAX_INPUT_LENGTH, type KeypadKey } from './keypadInput';
+import { endsWithOperand, MAX_INPUT_LENGTH, openParentheses, type KeypadKey } from './keypadInput';
 import { keyDefs, type KeyDef } from './keys';
 import type { AnswerKind, Topic } from './types';
 
@@ -38,7 +38,7 @@ export function applyNote(note: string, key: KeypadKey): string {
 
 /** The text a key appends to the last item of a note; empty when the key is ignored. */
 function noteKeyText(item: string, key: KeypadKey): string {
-  const afterOperand = /[\d)]$/.test(item);
+  const afterOperand = endsWithOperand(item);
   // Where a number may start: the item start, after an operator, '(', '=' or a minus sign.
   const operandStart = /(^|[-+×:(=])$/.test(item);
   const number = /[\d,]*$/.exec(item)?.[0] ?? '';
@@ -57,17 +57,13 @@ function noteKeyText(item: string, key: KeypadKey): string {
     case '(':
       return operandStart ? key : '';
     case ')':
-      return afterOperand && count(item, '(') > count(item, ')') ? key : '';
+      return afterOperand && openParentheses(item) > 0 ? key : '';
     case ',':
       return !item.endsWith(')') && !number.includes(',') && !numberFull ? key : '';
     default:
       // Only digits are appended; any other key is ignored until handled explicitly above.
       return /^\d$/.test(key) && !item.endsWith(')') && !numberFull ? key : '';
   }
-}
-
-function count(text: string, char: string): number {
-  return text.split(char).length - 1;
 }
 
 /** New notes with one key typed into cell `index`. */

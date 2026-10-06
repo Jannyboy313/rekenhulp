@@ -149,7 +149,7 @@ const EXPRESSION_OPERATORS: ReadonlySet<KeypadKey> = new Set<KeypadKey>(['+', '-
 export function applyExpressionKey(value: string, key: KeypadKey): string {
   if (key === 'backspace') return value.slice(0, -1);
   if (value.length >= MAX_EXPRESSION_LENGTH) return value;
-  const afterOperand = /[\d)]$/.test(value);
+  const afterOperand = endsWithOperand(value);
   if (/^\d$/.test(key)) return value.endsWith(')') ? value : value + key;
   if (EXPRESSION_OPERATORS.has(key)) return afterOperand ? value + key : value;
   if (key === '(') return afterOperand ? value : value + key;
@@ -158,9 +158,15 @@ export function applyExpressionKey(value: string, key: KeypadKey): string {
   return value;
 }
 
-function openParentheses(value: string): number {
+/** Whether a sum ends in a number or ')', so an operator or ')' may follow. */
+export function endsWithOperand(text: string): boolean {
+  return /[\d)]$/.test(text);
+}
+
+/** How many '(' in a sum are not closed yet. */
+export function openParentheses(text: string): number {
   let open = 0;
-  for (const char of value) {
+  for (const char of text) {
     if (char === '(') open++;
     else if (char === ')') open--;
   }
