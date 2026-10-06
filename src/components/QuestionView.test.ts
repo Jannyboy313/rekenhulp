@@ -19,7 +19,7 @@ function errorText(): string {
   return screen.getByRole('alert').textContent?.trim() ?? '';
 }
 
-async function press(...names: string[]) {
+async function press(...names: (string | RegExp)[]) {
   for (const name of names) await fireEvent.click(screen.getByRole('button', { name }));
 }
 
@@ -130,17 +130,50 @@ describe('QuestionView', () => {
       const onanswer = vi.fn();
       render(QuestionView, { props: { step: percent, onanswer } });
       await press('1', '2', 'breuk', '1', 'breuk', '2');
-      expect(answerText()).toBe('121/2%');
+      expect(answerText()).toBe('12 en 1/2%');
       await press('OK');
       expect(onanswer).toHaveBeenCalledWith('12 1/2', expect.objectContaining({ correct: true }));
     });
 
     it('moves the cursor to a tapped slot', async () => {
       render(QuestionView, { props: { step: percent, onanswer: vi.fn() } });
-      await press('breuk', '1', 'noemer', '4');
+      await press('breuk', '1', /^noemer/, '4');
       expect(answerText()).toBe('1/4%');
-      await press('teller', '3');
+      await press(/^teller/, '3');
       expect(answerText()).toBe('13/4%');
+    });
+
+    it('labels the slots with their content and marks the active one as pressed', async () => {
+      render(QuestionView, { props: { step: percent, onanswer: vi.fn() } });
+      await press('breuk', '7');
+      const teller = screen.getByRole('button', { name: 'teller: 7' });
+      const noemer = screen.getByRole('button', { name: 'noemer: leeg' });
+      expect(teller.getAttribute('aria-pressed')).toBe('true');
+      expect(noemer.getAttribute('aria-pressed')).toBe('false');
+
+      await press(/^noemer/);
+      expect(screen.getByRole('button', { name: /^teller/ }).getAttribute('aria-pressed')).toBe(
+        'false',
+      );
+      expect(screen.getByRole('button', { name: /^noemer/ }).getAttribute('aria-pressed')).toBe(
+        'true',
+      );
+    });
+
+    it('moves the cursor as soon as a slot is pressed', async () => {
+      render(QuestionView, { props: { step: percent, onanswer: vi.fn() } });
+      await press('breuk', '1');
+      await fireEvent.pointerDown(screen.getByRole('button', { name: /^noemer/ }));
+      await press('4');
+      expect(answerText()).toBe('1/4%');
+    });
+
+    it('clears the inline error when a slot is tapped', async () => {
+      render(QuestionView, { props: { step: percent, onanswer: vi.fn() } });
+      await press('breuk', '2', '5', 'breuk', 'OK');
+      expect(errorText()).toBe('Ongeldig getal');
+      await press(/^noemer/);
+      expect(errorText()).toBe('');
     });
 
     it('rejects a zero denominator inline', async () => {

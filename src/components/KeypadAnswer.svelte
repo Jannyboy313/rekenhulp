@@ -3,6 +3,7 @@
   import type { FractionSlot, KeypadKey } from '../lib/keypadInput';
   import Fraction from './Fraction.svelte';
   import Keypad from './Keypad.svelte';
+  import { press } from './press';
 
   interface Props {
     model: InputModel<S>;
@@ -28,6 +29,7 @@
 
   function select(slot: FractionSlot) {
     if (model.select) value = model.select(value, slot);
+    error = null;
   }
 
   function submit() {
@@ -42,8 +44,9 @@
     type="button"
     class="slot"
     class:active={name === active}
-    aria-label={name === 'num' ? 'teller' : 'noemer'}
-    onclick={() => select(name)}
+    aria-label={`${name === 'num' ? 'teller' : 'noemer'}: ${digits === '' ? 'leeg' : digits}`}
+    aria-pressed={name === active}
+    use:press={() => select(name)}
     >{#if digits === ''}<span class="placeholder">…</span>{:else}{digits}{/if}</button
   >{/snippet}
 
@@ -53,7 +56,9 @@
   class:tall={model.select !== undefined}
   aria-label="Jouw antwoord"
   aria-live="off"
-  >{#if prefix}<span class="prefix">{prefix}</span>{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}<Fraction
+  >{#if prefix}<span class="prefix">{prefix}</span>{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}{#if segment.mixed}<span
+          class="sr-only">{' en '}</span
+        >{/if}<Fraction
         >{#snippet numerator()}{@render slotButton('num', segment.num, segment.active)}{/snippet}{#snippet denominator()}{@render slotButton(
             'den',
             segment.den,

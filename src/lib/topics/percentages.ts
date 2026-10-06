@@ -203,7 +203,7 @@ function partOfWhole(rng: Rng): Question {
 }
 
 /**
- * `30 is ?% van 120`. Always a fraction step, so `12½` can be typed as `25/2` and the `/` key
+ * `30 is ?% van 120`. Always a fraction step, so `12½` can be typed as `25/2` and the breuk key
  * does not give the answer away.
  */
 function whatPercentage(rng: Rng): Question {

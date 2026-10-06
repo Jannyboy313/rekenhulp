@@ -22,10 +22,13 @@ export interface KeyDef {
   icon?: 'fraction';
 }
 
-/** The answer field while typing: plain text, or an open fraction template with its cursor. */
+/**
+ * The answer field while typing: plain text, or an open fraction template with its cursor.
+ * A mixed template follows a whole number, as in `12 1/2`.
+ */
 export type FieldSegment =
   | { type: 'text'; text: string }
-  | { type: 'template'; num: string; den: string; active: FractionSlot };
+  | { type: 'template'; num: string; den: string; active: FractionSlot; mixed: boolean };
 
 /** Everything that differs per answer kind on the keypad (spec §6). S is the typing state. */
 export interface InputModel<S> {
@@ -102,7 +105,13 @@ function viewFraction({ negative, whole, template }: FractionInput): FieldSegmen
   const text = formatInput((negative ? '-' : '') + whole);
   const segments: FieldSegment[] = text === '' ? [] : [{ type: 'text', text }];
   if (template !== null) {
-    segments.push({ type: 'template', num: template.num, den: template.den, active: template.slot });
+    segments.push({
+      type: 'template',
+      num: template.num,
+      den: template.den,
+      active: template.slot,
+      mixed: whole !== '',
+    });
   }
   return segments;
 }

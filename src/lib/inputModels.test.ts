@@ -88,10 +88,10 @@ describe('fraction input model', () => {
     expect(fraction.view(fraction.empty)).toEqual([]);
     expect(fraction.view(typeFraction(['-', '1', '2', '/', '1']))).toEqual([
       { type: 'text', text: '−12' },
-      { type: 'template', num: '1', den: '', active: 'num' },
+      { type: 'template', num: '1', den: '', active: 'num', mixed: true },
     ]);
     expect(fraction.view(typeFraction(['/']))).toEqual([
-      { type: 'template', num: '', den: '', active: 'num' },
+      { type: 'template', num: '', den: '', active: 'num', mixed: false },
     ]);
   });
 

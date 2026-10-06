@@ -75,7 +75,7 @@ describe('Feedback', () => {
       },
     });
     const answers = [...container.querySelectorAll('dd')].map((dd) => dd.textContent);
-    expect(answers).toEqual(['−12 1/2', '12,5 of 25/2']);
+    expect(answers).toEqual(['−12 en 1/2', '12,5 of 25/2']);
     expect(container.querySelectorAll('.fraction')).toHaveLength(2);
   });
 });
