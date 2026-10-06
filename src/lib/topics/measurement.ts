@@ -12,6 +12,7 @@ import {
   type Rational,
 } from '../rational';
 import { numberStep } from '../steps';
+import { firstTip, powerOfTenShift, type Diagnose } from '../tips';
 import type { Generator, Question, Topic } from '../types';
 
 /** A unit on a decimal scale: one unit is 10^exponent base units (spec §5.10, §5.14). */
@@ -164,14 +165,59 @@ export function conversionExplanation(
   return `1 ${to} = ${factor} ${from} → ${shownValue} : ${factor} = ${shownAnswer}`;
 }
 
-/** `3,5 L = ? cm³`, with the target unit as input suffix (spec §5.10). */
+const ONE = fromInteger(1);
+
+/**
+ * × and : swapped (spec §3.4.1): the value divided by the factor instead of multiplied, or the
+ * other way round. Units with factor 1 (ml and cm³) have no such mistake.
+ */
+export function swappedConversionTip(value: Rational, answer: Rational): Diagnose {
+  const ratio = divide(answer, value);
+  return (given) => {
+    if (equals(ratio, ONE) || !equals(given, divide(value, ratio))) return undefined;
+    return compare(ratio, ONE) > 0
+      ? `Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met ${formatRational(ratio)}.`
+      : `Naar een grotere eenheid wordt het getal kleiner: deel door ${formatRational(divide(ONE, ratio))}.`;
+  };
+}
+
+/** Area always; volume only between cubic units, because L, dl, … are no cubes of a length. */
+function lengthFactorDimensions(topic: Topic, from: string, to: string): 2 | 3 | null {
+  if (topic === 'area') return 2;
+  if (topic === 'volume' && from.endsWith('³') && to.endsWith('³')) return 3;
+  return null;
+}
+
+/** The length factor used for area or volume: 3 m² = 30 dm² instead of 300 (spec §3.4.1). */
+export function lengthFactorTip(dimensions: 2 | 3, value: Rational, answer: Rational): Diagnose {
+  const shift = powerOfTenShift(answer, value);
+  return (given) => {
+    if (shift === null || shift % dimensions !== 0) return undefined;
+    if (!equals(given, multiply(value, powerOfTen(shift / dimensions)))) return undefined;
+    return dimensions === 2
+      ? 'Bij oppervlakte is elke stap ×100 (10 × 10), niet ×10.'
+      : 'Bij kubieke eenheden is elke stap ×1000 (10 × 10 × 10), niet ×10.';
+  };
+}
+
+/**
+ * `3,5 L = ? cm³`, with the target unit as input suffix (spec §5.10). `tips` are tried before the
+ * shared conversion tips: the length factor, then × and : swapped.
+ */
 export function conversionQuestion(
   topic: Topic,
   from: string,
   to: string,
   value: Rational,
   answer: Rational,
+  tips: readonly Diagnose[] = [],
 ): Question {
+  const dimensions = lengthFactorDimensions(topic, from, to);
+  const diagnose = firstTip(
+    ...tips,
+    ...(dimensions === null ? [] : [lengthFactorTip(dimensions, value, answer)]),
+    swappedConversionTip(value, answer),
+  );
   return {
     key: `${topic}:${from}>${to}:${value.num}/${value.den}`,
     topic,
@@ -181,6 +227,7 @@ export function conversionQuestion(
         answer,
         suffix: to,
         explanation: conversionExplanation(from, to, value, answer),
+        diagnose,
       }),
     ],
   };

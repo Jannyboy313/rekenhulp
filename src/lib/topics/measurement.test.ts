@@ -12,7 +12,7 @@ import {
   rational,
   type Rational,
 } from '../rational';
-import type { Generator, Question } from '../types';
+import type { Generator, Question, Topic } from '../types';
 import {
   AREA_UNITS,
   conversionExplanation,
@@ -261,6 +261,49 @@ describe('conversionQuestion', () => {
       explanation: '1 L = 1000 cm³ → 3,5 × 1000 = 3500',
     });
     expect(step.check('350').correct).toBe(false);
+  });
+});
+
+const n = (text: string) => parseDutchNumber(text)!;
+
+describe('conversion tips', () => {
+  const step = (topic: Topic, from: string, to: string, value: string, answer: string) =>
+    conversionQuestion(topic, from, to, n(value), n(answer)).steps[0]!;
+
+  it('names × and : swapped', () => {
+    expect(step('volume', 'L', 'cm³', '3,5', '3500').check('0,0035').tip).toBe(
+      'Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met 1000.',
+    );
+    expect(step('volume', 'cm³', 'L', '3500', '3,5').check('3500000').tip).toBe(
+      'Naar een grotere eenheid wordt het getal kleiner: deel door 1000.',
+    );
+  });
+
+  it('has no swap tip between units with factor 1', () => {
+    expect(step('volume', 'ml', 'cm³', '25', '25').check('2,5').tip).toBe(
+      'Je antwoord is 10 keer te klein. Let op de komma en het aantal nullen.',
+    );
+  });
+
+  it('names the length factor for area', () => {
+    const tip = 'Bij oppervlakte is elke stap ×100 (10 × 10), niet ×10.';
+    expect(step('area', 'm²', 'dm²', '3', '300').check('30').tip).toBe(tip);
+    expect(step('area', 'cm²', 'm²', '5', '0,0005').check('0,05').tip).toBe(tip);
+  });
+
+  it('names the length factor between cubic units only', () => {
+    expect(step('volume', 'm³', 'dm³', '2', '2000').check('20').tip).toBe(
+      'Bij kubieke eenheden is elke stap ×1000 (10 × 10 × 10), niet ×10.',
+    );
+    // A litre is no cube of a length unit: 35 is just a factor 100 off.
+    expect(step('volume', 'L', 'cm³', '3,5', '3500').check('35').tip).toBe(
+      'Je antwoord is 100 keer te klein. Let op de komma en het aantal nullen.',
+    );
+  });
+
+  it('tries extra tips first', () => {
+    const question = conversionQuestion('time', 'uur', 'min', n('2'), n('120'), [() => 'eigen']);
+    expect(question.steps[0]!.check('7').tip).toBe('eigen');
   });
 });
 
