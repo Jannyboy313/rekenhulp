@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
+import { fromInteger, parseDutchNumber } from '../rational';
 import type { Question } from '../types';
-import { generateTables, TABLE_FACTORS } from './tables';
+import { generateTables, neighbourRowTip, productCheckTip, TABLE_FACTORS } from './tables';
 
 const SAMPLES = 1000;
 
@@ -94,5 +95,19 @@ describe('generateTables', () => {
 
   it('is deterministic for a fixed seed', () => {
     expect(sample(5).map((q) => q.key)).toEqual(sample(5).map((q) => q.key));
+  });
+});
+
+describe('table tips', () => {
+  it('names a neighbouring row', () => {
+    expect(neighbourRowTip(7, 8)(fromInteger(63))).toBe('63 = 7 × 9: je zit één rij ernaast.');
+    expect(neighbourRowTip(7, 8)(fromInteger(48))).toBe('48 = 6 × 8: je zit één rij ernaast.');
+    expect(neighbourRowTip(7, 8)(fromInteger(50))).toBeUndefined();
+  });
+
+  it('shows the product a division or missing-factor answer gives', () => {
+    expect(productCheckTip(7, 56, true)(fromInteger(9))).toBe('9 × 7 = 63, niet 56.');
+    expect(productCheckTip(7, 56, false)(fromInteger(9))).toBe('7 × 9 = 63, niet 56.');
+    expect(productCheckTip(7, 56, true)(parseDutchNumber('2,5')!)).toBeUndefined();
   });
 });

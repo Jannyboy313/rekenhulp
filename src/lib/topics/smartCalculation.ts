@@ -1,7 +1,8 @@
 import { formatInteger as f } from '../format';
 import { pick, randomInt, randomIntWhere, type Rng } from '../random';
-import { fromInteger } from '../rational';
+import { equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
+import { positiveInteger, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Smart calculation (spec §5.9).
@@ -23,10 +24,11 @@ export interface Exercise {
   prompt: string;
   answer: number;
   explanation: string;
+  diagnose?: Diagnose;
 }
 
 /** R ± d with R = k·m, m ∈ {10, 100, 1000}, k ∈ [1, 8] (k ≥ 2 for m = 10) and d ∈ [1, 3]. */
-interface NearRound {
+export interface NearRound {
   value: number;
   round: number;
   offset: number;
@@ -43,6 +45,24 @@ function nearRound(rng: Rng): NearRound {
 /** '− 2' or '+ 2': adds `offset` in an explanation. */
 function signed(offset: number): string {
   return `${offset < 0 ? '−' : '+'} ${Math.abs(offset)}`;
+}
+
+/**
+ * Compensation the wrong way round (spec §3.4.1). `compensation` is the right correction after
+ * calculating with the round number: + offset for a sum, − offset for a difference.
+ */
+export function compensationTip(near: NearRound, compensation: number, answer: number): Diagnose {
+  const tip = `${f(near.value)} = ${f(near.round)} ${signed(near.offset)}, dus compenseer met ${signed(compensation)}, niet met ${signed(-compensation)}.`;
+  const mistaken = fromInteger(answer - 2 * compensation);
+  return (given) => (equals(given, mistaken) ? tip : undefined);
+}
+
+/** Shows what the answer adds up to: '463 + 547 = 1010, niet 1000.' */
+export function complementTip(b: number, total: number): Diagnose {
+  return (given) => {
+    const value = positiveInteger(given);
+    return value === null ? undefined : `${f(b)} + ${f(value)} = ${f(b + value)}, niet ${f(total)}.`;
+  };
 }
 
 const notRound = (value: number) => value % 10 !== 0;
@@ -74,6 +94,7 @@ const BUILDERS: Record<Strategy, (rng: Rng) => Exercise> = {
       prompt: `${f(a.value)} + ${f(b)}`,
       answer,
       explanation: `${f(a.round)} + ${f(b)} ${signed(a.offset)} = ${f(answer)}`,
+      diagnose: compensationTip(a, a.offset, answer),
     };
   },
   // 5003 − 2998 → 5003 − 3000 + 2
@@ -86,6 +107,7 @@ const BUILDERS: Record<Strategy, (rng: Rng) => Exercise> = {
       prompt: `${f(a)} − ${f(b.value)}`,
       answer,
       explanation: `${f(a)} − ${f(b.round)} ${signed(-b.offset)} = ${f(answer)}`,
+      diagnose: compensationTip(b, -b.offset, answer),
     };
   },
   // 1000 − 463 → 463 + 537 = 1000
@@ -98,6 +120,7 @@ const BUILDERS: Record<Strategy, (rng: Rng) => Exercise> = {
       prompt: `${f(total)} − ${f(b)}`,
       answer,
       explanation: `${f(b)} + ${f(answer)} = ${f(total)}`,
+      diagnose: complementTip(b, total),
     };
   },
   // 48 × 25 → 48 : 4 × 100
@@ -155,10 +178,12 @@ export function buildExercise(rng: Rng, strategy: Strategy): Exercise {
 
 /** One of six mental strategies, each equally likely (spec §5.9). */
 export function generateSmartCalculation(rng: Rng): Question {
-  const { prompt, answer, explanation } = buildExercise(rng, pick(rng, STRATEGIES));
+  const { prompt, answer, explanation, diagnose } = buildExercise(rng, pick(rng, STRATEGIES));
   return {
     key: dedupKey(prompt),
     topic: 'smartCalculation',
-    steps: [numberStep({ prompt: `${prompt} = ?`, answer: fromInteger(answer), explanation })],
+    steps: [
+      numberStep({ prompt: `${prompt} = ?`, answer: fromInteger(answer), explanation, diagnose }),
+    ],
   };
 }

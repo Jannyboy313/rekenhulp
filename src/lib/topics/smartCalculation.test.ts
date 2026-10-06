@@ -3,9 +3,12 @@ import { evaluate } from '../expr/evaluate';
 import { parse } from '../expr/parser';
 import { formatInteger as f } from '../format';
 import { createRng } from '../random';
+import { fromInteger, parseDutchNumber } from '../rational';
 import type { Question } from '../types';
 import {
   buildExercise,
+  compensationTip,
+  complementTip,
   dedupKey,
   type Exercise,
   generateSmartCalculation,
@@ -287,5 +290,33 @@ describe('buildExercise', () => {
       expect(explanation).toBe(`${f(a)} ${steps} = ${f(quotient)}`);
     }
     expect([...divisors].sort((x, y) => x - y)).toEqual([4, 5, 8, 25]);
+  });
+});
+
+describe('smart calculation tips', () => {
+  it('names compensation the wrong way round', () => {
+    const near = { value: 398, round: 400, offset: -2, magnitude: 100 };
+    // 398 + 247 = 645; compensating the wrong way gives 400 + 247 + 2 = 649.
+    expect(compensationTip(near, -2, 645)(fromInteger(649))).toBe(
+      '398 = 400 − 2, dus compenseer met − 2, niet met + 2.',
+    );
+    const subtracted = { value: 2998, round: 3000, offset: -2, magnitude: 1000 };
+    // 5003 − 2998 = 2005; the wrong way gives 5003 − 3000 − 2 = 2001.
+    expect(compensationTip(subtracted, 2, 2005)(fromInteger(2001))).toBe(
+      '2998 = 3000 − 2, dus compenseer met + 2, niet met − 2.',
+    );
+    expect(compensationTip(near, -2, 645)(fromInteger(650))).toBeUndefined();
+  });
+
+  it('checks a complement', () => {
+    expect(complementTip(463, 1000)(fromInteger(547))).toBe('463 + 547 = 1010, niet 1000.');
+    expect(complementTip(463, 1000)(parseDutchNumber('5,5')!)).toBeUndefined();
+  });
+
+  it('gives the compensation and complement strategies a diagnosis', () => {
+    const rng = createRng(9);
+    for (const strategy of ['compensateAdd', 'compensateSubtract', 'complement'] as const) {
+      for (let i = 0; i < 100; i++) expect(buildExercise(rng, strategy).diagnose).toBeDefined();
+    }
   });
 });
