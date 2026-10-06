@@ -2186,6 +2186,7 @@ describe('rewriteStep', () => {
     ['686', 'Schrijf een som op, niet alleen de uitkomst.'],
     ['(7×98)', 'Er is niets veranderd.'],
     ['7×100-7×3', 'Deze stap verandert de uitkomst.'],
+    ['7×(100-2)', 'Hier is nog geen eigenschap toegepast.'],
     ['7×100-14', 'Dit zijn meerdere stappen.'],
   ])('explains why %j is rejected', (input, explanation) => {
     expect(step.check(input)).toEqual({ correct: false, expected: example, explanation });
@@ -2229,6 +2230,7 @@ export const REWRITE_MESSAGES: Record<Exclude<RewriteReason, 'otherProperty'>, s
   valueOnly: 'Schrijf een som op, niet alleen de uitkomst.',
   unchanged: 'Er is niets veranderd.',
   valueChanged: 'Deze stap verandert de uitkomst.',
+  noProperty: 'Hier is nog geen eigenschap toegepast.',
   multipleSteps: 'Dit zijn meerdere stappen.',
   notForMinusOrDivide: 'Deze eigenschap geldt niet voor − en :.',
 };

@@ -512,6 +512,8 @@ Feedback:
   - the same expression, or parentheses that do not change the order of evaluation
     (`(17 + 25) + 75` → `17 + 25 + 75`): "Er is niets veranderd."
   - another value: "Deze stap verandert de uitkomst."
+  - only a number written differently (`7 × (100 − 2)`): "Hier is nog geen eigenschap
+    toegepast."
   - more than one step: "Dit zijn meerdere stappen."
   - reordering `−` or `:`: "Deze eigenschap geldt niet voor − en :."
   - a valid step with another property: "Geldige stap (commutatief), maar niet handig. Probeer
@@ -748,6 +750,11 @@ subtraction, are rejected with the reason "Deze eigenschap geldt niet voor − e
 
 How the checker decides, in this order:
 
+0. Parentheses that cannot matter are removed from both expressions first: around the whole
+   expression, directly inside other parentheses, around a number or a power, and around a `×`
+   or `:` term of `+` or `−`. So `(7 × 100) − (7 × 2)` counts as `7 × 100 − 7 × 2`.
+   Parentheses around a sum, or around a product inside a product, stay: they are what the
+   associative property is about.
 1. The rewritten expression is a single number: reason `valueOnly`.
 2. With all `Group`s removed, both ASTs are identical: the order of evaluation did not change,
    so nothing happened (`7 × 98` → `(7 × 98)`, `(17 + 25) + 75` → `17 + 25 + 75`): reason
@@ -760,10 +767,13 @@ How the checker decides, in this order:
 5. If the required property is among the detected ones (or `'any'` and at least one is
    detected), the step is valid. If another property is detected: reason `otherProperty`.
 6. Otherwise, when the difference root of the original is a `−` or `:` and both roots contain
-   the same numbers: reason `notForMinusOrDivide`. Else: reason `multipleSteps`.
+   the same numbers: reason `notForMinusOrDivide`. When only one number was written
+   differently (`7 × 98` → `7 × (100 − 2)`, or `7 × 98` → `7 × 49 × 2` within a chain): reason
+   `noProperty`. Else: reason `multipleSteps`.
 
 The distributive *expand* form only applies to a product of exactly two factors, and the split
-`t₁ ± t₂ = n` only to number literals. In the *factor out* form, `S` must be a `Group`.
+`t₁ ± t₂ = n` only to number literals. In the *factor out* form, `S` must be a `Group`. A term
+that is just the factor `F` counts as `F × 1`: `15 × 99` → `15 × 100 − 15` is valid.
 
 Required test cases (accept ✔ / reject ✘):
 
@@ -781,6 +791,9 @@ Required test cases (accept ✔ / reject ✘):
 | `7 × 13 + 7 × 87` | distributive  | `7 × (13 + 87)`      | ✔      |
 | `20 − 5 − 3`      | commutative   | `20 − 3 − 5`         | ✘ (not for −) |
 | `(17 + 25) + 75`  | associative   | `17 + 25 + 75`       | ✘ (unchanged) |
+| `7 × 98`          | distributive  | `(7 × 100) − (7 × 2)` | ✔            |
+| `7 × 98`          | distributive  | `7 × (100 − 2)`      | ✘ (no property yet) |
+| `15 × 99`         | distributive  | `15 × 100 − 15`      | ✔             |
 
 ## 8. Conventions
 
@@ -964,7 +977,10 @@ These are assumptions made while writing the spec. Each one is easy to change.
     review): the 10 order-of-operations templates with 2 to 5 operations and a step-by-step
     explanation (§5.8), the value ranges per strategy (§5.9) and per property template, the
     example rewrite per applicable property and the feedback messages (§5.11), the checker's
-    decision order (§7.1), and unary minus only in front of a number (§7).
+    decision order (§7.1), and unary minus only in front of a number (§7). Confirmed after the
+    checker review: parentheses that cannot matter are ignored (`(7 × 100) − (7 × 2)` is
+    valid), a number only written differently gets its own reason ("Hier is nog geen
+    eigenschap toegepast"), and a term `F` counts as `F × 1` (`15 × 100 − 15` is valid).
 
 ## 12. Roadmap (not in v1)
 
