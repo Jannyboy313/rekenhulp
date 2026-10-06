@@ -47,24 +47,36 @@ function nodes(expr: Expr): Expr[] {
   }
 }
 
+const abs = (value: bigint) => (value < 0n ? -value : value);
+
 /** The checks of spec §5.8 that every generated expression must pass. */
 function expectValid(expr: Expr) {
   const operations = nodes(expr).filter((node) => node.type === 'binary' || node.type === 'power');
   expect(operations.length).toBeGreaterThanOrEqual(2);
   expect(operations.length).toBeLessThanOrEqual(5);
   for (const literal of literals(expr)) {
-    const size = literal < 0n ? -literal : literal;
+    const size = abs(literal);
     expect(size).toBeGreaterThanOrEqual(BigInt(MIN_LITERAL));
     expect(size).toBeLessThanOrEqual(BigInt(MAX_LITERAL));
   }
-  for (const node of operations) {
+  for (const node of nodes(expr)) {
+    if (node.type === 'group') expect(evaluate(node)!.num).not.toBe(0n);
     if (node.type === 'binary' && node.operator === ':') {
-      expect(evaluate(node)?.den).toBe(1n);
+      const quotient = evaluate(node)!;
+      expect(quotient.den).toBe(1n);
+      expect(abs(quotient.num)).toBeGreaterThanOrEqual(2n);
+      expect(abs(evaluate(node.right)!.num)).toBeGreaterThanOrEqual(2n);
+    }
+    if (node.type === 'binary' && node.operator === '×') {
+      for (const factor of [node.left, node.right]) {
+        const value = evaluate(factor)!;
+        expect(value.den === 1n && abs(value.num) === 1n).toBe(false);
+      }
     }
     if (node.type === 'power') {
       const base = evaluate(node.base)!;
       const exponent = node.exponent.type === 'number' ? Number(node.exponent.value.num) : NaN;
-      const size = base.num < 0n ? -base.num : base.num;
+      const size = abs(base.num);
       expect(base.den).toBe(1n);
       expect(size).toBeGreaterThanOrEqual(BigInt(MIN_POWER_BASE));
       expect(size).toBeLessThanOrEqual(BigInt(MAX_POWER_BASE[exponent]!));
@@ -93,6 +105,33 @@ describe('generateExpression', () => {
     expect(share).toBeGreaterThan(NEGATIVE_SHARE - 0.04);
     expect(share).toBeLessThan(NEGATIVE_SHARE + 0.04);
     expect(Math.max(...negatives)).toBe(2);
+    const withNegatives = negatives.filter((count) => count > 0);
+    const twoShare = withNegatives.filter((count) => count === 2).length / withNegatives.length;
+    expect(twoShare).toBeGreaterThan(0.42);
+    expect(twoShare).toBeLessThan(0.58);
+  });
+
+  it('spreads the power base evenly', () => {
+    const basesByExponent = new Map<number, bigint[]>();
+    for (const expr of expressions) {
+      for (const node of nodes(expr)) {
+        if (node.type !== 'power') continue;
+        const exponent = Number(evaluate(node.exponent)!.num);
+        const bases = basesByExponent.get(exponent) ?? [];
+        bases.push(abs(evaluate(node.base)!.num));
+        basesByExponent.set(exponent, bases);
+      }
+    }
+    for (const exponent of [2, 3]) {
+      const bases = basesByExponent.get(exponent) ?? [];
+      const max = MAX_POWER_BASE[exponent]!;
+      const options = max - MIN_POWER_BASE + 1;
+      for (let base = MIN_POWER_BASE; base <= max; base++) {
+        const share = bases.filter((value) => value === BigInt(base)).length / bases.length;
+        expect(share, `base ${base}, exponent ${exponent}`).toBeGreaterThan(0.5 / options);
+        expect(share, `base ${base}, exponent ${exponent}`).toBeLessThan(1.5 / options);
+      }
+    }
   });
 
   it('cubes 25% of the powers', () => {
