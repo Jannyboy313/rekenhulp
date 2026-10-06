@@ -29,6 +29,9 @@ describe('ResultScreen', () => {
         onmenu: vi.fn(),
       },
     });
+    expect(document.querySelector('.tip')?.textContent).toBe(
+      'Tip: 21 is geen priemgetal: ontbind het verder.',
+    );
     expect(screen.getByText('Ontbind 84 in priemfactoren')).toBeTruthy();
     expect(screen.getByText('2² × 21')).toBeTruthy();
     expect(screen.getByText('2² × 3 × 7')).toBeTruthy();

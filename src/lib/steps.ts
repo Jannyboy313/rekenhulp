@@ -1,6 +1,6 @@
 import { parse, type Expr } from './expr/parser';
 import { checkRewrite, type Property, type RewriteReason } from './expr/rewriteCheck';
-import { formatFraction, formatPrimeFactors, formatRational } from './format';
+import { formatFraction, formatInteger, formatPrimeFactors, formatRational } from './format';
 import { isPrime, primeFactors } from './primes';
 import {
   decimalPlaces,
@@ -134,23 +134,51 @@ export function factorizationStep({ prompt, value, explanation }: FactorizationS
     check(input) {
       const factors = parseFactorization(input);
       const correct = factors !== null && isPrimeFactorizationOf(factors, value);
-      return { correct, expected, explanation };
+      const tip = correct || factors === null ? undefined : factorizationTip(factors, value);
+      return { correct, expected, tip, explanation };
     },
   };
 }
 
 function isPrimeFactorizationOf(factors: readonly Factor[], value: number): boolean {
   const target = BigInt(value);
+  // base > target first, so isPrime never runs on a huge typed number.
+  const allPrime = factors.every(
+    ({ base, exponent }) => exponent >= 1n && base <= target && isPrime(Number(base)),
+  );
+  return allPrime && boundedProduct(factors, target) === target;
+}
+
+/** The product of the factors, or null as soon as it exceeds `limit` (cheap for 2^99999999). */
+function boundedProduct(factors: readonly Factor[], limit: bigint): bigint | null {
   let product = 1n;
   for (const { base, exponent } of factors) {
-    if (exponent < 1n || base > target || !isPrime(Number(base))) return false;
-    // One factor at a time with an early exit, so a typed 2^99999999 costs nothing.
     for (let i = 0n; i < exponent; i++) {
       product *= base;
-      if (product > target) return false;
+      if (product > limit) return null;
     }
   }
-  return product === target;
+  return product;
+}
+
+/** Products up to this are shown exactly; larger ones, e.g. 2^99999999, only as "groter dan". */
+const PRODUCT_LIMIT = 1_000_000n;
+
+/** Spec §3.4.1: a factor 1, a composite factor, or primes with another product. */
+export function factorizationTip(factors: readonly Factor[], value: number): string | undefined {
+  const target = BigInt(value);
+  if (factors.some(({ base }) => base === 1n)) return '1 is geen priemgetal: laat het weg.';
+  const composite = factors.find(
+    ({ base }) => base > 1n && base <= target && !isPrime(Number(base)),
+  );
+  if (composite) return `${formatInteger(composite.base)} is geen priemgetal: ontbind het verder.`;
+  const product = boundedProduct(factors, PRODUCT_LIMIT);
+  const shown = formatInteger(value);
+  if (product === null) return `Het product van je factoren is groter dan ${shown}.`;
+  if (product !== target) {
+    return `Het product van je factoren is ${formatInteger(product)}, niet ${shown}.`;
+  }
+  return undefined;
 }
 
 /** Dutch reasons of spec §5.11; a valid step with another property gets the topic's own hint. */

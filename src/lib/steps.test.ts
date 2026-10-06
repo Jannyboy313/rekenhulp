@@ -314,3 +314,28 @@ describe('number step tips', () => {
     );
   });
 });
+
+describe('factorization tips', () => {
+  const step = factorizationStep({ prompt: 'Ontbind 84 in priemfactoren', value: 84 });
+
+  it.each([
+    ['1×2^2×3×7', '1 is geen priemgetal: laat het weg.'],
+    ['2^2×21', '21 is geen priemgetal: ontbind het verder.'],
+    ['4×3×7', '4 is geen priemgetal: ontbind het verder.'],
+    ['2×3^2×5', 'Het product van je factoren is 90, niet 84.'],
+    ['2^9×3', 'Het product van je factoren is 1536, niet 84.'],
+    ['2^2×3×101', 'Het product van je factoren is 1212, niet 84.'],
+    ['2^30', 'Het product van je factoren is groter dan 84.'],
+  ])('%s → %s', (input, tip) => {
+    expect(step.check(input).tip).toBe(tip);
+  });
+
+  it('gives no tip for a correct or unparsable answer', () => {
+    expect(step.check('2^2×3×7').tip).toBeUndefined();
+    expect(step.check('2××3').tip).toBeUndefined();
+  });
+
+  it('stays cheap for a huge exponent', () => {
+    expect(step.check('2^99999999').tip).toBe('Het product van je factoren is groter dan 84.');
+  });
+});
