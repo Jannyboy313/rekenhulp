@@ -56,9 +56,8 @@ Workflow per set (new session each time):
 5. Update the Status column above when the set is done.
 
 Known follow-ups for the next plans:
-- The repo is not fully Prettier-clean (`npm run format` is not pre-approved): a few lines in
-  several modules exceed the print width. Run `npm run format` once with the user's approval and
-  commit the result.
+- The repo is not fully Prettier-clean: a few lines in several modules exceed the print width.
+  Run `npm run format` once and commit the result as a separate commit.
 - Manual phone check for Bewerkingen (plan Task 15 Step 2) is still open, incl. whether long
   property prompts with the kladblok keep the keypad on screen.
 - Focus falls back to `body` after a screen or question change (keyboard/screen-reader users only).
@@ -95,6 +94,7 @@ npm install     # install dependencies
 npm test        # run Vitest once
 npm run check   # svelte-check (type check)
 npm run build   # production build incl. service worker
+npm run format  # Prettier, writes all files
 npm run dev     # dev server (not pre-approved, ask first)
 npm run preview # serve dist/ (not pre-approved, ask first)
 ```
@@ -107,6 +107,9 @@ with the commands below, so work can proceed autonomously. Authorised by the use
 - `npm install` (incl. adding packages)
 - `npm test`
 - `npm run check`, `npm run build` (authorised 2026-10-05, for autonomous verification)
+- `npm run format` (Prettier, authorised 2026-10-06)
+- `sed -n` (read-only printing only; `sed -i` and other write forms stay forbidden; authorised
+  2026-10-06)
 - `git init`
 - `git add`
 - `git commit`
