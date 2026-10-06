@@ -46,7 +46,10 @@
     padding: 0 0.5rem;
     overflow: hidden;
     font-size: 1.25rem;
-    white-space: nowrap;
+    /* pre, not nowrap: a just-typed trailing spatie must take room. Wider spaces keep the
+       numbers apart. */
+    white-space: pre;
+    word-spacing: 0.25em;
     background: var(--surface);
     /* Muted, not --border: empty cells must stay visible (≥ 3:1 against the surface). */
     border: 2px dashed var(--muted);
@@ -59,5 +62,20 @@
   .cell.active {
     border-style: solid;
     border-color: var(--primary);
+  }
+
+  /* Shorter screens drop rows from the bottom, so the keypad stays on screen. Each row costs
+     56 px; the thresholds are estimates from the kladblok plan (spec §3.6). There is no
+     Volgende, so a hidden cell can never become active. */
+  @media (max-height: 815px) {
+    .cell:nth-child(n + 5) {
+      display: none;
+    }
+  }
+
+  @media (max-height: 759px) {
+    .cell:nth-child(n + 3) {
+      display: none;
+    }
   }
 </style>

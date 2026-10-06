@@ -16,8 +16,9 @@ Implemented sets: **Tafels** (plan: `docs/superpowers/plans/2026-10-05-beta-tafe
 UI feedback round 1 (plan: `docs/superpowers/plans/2026-10-06-feedback-round-1.md`) added stacked
 fractions everywhere, the breuk key with a fraction template and mixed numbers, counts 5–50,
 a light red Stop button and keys that act on press.
-The kladblok (plan: `docs/superpowers/plans/2026-10-06-kladblok.md`) adds a 2×2 scratchpad above
-the prompt, typed on the number keypad with OK as Volgende; notes last one question and are
+The kladblok (plan: `docs/superpowers/plans/2026-10-06-kladblok.md`, revised without a plan) is a
+2×3 scratchpad above the prompt, typed on the number keypad with a spatie in the place of OK
+(numbers separated by spaces); cells are switched by tapping. Notes last one question and are
 hidden for tables and Ja/Nee (spec §3.6).
 Every other set gets its own implementation plan; do not start one until the user says so. To add a
 set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
@@ -63,8 +64,8 @@ Known follow-ups for the next plans:
 - Focus falls back to `body` after a screen or question change (keyboard/screen-reader users only).
   The same happens inside a step when the kladblok's "Naar antwoordveld" overlay is activated by
   keyboard: the overlay is removed while it has focus.
-- Kladblok short-screen threshold (`SHORT_SCREEN_QUERY`, 760 px) is an estimate; adjust it after
-  the phone check if the keypad is cut off.
+- Kladblok short-screen thresholds (CSS media queries in `Scratchpad.svelte`: 816 px for 3 rows,
+  760 px for 2) are estimates; adjust them after the phone check if the keypad is cut off.
 - Android splash uses the light `background_color` in dark mode (cosmetic).
 
 ## Svelte pitfalls
@@ -135,7 +136,7 @@ src/
                         and parseFactorization — all answer parsing and checking goes through here
     keypadInput.ts      pure key → input reducers (numbers, fraction templates, factorizations)
     inputModels.ts      per answer kind: keys, typing state, reducer, validate, display, view
-    scratchpad.ts       kladblok: cell count, Volgende order, typing, when shown, short screens
+    scratchpad.ts       kladblok: cell count, keys (spatie), typing, when shown
     fractionText.ts     splits text into plain runs and (mixed) fractions for stacked display
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary

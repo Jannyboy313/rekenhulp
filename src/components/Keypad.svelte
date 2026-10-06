@@ -7,33 +7,39 @@
   interface Props {
     keys: readonly KeyDef[];
     canSubmit: boolean;
-    /** The kladblok relabels OK as Volgende (spec §3.6). */
-    okLabel?: string;
     onkey: (key: KeypadKey) => void;
-    /** Called with the click count: 0 for keyboard activation, 2 or more for a repeated tap. */
-    onsubmit: (clickCount: number) => void;
+    /** Without it there is no OK: the kladblok puts its spatie there (spec §3.6). */
+    onsubmit?: () => void;
   }
 
-  let { keys, canSubmit, okLabel = 'OK', onkey, onsubmit }: Props = $props();
+  let { keys, canSubmit, onkey, onsubmit }: Props = $props();
 </script>
 
 <div class="keypad">
-  {#each keys as { key, label, ariaLabel, icon } (key)}
-    <button type="button" class="key" aria-label={ariaLabel ?? label} use:press={() => onkey(key)}>
+  {#each keys as { key, label, ariaLabel, icon, span } (key)}
+    <button
+      type="button"
+      class="key"
+      style:grid-column={span === undefined ? undefined : `span ${span}`}
+      aria-label={ariaLabel ?? label}
+      use:press={() => onkey(key)}
+    >
       {#if icon === 'fraction'}<Fraction
           >{#snippet numerator()}□{/snippet}{#snippet denominator()}□{/snippet}</Fraction
         >{:else}{label}{/if}
     </button>
   {/each}
-  <!-- OK acts on click (release): it replaces the view, and a submit on press would let the
-       release land on the next screen. -->
-  <button
-    type="button"
-    class="key ok"
-    style:grid-column="span {okSpan(keys)}"
-    disabled={!canSubmit}
-    onclick={(event) => onsubmit(event.detail)}>{okLabel}</button
-  >
+  {#if onsubmit}
+    <!-- OK acts on click (release): it replaces the view, and a submit on press would let the
+         release land on the next screen. -->
+    <button
+      type="button"
+      class="key ok"
+      style:grid-column="span {okSpan(keys)}"
+      disabled={!canSubmit}
+      onclick={onsubmit}>OK</button
+    >
+  {/if}
 </div>
 
 <style>

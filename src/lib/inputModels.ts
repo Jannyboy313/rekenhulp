@@ -20,6 +20,8 @@ export interface KeyDef {
   ariaLabel?: string;
   /** Drawn instead of the label: the breuk key shows a small stacked fraction. */
   icon?: 'fraction';
+  /** Grid columns the key takes; the kladblok's spatie takes OK's place. */
+  span?: number;
 }
 
 /**

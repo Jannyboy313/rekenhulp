@@ -1,15 +1,7 @@
 <script lang="ts">
   import { INPUT_MODELS } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
-  import {
-    applyNoteKey,
-    EMPTY_NOTES,
-    nextNote,
-    NOTE_COUNT,
-    SHORT_NOTE_COUNT,
-    SHORT_SCREEN_QUERY,
-    type ScratchpadInput,
-  } from '../lib/scratchpad';
+  import { applyNoteKey, EMPTY_NOTES, type ScratchpadInput } from '../lib/scratchpad';
   import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
   import KeypadAnswer from './KeypadAnswer.svelte';
@@ -27,13 +19,6 @@
 
   let { step, scratchpad = false, notes = $bindable(EMPTY_NOTES), onanswer }: Props = $props();
 
-  // Short screens show only the top row (spec §3.6). Read once per step: the app is portrait
-  // only. jsdom has no matchMedia.
-  const noteCount =
-    typeof matchMedia === 'function' && matchMedia(SHORT_SCREEN_QUERY).matches
-      ? SHORT_NOTE_COUNT
-      : NOTE_COUNT;
-
   // This view is keyed per step, so every step starts with the answer field active.
   let activeNote = $state<number | null>(null);
 
@@ -42,7 +27,6 @@
       ? {
           active: activeNote !== null,
           onkey: typeNote,
-          onnext: nextCell,
           onfocusanswer: () => (activeNote = null),
         }
       : undefined,
@@ -50,10 +34,6 @@
 
   function typeNote(key: KeypadKey) {
     if (activeNote !== null) notes = applyNoteKey(notes, activeNote, key);
-  }
-
-  function nextCell() {
-    if (activeNote !== null) activeNote = nextNote(activeNote, noteCount);
   }
 
   // Guards against a double tap submitting twice before the feedback replaces this view.
@@ -68,11 +48,7 @@
 
 <div class="question">
   {#if scratchpad}
-    <Scratchpad
-      notes={notes.slice(0, noteCount)}
-      active={activeNote}
-      onselect={(index) => (activeNote = index)}
-    />
+    <Scratchpad {notes} active={activeNote} onselect={(index) => (activeNote = index)} />
   {/if}
   <p class="prompt"><MathText text={step.prompt} /></p>
   {#if step.kind === 'boolean'}

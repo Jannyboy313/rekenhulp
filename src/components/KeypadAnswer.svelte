@@ -44,13 +44,7 @@
     scratch?.onfocusanswer();
   }
 
-  function submit(clickCount: number) {
-    if (inNote) {
-      scratch?.onnext();
-      return;
-    }
-    // A repeated tap is a Volgende that just returned here, not a submit (spec §3.6).
-    if (clickCount > 1) return;
+  function submit() {
     if (!model.canSubmit(value)) return;
     const input = model.toInput(value);
     error = model.validate(input);
@@ -97,10 +91,9 @@
 <p class="error" role="alert">{error ?? ''}</p>
 <Keypad
   keys={inNote ? NOTE_KEYS : model.keys}
-  okLabel={inNote ? 'Volgende' : 'OK'}
-  canSubmit={inNote || model.canSubmit(value)}
+  canSubmit={model.canSubmit(value)}
   onkey={handleKey}
-  onsubmit={submit}
+  onsubmit={inNote ? undefined : submit}
 />
 
 <style>

@@ -1,5 +1,6 @@
 export type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-export type KeypadKey = DigitKey | ',' | '-' | '/' | '×' | '^' | 'backspace';
+/** ' ' is the kladblok's spatie; the answer reducers ignore it. */
+export type KeypadKey = DigitKey | ',' | '-' | '/' | '×' | '^' | ' ' | 'backspace';
 
 /** Maximum number of digits and comma; the sign is not counted. */
 export const MAX_INPUT_LENGTH = 12;

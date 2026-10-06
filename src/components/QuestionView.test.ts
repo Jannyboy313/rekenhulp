@@ -1,8 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { fromInteger, rational } from '../lib/rational';
-import { SHORT_SCREEN_QUERY } from '../lib/scratchpad';
 import { booleanStep, factorizationStep, fractionStep, numberStep } from '../lib/steps';
 import QuestionView from './QuestionView.svelte';
 
@@ -224,8 +223,6 @@ describe('QuestionView', () => {
   });
 
   describe('kladblok', () => {
-    afterEach(() => vi.unstubAllGlobals());
-
     function cell(n: number): HTMLElement {
       return screen.getByRole('button', { name: new RegExp(`^Kladblok vak ${n}:`) });
     }
@@ -241,64 +238,55 @@ describe('QuestionView', () => {
       expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
     });
 
-    it('shows four empty cells with the answer field active', () => {
+    it('shows six empty cells with the answer field active', () => {
       render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
       expect(cellLabels()).toEqual([
         'Kladblok vak 1: leeg',
         'Kladblok vak 2: leeg',
         'Kladblok vak 3: leeg',
         'Kladblok vak 4: leeg',
+        'Kladblok vak 5: leeg',
+        'Kladblok vak 6: leeg',
       ]);
       expect(cell(1).getAttribute('aria-pressed')).toBe('false');
       expect(screen.getByLabelText('Jouw antwoord').classList.contains('focused')).toBe(true);
       expect(okButton().disabled).toBe(true);
+      expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
     });
 
-    it('types into a tapped cell and turns OK into an enabled Volgende', async () => {
+    it('types into a tapped cell and swaps OK for a spatie', async () => {
       render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
       await press(/^Kladblok vak 2:/, '9', '0', '0', 'min');
       expect(cell(2).getAttribute('aria-pressed')).toBe('true');
       expect(cell(2).getAttribute('aria-label')).toBe('Kladblok vak 2: −900');
       await press('wissen');
       expect(cell(2).textContent).toBe('−90');
+      await press('spatie', '7', 'min');
+      expect(cell(2).textContent).toBe('−90 −7');
       expect(answerText()).toBe('…');
       expect(screen.getByLabelText('Jouw antwoord').classList.contains('focused')).toBe(false);
       expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
-      const volgende = screen.getByRole('button', { name: 'Volgende' }) as HTMLButtonElement;
-      expect(volgende.disabled).toBe(false);
     });
 
-    it('moves Volgende through the cells and back to the answer field', async () => {
+    it('switches cells by tapping them, then submits after the answer field is tapped', async () => {
       const onanswer = vi.fn();
       render(QuestionView, { props: { step, scratchpad: true, onanswer } });
       await press('1', '2');
-      await press(/^Kladblok vak 1:/, '1', 'Volgende', '2', 'Volgende', '3', 'Volgende', '4');
+      await press(/^Kladblok vak 1:/, '1', /^Kladblok vak 6:/, '6');
       expect(cellLabels()).toEqual([
         'Kladblok vak 1: 1',
-        'Kladblok vak 2: 2',
-        'Kladblok vak 3: 3',
-        'Kladblok vak 4: 4',
+        'Kladblok vak 2: leeg',
+        'Kladblok vak 3: leeg',
+        'Kladblok vak 4: leeg',
+        'Kladblok vak 5: leeg',
+        'Kladblok vak 6: 6',
       ]);
-      expect(cell(4).getAttribute('aria-pressed')).toBe('true');
+      expect(cell(6).getAttribute('aria-pressed')).toBe('true');
 
-      await press('Volgende');
-      expect(cell(4).getAttribute('aria-pressed')).toBe('false');
-      expect(onanswer).not.toHaveBeenCalled();
+      await press('Naar antwoordveld');
+      expect(cell(6).getAttribute('aria-pressed')).toBe('false');
       expect(answerText()).toBe('12');
       await press('OK');
-      expect(onanswer).toHaveBeenCalledWith('12', { correct: true, expected: '12' });
-    });
-
-    it('does not submit on a repeated tap of the Volgende that returned to the answer', async () => {
-      const onanswer = vi.fn();
-      render(QuestionView, { props: { step, scratchpad: true, onanswer } });
-      await press('1', '2', /^Kladblok vak 4:/);
-      await fireEvent.click(screen.getByRole('button', { name: 'Volgende' }), { detail: 1 });
-      await fireEvent.click(screen.getByRole('button', { name: 'OK' }), { detail: 2 });
-      expect(onanswer).not.toHaveBeenCalled();
-      expect(answerText()).toBe('12');
-
-      await fireEvent.click(okButton(), { detail: 1 });
       expect(onanswer).toHaveBeenCalledWith('12', { correct: true, expected: '12' });
     });
 
@@ -352,14 +340,5 @@ describe('QuestionView', () => {
       expect(screen.queryByRole('button', { name: 'keer' })).toBeNull();
       await press('min', '2', 'komma', '5');
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5');
-    });
-
-    it('shows and cycles through only the top row on short screens', async () => {
-      vi.stubGlobal('matchMedia', (query: string) => ({ matches: query === SHORT_SCREEN_QUERY }));
-      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
-      expect(cellLabels()).toEqual(['Kladblok vak 1: leeg', 'Kladblok vak 2: leeg']);
-      await press(/^Kladblok vak 2:/, 'Volgende');
-      expect(screen.getByRole('button', { name: 'OK' })).toBeTruthy();
-    });
-  });
+    });  });
 });

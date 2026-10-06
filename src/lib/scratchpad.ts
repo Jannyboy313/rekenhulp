@@ -1,33 +1,46 @@
-import { INPUT_MODELS, type KeyDef } from './inputModels';
+import { INPUT_MODELS, okSpan, type KeyDef } from './inputModels';
 import type { KeypadKey } from './keypadInput';
 import type { AnswerKind, Topic } from './types';
 
-/** Kladblok cells in a 2×2 grid, in reading order (spec §3.6). */
-export const NOTE_COUNT = 4;
+/** Kladblok cells in a grid of 2 columns and 3 rows, in reading order (spec §3.6). */
+export const NOTE_COUNT = 6;
 
-/** Short screens show only the top row, so the keypad stays on screen (spec §3.6). */
-export const SHORT_NOTE_COUNT = 2;
-
-/** Viewports lower than 760 px; see the height estimate in the kladblok plan. */
-export const SHORT_SCREEN_QUERY = '(max-height: 759px)';
+/** A cell holds a few numbers; it clips on the left, so this only bounds the string. */
+export const MAX_NOTE_LENGTH = 40;
 
 export const EMPTY_NOTES: readonly string[] = Object.freeze(Array<string>(NOTE_COUNT).fill(''));
 
-/** The kladblok holds numbers only and types them on the standard number keypad. */
-export const NOTE_KEYS: readonly KeyDef[] = INPUT_MODELS.number.keys;
+/** The standard number keypad, with a spatie in the place of OK (spec §3.6). */
+export const NOTE_KEYS: readonly KeyDef[] = [
+  ...INPUT_MODELS.number.keys,
+  { key: ' ', label: 'spatie', span: okSpan(INPUT_MODELS.number.keys) },
+];
 
-/** The cell after `index` for Volgende, or null for the answer field after the last one. */
-export function nextNote(index: number, count: number): number | null {
-  return index + 1 < count ? index + 1 : null;
+/**
+ * One key typed into a note: numbers separated by single spaces. Every key except backspace
+ * edits the last number with the number reducer, so `−` and `,` apply to that number only.
+ */
+export function applyNote(note: string, key: KeypadKey): string {
+  if (key === 'backspace') return note.slice(0, -1);
+  const start = note.lastIndexOf(' ') + 1;
+  const last = note.slice(start);
+  // A space only ends a number that has a digit: never leading, never two in a row.
+  const next =
+    key === ' '
+      ? /\d/.test(last)
+        ? `${note} `
+        : note
+      : note.slice(0, start) + INPUT_MODELS.number.apply(last, key);
+  return next.length > MAX_NOTE_LENGTH ? note : next;
 }
 
-/** New notes with one key typed into cell `index`, using the number reducer. */
+/** New notes with one key typed into cell `index`. */
 export function applyNoteKey(
   notes: readonly string[],
   index: number,
   key: KeypadKey,
 ): readonly string[] {
-  return notes.map((note, i) => (i === index ? INPUT_MODELS.number.apply(note, key) : note));
+  return notes.map((note, i) => (i === index ? applyNote(note, key) : note));
 }
 
 /** Tables are practised from memory, and Ja/Nee steps have no keypad (spec §3.6). */
@@ -37,11 +50,9 @@ export function showsScratchpad(topic: Topic, kind: AnswerKind): boolean {
 
 /** How KeypadAnswer hands the keypad to the kladblok. */
 export interface ScratchpadInput {
-  /** A cell is active: the keypad types there and OK is Volgende. */
+  /** A cell is active: the keypad types there, with a spatie instead of OK. */
   active: boolean;
   onkey(key: KeypadKey): void;
-  /** Volgende: the next cell, or back to the answer field after the last one. */
-  onnext(): void;
   /** The answer field was tapped while a cell was active. */
   onfocusanswer(): void;
 }
