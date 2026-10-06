@@ -768,6 +768,8 @@ The keypad is custom. The system keyboard is never opened.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
   a superscript. The feedback and the results show the given answer the same way.
 - `OK` is disabled only while the input is empty.
+- Ja/Nee keeps the layout of a keypad step: the buttons sit at the bottom and the prompt stays at
+  the height it has above a number keypad, so it does not jump between questions.
 - Input that cannot be submitted, such as `−`, `25/0` or `2 ×`, gives an inline error and does
   **not** count as the attempt: "Ongeldig getal" for number and fraction, "Ongeldige
   ontbinding" for factorization and "Ongeldige som" for expressions. The error disappears at

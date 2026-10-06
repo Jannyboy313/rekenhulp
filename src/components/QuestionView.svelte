@@ -107,10 +107,14 @@
     font-size: 1.375rem;
   }
 
+  /* As tall as the number answer field plus keypad (4 + 2.25 + 17 rem), with the buttons at the
+     bottom, so the prompt stays at the height it has in keypad steps (spec §6). */
   .choices {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    align-content: end;
     gap: 0.75rem;
+    min-height: 23.25rem;
   }
 
   .choice {
