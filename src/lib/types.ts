@@ -28,6 +28,8 @@ export interface CheckResult {
   correct: boolean;
   /** Correct answer, formatted for display. */
   expected: string;
+  /** The likely mistake, only for a wrong answer that parsed (spec §3.4.1). */
+  tip?: string;
   explanation?: string;
 }
 

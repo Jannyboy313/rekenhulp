@@ -268,3 +268,49 @@ describe('rewriteStep', () => {
     expect(step.check('7×')).toEqual({ correct: false, expected: example });
   });
 });
+
+describe('number step tips', () => {
+  const base = { prompt: '7 × 8 = ?', answer: fromInteger(56) };
+
+  it('uses the step diagnosis first', () => {
+    const step = numberStep({
+      ...base,
+      diagnose: (given) => (given.num === 63n ? 'rij' : undefined),
+    });
+    expect(step.check('63').tip).toBe('rij');
+  });
+
+  it('falls back to the factor-of-ten tip', () => {
+    const step = numberStep({ ...base, diagnose: () => undefined });
+    expect(step.check('560').tip).toBe(
+      'Je antwoord is 10 keer te groot. Let op de komma en het aantal nullen.',
+    );
+    expect(step.check('57').tip).toBeUndefined();
+  });
+
+  it('skips the fallback when asked', () => {
+    const step = numberStep({ ...base, noPowerOfTenTip: true });
+    expect(step.check('560').tip).toBeUndefined();
+  });
+
+  it('gives no tip for a correct or unparsable answer', () => {
+    let calls = 0;
+    const step = numberStep({
+      ...base,
+      diagnose: () => {
+        calls++;
+        return 'tip';
+      },
+    });
+    expect(step.check('56').tip).toBeUndefined();
+    expect(step.check(',').tip).toBeUndefined();
+    expect(calls).toBe(0);
+  });
+
+  it('applies to fraction steps too', () => {
+    const step = fractionStep({ prompt: '? %', answer: rational(25n, 2n) });
+    expect(step.check('125').tip).toBe(
+      'Je antwoord is 10 keer te groot. Let op de komma en het aantal nullen.',
+    );
+  });
+});

@@ -10,6 +10,7 @@ import {
   parseMixedNumber,
   type Rational,
 } from './rational';
+import { powerOfTenTip, type Diagnose } from './tips';
 import type { AnswerKind, Step } from './types';
 
 export interface NumberStepOptions {
@@ -20,6 +21,10 @@ export interface NumberStepOptions {
   /** Overrides the shown correct answer, e.g. '25,50' for money. */
   expected?: string;
   explanation?: string;
+  /** Names the likely mistake of a wrong answer (spec §3.4.1); tried before the fallback. */
+  diagnose?: Diagnose;
+  /** Skips the factor-of-ten fallback, e.g. when the answer is an exponent. */
+  noPowerOfTenTip?: boolean;
 }
 
 /** Turns keypad input into a value. A fraction step also accepts 'a/b' and '12 1/2' (spec §6). */
@@ -47,7 +52,7 @@ function formatFractionAnswer(answer: Rational): string {
 
 function exactStep(
   kind: AnswerKind,
-  { prompt, answer, prefix, suffix, explanation }: NumberStepOptions,
+  { prompt, answer, prefix, suffix, explanation, diagnose, noPowerOfTenTip }: NumberStepOptions,
   expected: string,
 ): Step {
   return {
@@ -57,7 +62,12 @@ function exactStep(
     suffix,
     check(input) {
       const given = parseAnswer(kind, input);
-      return { correct: given !== null && equals(given, answer), expected, explanation };
+      if (given !== null && equals(given, answer)) return { correct: true, expected, explanation };
+      const tip =
+        given === null
+          ? undefined
+          : (diagnose?.(given) ?? (noPowerOfTenTip ? undefined : powerOfTenTip(given, answer)));
+      return { correct: false, expected, tip, explanation };
     },
   };
 }
