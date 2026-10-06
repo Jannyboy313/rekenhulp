@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { formatInput } from '../lib/format';
-  import { applyKey, type KeypadKey } from '../lib/keypadInput';
-  import { parseAnswer } from '../lib/steps';
+  import { INPUT_MODELS } from '../lib/inputModels';
+  import type { KeypadKey } from '../lib/keypadInput';
+  import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
   import Keypad from './Keypad.svelte';
 
@@ -12,26 +12,50 @@
 
   let { step, onanswer }: Props = $props();
 
+  // Ja/Nee has no keypad: a tap on a choice is the answer (spec §6).
+  const model = $derived(step.kind === 'boolean' ? null : INPUT_MODELS[step.kind]);
+
   let value = $state('');
-  const canSubmit = $derived(parseAnswer(step.kind, value) !== null);
+  let error = $state<string | null>(null);
+  // Guards against a double tap submitting twice before the feedback replaces this view.
+  let answered = false;
 
   function handleKey(key: KeypadKey) {
-    value = applyKey(value, key);
+    if (model === null) return;
+    value = model.apply(value, key);
+    error = null;
   }
 
   function submit() {
-    if (canSubmit) onanswer(value, step.check(value));
+    if (model === null || value === '') return;
+    error = model.validate(value);
+    if (error === null) answer(value);
+  }
+
+  function answer(input: string) {
+    if (answered) return;
+    answered = true;
+    onanswer(input, step.check(input));
   }
 </script>
 
 <div class="question">
   <p class="prompt">{step.prompt}</p>
-  <output class="answer" aria-label="Jouw antwoord" aria-live="off"
-    >{#if step.prefix}<span class="prefix">{step.prefix}</span>{/if}{value === ''
-      ? '?'
-      : formatInput(value)}{#if step.suffix}<span class="suffix">{step.suffix}</span>{/if}</output
-  >
-  <Keypad kind={step.kind} {canSubmit} onkey={handleKey} onsubmit={submit} />
+  {#if model}
+    <output class="answer" aria-label="Jouw antwoord" aria-live="off"
+      >{#if step.prefix}<span class="prefix">{step.prefix}</span>{/if}{value === ''
+        ? '?'
+        : model.display(value)}{#if step.suffix}<span class="suffix">{step.suffix}</span>{/if}</output
+    >
+    <p class="error" role="alert">{error ?? ''}</p>
+    <Keypad {model} canSubmit={value !== ''} onkey={handleKey} onsubmit={submit} />
+  {:else}
+    <div class="choices">
+      {#each [YES, NO] as choice (choice)}
+        <button type="button" class="choice" onclick={() => answer(choice)}>{choice}</button>
+      {/each}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -69,5 +93,29 @@
   .prefix {
     margin-right: 0.5rem;
     color: var(--muted);
+  }
+
+  .error {
+    min-height: 1.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--wrong);
+  }
+
+  .choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  .choice {
+    min-height: 6rem;
+    font-size: 2rem;
+    font-weight: 600;
+    background: var(--key);
+  }
+
+  .choice:active {
+    background: var(--key-active);
   }
 </style>

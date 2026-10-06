@@ -85,6 +85,7 @@
   {#if feedback}
     <Feedback
       prompt={step.prompt}
+      kind={step.kind}
       input={feedback.input}
       result={feedback.result}
       onnext={handleNext}

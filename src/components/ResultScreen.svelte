@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { formatDuration, formatInput, formatSeconds } from '../lib/format';
+  import { formatDuration, formatSeconds } from '../lib/format';
+  import { displayAnswer } from '../lib/inputModels';
   import type { SessionSummary } from '../lib/results';
   import type { PracticeSet } from '../lib/types';
 
@@ -16,7 +17,10 @@
   const wrongSteps = $derived(
     summary.mistakes.flatMap((record) =>
       record.attempts
-        .map((attempt, index) => ({ prompt: record.question.steps[index]?.prompt ?? '', attempt }))
+        .map((attempt, index) => {
+          const step = record.question.steps[index];
+          return { prompt: step?.prompt ?? '', kind: step?.kind ?? 'number', attempt };
+        })
         .filter(({ attempt }) => !attempt.result.correct),
     ),
   );
@@ -43,10 +47,10 @@
     {#if wrongSteps.length > 0}
       <h2>Fouten</h2>
       <ul class="mistakes">
-        {#each wrongSteps as { prompt, attempt }, index (index)}
+        {#each wrongSteps as { prompt, kind, attempt }, index (index)}
           <li>
             <p class="prompt">{prompt}</p>
-            <p>Jouw antwoord: <strong>{formatInput(attempt.input)}</strong></p>
+            <p>Jouw antwoord: <strong>{displayAnswer(kind, attempt.input)}</strong></p>
             <p>Juist antwoord: <strong>{attempt.result.expected}</strong></p>
             {#if attempt.result.explanation}
               <p class="explanation">{attempt.result.explanation}</p>

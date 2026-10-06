@@ -3,17 +3,18 @@
 </script>
 
 <script lang="ts">
-  import { formatInput } from '../lib/format';
-  import type { CheckResult } from '../lib/types';
+  import { displayAnswer } from '../lib/inputModels';
+  import type { AnswerKind, CheckResult } from '../lib/types';
 
   interface Props {
     prompt: string;
+    kind: AnswerKind;
     input: string;
     result: CheckResult;
     onnext: () => void;
   }
 
-  let { prompt, input, result, onnext }: Props = $props();
+  let { prompt, kind, input, result, onnext }: Props = $props();
 
   let nextButton: HTMLButtonElement | undefined = $state();
 
@@ -37,7 +38,7 @@
       <p class="verdict">Fout</p>
       <dl>
         <dt>Jouw antwoord</dt>
-        <dd>{formatInput(input)}</dd>
+        <dd>{displayAnswer(kind, input)}</dd>
         <dt>Juist antwoord</dt>
         <dd>{result.expected}</dd>
       </dl>

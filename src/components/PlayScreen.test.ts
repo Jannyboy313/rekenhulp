@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fromInteger } from '../lib/rational';
 import { isCorrect, type QuestionRecord } from '../lib/results';
 import { TABLES_SET } from '../lib/sets';
-import { numberStep } from '../lib/steps';
+import { booleanStep, numberStep } from '../lib/steps';
 import type { Question } from '../lib/types';
 import PlayScreen from './PlayScreen.svelte';
 
@@ -80,5 +80,24 @@ describe('PlayScreen', () => {
     await press('2', 'Stop');
     expect(onfinish).toHaveBeenCalledOnce();
     expect(onfinish.mock.calls[0]![0]).toHaveLength(1);
+  });
+
+  it('takes a Ja/Nee answer with one tap and shows it in the feedback', async () => {
+    const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
+    const prime: Question = {
+      key: 'prime:91',
+      topic: 'tables',
+      steps: [
+        booleanStep({ prompt: 'Is 91 een priemgetal?', answer: false, explanation: '91 = 7 × 13' }),
+      ],
+    };
+    render(PlayScreen, { props: { set: TABLES_SET, questions: [prime], onfinish } });
+    await press('Ja');
+    expect(screen.getByText('Fout')).toBeTruthy();
+    expect(screen.getByText('Ja')).toBeTruthy();
+    expect(screen.getByText('Nee')).toBeTruthy();
+    expect(screen.getByText('91 = 7 × 13')).toBeTruthy();
+    await press('Verder');
+    expect(onfinish).toHaveBeenCalledOnce();
   });
 });
