@@ -7,6 +7,7 @@ import {
   generateVolume,
 } from './measurement';
 import { generateNumberUnits } from './numberUnits';
+import { generateGcd, generateLcm } from './numberTheory';
 import { generatePercentages } from './percentages';
 import { generateRatios } from './ratios';
 import { generateTables } from './tables';
@@ -21,6 +22,8 @@ export const GENERATORS: Record<Topic, Generator> = {
   numberUnits: generateNumberUnits,
   percentages: generatePercentages,
   ratios: generateRatios,
+  lcm: generateLcm,
+  gcd: generateGcd,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -34,4 +37,6 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
+  lcm: 'KGV (kleinste gemene veelvoud)',
+  gcd: 'GGD (grootste gemene deler)',
 };

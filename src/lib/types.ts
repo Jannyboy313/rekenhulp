@@ -13,7 +13,9 @@ export type Topic =
   | 'time'
   | 'numberUnits'
   | 'percentages'
-  | 'ratios';
+  | 'ratios'
+  | 'lcm'
+  | 'gcd';
 
 export interface CheckResult {
   correct: boolean;
