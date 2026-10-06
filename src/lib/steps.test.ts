@@ -169,9 +169,12 @@ describe('parseFactorization', () => {
     expect(parseFactorization('84')).toEqual([{ base: 84n, exponent: 1n }]);
   });
 
-  it.each(['', '2×', '2^', '2,5×2', '2^1,5', '2+3', '(2)'])('rejects %j', (input) => {
-    expect(parseFactorization(input)).toBeNull();
-  });
+  it.each(['', '2×', '2^', '2,5×2', '2^1,5', '2+3', '(2)', '-2', '2×(-3)'])(
+    'rejects %j',
+    (input) => {
+      expect(parseFactorization(input)).toBeNull();
+    },
+  );
 });
 
 describe('factorizationStep', () => {
