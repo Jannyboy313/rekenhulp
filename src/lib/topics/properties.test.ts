@@ -39,6 +39,17 @@ function expectRoundPair(x: number, y: number) {
   expect(ROUND_PAIRS.some(([p, q]) => p === x && q === y)).toBe(true);
 }
 
+/** The useful step is unique (spec §5.11): `free` adds up to no multiple of 10 with x or y. */
+function expectOnlyRoundSum(free: number, x: number, y: number) {
+  expect([x % 10, y % 10]).not.toContain(free % 10);
+}
+
+/** The useful step is unique (spec §5.11): `free` times x or y is no multiple of 100. */
+function expectOnlyRoundProduct(free: number, x: number, y: number) {
+  expect((free * x) % 100).not.toBe(0);
+  expect((free * y) % 100).not.toBe(0);
+}
+
 /** The seven templates of spec §5.11, recognised by the shape of the text. */
 const SHAPES: { pattern: RegExp; check: (numbers: number[]) => void }[] = [
   {
@@ -71,6 +82,7 @@ const SHAPES: { pattern: RegExp; check: (numbers: number[]) => void }[] = [
     check: ([a = NaN, b = NaN, c = NaN]) => {
       expectFree(a, 11, 99);
       expectHundredPair(b, c);
+      expectOnlyRoundSum(a, b, c);
     },
   },
   {
@@ -78,6 +90,7 @@ const SHAPES: { pattern: RegExp; check: (numbers: number[]) => void }[] = [
     check: ([a = NaN, b = NaN, c = NaN]) => {
       expectFree(a, 11, 49);
       expectRoundPair(b, c);
+      expectOnlyRoundProduct(a, b, c);
     },
   },
   {
@@ -86,6 +99,7 @@ const SHAPES: { pattern: RegExp; check: (numbers: number[]) => void }[] = [
       expectHundredPair(a, c);
       expectFree(b, 11, 99);
       expect(b).not.toBe(c);
+      expectOnlyRoundSum(b, a, c);
     },
   },
   {
@@ -94,6 +108,7 @@ const SHAPES: { pattern: RegExp; check: (numbers: number[]) => void }[] = [
       expectRoundPair(a, c);
       expectFree(b, 11, 49);
       expect(b).not.toBe(c);
+      expectOnlyRoundProduct(b, a, c);
     },
   },
 ];
@@ -179,6 +194,18 @@ describe('propertyQuestion', () => {
     );
     expect(value!.check('686').explanation).toBe(explanation);
   });
+
+  it('rejects a Basis question that does not ask the useful property', () => {
+    expect(() => propertyQuestion(timesNinetyEight, 'basis', 'commutative')).toThrow(RangeError);
+  });
+
+  it('rejects an example rewrite that does not parse', () => {
+    const broken: PropertyExercise = {
+      ...timesNinetyEight,
+      rewrites: { ...timesNinetyEight.rewrites, commutative: '98 ×' },
+    };
+    expect(() => propertyQuestion(broken, 'gevorderd', 'commutative')).toThrow(RangeError);
+  });
 });
 
 describe('generateProperties', () => {
@@ -195,9 +222,11 @@ describe('generateProperties', () => {
       expect(value!.prompt).toBe(`${text} = ?`);
       expect(question.key).toBe(`properties:${text}`);
 
+      // Unparsable input returns the expected answer (the example) without judging it.
       const example = rewrite!.check('').expected;
       expect(rewrite!.check(example).correct, example).toBe(true);
       const answer = evaluate(parse(text)!)!;
+      expect(answer.den).toBe(1n);
       const result = value!.check(String(answer.num));
       expect(result.correct).toBe(true);
       expect(result.explanation?.endsWith(` = ${formatInteger(answer.num)}`)).toBe(true);

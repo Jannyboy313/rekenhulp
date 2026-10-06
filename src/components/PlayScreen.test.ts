@@ -151,6 +151,7 @@ describe('PlayScreen', () => {
       'basis',
       'distributive',
     );
+    // The steps come from the question, not from the set: TABLES_SET only provides the header name.
     render(PlayScreen, { props: { set: TABLES_SET, questions: [property], onfinish } });
 
     await press('9', '8', 'keer', '7', 'OK');

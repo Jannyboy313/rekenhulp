@@ -62,17 +62,35 @@ function hundredPair(rng: Rng): [number, number] {
   return [first, 100 - first];
 }
 
-/** The free term of a round-sum template, unequal to the operand it may be swapped with. */
-function freeTerm(rng: Rng, other: number): number {
-  return randomIntWhere(rng, 11, 99, (value) => notRound(value) && value !== other);
+/**
+ * The free term of a round-sum template, in [11, 99]. It differs from the other terms (so a
+ * swap changes something) and does not end in the same digit as either of them, so it adds up
+ * to no multiple of 10 with them: the useful step stays unique (spec §5.11).
+ */
+function freeTerm(rng: Rng, others: readonly number[]): number {
+  return randomIntWhere(
+    rng,
+    11,
+    99,
+    (value) =>
+      notRound(value) && others.every((other) => value !== other && value % 10 !== other % 10),
+  );
 }
 
 /**
- * The free factor of a round-product template, unequal to the operand it may be swapped with.
- * At least 11, so the property is worth using (`5 × 3 × 20` is not).
+ * The free factor of a round-product template, in [11, 49], so the property is worth using
+ * (`5 × 3 × 20` is not). It differs from the other factors (so a swap changes something) and
+ * its product with either of them is no multiple of 100: the useful step stays unique
+ * (spec §5.11), so no `2 × 12 × 50` or `(12 × 25) × 4`.
  */
-function freeFactor(rng: Rng, other: number): number {
-  return randomIntWhere(rng, 11, 49, (value) => notRound(value) && value !== other);
+function freeFactor(rng: Rng, others: readonly number[]): number {
+  return randomIntWhere(
+    rng,
+    11,
+    49,
+    (value) =>
+      notRound(value) && others.every((other) => value !== other && (value * other) % 100 !== 0),
+  );
 }
 
 /** The seven templates of spec §5.11, each equally likely. */
@@ -123,7 +141,7 @@ export const PROPERTY_TEMPLATES: readonly ((rng: Rng) => PropertyExercise)[] = [
   // (a + b) + c with b + c = 100: (17 + 25) + 75
   (rng) => {
     const [b, c] = hundredPair(rng);
-    const a = freeTerm(rng, b);
+    const a = freeTerm(rng, [b, c]);
     return {
       text: `(${a} + ${b}) + ${c}`,
       intended: 'associative',
@@ -133,7 +151,7 @@ export const PROPERTY_TEMPLATES: readonly ((rng: Rng) => PropertyExercise)[] = [
   // (a × b) × c with b × c round: (13 × 25) × 4
   (rng) => {
     const [b, c] = pick(rng, ROUND_PAIRS);
-    const a = freeFactor(rng, b);
+    const a = freeFactor(rng, [b, c]);
     return {
       text: `(${a} × ${b}) × ${c}`,
       intended: 'associative',
@@ -143,7 +161,7 @@ export const PROPERTY_TEMPLATES: readonly ((rng: Rng) => PropertyExercise)[] = [
   // a + b + c with a + c = 100: 38 + 57 + 62
   (rng) => {
     const [a, c] = hundredPair(rng);
-    const b = freeTerm(rng, c);
+    const b = freeTerm(rng, [a, c]);
     return {
       text: `${a} + ${b} + ${c}`,
       intended: 'commutative',
@@ -153,7 +171,7 @@ export const PROPERTY_TEMPLATES: readonly ((rng: Rng) => PropertyExercise)[] = [
   // a × b × c with a × c round: 25 × 37 × 4
   (rng) => {
     const [a, c] = pick(rng, ROUND_PAIRS);
-    const b = freeFactor(rng, c);
+    const b = freeFactor(rng, [a, c]);
     return {
       text: `${a} × ${b} × ${c}`,
       intended: 'commutative',
@@ -171,18 +189,30 @@ export function applicableProperties(exercise: PropertyExercise): Property[] {
   return PROPERTIES.filter((property) => exercise.rewrites[property] !== undefined);
 }
 
-/** Step 1 applies `property`, step 2 asks for the value (spec §5.11). */
+/**
+ * Step 1 applies `property`, step 2 asks for the value (spec §5.11). Basis always asks the
+ * intended (useful) property.
+ */
 export function propertyQuestion(
   exercise: PropertyExercise,
   variant: Variant,
   property: Property,
 ): Question {
   const { text, intended, rewrites } = exercise;
+  if (variant === 'basis' && property !== intended) {
+    throw new RangeError(`Basis asks the useful property (${intended}), not ${property}: ${text}`);
+  }
   const original = parse(text);
   const value = original === null ? null : evaluate(original);
   const example = rewrites[property];
   const useful = parse(rewrites[intended] ?? '');
-  if (original === null || value === null || example === undefined || useful === null) {
+  if (
+    original === null ||
+    value === null ||
+    example === undefined ||
+    parse(example) === null ||
+    useful === null
+  ) {
     throw new RangeError(`Invalid property exercise: ${text}`);
   }
   return {
