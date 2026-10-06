@@ -20,7 +20,8 @@ export type RewriteReason =
 /** `detected`: every property of which the step is a single valid application. */
 export type RewriteResult =
   | { valid: true; detected: Property[]; reason: null }
-  | { valid: false; detected: Property[]; reason: RewriteReason };
+  | { valid: false; detected: [Property, ...Property[]]; reason: 'otherProperty' }
+  | { valid: false; detected: Property[]; reason: Exclude<RewriteReason, 'otherProperty'> };
 
 /** Whether `rewritten` is a single valid application of `property` to `original` (§7.1). */
 export function checkRewrite(
@@ -28,9 +29,9 @@ export function checkRewrite(
   rewrittenInput: Expr,
   property: Property | 'any',
 ): RewriteResult {
-  const reject = (reason: RewriteReason, detected: Property[] = []): RewriteResult => ({
+  const reject = (reason: Exclude<RewriteReason, 'otherProperty'>): RewriteResult => ({
     valid: false,
-    detected,
+    detected: [],
     reason,
   });
   const original = dropRedundantGroups(originalInput);
@@ -48,7 +49,10 @@ export function checkRewrite(
   if (property === 'any' ? detected.length > 0 : detected.includes(property)) {
     return { valid: true, detected, reason: null };
   }
-  if (detected.length > 0) return reject('otherProperty', detected);
+  const [first, ...rest] = detected;
+  if (first !== undefined) {
+    return { valid: false, detected: [first, ...rest], reason: 'otherProperty' };
+  }
   const reordered = from.type === 'binary' && isPermutation(numbers(from), numbers(to));
   if (reordered) return reject('notForMinusOrDivide');
   if (isRewrittenNumber(from, to)) return reject('noProperty');

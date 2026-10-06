@@ -226,6 +226,8 @@ describe('applyExpressionKey', () => {
   it('deletes the last character', () => {
     expect(applyExpressionKey('7×(13', 'backspace')).toBe('7×(1');
     expect(applyExpressionKey('', 'backspace')).toBe('');
+    expect(applyExpressionKey(applyExpressionKey('(2)', 'backspace'), ')')).toBe('(2)');
+    expect(applyExpressionKey(applyExpressionKey('(2', 'backspace'), ')')).toBe('(');
   });
 
   it(`stops at ${MAX_EXPRESSION_LENGTH} characters`, () => {

@@ -8,7 +8,7 @@ import QuestionView from './QuestionView.svelte';
 
 const step = numberStep({ prompt: '3 × 4 = ?', answer: fromInteger(12) });
 
-// A stand-in rewrite step; the real factory (rewriteStep) follows in the next task.
+// A minimal expression step; rewriteStep itself is tested in steps.test.ts.
 const rewrite: Step = {
   kind: 'expression',
   prompt: 'Vereenvoudig in één stap: 7 × 98',

@@ -160,7 +160,10 @@ export interface RewriteStepOptions {
   property: Property;
   /** A valid rewrite with `property`, shown as the correct answer. */
   example: string;
-  /** The explanation for a valid step with another property, e.g. a hint at the useful one. */
+  /**
+   * The explanation for a valid step with another property, e.g. a hint at the useful one.
+   * Gets the first detected property, in PROPERTIES order.
+   */
   otherProperty: (detected: Property) => string;
 }
 
@@ -183,7 +186,7 @@ export function rewriteStep({
       if (result.valid) return { correct: true, expected: example };
       const explanation =
         result.reason === 'otherProperty'
-          ? otherProperty(result.detected[0]!)
+          ? otherProperty(result.detected[0])
           : REWRITE_MESSAGES[result.reason];
       return { correct: false, expected: example, explanation };
     },

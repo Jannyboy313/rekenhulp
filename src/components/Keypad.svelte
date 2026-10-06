@@ -47,7 +47,7 @@
 <style>
   .keypad {
     display: grid;
-    grid-template-columns: repeat(var(--columns), 1fr);
+    grid-template-columns: repeat(var(--columns, 3), 1fr);
     gap: 0.5rem;
   }
 
