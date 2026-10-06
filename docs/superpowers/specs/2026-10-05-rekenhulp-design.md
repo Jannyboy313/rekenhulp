@@ -72,7 +72,8 @@ The app is a state machine in `App.svelte` with four states:
 - The header shows the set name and a **Terug** button.
 - Below it is a list of the set's topics. For every set except Tafels, the list includes
   "15% tafels".
-- **Count:** 15, 25, 50, 75 or 100 exercises. The default is 15.
+- **Count:** 5, 10, 15, 25 or 50 exercises, shown as full-width options stacked in one column.
+  The default is 15.
 - A **Start** button.
 - The chosen count is kept in memory only while the app stays open; nothing is persisted.
 
@@ -82,7 +83,8 @@ deliberate longer sessions.
 ### 3.3 Playing
 
 - The header shows the set name, progress (`7 / 15`), the elapsed time (`mm:ss`, counting up,
-  no time limit) and a **Stop** button.
+  no time limit) and a **Stop** button. Stop is light red (the wrong-answer background with
+  the wrong-answer text colour), so it stands apart from the neutral buttons.
 - Stop ends the session immediately and goes to results. Results then cover only the answered
   exercises; the current, unanswered exercise is not counted.
 - The time spent on each exercise is recorded, measured from when it is shown until the final
@@ -418,16 +420,16 @@ There are four forms, each picked with equal probability:
 | Back to 100%        | `20% is 14. Hoeveel is 100%?`             | 70     |
 
 - `p ∈ {1, 2, 5, 10, 12½, 15, 20, 25, 30, 40, 50, 60, 75, 80, 90, 120, 150}`
-  - `12½` is written with the fraction glyph in prompts: `12½% van 80 = ?`.
+  - `12½` is written as a mixed number in prompts: `12` followed by a stacked `½` (§8).
   - Discount uses only `p < 100`; increase uses only `p ≤ 50`.
 - The whole (the 100% amount, or the price) is an integer in `[10, 1000]` with at most 2
   significant digits: `85`, `470` and `1000`, but not `487`.
 - Answers have at most 2 decimals. Per form:
   - **Part of a whole** and **discount / increase:** 80% of the answers are integers.
   - **What percentage:** the part and the whole are integers. The answer is `p`, so it is an
-    integer except for `12½`. This form uses the `fraction` answer kind (§6): `12,5` and
-    `25/2` are both correct, and so is any other equal value. All exercises of this form use it,
-    so the `/` key does not give away the answer.
+    integer except for `12½`. This form uses the `fraction` answer kind (§6): `12,5`, `25/2`
+    and `12 1/2` are all correct, and so is any other equal value. All exercises of this form
+    use it, so the breuk key does not give away the answer.
   - **Back to 100%:** the answer is the whole, so it is always an integer. In 80% of the
     exercises the given part is an integer as well; otherwise it has 1 or 2 decimals, e.g.
     `15% is 4,5. Hoeveel is 100%?`.
@@ -522,7 +524,7 @@ The keypad is custom. The system keyboard is never opened.
 | Answer kind        | Keys                                                           |
 |--------------------|----------------------------------------------------------------|
 | number             | `0–9`, `,`, `−`, `⌫`, `OK`                                      |
-| fraction           | number keys plus `/`                                           |
+| fraction           | number keys plus a **breuk** key (stacked-fraction icon)       |
 | boolean            | two large buttons: `Ja` / `Nee`; a tap submits at once, no `OK` |
 | expression         | number keys plus `+ − × : ( ) ^`                               |
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
@@ -540,9 +542,29 @@ The keypad is custom. The system keyboard is never opened.
   digits. `2^2×3×7` is shown as `2² × 3 × 7`.
 - Units are shown next to the input field, and the user never types them. `€` is a fixed
   prefix (`€ 45`); other units (`%`, `cm³`, …) are a fixed suffix.
-- **Fraction input** (introduced with Verhoudingen v1 for `12½%`): the user types `a/b`, e.g.
-  `25/2`, or a decimal (`12,5`). `/` is allowed once, after a digit, and not together with a
-  comma. Mixed numbers (`12 1/2`) cannot be typed. Any value equal to the answer is correct.
+- While the input is empty, the field shows `…` in the muted colour as a placeholder. Empty
+  fraction slots show the same placeholder.
+- Keys act on press (`pointerdown`), not on release, and show a pressed state on every
+  platform (incl. iOS Safari). Keyboard activation still works, and one press never counts
+  twice.
+- **Fraction input** (introduced with Verhoudingen v1 for `12½%`): a decimal (`12,5`), a
+  fraction (`25/2`) or a mixed number (`12 1/2`). Fractions are entered with a template:
+  - **breuk** on empty input opens an empty stacked template, with the cursor in the numerator.
+  - **breuk** after a whole number (`12`) keeps `12` as the whole part and opens the template
+    next to it, cursor in the numerator: a mixed number.
+  - Inside a template, **breuk** moves the cursor between numerator and denominator. Tapping a
+    slot in the input field selects it as well. The active slot is highlighted.
+  - **breuk** does nothing after a comma, and the comma does nothing once a template is open.
+  - `⌫` deletes the last digit of the active slot. In an empty denominator it moves the cursor
+    to the numerator; when both slots are empty it removes the template, leaving the whole part
+    (if any).
+  - `−` applies to the whole number: `−12 1/2` means −(12 + 1/2).
+  - `OK` is disabled while no digit has been entered. An empty slot or a zero denominator gives
+    "Ongeldig getal".
+  - An improper fraction in a mixed number (`12 5/3`) is valid input. Any value equal to the
+    answer is correct.
+  - The submitted input is a string: `25/2`, `12 1/2` or `12,5`, with `-` for the sign. Parsing,
+    checking and results work on that string.
 
 ## 7. Expression engine (`lib/expr`)
 
@@ -616,7 +638,12 @@ Required test cases (accept ✔ / reject ✘):
   - the minus sign is shown as `−` (U+2212)
   - money: `€`, a no-break space (U+00A0), then the amount; whole euros without decimals,
     otherwise 2 decimals (`€ 45`, `€ 25,50`)
-  - half percentages use the fraction glyph: `12½%`
+  - fractions are always shown stacked, as written by hand: numerator, a horizontal bar,
+    denominator. This applies to prompts, the input field, the feedback and the results.
+    Strings keep the text form `a/b` (and the glyph `½` in `12½%`). Only the UI renders them
+    stacked, with a hidden `/` so screen readers still read a fraction.
+  - mixed numbers show the whole part at normal height next to the stacked fraction: `12½%`
+    is rendered as `12` with a stacked `1/2`
 - **Language:** UI text is in Dutch. Code, comments, tests and documentation are in English.
 
 ## 9. Code structure
@@ -760,11 +787,16 @@ These are assumptions made while writing the spec. Each one is easy to change.
     four positions (§5.12, §5.13).
 13. ~~Getallen & delers~~ — confirmed: a tap on `Ja` or `Nee` submits at once (§6). A prime
     is explained as `Geen deler tot en met √n` with the actual number (§5.4).
+14. ~~Feedback round 1~~ — confirmed: `…` placeholder in muted grey; fractions shown stacked
+    everywhere, including `12½%` in prompts; a breuk key with a template that also builds mixed
+    numbers (`12 2/3`), improper parts allowed; counts 5, 10, 15, 25, 50 in one column; a light
+    red Stop button; keys act on press (§3.2, §3.3, §6, §8). The expected answer stays
+    `12,5 of 25/2` (stacked). Mixed numbers as expected answers wait for v2.
 
 ## 12. Roadmap (not in v1)
 
 - **v2 — Fractions** (in set *Verhoudingen*)
-  - The answer kind `fraction` (number keypad plus `/`, exact comparison via `rational.ts`)
+  - The answer kind `fraction` (number keypad plus breuk, exact comparison via `rational.ts`)
     already exists since Verhoudingen v1 (§6). v2 adds per-exercise judging of the simplified
     and the unsimplified form.
   - `fractionConversion`: fraction ↔ decimal ↔ percentage, e.g. `3/8 = ?`, `0,125 = ?%`,
