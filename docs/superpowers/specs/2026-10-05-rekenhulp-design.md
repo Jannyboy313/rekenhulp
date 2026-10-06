@@ -345,7 +345,7 @@ topic answers with a number unless stated otherwise.
   value 0 (no `(7 − 7)`).
 - The power base is spread evenly: per exercise, the exponent (2 or 3) and then the absolute
   value of the base (`[2, 12]` or `[2, 5]`) are drawn first, and the exercise is redrawn until
-  its power has exactly that base. Without this, `(a + b)²` would mostly get bases 10–12.
+  its power has exactly that base. Without this, `(a + b)²` would favour large bases.
 - The answer is an integer with `|answer| ≤ 500`. Negative answers are allowed.
 - Values are drawn at random and the exercise is redrawn (same template) until all of the above
   hold.
