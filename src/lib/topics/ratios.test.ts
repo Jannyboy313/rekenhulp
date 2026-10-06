@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { NO_BREAK_SPACE } from '../format';
 import { createRng } from '../random';
+import { fromInteger } from '../rational';
 import type { Question, Step } from '../types';
 import { NICE_WHOLES } from './percentages';
 import {
   divideExplanation,
+  divideTip,
   generateRatios,
   MAX_RATIO_TERM,
   MAX_SCALED_ANSWER,
@@ -13,8 +15,10 @@ import {
   MIN_COUNT,
   MIN_PART,
   missingTermExplanation,
+  missingTermTip,
   SCALING_CONTEXTS,
   scalingExplanation,
+  scalingTip,
   type ScalingContext,
 } from './ratios';
 
@@ -299,5 +303,45 @@ describe('every reachable case', () => {
         expect(Math.floor(MAX_TOTAL / (a + b)), `${a} : ${b}`).toBeGreaterThanOrEqual(MIN_PART);
       }
     }
+  });
+});
+
+describe('ratio tips', () => {
+  const additive =
+    'Bij een verhouding vermenigvuldig of deel je beide getallen met hetzelfde getal; het verschil blijft niet gelijk.';
+
+  it.each([
+    [0, -3],
+    [1, 11],
+    [2, 18],
+    [3, 14],
+  ])('names the additive answer for position %i', (position, given) => {
+    expect(missingTermTip([3, 5, 12, 20], position)(fromInteger(given))).toBe(additive);
+  });
+
+  it('names inverse and additive scaling', () => {
+    const up = scalingTip(4, 300, 6);
+    expect(up(fromInteger(200))).toBe(
+      'Je hebt omgekeerd geschaald: 6 is meer dan 4, dus het antwoord is meer dan 300.',
+    );
+    expect(up(fromInteger(302))).toBe(
+      'Je hebt het verschil in aantal opgeteld; bij een verhouding vermenigvuldig je.',
+    );
+    expect(scalingTip(6, 450, 4)(fromInteger(675))).toBe(
+      'Je hebt omgekeerd geschaald: 4 is minder dan 6, dus het antwoord is minder dan 450.',
+    );
+    expect(up(fromInteger(451))).toBeUndefined();
+  });
+
+  it('names the other part, one part, and dividing by one term', () => {
+    const tip = divideTip(60, 2, 3, true);
+    expect(tip(fromInteger(24))).toBe('Dat is het kleinste deel; gevraagd is het grootste.');
+    expect(tip(fromInteger(12))).toBe('Dat is 1 deel; het grootste deel is 3 delen.');
+    expect(tip(fromInteger(30))).toBe('Deel eerst door het totaal aantal delen: 2 + 3 = 5.');
+    expect(tip(fromInteger(20))).toBe('Deel eerst door het totaal aantal delen: 2 + 3 = 5.');
+    expect(tip(fromInteger(37))).toBeUndefined();
+    expect(divideTip(60, 2, 3, false)(fromInteger(36))).toBe(
+      'Dat is het grootste deel; gevraagd is het kleinste.',
+    );
   });
 });

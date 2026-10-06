@@ -1,8 +1,9 @@
 import { formatEuro, formatInteger } from '../format';
 import { gcd } from '../primes';
 import { pick, randomInt, type Rng } from '../random';
-import { fromInteger } from '../rational';
+import { divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
+import { positiveInteger, type Diagnose } from '../tips';
 import type { Question, Step } from '../types';
 import { NICE_WHOLES } from './percentages';
 
@@ -103,6 +104,7 @@ function missingTerm(rng: Rng): Question {
       prompt: `${shown.slice(0, 2).join(' : ')} = ${shown.slice(2).join(' : ')}`,
       answer: fromInteger(terms[position]!),
       explanation: missingTermExplanation(terms, position),
+      diagnose: missingTermTip(terms, position),
     }),
   );
 }
@@ -122,6 +124,54 @@ export function missingTermExplanation(terms: Terms, position: number): string {
   if (knownFactor === 1) return `${showPair(known)} = ${showPair(completed)} (× ${completedFactor})`;
   if (completedFactor === 1) return `${showPair(known)} = ${showPair(completed)} (: ${knownFactor})`;
   return `${showPair(known)} = ${showPair(simplified)} = ${showPair(completed)}`;
+}
+
+/** Equal differences instead of equal factors: 3 : 5 = 12 : 14 (spec §3.4.1). */
+export function missingTermTip(terms: Terms, position: number): Diagnose {
+  const [a, b, c, d] = terms;
+  const additive = [b - (d - c), a + (d - c), d - (b - a), c + (b - a)][position]!;
+  return (given) =>
+    equals(given, fromInteger(additive))
+      ? 'Bij een verhouding vermenigvuldig of deel je beide getallen met hetzelfde getal; het verschil blijft niet gelijk.'
+      : undefined;
+}
+
+/** Scaled the wrong way (amount × a : b), or the difference in count added. */
+export function scalingTip(a: number, amount: number, b: number): Diagnose {
+  const inverse = divide(fromInteger(amount * a), fromInteger(b));
+  const added = fromInteger(amount + (b - a));
+  const more = b > a ? 'meer' : 'minder';
+  return (given) => {
+    if (equals(given, inverse)) {
+      return `Je hebt omgekeerd geschaald: ${b} is ${more} dan ${a}, dus het antwoord is ${more} dan ${formatInteger(amount)}.`;
+    }
+    if (equals(given, added)) {
+      return 'Je hebt het verschil in aantal opgeteld; bij een verhouding vermenigvuldig je.';
+    }
+    return undefined;
+  };
+}
+
+/** The other part, one part, or the total divided by one term of the ratio. */
+export function divideTip(total: number, a: number, b: number, largest: boolean): Diagnose {
+  const unit = total / (a + b);
+  const asked = largest ? Math.max(a, b) : Math.min(a, b);
+  const other = a + b - asked;
+  const [askedName, otherName] = largest ? ['grootste', 'kleinste'] : ['kleinste', 'grootste'];
+  return (given) => {
+    const value = positiveInteger(given);
+    if (value === null) return undefined;
+    if (value === other * unit) {
+      return `Dat is het ${otherName} deel; gevraagd is het ${askedName}.`;
+    }
+    if (asked > 1 && value === unit) {
+      return `Dat is 1 deel; het ${askedName} deel is ${asked} delen.`;
+    }
+    if (value * a === total || value * b === total) {
+      return `Deel eerst door het totaal aantal delen: ${a} + ${b} = ${a + b}.`;
+    }
+    return undefined;
+  };
 }
 
 /** `Voor 4 personen: 300 g pasta. Hoeveel g voor 6 personen?` */
@@ -147,6 +197,7 @@ function scaling(rng: Rng): Question {
       prefix: context.prefix,
       suffix: context.suffix,
       explanation: scalingExplanation(a, amount, b),
+      diagnose: scalingTip(a, amount, b),
     }),
   );
 }
@@ -174,6 +225,7 @@ function divideInRatio(rng: Rng): Question {
       prompt: `Verdeel ${formatInteger(total)} in de verhouding ${a} : ${b}. Hoe groot is het ${largest ? 'grootste' : 'kleinste'} deel?`,
       answer: fromInteger(asked * unit),
       explanation: divideExplanation(total, a, b, asked),
+      diagnose: divideTip(total, a, b, largest),
     }),
   );
 }
