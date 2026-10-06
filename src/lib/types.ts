@@ -18,7 +18,8 @@ export type Topic =
   | 'gcd'
   | 'prime'
   | 'factorization'
-  | 'divisibility';
+  | 'divisibility'
+  | 'squares';
 
 export interface CheckResult {
   correct: boolean;

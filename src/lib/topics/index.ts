@@ -11,6 +11,7 @@ import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generatePercentages } from './percentages';
 import { generateRatios } from './ratios';
+import { generateSquares } from './squares';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -28,6 +29,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   prime: generatePrime,
   factorization: generateFactorization,
   divisibility: generateDivisibility,
+  squares: generateSquares,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -46,4 +48,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   prime: 'Priemgetal of niet (11 t/m 199)',
   factorization: 'Ontbinden in priemfactoren (12 t/m 200)',
   divisibility: 'Deelbaarheid door 2 t/m 15 (zonder 10)',
+  squares: 'Kwadraten en wortels (2² t/m 25²)',
 };
