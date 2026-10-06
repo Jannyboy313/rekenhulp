@@ -49,6 +49,9 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 - Tap targets are ≥ 48 px. Feedback is announced via `aria-live`.
 - Supports `prefers-color-scheme` (light/dark) and `prefers-reduced-motion`.
 - The system keyboard is never used for answers; the app has its own keypad (§6).
+- The screen stays on during a session (Screen Wake Lock API). The lock is requested again when
+  the app becomes visible after being hidden, and released when the session ends. Where the API
+  is missing or the request is refused, nothing is shown and the session works as usual.
 
 ## 3. Session flow
 
@@ -58,6 +61,11 @@ The app is a state machine in `App.svelte` with four states:
 - "Terug" moves from `setup` back to `sets`.
 - "Opnieuw" moves from `results` back to `playing`, with the same set and count.
 - "Menu" moves from `results` to `sets`.
+- The system back action (Android back button or gesture, iOS swipe back) never closes the app
+  from another screen. On `setup` and `results` it moves to `sets`, like Terug and Menu. During
+  `playing` it is ignored; only Stop ends a session. On `sets` it behaves as the system default.
+  Implementation: one history entry is kept above the start screen while the app is not on
+  `sets`; a `popstate` that consumes it is handled as back.
 
 ### 3.1 Set overview (start screen)
 
