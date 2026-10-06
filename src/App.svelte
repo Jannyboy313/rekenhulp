@@ -3,6 +3,7 @@
   import ResultScreen from './components/ResultScreen.svelte';
   import SetOverview from './components/SetOverview.svelte';
   import SetupScreen from './components/SetupScreen.svelte';
+  import { createBackGuard } from './lib/backGuard';
   import { createRng, randomSeed } from './lib/random';
   import { summarize, type QuestionRecord, type SessionSummary } from './lib/results';
   import { buildSession } from './lib/session';
@@ -19,6 +20,21 @@
   // Kept in memory only while the app is open (spec §3.2: nothing is persisted).
   let size = $state(DEFAULT_SESSION_SIZE);
 
+  // A system back never closes the app from another screen (spec §3).
+  const backGuard = createBackGuard(history);
+
+  $effect(() => {
+    if (screen.name === 'sets') backGuard.disarm();
+    else backGuard.arm();
+  });
+
+  function handlePopState() {
+    if (!backGuard.popped()) return;
+    // Ignored during a session: only Stop ends it.
+    if (screen.name === 'playing') backGuard.arm();
+    else showSets();
+  }
+
   function showSets() {
     screen = { name: 'sets' };
   }
@@ -31,6 +47,8 @@
     screen = { name: 'results', set, summary: summarize(records, totalMs) };
   }
 </script>
+
+<svelte:window onpopstate={handlePopState} />
 
 {#if screen.name === 'sets'}
   <SetOverview sets={PRACTICE_SETS} onselect={(set) => (screen = { name: 'setup', set })} />
