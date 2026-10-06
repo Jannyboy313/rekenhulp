@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { parse } from './expr/parser';
 import { fromInteger, rational } from './rational';
 import {
   booleanStep,
@@ -8,6 +9,7 @@ import {
   numberStep,
   parseAnswer,
   parseFactorization,
+  rewriteStep,
   YES,
 } from './steps';
 
@@ -210,5 +212,59 @@ describe('factorizationStep', () => {
     '2^99999999999999999999',
   ])('rejects %j', (input) => {
     expect(step.check(input).correct).toBe(false);
+  });
+});
+
+describe('rewriteStep', () => {
+  const example = '7 × 100 − 7 × 2';
+  const step = rewriteStep({
+    prompt: 'Vereenvoudig in één stap: 7 × 98',
+    original: parse('7 × 98')!,
+    property: 'distributive',
+    example,
+    otherProperty: (detected) => `Andere eigenschap: ${detected}`,
+  });
+
+  it('is an expression step', () => {
+    expect(step.kind).toBe('expression');
+    expect(step.prompt).toBe('Vereenvoudig in één stap: 7 × 98');
+  });
+
+  it('accepts a single valid application of the property', () => {
+    expect(step.check('7×100-7×2')).toEqual({ correct: true, expected: example });
+    expect(step.check('7×90+7×8').correct).toBe(true);
+  });
+
+  it('explains a valid step with another property with the given hint', () => {
+    expect(step.check('98×7')).toEqual({
+      correct: false,
+      expected: example,
+      explanation: 'Andere eigenschap: commutative',
+    });
+  });
+
+  it.each([
+    ['686', 'Schrijf een som op, niet alleen de uitkomst.'],
+    ['(7×98)', 'Er is niets veranderd.'],
+    ['7×100-7×3', 'Deze stap verandert de uitkomst.'],
+    ['7×(100-2)', 'Hier is nog geen eigenschap toegepast.'],
+    ['7×100-14', 'Dit zijn meerdere stappen.'],
+  ])('explains why %j is rejected', (input, explanation) => {
+    expect(step.check(input)).toEqual({ correct: false, expected: example, explanation });
+  });
+
+  it('explains a reordered subtraction', () => {
+    const minus = rewriteStep({
+      prompt: 'Pas de commutatieve eigenschap toe: 20 − 5 − 3',
+      original: parse('20 − 5 − 3')!,
+      property: 'commutative',
+      example: '—',
+      otherProperty: () => '',
+    });
+    expect(minus.check('20-3-5').explanation).toBe('Deze eigenschap geldt niet voor − en :.');
+  });
+
+  it('rejects input that does not parse, without an explanation', () => {
+    expect(step.check('7×')).toEqual({ correct: false, expected: example });
   });
 });

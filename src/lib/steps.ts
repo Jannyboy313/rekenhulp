@@ -1,4 +1,5 @@
 import { parse, type Expr } from './expr/parser';
+import { checkRewrite, type Property, type RewriteReason } from './expr/rewriteCheck';
 import { formatFraction, formatPrimeFactors, formatRational } from './format';
 import { isPrime, primeFactors } from './primes';
 import {
@@ -140,4 +141,51 @@ function isPrimeFactorizationOf(factors: readonly Factor[], value: number): bool
     }
   }
   return product === target;
+}
+
+/** Dutch reasons of spec §5.11; a valid step with another property gets the topic's own hint. */
+export const REWRITE_MESSAGES: Record<Exclude<RewriteReason, 'otherProperty'>, string> = {
+  valueOnly: 'Schrijf een som op, niet alleen de uitkomst.',
+  unchanged: 'Er is niets veranderd.',
+  valueChanged: 'Deze stap verandert de uitkomst.',
+  noProperty: 'Hier is nog geen eigenschap toegepast.',
+  multipleSteps: 'Dit zijn meerdere stappen.',
+  notForMinusOrDivide: 'Deze eigenschap geldt niet voor − en :.',
+};
+
+export interface RewriteStepOptions {
+  prompt: string;
+  /** The expression to rewrite. */
+  original: Expr;
+  property: Property;
+  /** A valid rewrite with `property`, shown as the correct answer. */
+  example: string;
+  /** The explanation for a valid step with another property, e.g. a hint at the useful one. */
+  otherProperty: (detected: Property) => string;
+}
+
+/** Step 1 of a property exercise: one valid application of `property` (spec §5.11, §7.1). */
+export function rewriteStep({
+  prompt,
+  original,
+  property,
+  example,
+  otherProperty,
+}: RewriteStepOptions): Step {
+  return {
+    kind: 'expression',
+    prompt,
+    check(input) {
+      const rewritten = parse(input);
+      // Validation keeps unparsable input away; should it get here, it is simply wrong.
+      if (rewritten === null) return { correct: false, expected: example };
+      const result = checkRewrite(original, rewritten, property);
+      if (result.valid) return { correct: true, expected: example };
+      const explanation =
+        result.reason === 'otherProperty'
+          ? otherProperty(result.detected[0]!)
+          : REWRITE_MESSAGES[result.reason];
+      return { correct: false, expected: example, explanation };
+    },
+  };
 }
