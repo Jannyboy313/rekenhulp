@@ -29,6 +29,13 @@ describe('gcd and lcm', () => {
     expect(gcd(0, 0)).toBe(0);
     expect(lcm(0, 5)).toBe(0);
   });
+
+  it('rejects arguments that are not safe integers', () => {
+    expect(() => gcd(Number.NaN, 2)).toThrow(RangeError);
+    expect(() => gcd(2, 1.5)).toThrow(RangeError);
+    expect(() => lcm(2, 1.5)).toThrow(RangeError);
+    expect(() => lcm(Number.POSITIVE_INFINITY, 2)).toThrow(RangeError);
+  });
 });
 
 describe('isPrime', () => {

@@ -56,11 +56,15 @@ const SUPERSCRIPT_DIGITS = '⁰¹²³⁴⁵⁶⁷⁸⁹';
 /** Superscript minus (U+207B). */
 const SUPERSCRIPT_MINUS = '⁻';
 
+/** Digit by digit, so a typed exponent of any length (or with a leading zero) is shown as is. */
+function superscriptDigits(digits: string): string {
+  return digits.replace(/\d/g, (digit) => SUPERSCRIPT_DIGITS.charAt(Number(digit)));
+}
+
 /** Writes an integer exponent in superscript: 12 → '¹²', −1 → '⁻¹'. */
 export function toSuperscript(exponent: number): string {
   if (!Number.isSafeInteger(exponent)) throw new RangeError(`Not a safe integer: ${exponent}`);
-  const digits = [...String(Math.abs(exponent))].map((digit) => SUPERSCRIPT_DIGITS[Number(digit)]);
-  return (exponent < 0 ? SUPERSCRIPT_MINUS : '') + digits.join('');
+  return (exponent < 0 ? SUPERSCRIPT_MINUS : '') + superscriptDigits(String(Math.abs(exponent)));
 }
 
 /** 10 with a superscript exponent, e.g. 10⁹ (spec §5.14). */
@@ -94,11 +98,6 @@ export function formatPrimeFactors(factors: readonly PrimePower[]): string {
   return factors
     .map(({ prime, exponent }) => formatInteger(prime) + (exponent === 1 ? '' : toSuperscript(exponent)))
     .join(' × ');
-}
-
-/** Digit by digit, so a typed exponent of any length (or with a leading zero) is shown as is. */
-function superscriptDigits(digits: string): string {
-  return digits.replace(/\d/g, (digit) => SUPERSCRIPT_DIGITS.charAt(Number(digit)));
 }
 
 /** Factorization keypad input '2^2×3×7' as '2² × 3 × 7'. A '^' without exponent stays visible. */

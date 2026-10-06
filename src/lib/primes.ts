@@ -1,5 +1,12 @@
+function assertSafeIntegers(...values: number[]): void {
+  for (const value of values) {
+    if (!Number.isSafeInteger(value)) throw new RangeError(`Not a safe integer: ${value}`);
+  }
+}
+
 /** Greatest common divisor; gcd(0, 0) = 0. */
 export function gcd(a: number, b: number): number {
+  assertSafeIntegers(a, b);
   let x = Math.abs(a);
   let y = Math.abs(b);
   while (y !== 0) [x, y] = [y, x % y];
@@ -8,6 +15,7 @@ export function gcd(a: number, b: number): number {
 
 /** Least common multiple; 0 when either number is 0. */
 export function lcm(a: number, b: number): number {
+  assertSafeIntegers(a, b);
   if (a === 0 || b === 0) return 0;
   return (Math.abs(a) / gcd(a, b)) * Math.abs(b);
 }
@@ -19,6 +27,7 @@ export function isPrime(n: number): boolean {
   return true;
 }
 
+/** Smallest prime that divides n (n itself when n is prime); throws for n < 2. */
 export function smallestPrimeFactor(n: number): number {
   if (!Number.isSafeInteger(n) || n < 2) throw new RangeError(`No prime factor: ${n}`);
   for (let d = 2; d * d <= n; d++) if (n % d === 0) return d;
