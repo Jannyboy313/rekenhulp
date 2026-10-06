@@ -89,6 +89,7 @@ deliberate longer sessions.
   exercises; the current, unanswered exercise is not counted.
 - The time spent on each exercise is recorded, measured from when it is shown until the final
   submission.
+- Most exercises show a kladblok (scratchpad) above the prompt (§3.6).
 
 ### 3.4 Feedback per exercise
 
@@ -105,6 +106,37 @@ deliberate longer sessions.
 - A list of wrong exercises, each showing the prompt, the user's answer, the correct answer
   and the explanation
 - Buttons **Opnieuw** (new session with the same set and count) and **Menu**
+
+### 3.6 Kladblok (scratchpad)
+
+A small scratchpad for remembering intermediate results while playing. It holds numbers only
+and uses the standard number keypad; it has no keys of its own.
+
+- **Layout:** 4 cells in a 2×2 grid, each 48 px high, between the header and the prompt. The
+  size is fixed: cells never grow, wrap to more lines or scroll.
+- **Short screens:** below a viewport height threshold (around 700 px, settled during
+  implementation), only the top row (2 cells) is shown, so the keypad never ends up below
+  the screen edge.
+- **When shown:** for every step that is not Ja/Nee, unless the question is a table exercise
+  (topic `tables`, including the tables mixed into other sets). Tables are practised from
+  memory.
+- **Focus:** tapping a cell makes it active; tapping the answer field, or a fraction slot in
+  it, makes the answer field active again. The active field has a `--primary` border. Every
+  new step starts with the answer field active.
+- **While a cell is active:**
+  - the keypad shows the number keys (`0–9`, `−`, `,`, `⌫`), whatever the answer kind, so it
+    loses the breuk key for fraction steps and changes from `× ^` to `− ,` for factorization
+  - keys edit that cell with the number reducer; `⌫` deletes the last character of the cell
+  - OK is labelled **Volgende** and is always enabled: it moves to the next cell in reading
+    order (1 → 2 → 3 → 4), and from cell 4 back to the answer field
+- A cell is never validated. It is shown formatted like the answer field (`2 500`, `0,25`, `−`
+  as typed). There is no button to clear the scratchpad.
+- **Lifetime:** the notes belong to one question. They stay across the steps of a two-step
+  question, including the feedback in between, and are empty again at the next question. The
+  feedback screen and the results do not show the scratchpad. Nothing is stored.
+- **Accessibility:** cells are buttons labelled `Kladblok vak 1: 900` (or `leeg`), with
+  `aria-pressed` for the active cell.
+- To make room, keypad keys are 3 rem (48 px) high instead of 3.5 rem.
 
 ## 4. Practice sets & session composition
 
@@ -656,7 +688,8 @@ src/
     SetOverview.svelte      start screen: set cards
     SetupScreen.svelte      topics of the chosen set + count selector + Start
     PlayScreen.svelte       header (progress, timer, Stop) + question/feedback loop
-    QuestionView.svelte     renders prompt + input for any answer kind
+    QuestionView.svelte     renders scratchpad + prompt + input for any answer kind
+    Scratchpad.svelte       the 2×2 kladblok cells (§3.6)
     Keypad.svelte           layout chosen by answer kind
     Feedback.svelte
     ResultScreen.svelte
@@ -667,6 +700,7 @@ src/
     steps.ts                step factories, e.g. numberStep (shared answer checking)
     keypadInput.ts          pure key → input-string reducers used by Keypad
     inputModels.ts          per answer kind: keys, reducer, validation, display (§6)
+    scratchpad.ts           kladblok: cell count, next cell, when it is shown (§3.6)
     primes.ts               gcd, lcm, isPrime, prime factorization (shared math helpers)
     results.ts              per-question records + session summary
     sets.ts                 practice set definitions (§4.1)
@@ -754,8 +788,9 @@ interface PracticeSet {
     - every topic is present when `r ≥ topics`
     - de-duplication works
     - output is deterministic with a fixed seed
-- **Component tests (`@testing-library/svelte`):** keypad input per answer kind, and the
-  feedback flow (auto-advance when correct, Verder when wrong).
+- **Component tests (`@testing-library/svelte`):** keypad input per answer kind, the
+  feedback flow (auto-advance when correct, Verder when wrong), and the kladblok (focus,
+  Volgende, keypad switch, hidden for tables and Ja/Nee, notes reset per question).
 - **Manual:** install the PWA on iOS Safari and Android Chrome, then verify offline mode.
 
 ## 11. Decisions to confirm during iteration
@@ -792,6 +827,10 @@ These are assumptions made while writing the spec. Each one is easy to change.
     numbers (`12 2/3`), improper parts allowed; counts 5, 10, 15, 25, 50 in one column; a light
     red Stop button; keys act on press (§3.2, §3.3, §6, §8). The expected answer stays
     `12,5 of 25/2` (stacked). Mixed numbers as expected answers wait for v2.
+15. ~~Kladblok~~ — confirmed: numbers only, on the standard number keypad; 4 cells in a 2×2
+    grid of fixed size, the user picks a cell by tapping; OK becomes Volgende; no clear button;
+    notes last one question; hidden for tables and Ja/Nee; keys 3 rem high; on short screens
+    only the top row (§3.6).
 
 ## 12. Roadmap (not in v1)
 
