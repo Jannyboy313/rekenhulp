@@ -115,6 +115,7 @@ describe('PlayScreen', () => {
       topic: 'percentages',
       steps: [numberStep({ prompt: '50% van 8 = ?', answer: fromInteger(4) })],
     };
+    // Visibility depends on the question's topic, not on the set, so TABLES_SET is fine here.
     render(PlayScreen, {
       props: { set: TABLES_SET, questions: [twoSteps, next], onfinish: vi.fn() },
     });

@@ -10,7 +10,8 @@
     /** The kladblok relabels OK as Volgende (spec §3.6). */
     okLabel?: string;
     onkey: (key: KeypadKey) => void;
-    onsubmit: () => void;
+    /** Called with the click count: 0 for keyboard activation, 2 or more for a repeated tap. */
+    onsubmit: (clickCount: number) => void;
   }
 
   let { keys, canSubmit, okLabel = 'OK', onkey, onsubmit }: Props = $props();
@@ -31,7 +32,7 @@
     class="key ok"
     style:grid-column="span {okSpan(keys)}"
     disabled={!canSubmit}
-    onclick={onsubmit}>{okLabel}</button
+    onclick={(event) => onsubmit(event.detail)}>{okLabel}</button
   >
 </div>
 

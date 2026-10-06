@@ -271,6 +271,7 @@ describe('QuestionView', () => {
     it('moves Volgende through the cells and back to the answer field', async () => {
       const onanswer = vi.fn();
       render(QuestionView, { props: { step, scratchpad: true, onanswer } });
+      await press('1', '2');
       await press(/^Kladblok vak 1:/, '1', 'Volgende', '2', 'Volgende', '3', 'Volgende', '4');
       expect(cellLabels()).toEqual([
         'Kladblok vak 1: 1',
@@ -282,7 +283,22 @@ describe('QuestionView', () => {
 
       await press('Volgende');
       expect(cell(4).getAttribute('aria-pressed')).toBe('false');
-      await press('1', '2', 'OK');
+      expect(onanswer).not.toHaveBeenCalled();
+      expect(answerText()).toBe('12');
+      await press('OK');
+      expect(onanswer).toHaveBeenCalledWith('12', { correct: true, expected: '12' });
+    });
+
+    it('does not submit on a repeated tap of the Volgende that returned to the answer', async () => {
+      const onanswer = vi.fn();
+      render(QuestionView, { props: { step, scratchpad: true, onanswer } });
+      await press('1', '2', /^Kladblok vak 4:/);
+      await fireEvent.click(screen.getByRole('button', { name: 'Volgende' }), { detail: 1 });
+      await fireEvent.click(screen.getByRole('button', { name: 'OK' }), { detail: 2 });
+      expect(onanswer).not.toHaveBeenCalled();
+      expect(answerText()).toBe('12');
+
+      await fireEvent.click(okButton(), { detail: 1 });
       expect(onanswer).toHaveBeenCalledWith('12', { correct: true, expected: '12' });
     });
 
@@ -293,6 +309,25 @@ describe('QuestionView', () => {
       await press('3');
       expect(answerText()).toBe('53');
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 7');
+    });
+
+    it('hands the keypad back on press without the follow-up click selecting a slot', async () => {
+      const percent = fractionStep({
+        prompt: '10 is ?% van 80',
+        answer: rational(25n, 2n),
+        suffix: '%',
+      });
+      render(QuestionView, { props: { step: percent, scratchpad: true, onanswer: vi.fn() } });
+      await press('breuk', '1', /^Kladblok vak 1:/);
+      await fireEvent.pointerDown(screen.getByRole('button', { name: 'Naar antwoordveld' }), {
+        button: 0,
+      });
+      await fireEvent.click(screen.getByRole('button', { name: /^noemer/ }), { detail: 1 });
+      expect(screen.queryByRole('button', { name: 'Naar antwoordveld' })).toBeNull();
+      expect(screen.getByRole('button', { name: /^teller/ }).getAttribute('aria-pressed')).toBe(
+        'true',
+      );
+      expect(screen.getByRole('button', { name: 'breuk' })).toBeTruthy();
     });
 
     it('swaps in the number keys for fraction and factorization steps', async () => {

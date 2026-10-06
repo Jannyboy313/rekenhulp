@@ -44,11 +44,13 @@
     scratch?.onfocusanswer();
   }
 
-  function submit() {
+  function submit(clickCount: number) {
     if (inNote) {
       scratch?.onnext();
       return;
     }
+    // A repeated tap is a Volgende that just returned here, not a submit (spec §3.6).
+    if (clickCount > 1) return;
     if (!model.canSubmit(value)) return;
     const input = model.toInput(value);
     error = model.validate(input);

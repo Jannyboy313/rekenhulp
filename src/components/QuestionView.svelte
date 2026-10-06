@@ -18,7 +18,7 @@
 
   interface Props {
     step: Step;
-    /** Whether this step shows the kladblok; PlayScreen decides per question (spec §3.6). */
+    /** Whether this step shows the kladblok; PlayScreen decides per step (topic and answer kind) (spec §3.6). */
     scratchpad?: boolean;
     /** The kladblok notes. PlayScreen binds them, so they outlive this step. */
     notes?: readonly string[];
