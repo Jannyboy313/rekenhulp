@@ -10,8 +10,9 @@ Read it before changing behaviour. If code and spec disagree, ask which one is w
 ## Status
 
 Implemented sets: **Tafels** (plan: `docs/superpowers/plans/2026-10-05-beta-tafels.md`), **Meten**
-(plan: `docs/superpowers/plans/2026-10-05-meten.md`) and **Verhoudingen** v1
-(plan: `docs/superpowers/plans/2026-10-05-verhoudingen.md`).
+(plan: `docs/superpowers/plans/2026-10-05-meten.md`), **Verhoudingen** v1
+(plan: `docs/superpowers/plans/2026-10-05-verhoudingen.md`) and **Getallen & delers**
+(plan: `docs/superpowers/plans/2026-10-06-getallen-delers.md`).
 Every other set gets its own implementation plan; do not start one until the user says so. To add a
 set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.
@@ -26,7 +27,7 @@ implementation plan per step:
 | 0 | **Tafels** | `tables` (§5.1) | — (beta foundation) | v1 | ✅ done |
 | 1 | **Meten** | `volume`, `area`, `length`, `mass`, `time` (§5.10), `numberUnits` (§5.14) | One shared conversion engine; number input + unit suffix only; superscript powers of 10 in prompts | v1 | ✅ done |
 | 2 | **Verhoudingen** (v1 part) | `percentages` (§5.12), `ratios` (§5.13) | `Step.prefix` (`€`); `fraction` input (`/` key) brought forward from v2 for `12½%` | v1 | ✅ done |
-| 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (see follow-ups); `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` parser (`×`, `^`) | v1 | planned |
+| 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (`lib/inputModels.ts`) with inline invalid-input errors; `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` tokenizer and parser (`×`, `^`) | v1 | ✅ done |
 | 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, rewrite checker; `expression` answer kind; negative literals; two-step questions | v1 | planned |
 | 5 | **Verhoudingen** (v2 part) | `fractionConversion`, `fractionArithmetic` (§12) | Judging simplified vs unsimplified fractions (the `fraction` input exists since set 2) | v2 | later |
 | 6 | **Toepassingen** | `speed`, `scale`, `average`, `geometry` (§12) | Context/word problems | v3 | later |
@@ -44,14 +45,13 @@ Workflow per set (new session each time):
 5. Update the Status column above when the set is done.
 
 Known follow-ups for the next plans:
-- **Before adding the `boolean`/`expression`/`factorization` answer kinds:** `QuestionView` picks
-  the parser via `parseAnswer(step.kind, …)` (`lib/steps.ts`), and `Keypad` adds `/` for
-  `fraction` steps, but keys, reducer and display are still shared by all kinds, and `Step` has
-  no "invalid input, attempt not consumed" path (spec §6 "Ongeldige som"). Introduce a per-kind
-  input model (keys, reducer, validate, display) and let `QuestionView` pick it by `step.kind`
-  first. Fraction input that is complete but invalid (e.g. 25/0) currently just keeps OK disabled
-  without a hint; Keypad.svelte's 'fraction ⇒ / key, narrow OK' branch is the spot to replace with
-  a per-kind key list.
+- **Bewerkingen (`expression` answer kind):** add an `expression` entry to `INPUT_MODELS`
+  (`lib/inputModels.ts`, with the "Ongeldige som" message) and extend `lib/expr/parser.ts`,
+  which so far only parses products of powers (`×`, `^`) over numbers, to the full §7 grammar.
+  `QuestionView`, `Feedback` and `ResultScreen` need no change for a new keypad kind. The parser
+  builds a left-associative binary `×` tree, while spec §7 wants n-ary `Sum`/`Product` chains and
+  `Group` nodes, so set 4 must add chains (e.g. in `lib/expr/chains.ts`) and flip the parser test
+  that currently rejects `(2)`.
 - Focus falls back to `body` after a screen or question change (keyboard/screen-reader users only).
 - Android splash uses the light `background_color` in dark mode (cosmetic).
 
@@ -112,13 +112,16 @@ src/
     random.ts           seedable RNG; every generator takes an rng argument
     steps.ts            step factories (numberStep, fractionStep) and parseAnswer — all answer
                         parsing and checking goes through here
-    keypadInput.ts      pure key → input reducer
+    keypadInput.ts      pure key → input reducers (numbers/fractions, factorizations)
+    inputModels.ts      per answer kind: keys, reducer, validate, display
+    primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary
     sets.ts             practice sets (config): topics + weights + tables share
     session.ts          builds a session: quotas, shuffle, de-duplication
     format.ts           Dutch number/expression formatting
     rational.ts         exact bigint fractions (expressions, unit conversions, input parsing)
-    expr/               tokenizer, parser (AST), evaluate, rewriteCheck
+    expr/               tokenizer, parser (AST; products of powers so far); evaluate and
+                        rewriteCheck follow with Bewerkingen
     topics/             one generator module per topic
 ```
 
