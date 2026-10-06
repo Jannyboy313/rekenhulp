@@ -114,9 +114,9 @@ and uses the standard number keypad; it has no keys of its own.
 
 - **Layout:** 4 cells in a 2×2 grid, each 48 px high, between the header and the prompt. The
   size is fixed: cells never grow, wrap to more lines or scroll.
-- **Short screens:** below a viewport height threshold (around 700 px, settled during
-  implementation), only the top row (2 cells) is shown, so the keypad never ends up below
-  the screen edge.
+- **Short screens:** on viewports lower than 760 px (`max-height: 759px`), only the top row
+  (2 cells) is shown, so the keypad does not end up below the screen edge. The threshold
+  comes from a height estimate (kladblok plan) and is checked on a phone.
 - **When shown:** for every step that is not Ja/Nee, unless the question is a table exercise
   (topic `tables`, including the tables mixed into other sets). Tables are practised from
   memory.
@@ -128,9 +128,9 @@ and uses the standard number keypad; it has no keys of its own.
     loses the breuk key for fraction steps and changes from `× ^` to `− ,` for factorization
   - keys edit that cell with the number reducer; `⌫` deletes the last character of the cell
   - OK is labelled **Volgende** and is always enabled: it moves to the next cell in reading
-    order (1 → 2 → 3 → 4), and from cell 4 back to the answer field
-- A cell is never validated. It is shown formatted like the answer field (`2 500`, `0,25`, `−`
-  as typed). There is no button to clear the scratchpad.
+    order (1 → 2 → 3 → 4), and from the last shown cell back to the answer field
+- A cell is never validated. It is shown like the answer field: as typed, with `−` for the
+  minus (`−5`, `0,25`, `2500`). There is no button to clear the scratchpad.
 - **Lifetime:** the notes belong to one question. They stay across the steps of a two-step
   question, including the feedback in between, and are empty again at the next question. The
   feedback screen and the results do not show the scratchpad. Nothing is stored.
