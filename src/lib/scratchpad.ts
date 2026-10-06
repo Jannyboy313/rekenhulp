@@ -1,4 +1,3 @@
-import { INPUT_MODELS } from './inputModels';
 import { MAX_INPUT_LENGTH, type KeypadKey } from './keypadInput';
 import { keyDefs, type KeyDef } from './keys';
 import type { AnswerKind, Topic } from './types';
@@ -11,11 +10,18 @@ export const MAX_NOTE_LENGTH = 40;
 
 export const EMPTY_NOTES: readonly string[] = Object.freeze(Array<string>(NOTE_COUNT).fill(''));
 
-/** The expression keypad plus comma, = and a spatie in the place of OK (spec §3.6). */
-export const NOTE_KEYS: readonly KeyDef[] = [
-  ...INPUT_MODELS.expression.keys,
-  ...keyDefs(',', '=', ' '),
-];
+/**
+ * The expression keypad plus comma, = and a spatie in the place of OK (spec §3.6). Listed on its
+ * own, so a change to the expression keypad does not break this layout.
+ */
+// prettier-ignore
+export const NOTE_KEYS: readonly KeyDef[] = keyDefs(
+  '7', '8', '9', '+',
+  '4', '5', '6', '-',
+  '1', '2', '3', '×',
+  '(', '0', ')', ':',
+  'backspace', ',', '=', ' ',
+);
 
 /** Four columns like the expression keypad; the keys fill all five rows. */
 export const NOTE_COLUMNS = 4;

@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest';
-import { INPUT_MODELS } from './inputModels';
 import type { KeypadKey } from './keypadInput';
 import {
   applyNoteKey,
@@ -93,15 +92,15 @@ describe('scratchpad', () => {
     expect(EMPTY_NOTES).toEqual(['', '', '', '', '', '']);
   });
 
-  it('uses the expression keys plus comma, = and a spatie in 4 full rows', () => {
+  it('lays out the expression keys plus comma, = and a spatie in 5 full rows of 4', () => {
     expect(NOTE_COLUMNS).toBe(4);
-    expect(NOTE_KEYS.slice(0, -3)).toEqual(INPUT_MODELS.expression.keys);
-    expect(NOTE_KEYS.slice(-3)).toEqual([
-      { key: ',', label: ',', ariaLabel: 'komma' },
-      { key: '=', label: '=', ariaLabel: 'is' },
-      { key: ' ', label: '␣', ariaLabel: 'spatie' },
+    expect(NOTE_KEYS.map(({ key }) => key)).toEqual([
+      '7', '8', '9', '+',
+      '4', '5', '6', '-',
+      '1', '2', '3', '×',
+      '(', '0', ')', ':',
+      'backspace', ',', '=', ' ',
     ]);
-    expect(NOTE_KEYS.length % NOTE_COLUMNS).toBe(0);
   });
 
   it('is shown for keypad steps, except for tables', () => {
