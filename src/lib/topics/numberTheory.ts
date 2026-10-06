@@ -3,6 +3,7 @@ import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes'
 import { pick, randomInt, type Rng } from '../random';
 import { fromInteger } from '../rational';
 import { booleanStep, factorizationStep, numberStep } from '../steps';
+import { positiveInteger, type Diagnose } from '../tips';
 import type { Question, Step, Topic } from '../types';
 
 /** LCM (spec §5.2). */
@@ -76,8 +77,26 @@ export function generateLcm(rng: Rng): Question {
       prompt: `KGV van ${formatInteger(a)} en ${formatInteger(b)} = ?`,
       answer: fromInteger(lcm(a, b)),
       explanation: lcmExplanation(a, b),
+      diagnose: lcmTip(a, b),
     }),
   );
+}
+
+/** KGV mistakes (spec §3.4.1): the GGD, a larger common multiple, or not a multiple of a or b. */
+export function lcmTip(a: number, b: number): Diagnose {
+  const divisor = gcd(a, b);
+  return (given) => {
+    const value = positiveInteger(given);
+    if (value === null) return undefined;
+    if (value === divisor) {
+      return 'Dat is de GGD. De KGV is het kleinste getal dat door allebei deelbaar is.';
+    }
+    const term = [a, b].find((candidate) => value % candidate !== 0);
+    if (term !== undefined) {
+      return `${formatInteger(value)} is geen veelvoud van ${formatInteger(term)}.`;
+    }
+    return `${formatInteger(value)} is een gemeenschappelijk veelvoud, maar niet het kleinste.`;
+  };
 }
 
 /** '12 = 2² × 3 en 18 = 2 × 3² → KGV = 2² × 3² = 36' */
@@ -98,6 +117,7 @@ export function generateGcd(rng: Rng): Question {
       prompt: `GGD van ${formatInteger(a)} en ${formatInteger(b)} = ?`,
       answer: fromInteger(gcd(a, b)),
       explanation: gcdExplanation(a, b),
+      diagnose: gcdTip(a, b),
     }),
   );
 }
@@ -122,6 +142,23 @@ function coprimeComposites(rng: Rng): Pair {
     const b = pick(rng, COPRIME_CANDIDATES);
     if (a !== b && gcd(a, b) === 1) return [a, b];
   }
+}
+
+/** GGD mistakes: the KGV, a smaller common divisor, or not a divisor of a or b. */
+export function gcdTip(a: number, b: number): Diagnose {
+  const multiple = lcm(a, b);
+  return (given) => {
+    const value = positiveInteger(given);
+    if (value === null) return undefined;
+    if (value === multiple) {
+      return 'Dat is de KGV. De GGD is het grootste getal waar allebei door deelbaar zijn.';
+    }
+    const term = [a, b].find((candidate) => candidate % value !== 0);
+    if (term !== undefined) {
+      return `${formatInteger(term)} is niet deelbaar door ${formatInteger(value)}.`;
+    }
+    return `${formatInteger(value)} is een gemeenschappelijke deler, maar niet de grootste.`;
+  };
 }
 
 /** '84 = 2² × 3 × 7 en 126 = 2 × 3² × 7 → GGD = 2 × 3 × 7 = 42' */

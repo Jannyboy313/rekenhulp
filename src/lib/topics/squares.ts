@@ -1,7 +1,8 @@
 import { formatInteger } from '../format';
 import { randomInt, type Rng } from '../random';
-import { fromInteger } from '../rational';
+import { divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
+import { positiveInteger, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Squares and square roots (spec §5.7).
@@ -27,8 +28,32 @@ export function generateSquares(rng: Rng): Question {
         prompt: form === 'square' ? `${formatInteger(n)}² = ?` : `√${formatInteger(square)} = ?`,
         answer: fromInteger(form === 'square' ? square : n),
         explanation: squareExplanation(n),
+        diagnose: form === 'square' ? squareTip(n) : rootTip(n),
       }),
     ],
+  };
+}
+
+/** n² answered with n × 2 (spec §3.4.1). */
+export function squareTip(n: number): Diagnose {
+  const shown = formatInteger(n);
+  return (given) =>
+    equals(given, fromInteger(2 * n))
+      ? `${shown}² is ${shown} × ${shown}, niet ${shown} × 2.`
+      : undefined;
+}
+
+/** √ answered with half the square, or with another number: show what that number squares to. */
+export function rootTip(n: number): Diagnose {
+  const square = formatInteger(n * n);
+  return (given) => {
+    if (equals(given, divide(fromInteger(n * n), fromInteger(2)))) {
+      return `√${square} is het getal dat keer zichzelf ${square} geeft, niet de helft.`;
+    }
+    const value = positiveInteger(given);
+    // Larger numbers get the factor-of-ten fallback; their square would be unreadable anyway.
+    if (value === null || value > 10_000) return undefined;
+    return `${formatInteger(value)} × ${formatInteger(value)} = ${formatInteger(value * value)}, niet ${square}.`;
   };
 }
 

@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes';
 import { createRng, type Rng } from '../random';
+import { fromInteger, rational } from '../rational';
 import { NO, YES } from '../steps';
 import type { Generator, Question, Step } from '../types';
 import {
   divisionLadder,
   FACTORIZATION_NUMBERS,
   gcdExplanation,
+  gcdTip,
   GCD_COPRIME_SHARE,
   generateFactorization,
   generateGcd,
@@ -15,6 +17,7 @@ import {
   HARD_COMPOSITES,
   LCM_SHARED_FACTOR_SHARE,
   lcmExplanation,
+  lcmTip,
   MAX_COMMON_FACTOR,
   MAX_FACTORIZATION,
   MAX_GCD_TERM,
@@ -319,5 +322,28 @@ describe('divisionLadder', () => {
       }
       expect(isPrime(steps.at(-1)![2])).toBe(true);
     }
+  });
+});
+
+describe('lcmTip and gcdTip', () => {
+  it('names the GCD, a larger common multiple and a non-multiple', () => {
+    const tip = lcmTip(12, 18);
+    expect(tip(fromInteger(6))).toBe(
+      'Dat is de GGD. De KGV is het kleinste getal dat door allebei deelbaar is.',
+    );
+    expect(tip(fromInteger(72))).toBe('72 is een gemeenschappelijk veelvoud, maar niet het kleinste.');
+    expect(tip(fromInteger(50))).toBe('50 is geen veelvoud van 12.');
+    expect(tip(fromInteger(48))).toBe('48 is geen veelvoud van 18.');
+    expect(tip(rational(7n, 2n))).toBeUndefined();
+  });
+
+  it('names the LCM, a smaller common divisor and a non-divisor', () => {
+    const tip = gcdTip(84, 126);
+    expect(tip(fromInteger(252))).toBe(
+      'Dat is de KGV. De GGD is het grootste getal waar allebei door deelbaar zijn.',
+    );
+    expect(tip(fromInteger(6))).toBe('6 is een gemeenschappelijke deler, maar niet de grootste.');
+    expect(tip(fromInteger(8))).toBe('84 is niet deelbaar door 8.');
+    expect(tip(fromInteger(4))).toBe('126 is niet deelbaar door 4.');
   });
 });

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
+import { fromInteger } from '../rational';
 import type { Question, Step } from '../types';
 import {
   generateSquares,
@@ -7,7 +8,9 @@ import {
   MEMORISE_SHARE,
   MIN_BASE,
   MIN_MEMORISE_BASE,
+  rootTip,
   squareExplanation,
+  squareTip,
 } from './squares';
 
 const SAMPLES = 3000;
@@ -99,5 +102,20 @@ describe('squareExplanation', () => {
         expect(second, text).toBe(n * units);
       }
     }
+  });
+});
+
+describe('square tips', () => {
+  it('names n × 2', () => {
+    expect(squareTip(17)(fromInteger(34))).toBe('17² is 17 × 17, niet 17 × 2.');
+    expect(squareTip(17)(fromInteger(290))).toBeUndefined();
+  });
+
+  it('names half the square, and checks other roots', () => {
+    expect(rootTip(14)(fromInteger(98))).toBe(
+      '√196 is het getal dat keer zichzelf 196 geeft, niet de helft.',
+    );
+    expect(rootTip(14)(fromInteger(15))).toBe('15 × 15 = 225, niet 196.');
+    expect(rootTip(14)(fromInteger(20000))).toBeUndefined();
   });
 });
