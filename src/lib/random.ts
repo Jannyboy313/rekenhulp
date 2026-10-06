@@ -25,6 +25,20 @@ export function randomInt(rng: Rng, min: number, max: number): number {
   return min + Math.floor(rng() * (max - min + 1));
 }
 
+/** Uniform integer in [min, max] that passes `accept`, by rejection. Throws if none turns up. */
+export function randomIntWhere(
+  rng: Rng,
+  min: number,
+  max: number,
+  accept: (value: number) => boolean,
+): number {
+  for (let attempt = 0; attempt < 1000; attempt++) {
+    const value = randomInt(rng, min, max);
+    if (accept(value)) return value;
+  }
+  throw new RangeError(`No accepted integer found in [${min}, ${max}]`);
+}
+
 export function pick<T>(rng: Rng, items: readonly T[]): T {
   if (items.length === 0) throw new RangeError('Cannot pick from an empty list');
   return items[Math.floor(rng() * items.length)]!;

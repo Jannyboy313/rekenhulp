@@ -20,7 +20,8 @@ export type Topic =
   | 'factorization'
   | 'divisibility'
   | 'squares'
-  | 'orderOfOperations';
+  | 'orderOfOperations'
+  | 'smartCalculation';
 
 export interface CheckResult {
   correct: boolean;

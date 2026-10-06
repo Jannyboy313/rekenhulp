@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createRng, pick, randomInt, randomSeed, shuffle } from './random';
+import { createRng, pick, randomInt, randomIntWhere, randomSeed, shuffle } from './random';
 
 describe('createRng', () => {
   it('is deterministic for the same seed', () => {
@@ -72,5 +72,21 @@ describe('shuffle', () => {
     expect(input).toEqual(copy);
     expect([...output].sort((x, y) => x - y)).toEqual(input);
     expect(output).not.toEqual(input);
+  });
+});
+
+describe('randomIntWhere', () => {
+  it('only returns accepted values from the range', () => {
+    const rng = createRng(5);
+    for (let i = 0; i < 1000; i++) {
+      const value = randomIntWhere(rng, 11, 99, (candidate) => candidate % 10 !== 0);
+      expect(value).toBeGreaterThanOrEqual(11);
+      expect(value).toBeLessThanOrEqual(99);
+      expect(value % 10).not.toBe(0);
+    }
+  });
+
+  it('throws when no value is accepted', () => {
+    expect(() => randomIntWhere(createRng(1), 1, 5, () => false)).toThrow(RangeError);
   });
 });

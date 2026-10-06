@@ -12,6 +12,7 @@ import { generateFactorization, generateGcd, generateLcm, generatePrime } from '
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
 import { generateRatios } from './ratios';
+import { generateSmartCalculation } from './smartCalculation';
 import { generateSquares } from './squares';
 import { generateTables } from './tables';
 
@@ -32,6 +33,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   divisibility: generateDivisibility,
   squares: generateSquares,
   orderOfOperations: generateOrderOfOperations,
+  smartCalculation: generateSmartCalculation,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -52,4 +54,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   divisibility: 'Deelbaarheid door 2 t/m 15 (zonder 10)',
   squares: 'Kwadraten en wortels (2² t/m 25²)',
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
+  smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
 };
