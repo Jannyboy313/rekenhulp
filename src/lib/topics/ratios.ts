@@ -1,4 +1,5 @@
 import { formatEuro, formatInteger } from '../format';
+import { gcd } from '../primes';
 import { pick, randomInt, type Rng } from '../random';
 import { fromInteger } from '../rational';
 import { numberStep } from '../steps';
@@ -62,10 +63,6 @@ export function generateRatios(rng: Rng): Question {
     case 'divide':
       return divideInRatio(rng);
   }
-}
-
-function gcd(a: number, b: number): number {
-  return b === 0 ? a : gcd(b, a % b);
 }
 
 /** p : q with p ≠ q, both in [1, 12], and gcd(p, q) = 1. */
