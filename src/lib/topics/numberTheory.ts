@@ -47,7 +47,10 @@ function showFactorized(value: number): string {
   return factors === number ? number : `${factors} = ${number}`;
 }
 
-/** All pairs a < b in [2, 60] with lcm ≤ 300 that do, or do not, share a factor. */
+/**
+ * All pairs a < b in [MIN_LCM_TERM, MAX_LCM_TERM] with lcm ≤ MAX_LCM that do, or do not, share a
+ * factor.
+ */
 function lcmPairs(shareFactor: boolean): Pair[] {
   const pairs: Pair[] = [];
   for (let a = MIN_LCM_TERM; a <= MAX_LCM_TERM; a++) {
@@ -200,7 +203,10 @@ export function generateFactorization(rng: Rng): Question {
   );
 }
 
-/** '84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7': divide by the smallest prime until a prime is left. */
+/**
+ * '84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7': divide by the smallest prime until a prime is left.
+ * n must be composite: a prime gives an empty ladder.
+ */
 export function divisionLadder(n: number): string {
   const steps: string[] = [];
   let rest = n;

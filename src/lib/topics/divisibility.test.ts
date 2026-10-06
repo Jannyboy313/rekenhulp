@@ -207,7 +207,10 @@ describe('every reachable case', () => {
         expect(text.endsWith(` → ${verdict} door ${divisor}`), text).toBe(true);
         if (!isCombined(divisor)) continue;
         const stated = [...text.matchAll(/(niet deelbaar|deelbaar) door (\d+) \(([^)]+)\)/gi)];
-        expect(stated.map((match) => Number(match[2])), text).toEqual([...COMBINED_FACTORS[divisor]]);
+        expect(
+          stated.map((match) => Number(match[2])),
+          text,
+        ).toEqual([...COMBINED_FACTORS[divisor]]);
         for (const [, partVerdict, factor, reason] of stated) {
           const rule = checkRule(n, Number(factor) as RuleDivisor);
           expect(partVerdict!.toLowerCase() === 'deelbaar', text).toBe(rule.divisible);

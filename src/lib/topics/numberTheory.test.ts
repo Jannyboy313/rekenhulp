@@ -28,7 +28,6 @@ import {
   MIN_PRIME_CANDIDATE,
   MULTIPLES_OF_THREE,
   primeExplanation,
-  primeFactorCount,
   PRIMES,
 } from './numberTheory';
 
@@ -276,7 +275,19 @@ describe('generateFactorization', () => {
     expect(FACTORIZATION_NUMBERS).toContain(84);
     expect(FACTORIZATION_NUMBERS).not.toContain(15);
     expect(FACTORIZATION_NUMBERS).not.toContain(49);
-    expect(FACTORIZATION_NUMBERS.every((n) => primeFactorCount(n) >= 3)).toBe(true);
+    const expected: number[] = [];
+    for (let n = 12; n <= 200; n++) {
+      let rest = n;
+      let count = 0;
+      for (let d = 2; d <= rest; d++) {
+        while (rest % d === 0) {
+          rest /= d;
+          count++;
+        }
+      }
+      if (count >= 3) expected.push(n);
+    }
+    expect(FACTORIZATION_NUMBERS).toEqual(expected);
   });
 
   it('shows the canonical form as the expected answer', () => {

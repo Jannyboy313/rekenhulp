@@ -4,7 +4,7 @@ import { fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
 
-/** Squares and square roots (spec §5.7). */
+// Squares and square roots (spec §5.7).
 export const MIN_BASE = 2;
 export const MAX_BASE = 25;
 /** 11² to 25² are the squares worth memorising. */
@@ -38,5 +38,7 @@ export function squareExplanation(n: number): string {
   const units = n % 10;
   const tens = n - units;
   if (n <= 10 || units === 0) return `${n}² = ${n} × ${n} = ${square}`;
-  return `${n}² = ${n} × ${tens} + ${n} × ${units} = ${n * tens} + ${n * units} = ${square}`;
+  const first = formatInteger(n * tens);
+  const second = formatInteger(n * units);
+  return `${n}² = ${n} × ${tens} + ${n} × ${units} = ${first} + ${second} = ${square}`;
 }

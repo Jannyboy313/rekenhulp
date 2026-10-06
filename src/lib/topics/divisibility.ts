@@ -122,7 +122,10 @@ function alternatingSum(digits: string): string {
   const terms = values.map((value, index) =>
     index === 0 ? String(value) : `${index % 2 === 1 ? MINUS : '+'} ${value}`,
   );
-  const sum = values.reduce((total, value, index) => (index % 2 === 0 ? total + value : total - value), 0);
+  const sum = values.reduce(
+    (total, value, index) => (index % 2 === 0 ? total + value : total - value),
+    0,
+  );
   return `${terms.join(' ')} = ${formatInteger(sum)}`;
 }
 

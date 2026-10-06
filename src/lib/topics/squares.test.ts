@@ -86,6 +86,7 @@ describe('squareExplanation', () => {
       expect(text.startsWith(`${n}² = `), text).toBe(true);
       expect(text.endsWith(` = ${n * n}`), text).toBe(true);
       const split = /× (\d+) \+ \d+ × (\d+) = (\d+) \+ (\d+) =/.exec(text);
+      if (n > 10 && n % 10 !== 0) expect(split, text).not.toBeNull();
       if (split) {
         const [tens, units, first, second] = split.slice(1).map(Number) as [
           number,
