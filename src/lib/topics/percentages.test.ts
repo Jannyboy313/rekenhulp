@@ -13,7 +13,7 @@ import {
   subtract,
   type Rational,
 } from '../rational';
-import { parseAnswer } from '../steps';
+import { fractionStep, parseAnswer } from '../steps';
 import type { Question, Step } from '../types';
 import {
   DISCOUNT_PERCENTAGES,
@@ -412,11 +412,40 @@ describe('percentage tips', () => {
 
   it('names the ratio as a decimal and the inverse', () => {
     const tip = whatPercentageTip(fromInteger(30), fromInteger(120));
-    expect(tip(n('0,25'))).toBe('Dat is het deel als kommagetal; × 100 geeft het percentage.');
+    const ratio = 'Dat is deel : geheel, nog geen percentage; × 100 geeft het percentage.';
+    expect(tip(n('0,25'))).toBe(ratio);
     const inverse = 'Je hebt het geheel door het deel gedeeld; reken deel : geheel.';
     expect(tip(fromInteger(4))).toBe(inverse);
     expect(tip(fromInteger(400))).toBe(inverse);
     expect(tip(fromInteger(26))).toBeUndefined();
+  });
+
+  it('gives the ratio tip to a fraction answer too', () => {
+    const step = fractionStep({
+      prompt: '30 is ?% van 120',
+      answer: fromInteger(25),
+      diagnose: whatPercentageTip(fromInteger(30), fromInteger(120)),
+    });
+    expect(step.check('1/4').tip).toBe(
+      'Dat is deel : geheel, nog geen percentage; × 100 geeft het percentage.',
+    );
+  });
+
+  it('gives no rest tip at 100% or more', () => {
+    // 120% van 80 = 96, so the "rest" is −16: no mistake anyone makes.
+    expect(partTip(p(120), fromInteger(80))(fromInteger(-16))).toBeUndefined();
+  });
+
+  it('gives no tip for an unrelated answer', () => {
+    expect(partTip(p(25), fromInteger(80))(fromInteger(7))).toBeUndefined();
+    expect(priceChangeTip(p(25), fromInteger(60), false)(fromInteger(1))).toBeUndefined();
+    expect(backToWholeTip(p(20), fromInteger(14))(fromInteger(5))).toBeUndefined();
+  });
+
+  it('names p% of a decimal part', () => {
+    expect(backToWholeTip(p(20), n('2,8'))(n('0,56'))).toBe(
+      'Je hebt 20% van 2,8 berekend, maar 2,8 is zelf al 20%. Reken terug naar 100%.',
+    );
   });
 
   it('names the change itself and the wrong direction', () => {

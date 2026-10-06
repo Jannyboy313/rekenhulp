@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
-import { fromInteger } from '../rational';
+import { fromInteger, rational } from '../rational';
+import { numberStep } from '../steps';
 import type { Question, Step } from '../types';
 import {
   generateSquares,
@@ -109,6 +110,42 @@ describe('square tips', () => {
   it('names n × 2', () => {
     expect(squareTip(17)(fromInteger(34))).toBe('17² is 17 × 17, niet 17 × 2.');
     expect(squareTip(17)(fromInteger(290))).toBeUndefined();
+  });
+
+  it('wires the n × 2 tip into generated squares', () => {
+    const rng = createRng(7);
+    let seen = 0;
+    for (let i = 0; i < 300; i++) {
+      const step = generateSquares(rng).steps[0]!;
+      const match = /^(\d+)² = \?$/.exec(step.prompt);
+      if (!match) continue;
+      const n = Number(match[1]);
+      // 2² = 2 × 2, so typing 4 is correct.
+      if (n === 2) continue;
+      seen++;
+      expect(step.check(String(2 * n)).tip).toBe(`${n}² is ${n} × ${n}, niet ${n} × 2.`);
+    }
+    expect(seen).toBeGreaterThan(50);
+  });
+
+  it('leaves a factor of ten off the root to the fallback', () => {
+    const step = numberStep({
+      prompt: '√196 = ?',
+      answer: fromInteger(14),
+      diagnose: rootTip(14),
+    });
+    expect(step.check('140').tip).toBe(
+      'Je antwoord is 10 keer te groot. Let op de komma en het aantal nullen.',
+    );
+    expect(step.check('1,4').tip).toBe(
+      'Je antwoord is 10 keer te klein. Let op de komma en het aantal nullen.',
+    );
+  });
+
+  it('names half the square for an odd root', () => {
+    expect(rootTip(15)(rational(225n, 2n))).toBe(
+      '√225 is het getal dat keer zichzelf 225 geeft, niet de helft.',
+    );
   });
 
   it('names half the square, and checks other roots', () => {

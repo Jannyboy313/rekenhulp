@@ -331,10 +331,50 @@ describe('lcmTip and gcdTip', () => {
     expect(tip(fromInteger(6))).toBe(
       'Dat is de GGD. De KGV is het kleinste getal dat door allebei deelbaar is.',
     );
-    expect(tip(fromInteger(72))).toBe('72 is een gemeenschappelijk veelvoud, maar niet het kleinste.');
+    expect(tip(fromInteger(72))).toBe(
+      '72 is een gemeenschappelijk veelvoud, maar niet het kleinste.',
+    );
     expect(tip(fromInteger(50))).toBe('50 is geen veelvoud van 12.');
     expect(tip(fromInteger(48))).toBe('48 is geen veelvoud van 18.');
     expect(tip(rational(7n, 2n))).toBeUndefined();
+  });
+
+  it('names the GCD of a coprime pair', () => {
+    expect(lcmTip(7, 9)(fromInteger(1))).toBe(
+      'Dat is de GGD. De KGV is het kleinste getal dat door allebei deelbaar is.',
+    );
+  });
+
+  it('wires the GGD tip into generated KGV questions', () => {
+    const rng = createRng(5);
+    let seen = 0;
+    for (let i = 0; i < 300; i++) {
+      const step = generateLcm(rng).steps[0]!;
+      const match = /^KGV van (\d+) en (\d+) = \?$/.exec(step.prompt);
+      expect(match, step.prompt).not.toBeNull();
+      const divisor = gcd(Number(match![1]), Number(match![2]));
+      seen++;
+      expect(step.check(String(divisor)).tip).toBe(
+        'Dat is de GGD. De KGV is het kleinste getal dat door allebei deelbaar is.',
+      );
+    }
+    expect(seen).toBeGreaterThan(100);
+  });
+
+  it('wires the KGV tip into generated GGD questions', () => {
+    const rng = createRng(6);
+    let seen = 0;
+    for (let i = 0; i < 300; i++) {
+      const step = generateGcd(rng).steps[0]!;
+      const match = /^GGD van (\d+) en (\d+) = \?$/.exec(step.prompt);
+      expect(match, step.prompt).not.toBeNull();
+      const multiple = lcm(Number(match![1]), Number(match![2]));
+      seen++;
+      expect(step.check(String(multiple)).tip).toBe(
+        'Dat is de KGV. De GGD is het grootste getal waar allebei door deelbaar zijn.',
+      );
+    }
+    expect(seen).toBeGreaterThan(100);
   });
 
   it('names the LCM, a smaller common divisor and a non-divisor', () => {

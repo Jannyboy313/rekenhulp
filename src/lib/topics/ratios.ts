@@ -140,10 +140,10 @@ export function missingTermTip(terms: Terms, position: number): Diagnose {
 export function scalingTip(a: number, amount: number, b: number): Diagnose {
   const inverse = divide(fromInteger(amount * a), fromInteger(b));
   const added = fromInteger(amount + (b - a));
-  const more = b > a ? 'meer' : 'minder';
+  const comparison = b > a ? 'meer' : 'minder';
   return (given) => {
     if (equals(given, inverse)) {
-      return `Je hebt omgekeerd geschaald: ${b} is ${more} dan ${a}, dus het antwoord is ${more} dan ${formatInteger(amount)}.`;
+      return `Je hebt omgekeerd geschaald: ${b} is ${comparison} dan ${a}, dus het antwoord is ${comparison} dan ${formatInteger(amount)}.`;
     }
     if (equals(given, added)) {
       return 'Je hebt het verschil in aantal opgeteld; bij een verhouding vermenigvuldig je.';

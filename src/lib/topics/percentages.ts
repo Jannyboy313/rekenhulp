@@ -235,6 +235,8 @@ function changedPrice(p: Percentage, price: Rational, increase: boolean): Ration
 
 /** p% of the whole answered with the rest: '25% van 80' → 60 (spec §3.4.1). */
 export function partTip(p: Percentage, whole: Rational): Diagnose {
+  // At 100% or more there is no "rest" to confuse with the answer.
+  if (compare(p.value, HUNDRED) >= 0) return () => undefined;
   const rest = subtract(whole, percentOf(p.value, whole));
   return (given) =>
     equals(given, rest)
@@ -247,7 +249,9 @@ export function whatPercentageTip(part: Rational, whole: Rational): Diagnose {
   const ratio = divide(part, whole);
   const inverse = divide(whole, part);
   return (given) => {
-    if (equals(given, ratio)) return 'Dat is het deel als kommagetal; × 100 geeft het percentage.';
+    if (equals(given, ratio)) {
+      return 'Dat is deel : geheel, nog geen percentage; × 100 geeft het percentage.';
+    }
     if (equals(given, inverse) || equals(given, multiply(inverse, HUNDRED))) {
       return 'Je hebt het geheel door het deel gedeeld; reken deel : geheel.';
     }

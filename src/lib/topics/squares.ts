@@ -2,7 +2,7 @@ import { formatInteger } from '../format';
 import { randomInt, type Rng } from '../random';
 import { divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
-import { positiveInteger, type Diagnose } from '../tips';
+import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Squares and square roots (spec §5.7).
@@ -50,6 +50,8 @@ export function rootTip(n: number): Diagnose {
     if (equals(given, divide(fromInteger(n * n), fromInteger(2)))) {
       return `√${square} is het getal dat keer zichzelf ${square} geeft, niet de helft.`;
     }
+    // 10^k × the root is a decimal-point slip: the factor-of-ten fallback names that.
+    if (powerOfTenShift(given, fromInteger(n)) !== null) return undefined;
     const value = positiveInteger(given);
     // Larger numbers get the factor-of-ten fallback; their square would be unreadable anyway.
     if (value === null || value > 10_000) return undefined;

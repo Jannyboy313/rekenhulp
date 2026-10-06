@@ -344,4 +344,36 @@ describe('ratio tips', () => {
       'Dat is het grootste deel; gevraagd is het kleinste.',
     );
   });
+
+  it('handles a ratio with a term of 1', () => {
+    // 40 in 1 : 3: unit 10, largest part 30, smallest part 10.
+    const tip = divideTip(40, 1, 3, true);
+    expect(tip(fromInteger(10))).toBe('Dat is het kleinste deel; gevraagd is het grootste.');
+    expect(tip(fromInteger(40))).toBe('Deel eerst door het totaal aantal delen: 1 + 3 = 4.');
+    expect(divideTip(40, 1, 3, false)(fromInteger(30))).toBe(
+      'Dat is het grootste deel; gevraagd is het kleinste.',
+    );
+  });
+
+  it('wires the other-part tip into generated divide questions', () => {
+    const rng = createRng(8);
+    let seen = 0;
+    for (let i = 0; i < 900; i++) {
+      const step = generateRatios(rng).steps[0]!;
+      const match =
+        /^Verdeel (\d+) in de verhouding (\d+) : (\d+)\. Hoe groot is het (grootste|kleinste) deel\?$/.exec(
+          step.prompt,
+        );
+      if (!match) continue;
+      const [total, a, b] = [Number(match[1]), Number(match[2]), Number(match[3])];
+      const largest = match[4] === 'grootste';
+      const unit = total / (a + b);
+      const other = (largest ? Math.min(a, b) : Math.max(a, b)) * unit;
+      seen++;
+      expect(step.check(String(other)).tip).toBe(
+        `Dat is het ${largest ? 'kleinste' : 'grootste'} deel; gevraagd is het ${match[4]}.`,
+      );
+    }
+    expect(seen).toBeGreaterThan(100);
+  });
 });
