@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fromInteger, rational } from '../lib/rational';
+import { SHORT_SCREEN_QUERY } from '../lib/scratchpad';
 import { booleanStep, factorizationStep, fractionStep, numberStep } from '../lib/steps';
 import QuestionView from './QuestionView.svelte';
 
@@ -220,5 +221,110 @@ describe('QuestionView', () => {
     );
     await press('Ja');
     expect(onanswer).toHaveBeenCalledOnce();
+  });
+
+  describe('kladblok', () => {
+    afterEach(() => vi.unstubAllGlobals());
+
+    function cell(n: number): HTMLElement {
+      return screen.getByRole('button', { name: new RegExp(`^Kladblok vak ${n}:`) });
+    }
+
+    function cellLabels(): string[] {
+      return screen
+        .getAllByRole('button', { name: /^Kladblok vak/ })
+        .map((button) => button.getAttribute('aria-label') ?? '');
+    }
+
+    it('is hidden unless the step shows it', () => {
+      render(QuestionView, { props: { step, onanswer: vi.fn() } });
+      expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+    });
+
+    it('shows four empty cells with the answer field active', () => {
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      expect(cellLabels()).toEqual([
+        'Kladblok vak 1: leeg',
+        'Kladblok vak 2: leeg',
+        'Kladblok vak 3: leeg',
+        'Kladblok vak 4: leeg',
+      ]);
+      expect(cell(1).getAttribute('aria-pressed')).toBe('false');
+      expect(screen.getByLabelText('Jouw antwoord').classList.contains('focused')).toBe(true);
+      expect(okButton().disabled).toBe(true);
+    });
+
+    it('types into a tapped cell and turns OK into an enabled Volgende', async () => {
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      await press(/^Kladblok vak 2:/, '9', '0', '0', 'min');
+      expect(cell(2).getAttribute('aria-pressed')).toBe('true');
+      expect(cell(2).getAttribute('aria-label')).toBe('Kladblok vak 2: −900');
+      await press('wissen');
+      expect(cell(2).textContent).toBe('−90');
+      expect(answerText()).toBe('…');
+      expect(screen.getByLabelText('Jouw antwoord').classList.contains('focused')).toBe(false);
+      expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
+      const volgende = screen.getByRole('button', { name: 'Volgende' }) as HTMLButtonElement;
+      expect(volgende.disabled).toBe(false);
+    });
+
+    it('moves Volgende through the cells and back to the answer field', async () => {
+      const onanswer = vi.fn();
+      render(QuestionView, { props: { step, scratchpad: true, onanswer } });
+      await press(/^Kladblok vak 1:/, '1', 'Volgende', '2', 'Volgende', '3', 'Volgende', '4');
+      expect(cellLabels()).toEqual([
+        'Kladblok vak 1: 1',
+        'Kladblok vak 2: 2',
+        'Kladblok vak 3: 3',
+        'Kladblok vak 4: 4',
+      ]);
+      expect(cell(4).getAttribute('aria-pressed')).toBe('true');
+
+      await press('Volgende');
+      expect(cell(4).getAttribute('aria-pressed')).toBe('false');
+      await press('1', '2', 'OK');
+      expect(onanswer).toHaveBeenCalledWith('12', { correct: true, expected: '12' });
+    });
+
+    it('hands the keypad back when the answer field is tapped', async () => {
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      await press('5', /^Kladblok vak 1:/, '7', 'Naar antwoordveld');
+      expect(screen.queryByRole('button', { name: 'Naar antwoordveld' })).toBeNull();
+      await press('3');
+      expect(answerText()).toBe('53');
+      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 7');
+    });
+
+    it('swaps in the number keys for fraction and factorization steps', async () => {
+      const percent = fractionStep({
+        prompt: '10 is ?% van 80',
+        answer: rational(25n, 2n),
+        suffix: '%',
+      });
+      const { unmount } = render(QuestionView, {
+        props: { step: percent, scratchpad: true, onanswer: vi.fn() },
+      });
+      await press('breuk', '1', /^Kladblok vak 1:/);
+      expect(screen.queryByRole('button', { name: 'breuk' })).toBeNull();
+      await press('Naar antwoordveld');
+      expect(screen.getByRole('button', { name: 'breuk' })).toBeTruthy();
+      expect(answerText()).toBe('1/…%');
+      unmount();
+
+      const factorization = factorizationStep({ prompt: 'Ontbind 84 in priemfactoren', value: 84 });
+      render(QuestionView, { props: { step: factorization, scratchpad: true, onanswer: vi.fn() } });
+      await press(/^Kladblok vak 1:/);
+      expect(screen.queryByRole('button', { name: 'keer' })).toBeNull();
+      await press('min', '2', 'komma', '5');
+      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5');
+    });
+
+    it('shows and cycles through only the top row on short screens', async () => {
+      vi.stubGlobal('matchMedia', (query: string) => ({ matches: query === SHORT_SCREEN_QUERY }));
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      expect(cellLabels()).toEqual(['Kladblok vak 1: leeg', 'Kladblok vak 2: leeg']);
+      await press(/^Kladblok vak 2:/, 'Volgende');
+      expect(screen.getByRole('button', { name: 'OK' })).toBeTruthy();
+    });
   });
 });

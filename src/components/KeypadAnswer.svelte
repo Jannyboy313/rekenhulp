@@ -1,6 +1,7 @@
 <script lang="ts" generics="S">
   import type { InputModel } from '../lib/inputModels';
   import type { FractionSlot, KeypadKey } from '../lib/keypadInput';
+  import { NOTE_KEYS, type ScratchpadInput } from '../lib/scratchpad';
   import Fraction from './Fraction.svelte';
   import Keypad from './Keypad.svelte';
   import { press } from './press';
@@ -9,11 +10,13 @@
     model: InputModel<S>;
     prefix?: string;
     suffix?: string;
+    /** Only when the kladblok is shown: while a cell is active, the keypad types there (§3.6). */
+    scratch?: ScratchpadInput;
     /** Called with valid input only; invalid input shows an inline error instead (spec §6). */
     onsubmit: (input: string) => void;
   }
 
-  let { model, prefix, suffix, onsubmit }: Props = $props();
+  let { model, prefix, suffix, scratch, onsubmit }: Props = $props();
 
   // QuestionView is keyed per step, so the model never changes during this component's life.
   // svelte-ignore state_referenced_locally
@@ -21,8 +24,13 @@
   let error = $state<string | null>(null);
 
   const segments = $derived(model.view(value));
+  const inNote = $derived(scratch?.active === true);
 
   function handleKey(key: KeypadKey) {
+    if (inNote) {
+      scratch?.onkey(key);
+      return;
+    }
     value = model.apply(value, key);
     error = null;
   }
@@ -32,7 +40,15 @@
     error = null;
   }
 
+  function focusAnswer() {
+    scratch?.onfocusanswer();
+  }
+
   function submit() {
+    if (inNote) {
+      scratch?.onnext();
+      return;
+    }
     if (!model.canSubmit(value)) return;
     const input = model.toInput(value);
     error = model.validate(input);
@@ -50,28 +66,46 @@
     >{#if digits === ''}<span class="placeholder">…</span>{:else}{digits}{/if}</button
   >{/snippet}
 
-<!-- Kinds with a fraction template get a taller field, so opening one does not shift the layout. -->
-<output
-  class="answer"
-  class:tall={model.select !== undefined}
-  aria-label="Jouw antwoord"
-  aria-live="off"
-  >{#if prefix}<span class="prefix">{prefix}</span>{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}{#if segment.mixed}<span
-          class="sr-only">{' en '}</span
-        >{/if}<Fraction
-        >{#snippet numerator()}{@render slotButton('num', segment.num, segment.active)}{/snippet}{#snippet denominator()}{@render slotButton(
-            'den',
-            segment.den,
-            segment.active,
-          )}{/snippet}</Fraction
-      >{/if}{:else}<span class="placeholder">…</span>{/each}{#if suffix}<span class="suffix"
-      >{suffix}</span
-    >{/if}</output
->
+<div class="field">
+  <!-- Kinds with a fraction template get a taller field, so opening one does not shift the layout. -->
+  <output
+    class="answer"
+    class:tall={model.select !== undefined}
+    class:focused={scratch !== undefined && !inNote}
+    aria-label="Jouw antwoord"
+    aria-live="off"
+    >{#if prefix}<span class="prefix">{prefix}</span>{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}{#if segment.mixed}<span
+            class="sr-only">{' en '}</span
+          >{/if}<Fraction
+          >{#snippet numerator()}{@render slotButton('num', segment.num, segment.active)}{/snippet}{#snippet denominator()}{@render slotButton(
+              'den',
+              segment.den,
+              segment.active,
+            )}{/snippet}</Fraction
+        >{/if}{:else}<span class="placeholder">…</span>{/each}{#if suffix}<span class="suffix"
+        >{suffix}</span
+      >{/if}</output
+  >
+  {#if inNote}
+    <!-- Covers the whole field, slots included: one tap hands the keypad back (spec §3.6). -->
+    <button type="button" class="to-answer" aria-label="Naar antwoordveld" use:press={focusAnswer}
+    ></button>
+  {/if}
+</div>
 <p class="error" role="alert">{error ?? ''}</p>
-<Keypad keys={model.keys} canSubmit={model.canSubmit(value)} onkey={handleKey} onsubmit={submit} />
+<Keypad
+  keys={inNote ? NOTE_KEYS : model.keys}
+  okLabel={inNote ? 'Volgende' : 'OK'}
+  canSubmit={inNote || model.canSubmit(value)}
+  onkey={handleKey}
+  onsubmit={submit}
+/>
 
 <style>
+  .field {
+    position: relative;
+  }
+
   .answer {
     display: block;
     min-height: 4rem;
@@ -86,6 +120,18 @@
   /* Fits an open template with compact slots; kept low so the keypad still fits on small phones. */
   .answer.tall {
     min-height: 6rem;
+  }
+
+  /* With a kladblok on screen, the active field is marked (spec §3.6). */
+  .answer.focused {
+    border-color: var(--primary);
+  }
+
+  .to-answer {
+    position: absolute;
+    inset: 0;
+    min-height: 0;
+    background: none;
   }
 
   .placeholder {
