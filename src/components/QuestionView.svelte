@@ -1,6 +1,7 @@
 <script lang="ts">
   import { INPUT_MODELS } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
+  import { promptSize } from '../lib/promptSize';
   import { applyNoteKey, EMPTY_NOTES, type ScratchpadInput } from '../lib/scratchpad';
   import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
@@ -50,7 +51,7 @@
   {#if scratchpad}
     <Scratchpad {notes} active={activeNote} onselect={(index) => (activeNote = index)} />
   {/if}
-  <p class="prompt"><MathText text={step.prompt} /></p>
+  <p class="prompt {promptSize(step.prompt)}"><MathText text={step.prompt} /></p>
   {#if step.kind === 'boolean'}
     <!-- Ja/Nee has no keypad: a tap on a choice is the answer (spec §6). -->
     <div class="choices">
@@ -88,10 +89,22 @@
   }
 
   .prompt {
-    font-size: 2.5rem;
     font-weight: 600;
     text-align: center;
     text-wrap: balance;
+  }
+
+  /* Long prompts get smaller text, so they do not push the keypad down (spec §3.3). */
+  .prompt.large {
+    font-size: 2.5rem;
+  }
+
+  .prompt.medium {
+    font-size: 1.75rem;
+  }
+
+  .prompt.small {
+    font-size: 1.375rem;
   }
 
   .choices {

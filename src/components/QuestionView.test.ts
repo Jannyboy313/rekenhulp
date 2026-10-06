@@ -51,6 +51,14 @@ describe('QuestionView', () => {
     expect(okButton().disabled).toBe(true);
   });
 
+  it('sizes the prompt by its length', () => {
+    const { container, unmount } = render(QuestionView, { props: { step, onanswer: vi.fn() } });
+    expect(container.querySelector('.prompt')?.classList.contains('large')).toBe(true);
+    unmount();
+    render(QuestionView, { props: { step: rewrite, onanswer: vi.fn() } });
+    expect(document.querySelector('.prompt')?.classList.contains('medium')).toBe(true);
+  });
+
   it('builds the answer from key presses and submits the checked result', async () => {
     const onanswer = vi.fn();
     render(QuestionView, { props: { step, onanswer } });

@@ -101,6 +101,10 @@ deliberate longer sessions.
 - The time spent on each exercise is recorded, measured from when it is shown until the final
   submission.
 - Most exercises show a kladblok (scratchpad) above the prompt (§3.6).
+- The prompt's font size depends on its length as displayed (a stacked fraction counts as its
+  widest line): up to 18 characters large (2.5rem), up to 40 medium (1.75rem), longer small
+  (1.375rem). Short sums stay large; word problems and property prompts no longer push the
+  keypad down. The thresholds are estimates, to be adjusted after the phone check.
 
 ### 3.4 Feedback per exercise
 

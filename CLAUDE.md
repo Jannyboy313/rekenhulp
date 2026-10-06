@@ -148,6 +148,7 @@ src/
     scratchpad.ts       kladblok: cell count, keys (expression keys + , = spatie), typing,
                         when shown
     fractionText.ts     splits text into plain runs and (mixed) fractions for stacked display
+    promptSize.ts       font size step (large/medium/small) from the prompt's displayed length
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary
     sets.ts             practice sets (config): topics + weights + tables share
