@@ -2,6 +2,7 @@
   import { okSpan, type KeyDef } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
   import Fraction from './Fraction.svelte';
+  import { press } from './press';
 
   interface Props {
     keys: readonly KeyDef[];
@@ -15,12 +16,14 @@
 
 <div class="keypad">
   {#each keys as { key, label, ariaLabel, icon } (key)}
-    <button type="button" class="key" aria-label={ariaLabel ?? label} onclick={() => onkey(key)}>
+    <button type="button" class="key" aria-label={ariaLabel ?? label} use:press={() => onkey(key)}>
       {#if icon === 'fraction'}<Fraction
           >{#snippet numerator()}□{/snippet}{#snippet denominator()}□{/snippet}</Fraction
         >{:else}{label}{/if}
     </button>
   {/each}
+  <!-- OK acts on click (release): it replaces the view, and a submit on press would let the
+       release land on the next screen. -->
   <button
     type="button"
     class="key ok"
