@@ -1,7 +1,8 @@
 import { formatInteger, formatPowerOfTen, formatRational } from '../format';
 import { pick, randomInt, type Rng } from '../random';
-import { divide, fromInteger, multiply, powerOfTen, type Rational } from '../rational';
+import { divide, equals, fromInteger, multiply, powerOfTen, type Rational } from '../rational';
 import { numberStep } from '../steps';
+import type { Diagnose } from '../tips';
 import type { Question } from '../types';
 import {
   conversionQuestion,
@@ -62,6 +63,29 @@ function randomValue(rng: Rng): number {
   return mantissa * 10 ** randomInt(rng, 0, 3 - String(mantissa).length);
 }
 
+/** Long-scale names whose English look-alike is 10³ⁿ smaller (spec §3.4.1). */
+const ENGLISH_NAMES: Readonly<Record<string, { exponent: number; english: string }>> = {
+  biljoen: { exponent: 9, english: 'billion' },
+  triljoen: { exponent: 12, english: 'trillion' },
+  quadriljoen: { exponent: 15, english: 'quadrillion' },
+};
+
+/** Name → power mistakes: the English short scale, or the shift of the coefficient forgotten. */
+export function nameToPowerTip(unit: ScaleUnit, value: number, shift: number): Diagnose {
+  const short = ENGLISH_NAMES[unit.symbol];
+  return (given) => {
+    if (short && equals(given, fromInteger(short.exponent + shift))) {
+      const dutch = NUMBER_UNITS.find((candidate) => candidate.exponent === short.exponent)!;
+      return `Een ${unit.symbol} is ${formatPowerOfTen(unit.exponent)}; ${formatPowerOfTen(short.exponent)} is een ${dutch.symbol} (Engels: ${short.english}).`;
+    }
+    if (shift > 0 && equals(given, fromInteger(unit.exponent))) {
+      const coefficient = formatRational(divide(fromInteger(value), powerOfTen(shift)));
+      return `${formatInteger(value)} = ${coefficient} × ${formatPowerOfTen(shift)}: tel ${shift} op bij ${unit.exponent}.`;
+    }
+    return undefined;
+  };
+}
+
 /** `1 biljard = 10ⁿ. n = ?` or `250 miljoen = 2,5 × 10ⁿ. n = ?` */
 function nameToPower(rng: Rng): Question {
   const unit = pick(rng, NUMBER_UNITS);
@@ -82,6 +106,8 @@ function nameToPower(rng: Rng): Question {
         prompt,
         answer: fromInteger(exponent),
         explanation: nameToPowerExplanation(unit, value, coefficient, shift),
+        noPowerOfTenTip: true,
+        diagnose: nameToPowerTip(unit, value, shift),
       }),
     ],
   };

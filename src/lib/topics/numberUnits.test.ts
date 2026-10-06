@@ -12,7 +12,13 @@ import {
 } from '../rational';
 import type { Question, Step } from '../types';
 import { isNiceValue } from './measurement';
-import { generateNumberUnits, MIN_POWER, NUMBER_LIMITS, NUMBER_UNITS } from './numberUnits';
+import {
+  generateNumberUnits,
+  MIN_POWER,
+  nameToPowerTip,
+  NUMBER_LIMITS,
+  NUMBER_UNITS,
+} from './numberUnits';
 
 const SAMPLES = 3000;
 
@@ -213,5 +219,42 @@ describe('name ↔ name', () => {
       expect(Math.abs(exponentOf.get(from!)! - exponentOf.get(to!)!)).toBe(3);
       expect(stepOf(question).suffix).toBe(to);
     }
+  });
+});
+
+describe('nameToPowerTip', () => {
+  const unit = (symbol: string) => NUMBER_UNITS.find((candidate) => candidate.symbol === symbol)!;
+
+  it('names the English short scale', () => {
+    expect(nameToPowerTip(unit('biljoen'), 1, 0)(fromInteger(9))).toBe(
+      'Een biljoen is 10¹²; 10⁹ is een miljard (Engels: billion).',
+    );
+    expect(nameToPowerTip(unit('triljoen'), 250, 2)(fromInteger(14))).toBe(
+      'Een triljoen is 10¹⁸; 10¹² is een biljoen (Engels: trillion).',
+    );
+  });
+
+  it('names a forgotten shift of the coefficient', () => {
+    expect(nameToPowerTip(unit('miljoen'), 250, 2)(fromInteger(6))).toBe(
+      '250 = 2,5 × 10²: tel 2 op bij 6.',
+    );
+  });
+
+  it('gives nothing for other answers', () => {
+    expect(nameToPowerTip(unit('miljard'), 1, 0)(fromInteger(6))).toBeUndefined();
+    expect(nameToPowerTip(unit('biljard'), 1, 0)(fromInteger(12))).toBeUndefined();
+  });
+
+  it('skips the factor-of-ten fallback for exponents', () => {
+    const rng = createRng(3);
+    let seen = 0;
+    for (let i = 0; i < 1000; i++) {
+      const step = generateNumberUnits(rng).steps[0]!;
+      if (!step.prompt.endsWith('n = ?')) continue;
+      seen++;
+      const exponent = Number(step.check('0').expected);
+      expect(step.check(String(exponent * 10)).tip).toBeUndefined();
+    }
+    expect(seen).toBeGreaterThan(100);
   });
 });
