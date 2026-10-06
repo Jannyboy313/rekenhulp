@@ -4,6 +4,7 @@ import { formatExpr } from '../expr/format';
 import { parse, type Expr } from '../expr/parser';
 import { formatRational } from '../format';
 import { createRng } from '../random';
+import { parseDutchNumber } from '../rational';
 import {
   CUBE_SHARE,
   generateExpression,
@@ -15,6 +16,7 @@ import {
   MIN_LITERAL,
   MIN_POWER_BASE,
   NEGATIVE_SHARE,
+  orderOfOperationsTip,
   TEMPLATES,
 } from './orderOfOperations';
 
@@ -190,5 +192,23 @@ describe('generateOrderOfOperations', () => {
       expect(result.explanation?.startsWith(`${text} = `)).toBe(true);
       expect(result.explanation?.endsWith(` = ${expected}`)).toBe(true);
     }
+  });
+});
+
+describe('orderOfOperationsTip', () => {
+  const leftToRight =
+    'Je hebt van links naar rechts gerekend. Eerst machten, dan × en :, daarna pas + en −.';
+
+  it.each([
+    ['2+3×4', '20', leftToRight],
+    ['20-12:4×2', '4', leftToRight],
+    ['20-12:4×2', '18,5', '× en : zijn even sterk: reken die van links naar rechts.'],
+    ['3^2+1', '7', 'Een macht is herhaald vermenigvuldigen: 3² = 3 × 3, niet 3 × 2.'],
+  ])('%s answered with %s', (input, given, tip) => {
+    expect(orderOfOperationsTip(parse(input)!)(parseDutchNumber(given)!)).toBe(tip);
+  });
+
+  it('gives nothing for other answers', () => {
+    expect(orderOfOperationsTip(parse('2+3×4')!)(parseDutchNumber('15')!)).toBeUndefined();
   });
 });

@@ -1,10 +1,12 @@
 import { evaluate } from '../expr/evaluate';
 import { formatExpr } from '../expr/format';
+import { evaluateMisconception, type Misconception } from '../expr/misconceptions';
 import type { BinaryOperator, Expr } from '../expr/parser';
 import { explainEvaluation } from '../expr/reduce';
 import { pick, randomInt, shuffle, type Rng } from '../random';
-import { fromInteger, negate, type Rational } from '../rational';
+import { equals, fromInteger, negate, type Rational } from '../rational';
 import { numberStep } from '../steps';
+import type { Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Order of operations (spec §5.8).
@@ -178,6 +180,26 @@ function partsValid(expr: Expr, powerBase: bigint): boolean {
   }
 }
 
+/** In order of priority: the first misconception that explains the answer names it. */
+const MISCONCEPTION_TIPS: readonly (readonly [Misconception, string])[] = [
+  ['powerAsProduct', 'Een macht is herhaald vermenigvuldigen: 3² = 3 × 3, niet 3 × 2.'],
+  [
+    'leftToRight',
+    'Je hebt van links naar rechts gerekend. Eerst machten, dan × en :, daarna pas + en −.',
+  ],
+  ['multiplyBeforeDivide', '× en : zijn even sterk: reken die van links naar rechts.'],
+];
+
+/** Spec §3.4.1: the answer equals what a known misconception gives, and that is wrong. */
+export function orderOfOperationsTip(expr: Expr): Diagnose {
+  const answer = evaluate(expr);
+  const mistakes = MISCONCEPTION_TIPS.flatMap(([misconception, tip]) => {
+    const value = evaluateMisconception(expr, misconception);
+    return value === null || answer === null || equals(value, answer) ? [] : [{ value, tip }];
+  });
+  return (given) => mistakes.find(({ value }) => equals(given, value))?.tip;
+}
+
 /** `3 × (8 − 2) + 4 = ?`, explained one operation at a time. */
 export function generateOrderOfOperations(rng: Rng): Question {
   const expr = generateExpression(rng);
@@ -190,6 +212,7 @@ export function generateOrderOfOperations(rng: Rng): Question {
         prompt: `${text} = ?`,
         answer: evaluate(expr)!,
         explanation: explainEvaluation(expr),
+        diagnose: orderOfOperationsTip(expr),
       }),
     ],
   };
