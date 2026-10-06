@@ -28,6 +28,9 @@ describe('checkRewrite', () => {
     ['7 × 13 + 7 × 87', 'distributive', '7 × (13 + 87)', null],
     ['20 − 5 − 3', 'commutative', '20 − 3 − 5', 'notForMinusOrDivide'],
     ['(17 + 25) + 75', 'associative', '17 + 25 + 75', 'unchanged'],
+    ['7 × 98', 'distributive', '(7 × 100) − (7 × 2)', null],
+    ['7 × 98', 'distributive', '7 × (100 − 2)', 'noProperty'],
+    ['15 × 99', 'distributive', '15 × 100 − 15', null],
   ])('handles the spec §7.1 case %s, %s: %s', (...row) => {
     expectCase(row);
   });
@@ -53,6 +56,19 @@ describe('checkRewrite', () => {
     ['2 × ((17 + 25) + 75)', 'associative', '2 × (17 + (25 + 75))', null],
     ['7 × 98 + 1', 'distributive', '7 × 100 − 7 × 2 + 1', null],
     ['5 : 1', 'any', '5 : (1 − 1)', 'valueChanged'],
+    ['6 × (40 + 3)', 'distributive', '(6 × 40) + (6 × 3)', null],
+    ['7 × 13 + 7 × 87', 'commutative', '(7 × 87) + (7 × 13)', null],
+    ['7 × 98', 'commutative', '(98 × 7)', null],
+    ['7 × 98', 'distributive', '(7 × 100 − 7 × 2)', null],
+    ['(25 × 4) × 37', 'associative', '25 × (4 × 37)', null],
+    ['7 × 98', 'distributive', '7 × 49 × 2', 'noProperty'],
+    ['38 + 57 + 62', 'commutative', '38 + 50 + 7 + 62', 'noProperty'],
+    ['7 × 13 + 7', 'distributive', '7 × (13 + 1)', null],
+    ['7 × 98', 'distributive', '7 × 100 − 2 × 7', null],
+    ['7 × 13 + 7 × 87', 'distributive', '(13 + 87) × 7', null],
+    ['7 × 13 + 7 × 87', 'distributive', '7 × (87 + 13)', 'multipleSteps'],
+    ['7 × 13 + 7 × 87', 'distributive', '7 × 100', 'multipleSteps'],
+    ['38 + 57 + 62', 'any', '38 + 50 + 7 + 62', 'noProperty'],
   ])('handles %s, %s: %s', (...row) => {
     expectCase(row);
   });

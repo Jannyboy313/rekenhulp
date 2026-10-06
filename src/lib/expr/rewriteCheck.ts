@@ -1,7 +1,7 @@
-import { add, equals, subtract, type Rational } from '../rational';
+import { add, equals, rational, subtract, type Rational } from '../rational';
 import { sameChains, toChains, type ChainExpr, type ChainOperator } from './chains';
 import { evaluate } from './evaluate';
-import type { Expr } from './parser';
+import type { BinaryOperator, Expr } from './parser';
 
 export type Property = 'commutative' | 'associative' | 'distributive';
 
@@ -12,6 +12,7 @@ export type RewriteReason =
   | 'valueOnly'
   | 'unchanged'
   | 'valueChanged'
+  | 'noProperty'
   | 'otherProperty'
   | 'notForMinusOrDivide'
   | 'multipleSteps';
@@ -23,8 +24,8 @@ export type RewriteResult =
 
 /** Whether `rewritten` is a single valid application of `property` to `original` (§7.1). */
 export function checkRewrite(
-  original: Expr,
-  rewritten: Expr,
+  originalInput: Expr,
+  rewrittenInput: Expr,
   property: Property | 'any',
 ): RewriteResult {
   const reject = (reason: RewriteReason, detected: Property[] = []): RewriteResult => ({
@@ -32,6 +33,8 @@ export function checkRewrite(
     detected,
     reason,
   });
+  const original = dropRedundantGroups(originalInput);
+  const rewritten = dropRedundantGroups(rewrittenInput);
   if (rewritten.type === 'number') return reject('valueOnly');
   if (sameChains(toChains(stripGroups(original)), toChains(stripGroups(rewritten)))) {
     return reject('unchanged');
@@ -47,7 +50,75 @@ export function checkRewrite(
   }
   if (detected.length > 0) return reject('otherProperty', detected);
   const reordered = from.type === 'binary' && isPermutation(numbers(from), numbers(to));
-  return reject(reordered ? 'notForMinusOrDivide' : 'multipleSteps');
+  if (reordered) return reject('notForMinusOrDivide');
+  if (isRewrittenNumber(from, to)) return reject('noProperty');
+  return reject('multipleSteps');
+}
+
+/**
+ * The AST without the parentheses that cannot matter (spec §7.1, step 0): around the whole
+ * expression, directly inside other parentheses, around a number or a power, and around a `×`
+ * or `:` term of `+` or `−`. Parentheses around a sum, or around a product inside a product,
+ * stay: they are what the associative property is about.
+ */
+function dropRedundantGroups(
+  expr: Expr,
+  parent: BinaryOperator | 'group' | 'power' | null = null,
+): Expr {
+  switch (expr.type) {
+    case 'number':
+      return expr;
+    case 'power':
+      return {
+        type: 'power',
+        base: dropRedundantGroups(expr.base, 'power'),
+        exponent: dropRedundantGroups(expr.exponent, 'power'),
+      };
+    case 'binary':
+      return {
+        ...expr,
+        left: dropRedundantGroups(expr.left, expr.operator),
+        right: dropRedundantGroups(expr.right, expr.operator),
+      };
+    case 'group': {
+      const inner = dropRedundantGroups(expr.inner, 'group');
+      const redundant =
+        parent === null ||
+        parent === 'group' ||
+        inner.type === 'number' ||
+        inner.type === 'power' ||
+        (inner.type === 'binary' &&
+          (inner.operator === '×' || inner.operator === ':') &&
+          (parent === '+' || parent === '−'));
+      return redundant ? inner : { type: 'group', inner };
+    }
+  }
+}
+
+/**
+ * A single number written differently: `98` → `(100 − 2)`, or `98` → `49 × 2` within a product
+ * chain.
+ */
+function isRewrittenNumber(from: ChainExpr, to: ChainExpr): boolean {
+  if (from.type === 'number') return true;
+  if (from.type !== 'chain' || to.type !== 'chain' || from.operator !== to.operator) return false;
+  const shortest = Math.min(from.operands.length, to.operands.length);
+  let prefix = 0;
+  while (prefix < shortest && sameChains(from.operands[prefix]!, to.operands[prefix]!)) {
+    prefix++;
+  }
+  let suffix = 0;
+  while (
+    suffix < shortest - prefix &&
+    sameChains(
+      from.operands[from.operands.length - 1 - suffix]!,
+      to.operands[to.operands.length - 1 - suffix]!,
+    )
+  ) {
+    suffix++;
+  }
+  const remaining = from.operands.slice(prefix, from.operands.length - suffix);
+  return remaining.length === 1 && remaining[0]!.type === 'number';
 }
 
 /** The AST without parentheses: what remains is the order of evaluation. */
@@ -88,12 +159,16 @@ function sameNode(a: ChainExpr, b: ChainExpr): boolean {
   );
 }
 
+// Limitation: a step that changes the length of an enclosing chain
+// (7 × 98 + 1 → 7 × 90 + 7 × 8 + 1) is not recognised; no template puts the property below the root.
 /** The smallest pair of subtrees that contains every difference; outside it all is identical. */
 function differenceRoot(a: ChainExpr, b: ChainExpr): [ChainExpr, ChainExpr] {
   if (!sameNode(a, b)) return [a, b];
   const left = children(a);
   const right = children(b);
-  const differing = left.flatMap((child, index) => (sameChains(child, right[index]!) ? [] : [index]));
+  const differing = left.flatMap((child, index) =>
+    sameChains(child, right[index]!) ? [] : [index],
+  );
   if (differing.length !== 1) return [a, b];
   const index = differing[0]!;
   return differenceRoot(left[index]!, right[index]!);
@@ -165,10 +240,12 @@ function twoFactors(expr: ChainExpr): [ChainExpr, ChainExpr] | null {
     : null;
 }
 
-/** t in `F × t` or `t × F`; null when F is not one of the two factors. */
+/** t in `F × t` or `t × F`; a bare `F` counts as `F × 1`. Null when F is not a factor. */
 function otherFactor(product: ChainExpr, factor: ChainExpr): ChainExpr | null {
   const factors = twoFactors(product);
-  if (factors === null) return null;
+  if (factors === null) {
+    return sameChains(product, factor) ? { type: 'number', value: rational(1n) } : null;
+  }
   if (sameChains(factors[0], factor)) return factors[1];
   return sameChains(factors[1], factor) ? factors[0] : null;
 }
