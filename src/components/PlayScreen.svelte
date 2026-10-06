@@ -5,6 +5,7 @@
   import { isCorrect, type QuestionRecord, type StepAttempt } from '../lib/results';
   import { EMPTY_NOTES, showsScratchpad } from '../lib/scratchpad';
   import { insertRepeat } from '../lib/session';
+  import { keepScreenAwake } from '../lib/wakeLock';
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
   import QuestionView from './QuestionView.svelte';
@@ -62,6 +63,11 @@
     const interval = setInterval(() => (now = Date.now()), 1000);
     return () => clearInterval(interval);
   });
+
+  // The screen stays on during a session (spec §2).
+  $effect(() =>
+    keepScreenAwake('wakeLock' in navigator ? navigator.wakeLock : undefined, document),
+  );
 
   function handleAnswer(input: string, result: CheckResult) {
     const attempt = { input, result };

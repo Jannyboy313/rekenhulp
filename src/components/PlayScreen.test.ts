@@ -48,6 +48,23 @@ describe('PlayScreen', () => {
     expect(totalMs).toBe(3200);
   });
 
+  it('keeps the screen on while the session runs', async () => {
+    const release = vi.fn(async () => {});
+    const request = vi.fn(async () => ({ released: false, release }));
+    Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request } });
+    try {
+      const { unmount } = render(PlayScreen, {
+        props: { set: TABLES_SET, questions, onfinish: vi.fn() },
+      });
+      await vi.advanceTimersByTimeAsync(0);
+      expect(request).toHaveBeenCalledWith('screen');
+      unmount();
+      expect(release).toHaveBeenCalled();
+    } finally {
+      Reflect.deleteProperty(navigator, 'wakeLock');
+    }
+  });
+
   it('shows the elapsed time', async () => {
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
     expect(screen.getByText('00:00')).toBeTruthy();

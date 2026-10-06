@@ -152,6 +152,9 @@ src/
     results.ts          question records + session summary
     sets.ts             practice sets (config): topics + weights + tables share
     session.ts          builds a session: quotas, shuffle, de-duplication
+    backGuard.ts        one history entry above the start screen, so the system back stays in
+                        the app (wired in App.svelte; ignored while playing)
+    wakeLock.ts         keeps the screen on while PlayScreen is mounted
     format.ts           Dutch number/expression formatting
     rational.ts         exact bigint fractions (expressions, unit conversions, input parsing)
     expr/               tokenizer, parser (AST with groups), evaluate, format (prompt text),

@@ -900,6 +900,8 @@ src/
     results.ts              per-question records + session summary
     sets.ts                 practice set definitions (§4.1)
     session.ts              quota algorithm (§4.2), generation, shuffle, de-duplication
+    backGuard.ts            history entry that keeps the system back inside the app (§3)
+    wakeLock.ts             keeps the screen on during a session (§2)
     types.ts                Question, Step, AnswerKind, CheckResult, Topic, PracticeSet
     expr/
       tokenizer.ts
