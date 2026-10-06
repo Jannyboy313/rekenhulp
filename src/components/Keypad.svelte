@@ -7,11 +7,13 @@
   interface Props {
     keys: readonly KeyDef[];
     canSubmit: boolean;
+    /** The kladblok relabels OK as Volgende (spec §3.6). */
+    okLabel?: string;
     onkey: (key: KeypadKey) => void;
     onsubmit: () => void;
   }
 
-  let { keys, canSubmit, onkey, onsubmit }: Props = $props();
+  let { keys, canSubmit, okLabel = 'OK', onkey, onsubmit }: Props = $props();
 </script>
 
 <div class="keypad">
@@ -29,7 +31,7 @@
     class="key ok"
     style:grid-column="span {okSpan(keys)}"
     disabled={!canSubmit}
-    onclick={onsubmit}>OK</button
+    onclick={onsubmit}>{okLabel}</button
   >
 </div>
 
@@ -40,8 +42,9 @@
     gap: 0.5rem;
   }
 
+  /* 48 px: the minimum tap target, which leaves room for the kladblok (spec §3.6). */
   .key {
-    min-height: 3.5rem;
+    min-height: 3rem;
     font-size: 1.5rem;
     background: var(--key);
   }
