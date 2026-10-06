@@ -137,7 +137,8 @@ const BUILDERS: Record<Strategy, (rng: Rng) => Exercise> = {
 
 /**
  * De-duplication key (spec §5.9): the sum itself, with the factors of a product in ascending
- * order, so `12 × 25` (split) and `25 × 12` (double/halve) count as one calculation.
+ * order, so `12 × 25` (split) and `25 × 12` (double/halve) count as one calculation. Assumes a
+ * product of exactly two positive integer factors, as all smart-calculation products are.
  */
 export function dedupKey(prompt: string): string {
   const factors = prompt.split(' × ');

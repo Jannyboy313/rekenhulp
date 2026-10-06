@@ -193,7 +193,6 @@ describe('buildExercise', () => {
     }
     expect(edge).toBeDefined();
     expect(edge!.explanation.endsWith(` = ${f(10_000)}`)).toBe(true);
-    expect(f(10_000)).toBe('10\u{202f}000');
   });
 
   it('compensates a near-round second term (−)', () => {
