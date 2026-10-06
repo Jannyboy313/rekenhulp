@@ -110,8 +110,8 @@ deliberate longer sessions.
 
 - **Correct:** green confirmation for 600 ms, then automatically on to the next exercise. With
   reduced motion, a static colour is shown instead of an animation.
-- **Wrong:** red, with "Jouw antwoord", "Juist antwoord" and an optional explanation (e.g.
-  `91 = 7 × 13`). The user moves on by tapping **Verder**.
+- **Wrong:** red, with "Jouw antwoord", "Juist antwoord", an optional tip (§3.4.1) and an
+  optional explanation (e.g. `91 = 7 × 13`). The user moves on by tapping **Verder**.
 - Each exercise allows exactly one attempt (two steps for property exercises, §5.11).
 - **Repeat until correct:** an exercise answered wrong (any step wrong) comes back later in the
   same session, unchanged, with all its steps and an empty kladblok. It is inserted at a random
@@ -119,12 +119,72 @@ deliberate longer sessions.
   repeat answered wrong comes back again, until it is answered correctly. The progress count
   keeps the original total; a repeat shows **Herhaling** instead of a number.
 
+#### 3.4.1 Tips (mistake diagnosis)
+
+A wrong answer can get a **tip**: one Dutch sentence that names the likely mistake, e.g.
+"Dat is de korting zelf; trek die nog af van de prijs." It is shown as "Tip: …" between the
+answers and the explanation, in the feedback and on the results screen. Rules:
+
+- Only for a wrong answer that parses; at most one tip. Scoring and repeats are unchanged.
+- `CheckResult.tip` carries it. A step's own diagnosis comes first; for number and fraction steps
+  the fallback is the **factor-of-ten tip**: when the answer is exactly 10ᵏ times the correct one
+  (k ≠ 0): "Je antwoord is 100 keer te groot. Let op de komma en het aantal nullen."
+  Questions whose answer is an exponent (`1 biljard = 10ⁿ`) skip this fallback.
+- A tip may only claim what is certain from the input: it names a mistake only when the answer
+  equals exactly what that mistake produces.
+
+| Topic | Answer equals | Tip |
+|---|---|---|
+| Meten, grote getallen (`… = ? unit`) | value with × and : swapped | "Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met 1000." (or: grotere eenheid, deel) |
+| `area` | conversion with the length factor (10ᵏ instead of 10²ᵏ) | "Bij oppervlakte is elke stap ×100 (10 × 10), niet ×10." |
+| `volume`, both units cubic | conversion with the length factor | "Bij kubieke eenheden is elke stap ×1000 (10 × 10 × 10), niet ×10." |
+| `time` (min↔s, uur↔min, uur↔s) | conversion with 100 per 60 | "1 uur = 60 min, niet 100 min." |
+| `time`, larger → smaller, factor 60 | decimals read as minutes: 2,5 uur → 170 or 125 | "0,5 uur is 30 min, niet 50 min." |
+| `time`, smaller → larger, factor 60 | remainder written as decimals: 150 min → 2,3 | "30 min is 0,5 uur, niet 0,3 uur." |
+| `numberUnits`, name → power | English short scale (biljoen → 10⁹) | "Een biljoen is 10¹²; 10⁹ is een miljard (Engels: billion)." |
+| `numberUnits`, name → power | shift of the coefficient forgotten | "250 = 2,5 × 10²: tel 2 op bij 6." |
+| `percentages`, part of whole | the rest (100% − p%) | "Dat is wat er overblijft; gevraagd is 25% zelf." |
+| `percentages`, what percentage | the ratio as a decimal (0,25) | "Dat is het deel als kommagetal; × 100 geeft het percentage." |
+| `percentages`, what percentage | whole : part (or × 100) | "Je hebt het geheel door het deel gedeeld; reken deel : geheel." |
+| `percentages`, price change | the change itself | "Dat is de korting zelf; trek die nog af van de prijs." (verhoging: tel op) |
+| `percentages`, price change | change in the wrong direction | "Bij korting wordt de prijs lager: trek de korting af." (verhoging: hoger, tel op) |
+| `percentages`, back to 100% | p% of the given part | "Je hebt 20% van 14 berekend, maar 14 is zelf al 20%. Reken terug naar 100%." |
+| `ratios`, missing term | the additive answer (equal difference) | "Bij een verhouding vermenigvuldig of deel je beide getallen met hetzelfde getal; het verschil blijft niet gelijk." |
+| `ratios`, scaling | inverse scaling (amount × a : b) | "Je hebt omgekeerd geschaald: 6 is meer dan 4, dus het antwoord is meer dan 300." |
+| `ratios`, scaling | amount + (b − a) | "Je hebt het verschil in aantal opgeteld; bij een verhouding vermenigvuldig je." |
+| `ratios`, divide | the other part | "Dat is het kleinste deel; gevraagd is het grootste." |
+| `ratios`, divide | one part (asked > 1) | "Dat is 1 deel; het grootste deel is 3 delen." |
+| `ratios`, divide | total divided by one term | "Deel eerst door het totaal aantal delen: 2 + 3 = 5." |
+| `lcm` | the GCD | "Dat is de GGD. De KGV is het kleinste getal dat door allebei deelbaar is." |
+| `lcm` | a larger common multiple | "72 is een gemeenschappelijk veelvoud, maar niet het kleinste." |
+| `lcm` | not a multiple of a or b | "50 is geen veelvoud van 12." |
+| `gcd` | the LCM | "Dat is de KGV. De GGD is het grootste getal waar allebei door deelbaar zijn." |
+| `gcd` | a smaller common divisor | "6 is een gemeenschappelijke deler, maar niet de grootste." |
+| `gcd` | not a divisor of a or b | "84 is niet deelbaar door 8." |
+| `factorization` | a factor 1 | "1 is geen priemgetal: laat het weg." |
+| `factorization` | a composite factor | "9 is geen priemgetal: ontbind het verder." |
+| `factorization` | primes with another product | "Het product van je factoren is 90, niet 84." (or: groter dan 84) |
+| `squares`, n² | n × 2 | "17² is 17 × 17, niet 17 × 2." |
+| `squares`, √ | half the square | "√196 is het getal dat keer zichzelf 196 geeft, niet de helft." |
+| `squares`, √ | another positive integer | "15 × 15 = 225, niet 196." |
+| `orderOfOperations` | a power as base × exponent | "Een macht is herhaald vermenigvuldigen: 3² = 3 × 3, niet 3 × 2." |
+| `orderOfOperations` | strictly left to right | "Je hebt van links naar rechts gerekend. Eerst machten, dan × en :, daarna pas + en −." |
+| `orderOfOperations` | × before : | "× en : zijn even sterk: reken die van links naar rechts." |
+| `smartCalculation`, compensation | compensation the wrong way | "398 = 400 − 2, dus compenseer met − 2, niet met + 2." |
+| `smartCalculation`, complement | another positive integer | "463 + 547 = 1010, niet 1000." |
+| `tables`, product | a neighbouring row | "63 = 7 × 9: je zit één rij ernaast." |
+| `tables`, division or missing factor | another positive integer | "9 × 7 = 63, niet 56." |
+
+Ja/Nee steps (prime, divisibility) and property rewrites get no tips: their explanation (§5.4,
+§5.6) or rewrite message (§5.11) already names the mistake.
+
 ### 3.5 Results
 
 - Score `x / n` and percentage, over first attempts only: repeats (§3.4) do not count
 - Total time (wall clock, repeats included), and average time per exercise (first attempts)
 - A list of wrong exercises, each showing the prompt, the user's answer, the correct answer
-  and the explanation. These are the first-attempt mistakes, also when a repeat was correct.
+  and the tip and explanation. These are the first-attempt mistakes, also when a repeat was
+  correct.
 - Buttons **Opnieuw** (new session with the same set and count) and **Menu**
 
 ### 3.6 Kladblok (scratchpad)
@@ -944,6 +1004,7 @@ type Topic =
 interface CheckResult {
   correct: boolean;
   expected: string;
+  tip?: string; // likely mistake, wrong answers only (§3.4.1)
   explanation?: string;
 }
 
