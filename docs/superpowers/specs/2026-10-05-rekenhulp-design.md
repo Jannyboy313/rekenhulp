@@ -177,28 +177,38 @@ topic answers with a number unless stated otherwise.
 
 ### 5.2 LCM — KGV (`lcm`)
 
-- Two distinct numbers `a, b ∈ [2, 60]` with `lcm(a, b) ≤ 300`
-- In at least 50% of pairs the numbers share a factor (`gcd(a, b) > 1`), so that simply
-  multiplying them is not enough.
-- Prompt: `KGV van 12 en 18 = ?`. Explanation on error: the prime factorizations of both numbers.
+- Two distinct numbers `a, b ∈ [2, 60]` with `lcm(a, b) ≤ 300`, in random order
+- 75% of the pairs share a factor (`gcd(a, b) > 1`), so that simply multiplying them is not
+  enough. The other 25% are coprime.
+- Prompt: `KGV van 12 en 18 = ?`
+- Explanation on error: the prime factorizations of both numbers, then the LCM as the highest
+  power of every prime: `12 = 2² × 3 en 18 = 2 × 3² → KGV = 2² × 3² = 36`. A prime is written
+  as `13 is priem`.
 
 ### 5.3 GCD — GGD (`gcd`)
 
-- Generated as `a = g·p` and `b = g·q`, with `g ∈ [2, 30]`, `p ≠ q`, `gcd(p, q) = 1`, and
-  `a, b ≤ 200`
-- 10% of exercises are coprime pairs, whose answer is `1`.
-- Prompt: `GGD van 84 en 126 = ?`. Explanation on error: the prime factorizations of both numbers.
+- 90% of exercises are generated as `a = g·p` and `b = g·q`, with `g ∈ [2, 30]`, `p ≠ q`,
+  `gcd(p, q) = 1`, and `a, b ≤ 200`. First `g` is drawn uniformly, then `(p, q)`. `p = 1` is
+  allowed, so one number can divide the other.
+- 10% of exercises are coprime pairs, whose answer is `1`. Both numbers are composite and lie in
+  `[10, 200]`, so the answer does not follow from spotting two primes.
+- Prompt: `GGD van 84 en 126 = ?`
+- Explanation on error: the prime factorizations of both numbers, then the common prime powers:
+  `84 = 2² × 3 × 7 en 126 = 2 × 3² × 7 → GGD = 2 × 3 × 7 = 42`. For a coprime pair it ends in
+  `→ geen gemeenschappelijke priemfactor, GGD = 1`.
 
 ### 5.4 Prime yes/no (`prime`)
 
-- `n ∈ [11, 199]`
+- `n ∈ [11, 199]`. Prompt: `Is 91 een priemgetal?`
 - 50% of the numbers are prime and 50% are composite.
-- Composites are odd and not divisible by 5. At least half of them are also not divisible by 3,
-  which makes them the hard ones: 49, 77, 91, 119, 121, 133, 143, 161, 169 and 187.
+- Composites are odd and not divisible by 5. Half of them are also not divisible by 3, which
+  makes them the hard ones: 49, 77, 91, 119, 121, 133, 143, 161, 169 and 187. The other half
+  are odd multiples of 3 that are not divisible by 5 (21, 27, 33, …, 189).
 - Answer: **Ja** / **Nee** buttons.
 - Explanation on error:
-  - if `n` is composite: its smallest factorization, e.g. `91 = 7 × 13`
-  - if `n` is prime: "Geen deler tot en met √n"
+  - if `n` is composite: its smallest prime factor times the cofactor, e.g. `91 = 7 × 13` or
+    `27 = 3 × 9`
+  - if `n` is prime: `Geen deler tot en met √151`, with the actual number
 
 ### 5.5 Prime factorization (`factorization`)
 
@@ -213,30 +223,61 @@ topic answers with a number unless stated otherwise.
   - the order of the factors and the notation are free: `2×2×3×7`, `2^2×3×7` and `7×3×2^2` are
     all correct
 - Expected answer shown: the canonical form `2² × 3 × 7`.
+- Explanation on error: the division ladder, dividing by the smallest prime each time:
+  `84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7`.
 
 ### 5.6 Divisibility rules (`divisibility`)
 
 - Prompt: `Is 2718 deelbaar door 9?`
 - Answer: **Ja** / **Nee**.
-- Divisors: `{2, 3, 4, 5, 6, 8, 9, 11}`.
-- Numbers have 3 to 5 digits (`[100, 99 999]`). 50% of them are divisible.
-- Non-divisible numbers are chosen to be close calls, so that guessing does not work:
-  - for 3 and 9, the digit sum is off by 1 or 2
-  - for 4 and 8, the last two or three digits are even but not divisible
-  - for 6, the number is even but not divisible by 3, or vice versa
-- The explanation shows the rule as it applies to the number. Examples:
-  - "Cijfersom 2 + 7 + 1 + 8 = 18 → deelbaar door 9"
-  - "Laatste twee cijfers 18 → niet deelbaar door 4"
-  - "Alternerende som 2 − 7 + 1 − 8 = −12 → niet deelbaar door 11"
+- Divisors: 2 to 15 without 10, like the tables: `{2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15}`,
+  each equally likely.
+- The number of digits is drawn uniformly: 3 to 5 digits (`[100, 99 999]`), but only 3 or 4
+  digits (`[100, 9999]`) for 7, 13 and 14, which have no digit rule.
+- 50% of the numbers are divisible.
+- Non-divisible numbers are close calls, so that guessing does not work. Their remainder modulo
+  the divisor comes from this table; where there are two groups, each is picked with equal
+  probability:
+
+  | Divisor | Remainders                                  | Close call                               |
+  |---------|---------------------------------------------|------------------------------------------|
+  | 2       | 1                                           | odd                                      |
+  | 3       | 1, 2                                        | digit sum off by 1 or 2                  |
+  | 4       | 2                                           | last two digits even, not divisible      |
+  | 5       | 1, 2, 3, 4                                  | —                                        |
+  | 6       | 2, 4 / 3                                    | even but not by 3 / by 3 but odd         |
+  | 7       | 1, 2, 5, 6                                  | off by 1 or 2 from a multiple            |
+  | 8       | 2, 4, 6                                     | last three digits even, not divisible    |
+  | 9       | 1, 2, 7, 8                                  | digit sum off by 1 or 2                  |
+  | 11      | 1, 2, 9, 10                                 | alternating sum off by 1 or 2            |
+  | 12      | 4, 8 / 3, 6, 9                              | by 4 but not by 3 / by 3 but not by 4    |
+  | 13      | 1, 2, 11, 12                                | off by 1 or 2 from a multiple            |
+  | 14      | 2, 4, 6, 8, 10, 12 / 7                      | even but not by 7 / by 7 but odd         |
+  | 15      | 5, 10 / 3, 6, 9, 12                         | by 5 but not by 3 / by 3 but not by 5    |
+
+- The explanation shows the rule as it applies to the number:
+  - 2 and 5: `Laatste cijfer 8 → deelbaar door 2`
+  - 3 and 9: `Cijfersom 2 + 7 + 1 + 8 = 18 → deelbaar door 9`
+  - 4: `Laatste twee cijfers 18 → niet deelbaar door 4`; 8: `Laatste drie cijfers 718 → …`
+  - 11: `Alternerende som 2 − 7 + 1 − 8 = −12 → niet deelbaar door 11`, starting with `+` at
+    the leftmost digit
+  - 7 and 13, by chunking (*happen*): one multiple of the divisor per non-zero digit of the
+    quotient, then the remainder: `2718 = 2100 + 560 + 56 + rest 2 → niet deelbaar door 7`, or
+    `2716 = 2100 + 560 + 56 → deelbaar door 7`
+  - 6, 12, 14 and 15 combine the rules of two coprime factors (`2 × 3`, `3 × 4`, `2 × 7`,
+    `3 × 5`), and always show both: `Deelbaar door 2 (laatste cijfer 6) en niet deelbaar door 3
+    (cijfersom 1 + 2 + 4 + 6 = 13) → niet deelbaar door 6`
 
 ### 5.7 Squares & square roots (`squares`)
 
 - There are two forms, each picked with equal probability:
   - `17² = ?` with `n ∈ [2, 25]`
   - `√289 = ?` where the radicand is a perfect square from `2²` up to `25²`
-- In 70% of exercises `n ∈ [11, 25]`, because those are the squares worth memorising.
-- Explanation on error: a strategy hint, e.g. `17² = 17 × 17 = 170 + 119 = 289`, or
-  `(20 − 3)² = 400 − 120 + 9`.
+- In 70% of exercises `n ∈ [11, 25]`, because those are the squares worth memorising. The other
+  30% have `n ∈ [2, 10]`.
+- Explanation on error, the same for both forms: `7² = 7 × 7 = 49` for `n ≤ 10`,
+  `20² = 20 × 20 = 400`, and otherwise splitting off the tens:
+  `17² = 17 × 10 + 17 × 7 = 170 + 119 = 289`, `23² = 23 × 20 + 23 × 3 = 460 + 69 = 529`.
 
 ### 5.8 Order of operations (`orderOfOperations`)
 
@@ -482,15 +523,21 @@ The keypad is custom. The system keyboard is never opened.
 |--------------------|----------------------------------------------------------------|
 | number             | `0–9`, `,`, `−`, `⌫`, `OK`                                      |
 | fraction           | number keys plus `/`                                           |
-| boolean            | two large buttons: `Ja` / `Nee`                                |
+| boolean            | two large buttons: `Ja` / `Nee`; a tap submits at once, no `OK` |
 | expression         | number keys plus `+ − × : ( ) ^`                               |
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
 
+- Every answer kind has its own input model: keys, key reducer, validation and display.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
-  a superscript.
-- `OK` is disabled while the input is empty.
-- An unparsable expression gives an inline error ("Ongeldige som") and does **not** count as
-  the attempt.
+  a superscript. The feedback and the results show the given answer the same way.
+- `OK` is disabled only while the input is empty.
+- Input that cannot be submitted, such as `−`, `25/0` or `2 ×`, gives an inline error and does
+  **not** count as the attempt: "Ongeldig getal" for number and fraction, "Ongeldige
+  ontbinding" for factorization and "Ongeldige som" for expressions. The error disappears at
+  the next key press.
+- **Factorization input:** `×` is allowed only directly after a number. `^` is allowed only
+  directly after a base, so never at the start, after `×`, or after an exponent. Exponents are
+  digits. `2^2×3×7` is shown as `2² × 3 × 7`.
 - Units are shown next to the input field, and the user never types them. `€` is a fixed
   prefix (`€ 45`); other units (`%`, `cm³`, …) are a fixed suffix.
 - **Fraction input** (introduced with Verhoudingen v1 for `12½%`): the user types `a/b`, e.g.
@@ -591,7 +638,9 @@ src/
     rational.ts             exact bigint fractions; Dutch decimal parsing; used everywhere
     format.ts
     steps.ts                step factories, e.g. numberStep (shared answer checking)
-    keypadInput.ts          pure key → input-string reducer used by Keypad
+    keypadInput.ts          pure key → input-string reducers used by Keypad
+    inputModels.ts          per answer kind: keys, reducer, validation, display (§6)
+    primes.ts               gcd, lcm, isPrime, prime factorization (shared math helpers)
     results.ts              per-question records + session summary
     sets.ts                 practice set definitions (§4.1)
     session.ts              quota algorithm (§4.2), generation, shuffle, de-duplication
@@ -606,7 +655,7 @@ src/
     topics/
       index.ts              Topic → generator registry
       tables.ts
-      numberTheory.ts       lcm, gcd, prime, factorization (+ shared math helpers)
+      numberTheory.ts       lcm, gcd, prime, factorization
       divisibility.ts
       squares.ts
       orderOfOperations.ts
@@ -693,11 +742,12 @@ These are assumptions made while writing the spec. Each one is easy to change.
 4. In property exercises, a wrong step 1 still continues to step 2.
 5. Feedback for a correct answer lasts 600 ms before auto-advancing.
 6. Stop counts only the exercises that have been answered.
-7. An unparsable expression does not consume the attempt.
+7. ~~Invalid input~~ — confirmed: input that cannot be submitted gives an inline error and
+   does not consume the attempt, for every keypad answer kind (§6).
 8. The form `−3²` (which equals −9) is not generated, because it is a common source of
    confusion. It could be added as a deliberate trick question.
-9. The divisors for divisibility are `{2, 3, 4, 5, 6, 8, 9, 11}`. 10 and 25 are left out
-   because they are trivial.
+9. ~~Divisors~~ — confirmed: 2 to 15 without 10, like the tables. 7 and 13 are explained by
+   chunking, and with 14 they use numbers of at most 4 digits (§5.6).
 10. ~~Units~~ — confirmed: length `mm, cm, dm, m, km` without `dam`/`hm`, mass
     `mg, g, kg, ton` without `cg`/`dg`. Metric conversions span at most a factor 10⁶, and time
     leaves out `s ↔ dag` (§5.10). Large numbers (§5.14) were added to Meten.
@@ -708,6 +758,8 @@ These are assumptions made while writing the spec. Each one is easy to change.
     and `12,5` are correct, which brings the `fraction` input (`/` key) forward from v2.
     Discount uses `p < 100` and increase `p ≤ 50`. A missing ratio term can be in any of the
     four positions (§5.12, §5.13).
+13. ~~Getallen & delers~~ — confirmed: a tap on `Ja` or `Nee` submits at once (§6). A prime
+    is explained as `Geen deler tot en met √n` with the actual number (§5.4).
 
 ## 12. Roadmap (not in v1)
 
