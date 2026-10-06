@@ -398,8 +398,8 @@ the rewrite.
     of 5. Explanation `2a × h`, which is a table fact times 10: `35 × 18 → 70 × 9`.
   - **Split (:):** quotient `q ∈ [13, 99]` for 4 and 8, `[13, 199]` for 5, `[5, 99]` for 25,
     and `a = b × q`. Explanations `a : 2 : 2`, `a : 2 : 2 : 2`, `a × 2 : 10` and `a × 4 : 100`.
-- The de-duplication key is the prompt itself, so `1000 − 998` cannot appear twice in a session
-  as both complement and compensating.
+- The de-duplication key is the prompt itself, so the same sum never appears twice in a session,
+  whichever strategy produced it.
 
 ### 5.10 Measurement (`volume`, `area`, `length`, `mass`, `time`)
 
