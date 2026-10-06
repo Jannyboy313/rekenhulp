@@ -978,6 +978,7 @@ src/
     session.ts              quota algorithm (§4.2), generation, shuffle, de-duplication
     backGuard.ts            history entry that keeps the system back inside the app (§3)
     wakeLock.ts             keeps the screen on during a session (§2)
+    tips.ts                 Diagnose, firstTip, factor-of-ten fallback tip (§3.4.1)
     types.ts                Question, Step, AnswerKind, CheckResult, Topic, PracticeSet
     expr/
       tokenizer.ts
@@ -987,6 +988,7 @@ src/
       reduce.ts             evaluation steps, one operation at a time (explanations)
       chains.ts
       rewriteCheck.ts
+      misconceptions.ts     values of order-of-operations mistakes, for tips (§3.4.1)
     topics/
       index.ts              Topic → generator registry
       tables.ts

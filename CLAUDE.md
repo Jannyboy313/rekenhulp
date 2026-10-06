@@ -25,6 +25,10 @@ and are hidden for tables and Ja/Nee (spec §3.6).
 Repeat until correct (no plan, spec §3.4): a wrong question returns at a random later place in
 the queue (`insertRepeat` in `lib/session.ts`, queue in `PlayScreen.svelte`) until it is correct;
 repeats show "Herhaling" and are not recorded, so the results cover first attempts only.
+Tips (plan: `docs/superpowers/plans/2026-10-06-tips.md`, spec §3.4.1): a wrong answer can get one
+Dutch tip that names the likely mistake (`CheckResult.tip`). Each generator passes a `diagnose`
+to its step; number steps fall back to a factor-of-ten tip. A tip may only claim what is certain:
+it fires when the answer equals exactly what that mistake produces.
 Every other set gets its own implementation plan; do not start one until the user says so. To add a
 set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.
@@ -157,10 +161,12 @@ src/
     backGuard.ts        one history entry above the start screen, so the system back stays in
                         the app (wired in App.svelte; ignored while playing)
     wakeLock.ts         keeps the screen on while PlayScreen is mounted
+    tips.ts             Diagnose type, firstTip, factor-of-ten tip (fallback of number steps)
     format.ts           Dutch number/expression formatting
     rational.ts         exact bigint fractions (expressions, unit conversions, input parsing)
     expr/               tokenizer, parser (AST with groups), evaluate, format (prompt text),
-                        reduce (evaluation steps), chains, rewriteCheck (one property per step)
+                        reduce (evaluation steps), chains, rewriteCheck (one property per step),
+                        misconceptions (values of order-of-operations mistakes, for tips only)
     topics/             one generator module per topic
 ```
 
