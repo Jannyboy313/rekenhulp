@@ -52,7 +52,8 @@ Known follow-ups for the next plans:
   `expression` entry to `INPUT_MODELS` (`lib/inputModels.ts`, a `textModel` with the "Ongeldige
   som" message), and extend `lib/expr/parser.ts`,
   which so far only parses products of powers (`×`, `^`) over numbers, to the full §7 grammar.
-  `QuestionView`, `Feedback` and `ResultScreen` need no change for a new keypad kind. The parser
+  `QuestionView`, `Feedback` and `ResultScreen` need no change for a new keypad kind whose typing
+  state is a string (otherwise `QuestionView` needs a branch like `fraction`). The parser
   builds a left-associative binary `×` tree, while spec §7 wants n-ary `Sum`/`Product` chains and
   `Group` nodes, so set 4 must add chains (e.g. in `lib/expr/chains.ts`) and flip the parser test
   that currently rejects `(2)`.

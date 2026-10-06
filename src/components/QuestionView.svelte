@@ -32,6 +32,7 @@
       {/each}
     </div>
   {:else if step.kind === 'fraction'}
+    <!-- A separate branch per typing state: a union of models cannot infer KeypadAnswer's S. -->
     <KeypadAnswer
       model={INPUT_MODELS.fraction}
       prefix={step.prefix}

@@ -83,8 +83,9 @@
     border-radius: var(--radius);
   }
 
+  /* Fits an open template with compact slots; kept low so the keypad still fits on small phones. */
   .answer.tall {
-    min-height: 7rem;
+    min-height: 6rem;
   }
 
   .placeholder {
@@ -93,11 +94,15 @@
 
   .slot {
     min-width: 2.5rem;
-    min-height: 2.25rem;
+    min-height: 1.9rem;
     padding: 0 0.25rem;
     background: none;
     border: 2px solid transparent;
     border-radius: 0.375rem;
+  }
+
+  .slot:active {
+    background: var(--key-active);
   }
 
   .slot.active {
