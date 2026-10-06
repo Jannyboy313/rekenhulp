@@ -1,5 +1,6 @@
-import { INPUT_MODELS, type KeyDef } from './inputModels';
+import { INPUT_MODELS } from './inputModels';
 import { MAX_INPUT_LENGTH, type KeypadKey } from './keypadInput';
+import { keyDefs, type KeyDef } from './keys';
 import type { AnswerKind, Topic } from './types';
 
 /** Kladblok cells in a grid of 2 columns and 3 rows, in reading order (spec §3.6). */
@@ -13,9 +14,7 @@ export const EMPTY_NOTES: readonly string[] = Object.freeze(Array<string>(NOTE_C
 /** The expression keypad plus comma, = and a spatie in the place of OK (spec §3.6). */
 export const NOTE_KEYS: readonly KeyDef[] = [
   ...INPUT_MODELS.expression.keys,
-  { key: ',', label: ',', ariaLabel: 'komma' },
-  { key: '=', label: '=', ariaLabel: 'is' },
-  { key: ' ', label: '␣', ariaLabel: 'spatie' },
+  ...keyDefs(',', '=', ' '),
 ];
 
 /** Four columns like the expression keypad; the keys fill all five rows. */

@@ -8,21 +8,13 @@ import {
   EMPTY_FRACTION_INPUT,
   fractionInputToString,
   selectFractionSlot,
-  type DigitKey,
   type FractionInput,
   type FractionSlot,
   type KeypadKey,
 } from './keypadInput';
+import { keyDefs, type KeyDef } from './keys';
 import { parseAnswer, parseFactorization } from './steps';
 import type { AnswerKind } from './types';
-
-export interface KeyDef {
-  key: KeypadKey;
-  label: string;
-  ariaLabel?: string;
-  /** Drawn instead of the label: the breuk key shows a small stacked fraction. */
-  icon?: 'fraction';
-}
 
 /**
  * The answer field while typing: plain text, or an open fraction template with its cursor.
@@ -70,43 +62,47 @@ export const INVALID_NUMBER = 'Ongeldig getal';
 export const INVALID_EXPRESSION = 'Ongeldige som';
 export const INVALID_FACTORIZATION = 'Ongeldige ontbinding';
 
-const digit = (key: DigitKey): KeyDef => ({ key, label: key });
-const DIGIT_ROWS: readonly KeyDef[] = (['7', '8', '9', '4', '5', '6', '1', '2', '3'] as const).map(
-  digit,
-);
-const BACKSPACE: KeyDef = { key: 'backspace', label: '⌫', ariaLabel: 'wissen' };
+// Keypads are written one grid row per line; OK fills the rest of the last row.
 
-const NUMBER_KEYS: readonly KeyDef[] = [
-  ...DIGIT_ROWS,
-  { key: '-', label: '−', ariaLabel: 'min' },
-  digit('0'),
-  { key: ',', label: ',', ariaLabel: 'komma' },
-  BACKSPACE,
-];
+// prettier-ignore
+const NUMBER_KEYS = keyDefs(
+  '7', '8', '9',
+  '4', '5', '6',
+  '1', '2', '3',
+  '-', '0', ',',
+  'backspace',
+);
+
+// prettier-ignore
+const FRACTION_KEYS = keyDefs(
+  '7', '8', '9',
+  '4', '5', '6',
+  '1', '2', '3',
+  '-', '0', ',',
+  'backspace', '/',
+);
 
 /**
  * Digits in the usual three columns, operators in a fourth (spec §6). Rewrites need no comma,
  * power or negative number, so '-' is only the operator.
  */
-const EXPRESSION_KEYS: readonly KeyDef[] = [
-  digit('7'),
-  digit('8'),
-  digit('9'),
-  { key: '+', label: '+', ariaLabel: 'plus' },
-  digit('4'),
-  digit('5'),
-  digit('6'),
-  { key: '-', label: '−', ariaLabel: 'min' },
-  digit('1'),
-  digit('2'),
-  digit('3'),
-  { key: '×', label: '×', ariaLabel: 'keer' },
-  { key: '(', label: '(', ariaLabel: 'haakje openen' },
-  digit('0'),
-  { key: ')', label: ')', ariaLabel: 'haakje sluiten' },
-  { key: ':', label: ':', ariaLabel: 'gedeeld door' },
-  BACKSPACE,
-];
+// prettier-ignore
+const EXPRESSION_KEYS = keyDefs(
+  '7', '8', '9', '+',
+  '4', '5', '6', '-',
+  '1', '2', '3', '×',
+  '(', '0', ')', ':',
+  'backspace',
+);
+
+// prettier-ignore
+const FACTORIZATION_KEYS = keyDefs(
+  '7', '8', '9',
+  '4', '5', '6',
+  '1', '2', '3',
+  '×', '0', '^',
+  'backspace',
+);
 
 /** A model whose typing state is the input string itself. */
 function textModel(
@@ -149,7 +145,7 @@ function viewFraction({ negative, whole, template }: FractionInput): FieldSegmen
 export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates[K]> } = {
   number: textModel(NUMBER_KEYS, applyKey, validateNumber('number'), formatInput),
   fraction: {
-    keys: [...NUMBER_KEYS, { key: '/', label: 'breuk', icon: 'fraction' }],
+    keys: FRACTION_KEYS,
     empty: EMPTY_FRACTION_INPUT,
     apply: applyFractionKey,
     // At least one digit, so an empty template cannot be submitted (spec §6).
@@ -170,13 +166,7 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
     columns: 4,
   },
   factorization: textModel(
-    [
-      ...DIGIT_ROWS,
-      { key: '×', label: '×', ariaLabel: 'keer' },
-      digit('0'),
-      { key: '^', label: '^', ariaLabel: 'tot de macht' },
-      BACKSPACE,
-    ],
+    FACTORIZATION_KEYS,
     applyFactorizationKey,
     (input) => (parseFactorization(input) === null ? INVALID_FACTORIZATION : null),
     formatFactorizationInput,
@@ -186,9 +176,4 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
 /** A given answer as it was shown while typing; Ja and Nee are shown as they are. */
 export function displayAnswer(kind: AnswerKind, input: string): string {
   return kind === 'boolean' ? input : INPUT_MODELS[kind].display(input);
-}
-
-/** Columns that OK spans, so that it fills the last row of the keypad. */
-export function okSpan(keys: readonly KeyDef[], columns = 3): number {
-  return columns - (keys.length % columns);
 }

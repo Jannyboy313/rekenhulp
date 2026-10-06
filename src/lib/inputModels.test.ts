@@ -5,7 +5,6 @@ import {
   INVALID_EXPRESSION,
   INVALID_FACTORIZATION,
   INVALID_NUMBER,
-  okSpan,
   type KeypadKind,
 } from './inputModels';
 import type { FractionInput, KeypadKey } from './keypadInput';
@@ -41,12 +40,6 @@ describe('INPUT_MODELS keys', () => {
     expect(ariaLabels('factorization').slice(-4)).toEqual(['keer', '0', 'tot de macht', 'wissen']);
   });
 
-  it('lets OK fill the last row of the 3-column grid', () => {
-    expect(okSpan(INPUT_MODELS.number.keys)).toBe(2);
-    expect(okSpan(INPUT_MODELS.fraction.keys)).toBe(1);
-    expect(okSpan(INPUT_MODELS.factorization.keys)).toBe(2);
-  });
-
   it('lays out the expression keypad in 4 columns, operators on the right', () => {
     expect(labels('expression')).toEqual([
       '7', '8', '9', '+',
@@ -66,10 +59,6 @@ describe('INPUT_MODELS keys', () => {
     ]);
     expect(INPUT_MODELS.expression.columns).toBe(4);
     expect(INPUT_MODELS.number.columns).toBeUndefined();
-  });
-
-  it('lets OK fill the last row of the 4-column expression grid', () => {
-    expect(okSpan(INPUT_MODELS.expression.keys, 4)).toBe(3);
   });
 });
 

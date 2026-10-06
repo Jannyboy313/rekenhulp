@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { okSpan, type KeyDef } from '../lib/inputModels';
+  import { okSpan, type KeyDef } from '../lib/keys';
   import type { KeypadKey } from '../lib/keypadInput';
   import Fraction from './Fraction.svelte';
   import { press } from './press';

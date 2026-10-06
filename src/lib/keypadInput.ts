@@ -1,4 +1,4 @@
-export type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 /** '=' and ' ' (the spatie) are kladblok keys only; the answer reducers ignore them. */
 export type KeypadKey =
   | DigitKey
