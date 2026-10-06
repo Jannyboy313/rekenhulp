@@ -35,8 +35,10 @@ import {
   TIME_DENOMINATORS,
   TIME_PAIRS,
   TIME_UNITS,
+  timeTip,
   VOLUME_UNITS,
   type ScaleUnit,
+  type TimeUnit,
 } from './measurement';
 
 const SAMPLES = 1000;
@@ -413,6 +415,47 @@ describe('largerTimeValues', () => {
           expect(smallerValue.num).toBeLessThanOrEqual(BigInt(MAX_SMALLER_TIME_VALUE));
         }
       }
+    }
+  });
+});
+
+describe('timeTip', () => {
+  const [SECOND, MINUTE, HOUR, DAY] = TIME_UNITS as readonly [
+    TimeUnit,
+    TimeUnit,
+    TimeUnit,
+    TimeUnit,
+  ];
+
+  it.each([
+    [HOUR, MINUTE, '2,5', true, '250', '1 uur = 60 min, niet 100 min.'],
+    [HOUR, MINUTE, '2,5', false, '1,5', '1 uur = 60 min, niet 100 min.'],
+    [HOUR, SECOND, '0,5', true, '5000', '1 uur = 3600 s, niet 10\u{202f}000 s.'],
+    [HOUR, MINUTE, '2,5', true, '170', '0,5 uur is 30 min, niet 50 min.'],
+    [HOUR, MINUTE, '2,5', true, '125', '0,5 uur is 30 min, niet 5 min.'],
+    [HOUR, MINUTE, '2,25', true, '145', '0,25 uur is 15 min, niet 25 min.'],
+    [HOUR, MINUTE, '2,5', false, '2,3', '30 min is 0,5 uur, niet 0,3 uur.'],
+    [MINUTE, SECOND, '1,5', false, '1,3', '30 s is 0,5 min, niet 0,3 min.'],
+  ] as const)(
+    'case %# (toSmaller %s, answer %s)',
+    (larger, smaller, value, toSmaller, given, tip) => {
+      expect(timeTip(larger, smaller, n(value), toSmaller)(n(given))).toBe(tip);
+    },
+  );
+
+  it('gives nothing for other answers', () => {
+    expect(timeTip(DAY, HOUR, n('2,5'), true)(n('250'))).toBeUndefined();
+    expect(timeTip(HOUR, MINUTE, n('2'), true)(n('125'))).toBeUndefined();
+    expect(timeTip(HOUR, MINUTE, n('2,5'), true)(n('151'))).toBeUndefined();
+  });
+
+  it('is wired into generated time questions', () => {
+    const rng = createRng(7);
+    for (let i = 0; i < 1000; i++) {
+      const question = generateTime(rng);
+      const step = question.steps[0]!;
+      // Every step has a diagnosis: a typed 0 parses, is wrong, and never crashes it.
+      expect(step.check('0').correct).toBe(false);
     }
   });
 });

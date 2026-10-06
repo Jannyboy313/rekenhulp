@@ -1,6 +1,7 @@
 import { formatInteger, formatRational } from '../format';
 import { pick, randomInt, type Rng } from '../random';
 import {
+  add,
   compare,
   decimalPlaces,
   divide,
@@ -9,6 +10,7 @@ import {
   multiply,
   powerOfTen,
   rational,
+  subtract,
   type Rational,
 } from '../rational';
 import { numberStep } from '../steps';
@@ -309,12 +311,90 @@ const TIME_VALUE_GROUPS: readonly Rational[][][] = TIME_PAIRS.map(([larger, smal
   ),
 );
 
+/** A pair's factor if an hour had 100 minutes and a minute 100 seconds (spec §3.4.1). */
+const DECIMAL_TIME_FACTORS: Readonly<Record<string, number>> = {
+  'min>s': 100,
+  'uur>min': 100,
+  'uur>s': 10_000,
+};
+
+/** 2,25 → whole 2 and fraction 0,25. Only for non-negative values. */
+function splitWhole(value: Rational): { whole: Rational; fraction: Rational } {
+  const whole = rational(value.num / value.den);
+  return { whole, fraction: subtract(value, whole) };
+}
+
+/**
+ * Time mistakes (spec §3.4.1): 100 per 60, decimals read as minutes (2,5 uur → 2 uur 50 min) and
+ * a remainder written as decimals (150 min → 2,30 uur). `largerValue` is in the larger unit;
+ * `toSmaller` tells the direction of the question.
+ */
+export function timeTip(
+  larger: TimeUnit,
+  smaller: TimeUnit,
+  largerValue: Rational,
+  toSmaller: boolean,
+): Diagnose {
+  const factor = larger.seconds / smaller.seconds;
+  const decimal = DECIMAL_TIME_FACTORS[`${larger.symbol}>${smaller.symbol}`];
+  const smallerValue = multiply(largerValue, fromInteger(factor));
+  return (given) => {
+    if (decimal !== undefined) {
+      const mistaken = toSmaller
+        ? multiply(largerValue, fromInteger(decimal))
+        : divide(smallerValue, fromInteger(decimal));
+      if (equals(given, mistaken)) {
+        return `1 ${larger.symbol} = ${formatInteger(factor)} ${smaller.symbol}, niet ${formatInteger(decimal)} ${smaller.symbol}.`;
+      }
+    }
+    if (factor !== 60) return undefined;
+    return toSmaller
+      ? decimalsAsMinutesTip(larger, smaller, largerValue, given)
+      : remainderAsDecimalsTip(larger, smaller, largerValue, given);
+  };
+}
+
+/** 2,5 uur read as 2 uur 50 min (170) or 2 uur 5 min (125): '0,5 uur is 30 min, niet 50 min.' */
+function decimalsAsMinutesTip(
+  larger: TimeUnit,
+  smaller: TimeUnit,
+  largerValue: Rational,
+  given: Rational,
+): string | undefined {
+  const { whole, fraction } = splitWhole(largerValue);
+  if (fraction.num === 0n) return undefined;
+  const digits = formatRational(fraction).slice(2); // '0,25' → '25'
+  const readings = digits.length === 1 ? [Number(digits), Number(digits) * 10] : [Number(digits)];
+  const start = multiply(whole, fromInteger(60));
+  const reading = readings.find((minutes) => equals(given, add(start, fromInteger(minutes))));
+  if (reading === undefined) return undefined;
+  const real = formatRational(multiply(fraction, fromInteger(60)));
+  return `${formatRational(fraction)} ${larger.symbol} is ${real} ${smaller.symbol}, niet ${reading} ${smaller.symbol}.`;
+}
+
+/** 150 min written as 2,30 uur: '30 min is 0,5 uur, niet 0,3 uur.' */
+function remainderAsDecimalsTip(
+  larger: TimeUnit,
+  smaller: TimeUnit,
+  largerValue: Rational,
+  given: Rational,
+): string | undefined {
+  const { whole, fraction } = splitWhole(largerValue);
+  if (fraction.num === 0n) return undefined;
+  const rest = multiply(fraction, fromInteger(60));
+  const written = divide(rest, fromInteger(100));
+  if (!equals(given, add(whole, written))) return undefined;
+  return `${formatRational(rest)} ${smaller.symbol} is ${formatRational(fraction)} ${larger.symbol}, niet ${formatRational(written)} ${larger.symbol}.`;
+}
+
 export function generateTime(rng: Rng): Question {
   const index = randomInt(rng, 0, TIME_PAIRS.length - 1);
   const [larger, smaller] = TIME_PAIRS[index]!;
   const largerValue = pick(rng, pick(rng, TIME_VALUE_GROUPS[index]!));
   const smallerValue = multiply(largerValue, timeFactor(larger, smaller));
-  return rng() < 0.5
-    ? conversionQuestion('time', larger.symbol, smaller.symbol, largerValue, smallerValue)
-    : conversionQuestion('time', smaller.symbol, larger.symbol, smallerValue, largerValue);
+  const toSmaller = rng() < 0.5;
+  const tips = [timeTip(larger, smaller, largerValue, toSmaller)];
+  return toSmaller
+    ? conversionQuestion('time', larger.symbol, smaller.symbol, largerValue, smallerValue, tips)
+    : conversionQuestion('time', smaller.symbol, larger.symbol, smallerValue, largerValue, tips);
 }
