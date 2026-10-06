@@ -171,9 +171,9 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `orderOfOperations` | strictly left to right | "Je hebt van links naar rechts gerekend. Eerst machten, dan × en :, daarna pas + en −." |
 | `orderOfOperations` | × before : | "× en : zijn even sterk: reken die van links naar rechts." |
 | `smartCalculation`, compensation | compensation the wrong way | "398 = 400 − 2, dus compenseer met − 2, niet met + 2." |
-| `smartCalculation`, complement | another positive integer | "463 + 547 = 1010, niet 1000." |
+| `smartCalculation`, complement | another positive integer, not 10ᵏ × the answer | "463 + 547 = 1010, niet 1000." |
 | `tables`, product | a neighbouring row | "63 = 7 × 9: je zit één rij ernaast." |
-| `tables`, division or missing factor | another positive integer | "9 × 7 = 63, niet 56." |
+| `tables`, division or missing factor | another positive integer, not 10ᵏ × the answer | "9 × 7 = 63, niet 56." |
 
 Ja/Nee steps (prime, divisibility) and property rewrites get no tips: their explanation (§5.4,
 §5.6) or rewrite message (§5.11) already names the mistake.
