@@ -10,7 +10,7 @@
     columns?: number;
     canSubmit: boolean;
     onkey: (key: KeypadKey) => void;
-    /** Without it there is no OK: the kladblok puts its spatie there (spec §3.6). */
+    /** Without it there is no OK: the kladblok has no submit (spec §3.6). */
     onsubmit?: () => void;
   }
 
@@ -18,11 +18,10 @@
 </script>
 
 <div class="keypad" style:--columns={columns}>
-  {#each keys as { key, label, ariaLabel, icon, span } (key)}
+  {#each keys as { key, label, ariaLabel, icon } (key)}
     <button
       type="button"
       class="key"
-      style:grid-column={span === undefined ? undefined : `span ${span}`}
       aria-label={ariaLabel ?? label}
       use:press={() => onkey(key)}
     >
