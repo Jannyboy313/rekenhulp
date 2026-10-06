@@ -140,6 +140,9 @@ src/
                         goes through here
     keypadInput.ts      pure key → input reducers (numbers, fraction templates, factorizations,
                         expressions)
+    keys.ts             key catalogue (label, aria label per key) and keyDefs; keypads list key
+                        names one grid row per line. A new key: widen KeypadKey, add it to KEYS,
+                        handle it in the reducers that should accept it
     inputModels.ts      per answer kind: keys, columns, typing state, reducer, validate,
                         display, view
     scratchpad.ts       kladblok: cell count, keys (expression keys + , = spatie), typing,
