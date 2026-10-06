@@ -494,7 +494,10 @@ The seven templates are equally likely. Values:
   the commutative one) are always 100: two numbers in `[11, 89]` that are not multiples of 10.
   The third number is in `[11, 99]` and not a multiple of 10.
 - The products that must be round use the pairs `25·4`, `50·2`, `20·5` (100) and `125·8`
-  (1000), in either order. The third factor is in `[3, 49]` and not a multiple of 10.
+  (1000), in either order. The third factor is in `[11, 49]` and not a multiple of 10, so the
+  property is worth using (`5 × 3 × 20` is not).
+- The de-duplication key is the expression, so the same expression never appears twice in a
+  session, not even once as Basis and once as Gevorderd.
 
 Applicable properties (Gevorderd picks one of these, equally likely) and the example rewrite
 for each:
@@ -525,9 +528,9 @@ Feedback:
   - the same expression, or parentheses that do not change the order of evaluation
     (`(17 + 25) + 75` → `17 + 25 + 75`): "Er is niets veranderd."
   - another value: "Deze stap verandert de uitkomst."
-  - only a number written differently (`7 × (100 − 2)`): "Hier is nog geen eigenschap
-    toegepast."
-  - more than one step: "Dit zijn meerdere stappen."
+  - only a number written differently (`7 × (100 − 2)`), or only a part worked out
+    (`6 × (40 + 3)` → `6 × 43`): "Hier is nog geen eigenschap toegepast."
+  - more than one step: "Dit zijn meerdere stappen: pas één eigenschap per keer toe."
   - reordering `−` or `:`: "Deze eigenschap geldt niet voor − en :."
   - a valid step with another property: "Geldige stap (commutatief), maar niet handig. Probeer
     distributief." (Basis) or "Geldige stap (commutatief), maar gevraagd is associatief."
@@ -781,8 +784,10 @@ How the checker decides, in this order:
    detected), the step is valid. If another property is detected: reason `otherProperty`.
 6. Otherwise, when the difference root of the original is a `−` or `:` and both roots contain
    the same numbers: reason `notForMinusOrDivide`. When only one number was written
-   differently (`7 × 98` → `7 × (100 − 2)`, or `7 × 98` → `7 × 49 × 2` within a chain): reason
-   `noProperty`. Else: reason `multipleSteps`.
+   differently (`7 × 98` → `7 × (100 − 2)`, or `7 × 98` → `7 × 49 × 2` within a chain), or
+   only one part was worked out into a number (`6 × (40 + 3)` → `6 × 43`, or
+   `25 × 37 × 4` → `25 × 148` within a chain): reason `noProperty`. Else: reason
+   `multipleSteps`.
 
 The distributive *expand* form only applies to a product of exactly two factors, and the split
 `t₁ ± t₂ = n` only to number literals. In the *factor out* form, `S` must be a `Group`. A term
