@@ -135,7 +135,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 
 | Topic | Answer equals | Tip |
 |---|---|---|
-| Meten, grote getallen (`… = ? unit`) | value with × and : swapped | "Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met 1000." (or: grotere eenheid, deel) |
+| Meten, grote getallen name → name (`3,5 L = ? cm³`, `250 miljoen = ? miljard`) | value with × and : swapped | "Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met 1000." (or: grotere eenheid, deel) |
 | `area` | conversion with the length factor (10ᵏ instead of 10²ᵏ) | "Bij oppervlakte is elke stap ×100 (10 × 10), niet ×10." |
 | `volume`, both units cubic | conversion with the length factor | "Bij kubieke eenheden is elke stap ×1000 (10 × 10 × 10), niet ×10." |
 | `time` (min↔s, uur↔min, uur↔s) | conversion with 100 per 60 | "1 uur = 60 min, niet 100 min." |
