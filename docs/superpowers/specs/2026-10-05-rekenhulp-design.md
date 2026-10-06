@@ -323,23 +323,38 @@ topic answers with a number unless stated otherwise.
 
 ### 5.8 Order of operations (`orderOfOperations`)
 
-- Expressions are built from templates with 3 to 5 operations, for example:
+- Expressions are built from these 10 templates (2 to 5 operations, a power counts as one),
+  each equally likely:
   - `a + b × c`
   - `a × (b − c) + d`
   - `a − b : c × d`
   - `(a + b)² − c × d`
   - `a² + b × c − d`
   - `a : b + c × (d − e)`
+  - `a × b − c : d`
+  - `(a − b) × c + d²`
+  - `a − (b + c) : d`
+  - `a × (b + c²) − d`
 - Literals are integers in `[1, 20]`.
-- Powers: base `[2, 12]` with exponent 2, or base `[2, 5]` with exponent 3.
+- Powers: base `[2, 12]` with exponent 2, or base `[2, 5]` with exponent 3. A power slot (`²`
+  above) has exponent 3 in 25% of the exercises. With a negative base, these ranges apply to its
+  absolute value.
 - Every division is exact, including its intermediate results.
 - The answer is an integer with `|answer| ≤ 500`. Negative answers are allowed.
-- **Negative numbers:** about 30% of exercises contain negative literals.
+- Values are drawn at random and the exercise is redrawn (same template) until all of the above
+  hold.
+- **Negative numbers:** 30% of exercises contain negative literals: 1 or 2 of them (equally
+  likely), at random literal positions (never an exponent).
   - In a prompt, a negative literal is always written in parentheses, except when it is the
-    first term: `−7 − (−12)`, `5 × (−3) + 8`, `(−4)² − 10`.
-  - The form `−3²` is not generated (§11).
+    first term of the expression or of a parenthesized part, where unary minus is allowed
+    (§7): `−7 − (−12)`, `5 × (−3) + 8`, `(−3 + 5) × 2`.
+  - A negative power base is always written in parentheses: `(−4)² − 10`. The form `−3²` is
+    not generated (§11).
 - The convention from §8 applies: `×` and `:` have equal priority and are evaluated left to
   right.
+- Explanation on error: the evaluation one operation at a time, in the order of §8 (innermost
+  parentheses first, then powers, then `×`/`:` from left to right, then `+`/`−` from left to
+  right): `3 × (8 − 2) + 4 = 3 × 6 + 4 = 18 + 4 = 22`.
 
 ### 5.9 Smart calculation (`smartCalculation`)
 
@@ -358,6 +373,22 @@ the rewrite.
 
 - "Close to round" means within ±1 to ±3 of a multiple of 10, 100 or 1000.
 - Answers are integers in `[1, 10 000]`.
+- The six strategies are equally likely. Values per strategy (a draw outside the answer range is
+  redrawn):
+  - **Compensating (+):** a magnitude `m ∈ {10, 100, 1000}`, a round `R = k·m` (`k ∈ [2, 9]`
+    for `m = 10`, otherwise `[1, 9]`) and `a = R ± d` with `d ∈ [1, 3]`. `b ∈ [m + 1, 10m − 1]`
+    and not a multiple of 10. The near-round number comes first.
+  - **Compensating (−):** `b = R ± d` as above, and `a ∈ [b + 1, 10m − 1]`.
+    Explanation `a − R + d` or `a − R − d`.
+  - **Complement:** `100 − b` with `b ∈ [11, 99]`, or `1000 − b` with `b ∈ [101, 999]`, each
+    equally likely; `b` is not a multiple of 10.
+  - **Split (×):** `a × 25` with `a = 4k`, `k ∈ [3, 25]`; `a × 50` with `a = 2k`,
+    `k ∈ [6, 50]`; `a × 125` with `a = 8k`, `k ∈ [2, 10]`. Explanations `a : 4 × 100`,
+    `a : 2 × 100` and `a : 8 × 1000`.
+  - **Double / halve:** `a = 10j + 5` with `j ∈ [1, 9]`, and an even `b ∈ [12, 98]` that is not
+    a multiple of 10. Explanation `2a × b/2`.
+  - **Split (:):** quotient `q ∈ [13, 99]` for 4 and 8, `[13, 199]` for 5, `[5, 99]` for 25,
+    and `a = b × q`. Explanations `a : 2 : 2`, `a : 2 : 2 : 2`, `a × 2 : 10` and `a × 4 : 100`.
 
 ### 5.10 Measurement (`volume`, `area`, `length`, `mass`, `time`)
 
@@ -441,12 +472,54 @@ A two-step exercise:
 | commutative       | `a + b + c`                      | `38 + 57 + 62`           | `a + c` round                 |
 | commutative       | `a × b × c`                      | `25 × 37 × 4`            | `a × c ∈ {100, 1000}`         |
 
-Example rewrites shown on error:
+The seven templates are equally likely. Values:
+
+- `a ∈ [3, 19]` without 10 in the three distributive templates; `n = R ± d` with `R` one of
+  `20, 30, …, 90, 100, 200, …, 900, 1000` and `d ∈ [1, 3]`; `b ∈ {20, 30, …, 90}` and
+  `c ∈ [1, 9]` in `a × (b + c)`.
+- The sums that must be round (`b + c` in the factor-out and associative templates, `a + c` in
+  the commutative one) are always 100: two numbers in `[11, 89]` that are not multiples of 10.
+  The third number is in `[11, 99]` and not a multiple of 10.
+- The products that must be round use the pairs `25·4`, `50·2`, `20·5` (100) and `125·8`
+  (1000), in either order. The third factor is in `[3, 49]` and not a multiple of 10.
+
+Applicable properties (Gevorderd picks one of these, equally likely) and the example rewrite
+for each:
+
+| Template          | Commutative            | Associative        | Distributive             |
+|-------------------|------------------------|--------------------|--------------------------|
+| `a × n`           | `n × a`                | —                  | `a × R − a × d` (or `+`) |
+| `a × (b + c)`     | `(b + c) × a`          | —                  | `a × b + a × c`          |
+| `a × b + a × c`   | `a × c + a × b`        | —                  | `a × (b + c)`            |
+| `(a + b) + c`     | `c + (a + b)`          | `a + (b + c)`      | —                        |
+| `(a × b) × c`     | `c × (a × b)`          | `a × (b × c)`      | —                        |
+| `a + b + c`       | `a + c + b`            | `a + (b + c)`      | —                        |
+| `a × b × c`       | `a × c × b`            | `a × (b × c)`      | —                        |
+
+Example rewrites of the intended property, for instance:
 
 - `7 × 100 − 7 × 2`
 - `17 + (25 + 75)`
 - `38 + 62 + 57`
 - `25 × 4 × 37`
+
+Feedback:
+
+- **Step 1** is an `expression` step. The correct answer shown is the example rewrite of the
+  asked property (Basis: the intended one). The explanation is the reason from the rewrite
+  checker (§7.1):
+  - only a number: "Schrijf een som op, niet alleen de uitkomst."
+  - the same expression, or parentheses that do not change the order of evaluation
+    (`(17 + 25) + 75` → `17 + 25 + 75`): "Er is niets veranderd."
+  - another value: "Deze stap verandert de uitkomst."
+  - more than one step: "Dit zijn meerdere stappen."
+  - reordering `−` or `:`: "Deze eigenschap geldt niet voor − en :."
+  - a valid step with another property: "Geldige stap (commutatief), maar niet handig. Probeer
+    distributief." (Basis) or "Geldige stap (commutatief), maar gevraagd is associatief."
+    (Gevorderd)
+- **Step 2** is a number step with the prompt `7 × 98 = ?`. Its explanation is the evaluation
+  of the intended rewrite, one operation at a time as in §5.8:
+  `7 × 100 − 7 × 2 = 700 − 7 × 2 = 700 − 14 = 686`.
 
 ### 5.12 Percentages (`percentages`)
 
@@ -566,7 +639,7 @@ The keypad is custom. The system keyboard is never opened.
 | number             | `0–9`, `,`, `−`, `⌫`, `OK`                                      |
 | fraction           | number keys plus a **breuk** key (stacked-fraction icon)       |
 | boolean            | two large buttons: `Ja` / `Nee`; a tap submits at once, no `OK` |
-| expression         | number keys plus `+ − × : ( ) ^`                               |
+| expression         | `0–9`, `+ − × :`, `( )`, `⌫`, `OK`, in 4 columns               |
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
 
 - Every answer kind has its own input model: keys, key reducer, validation and display.
@@ -580,6 +653,23 @@ The keypad is custom. The system keyboard is never opened.
 - **Factorization input:** `×` is allowed only directly after a number. `^` is allowed only
   directly after a base, so never at the start, after `×`, or after an exponent. Exponents are
   digits. `2^2×3×7` is shown as `2² × 3 × 7`.
+- **Expression input** (only the rewrite step of §5.11 uses it): integers, `+ − × :` and
+  parentheses. The rewrites never need a decimal comma, a power or a negative number, so these
+  keys are left out, and `−` is always the operator. It is the only keypad with 4 columns; all
+  other keypads keep 3. Five rows, the same height as the other keypads:
+
+  ```
+  7  8  9  +
+  4  5  6  −
+  1  2  3  ×
+  (  0  )  :
+  ⌫  OK────────
+  ```
+
+  An operator is allowed only after a number or `)`; `(` only at the start, after an operator
+  or after `(`; `)` only after a number or `)` while a `(` is open; a digit not directly after
+  `)`. At most 30 characters. `7×(13+87)` is shown as `7 × (13 + 87)`. What the keys cannot
+  prevent (a trailing operator, an unclosed `(`) gives "Ongeldige som".
 - Units are shown next to the input field, and the user never types them. `€` is a fixed
   prefix (`€ 45`); other units (`%`, `cm³`, …) are a fixed suffix.
 - While the input is empty, the field shows `…` in the muted colour as a placeholder. Empty
@@ -608,20 +698,26 @@ The keypad is custom. The system keyboard is never opened.
 
 ## 7. Expression engine (`lib/expr`)
 
-- **Tokenizer:** integers, decimal commas, `+ − × : ( ) ^`.
-- **Unary minus:** it is allowed at the start of an expression and directly after `(`. It is
-  needed for the negative literals in §5.8. In user input it only occurs in number answers.
+- **Tokenizer:** integers, decimal commas, `+ − × : ( ) ^`. Superscript digits read as a power
+  (`5²` as `5^2`), so prompt text can be parsed back.
+- **Unary minus:** it is allowed at the start of an expression and directly after `(`, and only
+  in front of a number: it makes a negative literal. It is needed for the negative literals in
+  §5.8. In user input it only occurs in number answers.
 - **Parser:** recursive descent producing an AST. Explicit parentheses are kept as `Group`
-  nodes, because the associative check depends on them.
+  nodes, because the associative check depends on them. Parentheses around just a negative
+  literal (`(−3)`) are its notation, not a group: they give the negative literal itself.
   - Grammar, by increasing precedence: `sum := product (('+'|'−') product)*`,
     `product := power (('×'|':') power)*`, `power := unary ('^' atom)?`,
-    `unary := '−' atom | atom`, `atom := number | '(' sum ')'`.
+    `unary := '−' number | atom`, `atom := number | '(' sum ')'`.
+  - Binary operators are left-associative: `20 − 5 − 3` is `(20 − 5) − 3`.
   - As a result, `−3²` would parse as `(−3)²`. This is the reason §5.8 never generates that form
     in a prompt.
-- **Evaluate:** exact rational arithmetic via `lib/rational.ts`. Division by zero is reported
-  as an error.
+- **Evaluate:** exact rational arithmetic via `lib/rational.ts`. Division by zero, and an
+  exponent that is not an integer in `[0, 10]`, give no value (`null`) instead of a crash.
 - **Formatter:** turns an AST into prompt text following §8. It inserts the parentheses around
-  negative literals itself.
+  negative literals itself (§5.8).
+- **Evaluation steps:** the expression after each single operation, in the order of §8, for
+  the explanations in §5.8 and §5.11.
 - **Chains:** within one parenthesis level, consecutive `+` operands form an n-ary `Sum` chain
   and consecutive `×` operands form a `Product` chain. Subtraction and division are not
   chainable for commutative/associative purposes.
@@ -650,6 +746,25 @@ If more than one property is needed (e.g. both reordering and regrouping), the s
 with the reason "Dit zijn meerdere stappen". Steps that violate a property, such as reordering a
 subtraction, are rejected with the reason "Deze eigenschap geldt niet voor − en :".
 
+How the checker decides, in this order:
+
+1. The rewritten expression is a single number: reason `valueOnly`.
+2. With all `Group`s removed, both ASTs are identical: the order of evaluation did not change,
+   so nothing happened (`7 × 98` → `(7 × 98)`, `(17 + 25) + 75` → `17 + 25 + 75`): reason
+   `unchanged`.
+3. The values differ, or the rewrite has no value (division by zero): reason `valueChanged`.
+4. Both ASTs are converted to chains. The **difference root** is the smallest pair of subtrees
+   that contains every difference: descend while both nodes have the same type, operator and
+   number of children and exactly one child differs. "Everything else in the AST is identical"
+   holds by construction; the three property tests above are applied to the difference root.
+5. If the required property is among the detected ones (or `'any'` and at least one is
+   detected), the step is valid. If another property is detected: reason `otherProperty`.
+6. Otherwise, when the difference root of the original is a `−` or `:` and both roots contain
+   the same numbers: reason `notForMinusOrDivide`. Else: reason `multipleSteps`.
+
+The distributive *expand* form only applies to a product of exactly two factors, and the split
+`t₁ ± t₂ = n` only to number literals. In the *factor out* form, `S` must be a `Group`.
+
 Required test cases (accept ✔ / reject ✘):
 
 | Original          | Required      | Input                | Result |
@@ -665,6 +780,7 @@ Required test cases (accept ✔ / reject ✘):
 | `25 × 37 × 4`     | commutative   | `(25 × 4) × 37`      | ✘ (multiple steps) |
 | `7 × 13 + 7 × 87` | distributive  | `7 × (13 + 87)`      | ✔      |
 | `20 − 5 − 3`      | commutative   | `20 − 3 − 5`         | ✘ (not for −) |
+| `(17 + 25) + 75`  | associative   | `17 + 25 + 75`       | ✘ (unchanged) |
 
 ## 8. Conventions
 
@@ -719,6 +835,7 @@ src/
       parser.ts
       evaluate.ts
       format.ts
+      reduce.ts             evaluation steps, one operation at a time (explanations)
       chains.ts
       rewriteCheck.ts
     topics/
@@ -807,15 +924,15 @@ These are assumptions made while writing the spec. Each one is easy to change.
 
 1. ~~Table ranges~~ — confirmed: factors `{2, …, 15} \ {10}` (see §5.1).
 2. ~~Session quotas~~ — replaced by practice sets with 15% tables (§4).
-3. Basis property exercises require the *useful* property. A different valid property is
-   rejected with a hint.
+3. ~~Basis property~~ — confirmed: Basis property exercises require the *useful* property. A
+   different valid property is rejected with a hint.
 4. In property exercises, a wrong step 1 still continues to step 2.
 5. Feedback for a correct answer lasts 600 ms before auto-advancing.
 6. Stop counts only the exercises that have been answered.
 7. ~~Invalid input~~ — confirmed: input that cannot be submitted gives an inline error and
    does not consume the attempt, for every keypad answer kind (§6).
-8. The form `−3²` (which equals −9) is not generated, because it is a common source of
-   confusion. It could be added as a deliberate trick question.
+8. ~~`−3²`~~ — confirmed: the form `−3²` (which equals −9) is not generated, because it is a
+   common source of confusion. A negative power base is always written in parentheses.
 9. ~~Divisors~~ — confirmed: 2 to 15 without 10, like the tables. 7 and 13 are explained by
    chunking, and with 14 they use numbers of at most 4 digits (§5.6).
 10. ~~Units~~ — confirmed: length `mm, cm, dm, m, km` without `dam`/`hm`, mass
@@ -840,6 +957,14 @@ These are assumptions made while writing the spec. Each one is easy to change.
     notes last one question; hidden for tables and Ja/Nee; keys 3 rem high; on short screens
     only the top row (§3.6). Revised 2026-10-06: 6 cells in 2 columns × 3 rows, rows dropped
     on short screens; OK becomes a spatie (numbers separated by spaces), no Volgende (§3.6).
+16. ~~Bewerkingen~~ — confirmed 2026-10-06: the expression keypad has only `0–9`, `+ − × :`,
+    `( )` and `⌫` in 4 columns, and only the rewrite step uses it; every other keypad keeps 3
+    columns. Removing parentheses without changing the order of evaluation is not a step
+    ("Er is niets veranderd"). Assumed in the same revision (open for veto in the plan
+    review): the 10 order-of-operations templates with 2 to 5 operations and a step-by-step
+    explanation (§5.8), the value ranges per strategy (§5.9) and per property template, the
+    example rewrite per applicable property and the feedback messages (§5.11), the checker's
+    decision order (§7.1), and unary minus only in front of a number (§7).
 
 ## 12. Roadmap (not in v1)
 
