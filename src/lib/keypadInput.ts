@@ -48,3 +48,80 @@ export function applyFactorizationKey(value: string, key: KeypadKey): string {
       return /^\d$/.test(key) ? value + key : value;
   }
 }
+
+export type FractionSlot = 'num' | 'den';
+
+/** An open fraction template: numerator, denominator and the slot that has the cursor. */
+export interface FractionTemplate {
+  num: string;
+  den: string;
+  slot: FractionSlot;
+}
+
+/** Fraction typing state (spec §6): the sign, a whole part and an optional template. */
+export interface FractionInput {
+  negative: boolean;
+  /** Digits and at most one comma. Next to a template it is the whole part of a mixed number. */
+  whole: string;
+  /** Null while no template is open. */
+  template: FractionTemplate | null;
+}
+
+export const EMPTY_FRACTION_INPUT: FractionInput = { negative: false, whole: '', template: null };
+
+/** Digits per numerator or denominator; far beyond any exercise. */
+export const MAX_SLOT_LENGTH = 6;
+
+/**
+ * Fraction input with a template (spec §6). The breuk key ('/') opens a template, after a whole
+ * number too (a mixed number), and inside a template it moves the cursor to the other slot.
+ */
+export function applyFractionKey(state: FractionInput, key: KeypadKey): FractionInput {
+  const { negative, whole, template } = state;
+  if (key === '-') return { ...state, negative: !negative };
+  if (template === null) {
+    if (key === '/') {
+      return whole.includes(',') ? state : { ...state, template: { num: '', den: '', slot: 'num' } };
+    }
+    if (key === 'backspace' && whole === '') return { ...state, negative: false };
+    // Without a template the whole part behaves like a number input.
+    return { ...state, whole: applyKey(whole, key) };
+  }
+  const active = template[template.slot];
+  switch (key) {
+    case '/':
+      return selectFractionSlot(state, template.slot === 'num' ? 'den' : 'num');
+    case 'backspace':
+      if (active !== '') return withActiveSlot(state, template, active.slice(0, -1));
+      if (template.slot === 'den') return selectFractionSlot(state, 'num');
+      return template.den === '' ? { ...state, template: null } : state;
+    default:
+      // Only digits go into a slot; the comma and the factorization keys are ignored.
+      return /^\d$/.test(key) && active.length < MAX_SLOT_LENGTH
+        ? withActiveSlot(state, template, active + key)
+        : state;
+  }
+}
+
+function withActiveSlot(
+  state: FractionInput,
+  template: FractionTemplate,
+  digits: string,
+): FractionInput {
+  return {
+    ...state,
+    template: template.slot === 'num' ? { ...template, num: digits } : { ...template, den: digits },
+  };
+}
+
+/** Moves the cursor to a slot of the open template: the breuk key, or a tap on the slot. */
+export function selectFractionSlot(state: FractionInput, slot: FractionSlot): FractionInput {
+  return state.template === null ? state : { ...state, template: { ...state.template, slot } };
+}
+
+/** '25/2', '12 1/2', '-12,5': the input string that parseAnswer('fraction', …) reads. */
+export function fractionInputToString({ negative, whole, template }: FractionInput): string {
+  const fraction = template === null ? '' : `${template.num}/${template.den}`;
+  const separator = whole !== '' && template !== null ? ' ' : '';
+  return (negative ? '-' : '') + whole + separator + fraction;
+}
