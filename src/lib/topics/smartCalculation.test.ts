@@ -16,8 +16,24 @@ const SAMPLES = 3000;
 const rng = createRng(29);
 const questions = Array.from({ length: SAMPLES }, () => generateSmartCalculation(rng));
 
+/** The strategy, recognised by the shape of the exercise (the key is just the prompt). */
 function strategyOf(question: Question): Strategy {
-  return question.key.split(':')[1] as Strategy;
+  const prompt = promptText(question);
+  if (prompt.includes(' + ')) return 'compensateAdd';
+  if (prompt.includes(' − ')) {
+    return explanationOf(question).includes('−') ? 'compensateSubtract' : 'complement';
+  }
+  if (prompt.includes(':')) return 'splitDivide';
+  return [25, 50, 125].includes(operands(question)[1]) ? 'splitMultiply' : 'doubleHalve';
+}
+
+function explanationOf(question: Question): string {
+  return question.steps[0]!.check('').explanation!;
+}
+
+/** The numbers of a text without digit grouping, e.g. [5003, 3000, 2, 2005]. */
+function numbersIn(text: string): number[] {
+  return [...text.matchAll(/\d+/g)].map((m) => Number(m[0]));
 }
 
 function promptText(question: Question): string {
@@ -26,7 +42,7 @@ function promptText(question: Question): string {
 
 /** The two numbers of the prompt; prompts never group digits (all numbers are ≤ 9999). */
 function operands(question: Question): [number, number] {
-  const [a = NaN, b = NaN] = [...promptText(question).matchAll(/\d+/g)].map((m) => Number(m[0]));
+  const [a = NaN, b = NaN] = numbersIn(promptText(question));
   return [a, b];
 }
 
@@ -55,7 +71,7 @@ describe('generateSmartCalculation', () => {
       expect(question.topic).toBe('smartCalculation');
       expect(step.kind).toBe('number');
       expect(step.prompt.endsWith(' = ?')).toBe(true);
-      expect(question.key).toBe(`smartCalculation:${strategyOf(question)}:${promptText(question)}`);
+      expect(question.key).toBe(`smartCalculation:${promptText(question)}`);
       expect(Number.isInteger(answer)).toBe(true);
       expect(answer).toBeGreaterThanOrEqual(MIN_ANSWER);
       expect(answer).toBeLessThanOrEqual(MAX_ANSWER);
@@ -106,6 +122,26 @@ describe('generateSmartCalculation', () => {
     }
   });
 
+  it('draws the magnitude of the near-round sum term evenly (no redraw skews it)', () => {
+    const sums = ofStrategy('compensateAdd');
+    const thousands = sums.filter((question) => operands(question)[0] >= 997).length;
+    expect(thousands / sums.length).toBeGreaterThan(0.28);
+    expect(thousands / sums.length).toBeLessThan(0.39);
+  });
+
+  it('subtracts a near-round number from one beyond the next round number', () => {
+    for (const question of ofStrategy('compensateSubtract')) {
+      const [a, b] = operands(question);
+      // '5003 − 3000 + 2 = 2005': the round number R = k·m with k ∈ [1, 8] (k ≥ 2 for m = 10).
+      const [, round = NaN] = numbersIn(explanationOf(question));
+      const magnitude = round < 100 ? 10 : round < 1000 ? 100 : 1000;
+      expect(Math.abs(b - round), `${a} − ${b}`).toBeLessThanOrEqual(3);
+      expect(a, `${a} − ${b}`).toBeGreaterThanOrEqual(round + magnitude);
+      expect(a - b, `${a} − ${b}`).toBeGreaterThanOrEqual(magnitude - 3);
+      expect(a - b).toBeGreaterThanOrEqual(7);
+    }
+  });
+
   it('completes 100 or 1000', () => {
     for (const question of ofStrategy('complement')) {
       const [total, b] = operands(question);
@@ -113,6 +149,7 @@ describe('generateSmartCalculation', () => {
       expect(b).toBeGreaterThan(total / 10);
       expect(b).toBeLessThan(total);
       expect(b % 10).not.toBe(0);
+      expect(total - b, `${total} − ${b}`).toBeGreaterThanOrEqual(11);
     }
   });
 
@@ -121,17 +158,22 @@ describe('generateSmartCalculation', () => {
       const [a, b] = operands(question);
       expect([25, 50, 125]).toContain(b);
       expect((a * b) % (b === 125 ? 1000 : 100)).toBe(0);
+      expect(a % 10, `${a} × ${b}`).not.toBe(0);
     }
   });
 
   it('doubles a factor ending in 5 and halves an even one', () => {
     for (const question of ofStrategy('doubleHalve')) {
       const [a, b] = operands(question);
-      expect(a % 10).toBe(5);
+      expect([15, 25, 35, 45, 55, 65, 75]).toContain(a);
       expect(b % 2).toBe(0);
       expect(b % 10).not.toBe(0);
-      expect(b).toBeGreaterThanOrEqual(12);
-      expect(b).toBeLessThanOrEqual(98);
+      const half = b / 2;
+      expect(half).toBeGreaterThanOrEqual(6);
+      expect(half).toBeLessThanOrEqual(15);
+      expect(half % 5).not.toBe(0);
+      // 2a × h is a table fact times 10.
+      expect(((2 * a) / 10) * half).toBeLessThanOrEqual(15 * 15);
     }
   });
 
