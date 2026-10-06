@@ -335,6 +335,30 @@ describe('factorization tips', () => {
     expect(step.check('2××3').tip).toBeUndefined();
   });
 
+  it('names a composite factor above the target', () => {
+    expect(step.check('168').tip).toBe('168 is geen priemgetal: ontbind het verder.');
+  });
+
+  it('gives no tip when only a factor with exponent 0 makes it wrong', () => {
+    const result = step.check('2^2×3×7×5^0');
+    expect(result.correct).toBe(false);
+    expect(result.tip).toBeUndefined();
+  });
+
+  it('stays cheap for base 0 or 1 with a huge exponent', () => {
+    expect(step.check('0^999999999999999999').tip).toBe(
+      'Het product van je factoren is 0, niet 84.',
+    );
+    expect(step.check('1^999999999999999999').tip).toBe('1 is geen priemgetal: laat het weg.');
+  });
+
+  it('says "groter dan" only for products above a large target too', () => {
+    const big = factorizationStep({ prompt: 'Ontbind 2000000', value: 2_000_000 });
+    expect(big.check('2^30').tip).toBe(
+      'Het product van je factoren is groter dan 2\u{202f}000\u{202f}000.',
+    );
+  });
+
   it('stays cheap for a huge exponent', () => {
     expect(step.check('2^99999999').tip).toBe('Het product van je factoren is groter dan 84.');
   });

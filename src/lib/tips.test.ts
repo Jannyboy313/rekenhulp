@@ -10,6 +10,7 @@ describe('powerOfTenShift', () => {
     ['5,6', '56', -1],
     ['0,056', '56', -3],
     ['35000', '3,5', 4],
+    ['-560', '-56', 1],
   ])('%s against %s is 10^%i', (given, answer, shift) => {
     expect(powerOfTenShift(n(given), n(answer))).toBe(shift);
   });

@@ -114,12 +114,8 @@
     font-weight: 600;
   }
 
+  .tip,
   .explanation {
-    margin-top: 1rem;
-    font-size: 1.25rem;
-  }
-
-  .tip {
     margin-top: 1rem;
     font-size: 1.25rem;
   }

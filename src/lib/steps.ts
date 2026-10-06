@@ -149,10 +149,15 @@ function isPrimeFactorizationOf(factors: readonly Factor[], value: number): bool
   return allPrime && boundedProduct(factors, target) === target;
 }
 
-/** The product of the factors, or null as soon as it exceeds `limit` (cheap for 2^99999999). */
+/**
+ * The product of the factors, or null as soon as it exceeds `limit`. Cheap for any exponent:
+ * bases 0 and 1 are settled without looping, and any other base exceeds the limit quickly.
+ */
 function boundedProduct(factors: readonly Factor[], limit: bigint): bigint | null {
   let product = 1n;
   for (const { base, exponent } of factors) {
+    if (exponent === 0n || base === 1n) continue;
+    if (base === 0n) return 0n;
     for (let i = 0n; i < exponent; i++) {
       product *= base;
       if (product > limit) return null;
@@ -169,10 +174,11 @@ export function factorizationTip(factors: readonly Factor[], value: number): str
   const target = BigInt(value);
   if (factors.some(({ base }) => base === 1n)) return '1 is geen priemgetal: laat het weg.';
   const composite = factors.find(
-    ({ base }) => base > 1n && base <= target && !isPrime(Number(base)),
+    ({ base }) => base > 1n && base <= PRODUCT_LIMIT && !isPrime(Number(base)),
   );
   if (composite) return `${formatInteger(composite.base)} is geen priemgetal: ontbind het verder.`;
-  const product = boundedProduct(factors, PRODUCT_LIMIT);
+  // "groter dan" must stay true for a target above the limit too.
+  const product = boundedProduct(factors, target > PRODUCT_LIMIT ? target : PRODUCT_LIMIT);
   const shown = formatInteger(value);
   if (product === null) return `Het product van je factoren is groter dan ${shown}.`;
   if (product !== target) {
