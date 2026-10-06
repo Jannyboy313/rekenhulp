@@ -82,12 +82,14 @@ deliberate longer sessions.
 
 ### 3.3 Playing
 
-- The header shows the set name, progress (`7 / 15`), the elapsed time (`mm:ss`, counting up,
-  no time limit) and a **Stop** button. Stop is light red (the wrong-answer background with
+- The header shows the set name, progress (`7 / 15`, or **Herhaling** while a repeated exercise
+  is shown, §3.4), the elapsed time (`mm:ss`, counting up, no time limit) and a **Stop**
+  button. Stop is light red (the wrong-answer background with
   the wrong-answer text colour), so it stands apart from the neutral buttons.
 - Stop ends the session immediately and goes to results. Results then cover only the answered
   exercises; the current, unanswered exercise is not counted. A two-step exercise counts as
-  answered only after its last step, so Stop after step 1 drops it.
+  answered only after its last step, so Stop after step 1 drops it. Repeats still waiting in the
+  queue are dropped as well.
 - The time spent on each exercise is recorded, measured from when it is shown until the final
   submission.
 - Most exercises show a kladblok (scratchpad) above the prompt (§3.6).
@@ -99,13 +101,18 @@ deliberate longer sessions.
 - **Wrong:** red, with "Jouw antwoord", "Juist antwoord" and an optional explanation (e.g.
   `91 = 7 × 13`). The user moves on by tapping **Verder**.
 - Each exercise allows exactly one attempt (two steps for property exercises, §5.11).
+- **Repeat until correct:** an exercise answered wrong (any step wrong) comes back later in the
+  same session, unchanged, with all its steps and an empty kladblok. It is inserted at a random
+  place among the remaining exercises, but never directly next unless nothing else remains. A
+  repeat answered wrong comes back again, until it is answered correctly. The progress count
+  keeps the original total; a repeat shows **Herhaling** instead of a number.
 
 ### 3.5 Results
 
-- Score `x / n` and percentage
-- Total time, and average time per exercise
+- Score `x / n` and percentage, over first attempts only: repeats (§3.4) do not count
+- Total time (wall clock, repeats included), and average time per exercise (first attempts)
 - A list of wrong exercises, each showing the prompt, the user's answer, the correct answer
-  and the explanation
+  and the explanation. These are the first-attempt mistakes, also when a repeat was correct.
 - Buttons **Opnieuw** (new session with the same set and count) and **Menu**
 
 ### 3.6 Kladblok (scratchpad)
@@ -1007,6 +1014,10 @@ These are assumptions made while writing the spec. Each one is easy to change.
     eigenschap toegepast"), and a term `F` counts as `F × 1` (`15 × 100 − 15` is valid).
     Confirmed after the generator review: order-of-operations exercises have no trivial parts
     (`x : 1`, `x : x`, `× 1`, `(7 − 7)`) and an evenly spread power base (§5.8).
+17. ~~Repeat until correct~~ — confirmed 2026-10-06: always on, no setting. A wrong exercise
+    returns unchanged at a random later place (not directly next when avoidable) until it is
+    answered correctly. The count keeps the original total and shows **Herhaling** for a
+    repeat; score, average and mistakes cover first attempts only (§3.3–§3.5).
 
 ## 12. Roadmap (not in v1)
 
