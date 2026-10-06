@@ -3,7 +3,8 @@ import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { summarize, type QuestionRecord } from '../lib/results';
 import { TABLES_SET } from '../lib/sets';
-import { factorizationStep } from '../lib/steps';
+import { fromInteger } from '../lib/rational';
+import { factorizationStep, numberStep } from '../lib/steps';
 import type { Question } from '../lib/types';
 import ResultScreen from './ResultScreen.svelte';
 
@@ -32,5 +33,26 @@ describe('ResultScreen', () => {
     expect(screen.getByText('2² × 21')).toBeTruthy();
     expect(screen.getByText('2² × 3 × 7')).toBeTruthy();
     expect(screen.getByText('84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7')).toBeTruthy();
+  });
+
+  it('shows the tip of a wrong step', () => {
+    const step = numberStep({ prompt: '7 × 8 = ?', answer: fromInteger(56) });
+    const question: Question = { key: 'tables:product:7x8', topic: 'tables', steps: [step] };
+    const record: QuestionRecord = {
+      question,
+      attempts: [{ input: '560', result: step.check('560') }],
+      durationMs: 3000,
+    };
+    render(ResultScreen, {
+      props: {
+        set: TABLES_SET,
+        summary: summarize([record], 3000),
+        onrestart: vi.fn(),
+        onmenu: vi.fn(),
+      },
+    });
+    expect(document.querySelector('.tip')?.textContent).toBe(
+      'Tip: Je antwoord is 10 keer te groot. Let op de komma en het aantal nullen.',
+    );
   });
 });

@@ -50,6 +50,30 @@ describe('Feedback', () => {
     expect(onnext).toHaveBeenCalledOnce();
   });
 
+  it('shows the tip between the answers and the explanation', () => {
+    render(Feedback, {
+      props: {
+        prompt: '€ 60 na 25% korting = ?',
+        kind: 'number',
+        input: '15',
+        result: {
+          correct: false,
+          expected: '45',
+          tip: 'Dat is de korting zelf; trek die nog af van de prijs.',
+          explanation: '25% = 60 : 4 = 15 → 60 − 15 = 45',
+        },
+        onnext: vi.fn(),
+      },
+    });
+    const tip = document.querySelector('.tip');
+    expect(tip?.textContent).toBe('Tip: Dat is de korting zelf; trek die nog af van de prijs.');
+    // The tip comes before the explanation.
+    const explanation = document.querySelector('.explanation')!;
+    expect(
+      tip!.compareDocumentPosition(explanation) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
   it('shows a factorization answer pretty-printed', () => {
     render(Feedback, {
       props: {

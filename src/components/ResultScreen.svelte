@@ -55,6 +55,9 @@
               Jouw antwoord: <strong><MathText text={displayAnswer(kind, attempt.input)} /></strong>
             </p>
             <p>Juist antwoord: <strong><MathText text={attempt.result.expected} /></strong></p>
+            {#if attempt.result.tip}
+              <p class="tip"><strong>Tip:</strong> <MathText text={attempt.result.tip} /></p>
+            {/if}
             {#if attempt.result.explanation}
               <p class="explanation"><MathText text={attempt.result.explanation} /></p>
             {/if}

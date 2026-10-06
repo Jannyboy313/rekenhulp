@@ -43,6 +43,9 @@
         <dt>Juist antwoord</dt>
         <dd><MathText text={result.expected} /></dd>
       </dl>
+      {#if result.tip}
+        <p class="tip"><strong>Tip:</strong> <MathText text={result.tip} /></p>
+      {/if}
       {#if result.explanation}
         <p class="explanation"><MathText text={result.explanation} /></p>
       {/if}
@@ -112,6 +115,11 @@
   }
 
   .explanation {
+    margin-top: 1rem;
+    font-size: 1.25rem;
+  }
+
+  .tip {
     margin-top: 1rem;
     font-size: 1.25rem;
   }
