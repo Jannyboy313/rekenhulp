@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { evaluate } from '../expr/evaluate';
 import { parse } from '../expr/parser';
-import { formatInteger } from '../format';
+import { formatInteger as f } from '../format';
 import { createRng } from '../random';
 import type { Question } from '../types';
 import {
+  buildExercise,
+  dedupKey,
+  type Exercise,
   generateSmartCalculation,
   MAX_ANSWER,
   MIN_ANSWER,
@@ -13,10 +16,59 @@ import {
 } from './smartCalculation';
 
 const SAMPLES = 3000;
-const rng = createRng(29);
-const questions = Array.from({ length: SAMPLES }, () => generateSmartCalculation(rng));
+const PER_STRATEGY = 1000;
 
-/** The strategy, recognised by the shape of the exercise (the key is just the prompt). */
+interface SplitFactor {
+  divisor: number;
+  power: number;
+  minK: number;
+  maxK: number;
+}
+
+/** `count` exercises of one strategy, each strategy with its own seed. */
+function exercisesOf(strategy: Strategy, count = PER_STRATEGY): Exercise[] {
+  const rng = createRng(100 + STRATEGIES.indexOf(strategy));
+  return Array.from({ length: count }, () => buildExercise(rng, strategy));
+}
+
+function promptText(question: Question): string {
+  return question.steps[0]!.prompt.slice(0, -' = ?'.length);
+}
+
+function explanationOf(question: Question): string {
+  return question.steps[0]!.check('').explanation!;
+}
+
+/** The numbers of a text without digit grouping, e.g. [5003, 2998]. */
+function numbersIn(text: string): number[] {
+  return [...text.matchAll(/\d+/g)].map((m) => Number(m[0]));
+}
+
+/** The groups of `pattern` in `text` as numbers; fails the test when it does not match. */
+function matchNumbers(text: string, pattern: RegExp): number[] {
+  const match = pattern.exec(text);
+  expect(match, text).not.toBeNull();
+  return match!.slice(1).map(Number);
+}
+
+function valueOf(text: string): number {
+  return Number(evaluate(parse(text)!)!.num);
+}
+
+/** The magnitude m of a round number R = k·m with k ≤ 8 (spec §5.9). */
+function magnitudeOf(round: number): number {
+  return round < 100 ? 10 : round < 1000 ? 100 : 1000;
+}
+
+/** The k range of R = k·m (spec §5.9). */
+function expectRoundInRange(round: number): void {
+  const magnitude = magnitudeOf(round);
+  expect(round % magnitude, String(round)).toBe(0);
+  expect(round / magnitude, String(round)).toBeGreaterThanOrEqual(magnitude === 10 ? 2 : 1);
+  expect(round / magnitude, String(round)).toBeLessThanOrEqual(8);
+}
+
+/** The strategy, recognised by the shape of the exercise. */
 function strategyOf(question: Question): Strategy {
   const prompt = promptText(question);
   if (prompt.includes(' + ')) return 'compensateAdd';
@@ -24,46 +76,13 @@ function strategyOf(question: Question): Strategy {
     return explanationOf(question).includes('−') ? 'compensateSubtract' : 'complement';
   }
   if (prompt.includes(':')) return 'splitDivide';
-  return [25, 50, 125].includes(operands(question)[1]) ? 'splitMultiply' : 'doubleHalve';
-}
-
-function explanationOf(question: Question): string {
-  return question.steps[0]!.check('').explanation!;
-}
-
-/** The numbers of a text without digit grouping, e.g. [5003, 3000, 2, 2005]. */
-function numbersIn(text: string): number[] {
-  return [...text.matchAll(/\d+/g)].map((m) => Number(m[0]));
-}
-
-function promptText(question: Question): string {
-  return question.steps[0]!.prompt.slice(0, -' = ?'.length);
-}
-
-/** The two numbers of the prompt; prompts never group digits (all numbers are ≤ 9999). */
-function operands(question: Question): [number, number] {
-  const [a = NaN, b = NaN] = numbersIn(promptText(question));
-  return [a, b];
-}
-
-function valueOf(text: string): number {
-  return Number(evaluate(parse(text)!)!.num);
-}
-
-/** Within ±1 to ±3 of a positive multiple of 10, 100 or 1000 (spec §5.9). */
-function isNearRound(value: number): boolean {
-  return [10, 100, 1000].some((magnitude) => {
-    const round = Math.round(value / magnitude) * magnitude;
-    const distance = Math.abs(value - round);
-    return round > 0 && distance >= 1 && distance <= 3;
-  });
-}
-
-function ofStrategy(strategy: Strategy): Question[] {
-  return questions.filter((question) => strategyOf(question) === strategy);
+  return [25, 50, 125].includes(numbersIn(prompt)[1]!) ? 'splitMultiply' : 'doubleHalve';
 }
 
 describe('generateSmartCalculation', () => {
+  const rng = createRng(29);
+  const questions = Array.from({ length: SAMPLES }, () => generateSmartCalculation(rng));
+
   it('asks for one number and accepts its own answer', () => {
     for (const question of questions) {
       const step = question.steps[0]!;
@@ -71,29 +90,28 @@ describe('generateSmartCalculation', () => {
       expect(question.topic).toBe('smartCalculation');
       expect(step.kind).toBe('number');
       expect(step.prompt.endsWith(' = ?')).toBe(true);
-      expect(question.key).toBe(`smartCalculation:${promptText(question)}`);
+      expect(question.key).toBe(dedupKey(promptText(question)));
       expect(Number.isInteger(answer)).toBe(true);
       expect(answer).toBeGreaterThanOrEqual(MIN_ANSWER);
       expect(answer).toBeLessThanOrEqual(MAX_ANSWER);
       const result = step.check(String(answer));
       expect(result.correct).toBe(true);
-      expect(result.expected).toBe(formatInteger(answer));
+      expect(result.expected).toBe(f(answer));
     }
   });
 
   it('explains with a calculation that gives the answer', () => {
     for (const question of questions) {
       const answer = valueOf(promptText(question));
-      const explanation = question.steps[0]!.check('').explanation!;
-      const [left = '', right = ''] = explanation.split(' = ');
+      const [left = '', right = ''] = explanationOf(question).split(' = ');
       if (strategyOf(question) === 'complement') {
         // '463 + 537 = 1000': the answer completes the round number.
-        const [total] = operands(question);
-        expect(right).toBe(formatInteger(total));
+        const [total = NaN] = numbersIn(promptText(question));
+        expect(right).toBe(f(total));
         expect(valueOf(left)).toBe(total);
-        expect(left.endsWith(` + ${formatInteger(answer)}`)).toBe(true);
+        expect(left.endsWith(` + ${f(answer)}`)).toBe(true);
       } else {
-        expect(right).toBe(formatInteger(answer));
+        expect(right).toBe(f(answer));
         expect(valueOf(left)).toBe(answer);
       }
     }
@@ -101,89 +119,174 @@ describe('generateSmartCalculation', () => {
 
   it('uses every strategy about equally often', () => {
     for (const strategy of STRATEGIES) {
-      const share = ofStrategy(strategy).length / SAMPLES;
-      expect(share).toBeGreaterThan(1 / 6 - 0.03);
-      expect(share).toBeLessThan(1 / 6 + 0.03);
+      const share = questions.filter((question) => strategyOf(question) === strategy).length;
+      expect(share / SAMPLES).toBeGreaterThan(1 / 6 - 0.03);
+      expect(share / SAMPLES).toBeLessThan(1 / 6 + 0.03);
     }
   });
 
-  it('compensates near-round numbers', () => {
-    for (const question of ofStrategy('compensateAdd')) {
-      const [a, b] = operands(question);
-      expect(isNearRound(a), String(a)).toBe(true);
-      expect(b % 10).not.toBe(0);
-      expect(question.steps[0]!.prompt).toContain(' + ');
+  it('keys a product by its factors in ascending order', () => {
+    for (const question of questions) {
+      const prompt = promptText(question);
+      if (!prompt.includes(' × ')) {
+        expect(question.key).toBe(`smartCalculation:${prompt}`);
+        continue;
+      }
+      const [x = NaN, y = NaN] = numbersIn(prompt);
+      expect(question.key).toBe(`smartCalculation:${Math.min(x, y)} × ${Math.max(x, y)}`);
     }
-    for (const question of ofStrategy('compensateSubtract')) {
-      const [a, b] = operands(question);
-      expect(isNearRound(b), String(b)).toBe(true);
-      expect(a).toBeGreaterThan(b);
-      expect(question.steps[0]!.prompt).toContain(' − ');
+  });
+});
+
+describe('dedupKey', () => {
+  it('gives a product and its commuted form one key (spec §5.9)', () => {
+    // Split (×) asks 12 × 25, double/halve asks 25 × 12.
+    expect(dedupKey('12 × 25')).toBe('smartCalculation:12 × 25');
+    expect(dedupKey('25 × 12')).toBe('smartCalculation:12 × 25');
+    // Numeric, not alphabetical, order.
+    expect(dedupKey('125 × 16')).toBe('smartCalculation:16 × 125');
+    expect(dedupKey('16 × 125')).toBe('smartCalculation:16 × 125');
+  });
+
+  it('keeps every other sum as it is', () => {
+    expect(dedupKey('1000 − 463')).toBe('smartCalculation:1000 − 463');
+    expect(dedupKey('398 + 247')).toBe('smartCalculation:398 + 247');
+    expect(dedupKey('72 : 4')).toBe('smartCalculation:72 : 4');
+  });
+});
+
+describe('buildExercise', () => {
+  it('compensates a near-round first term (+)', () => {
+    for (const { prompt, answer, explanation } of exercisesOf('compensateAdd')) {
+      const [a = NaN, b = NaN] = matchNumbers(prompt, /^(\d+) \+ (\d+)$/);
+      const [round = NaN, explainedB, d = NaN] = matchNumbers(
+        explanation,
+        /^(\d+) \+ (\d+) [+−] (\d+) = /,
+      );
+      const magnitude = magnitudeOf(round);
+      expectRoundInRange(round);
+      expect(explainedB).toBe(b);
+      expect(Math.abs(a - round)).toBe(d);
+      expect(d).toBeGreaterThanOrEqual(1);
+      expect(d).toBeLessThanOrEqual(3);
+      expect(b).toBeGreaterThanOrEqual(magnitude + 1);
+      expect(b).toBeLessThanOrEqual(Math.min(10 * magnitude - 1, MAX_ANSWER - a));
+      expect(b % 10).not.toBe(0);
+      expect(answer).toBe(a + b);
+      expect(explanation).toBe(`${f(round)} + ${f(b)} ${a < round ? '−' : '+'} ${d} = ${f(a + b)}`);
     }
   });
 
   it('draws the magnitude of the near-round sum term evenly (no redraw skews it)', () => {
-    const sums = ofStrategy('compensateAdd');
-    const thousands = sums.filter((question) => operands(question)[0] >= 997).length;
-    expect(thousands / sums.length).toBeGreaterThan(0.28);
-    expect(thousands / sums.length).toBeLessThan(0.39);
+    const exercises = exercisesOf('compensateAdd');
+    const thousands = exercises.filter(({ prompt }) => numbersIn(prompt)[0]! >= 997).length;
+    expect(thousands / exercises.length).toBeGreaterThan(0.28);
+    expect(thousands / exercises.length).toBeLessThan(0.39);
   });
 
-  it('subtracts a near-round number from one beyond the next round number', () => {
-    for (const question of ofStrategy('compensateSubtract')) {
-      const [a, b] = operands(question);
-      // '5003 − 3000 + 2 = 2005': the round number R = k·m with k ∈ [1, 8] (k ≥ 2 for m = 10).
-      const [, round = NaN] = numbersIn(explanationOf(question));
-      const magnitude = round < 100 ? 10 : round < 1000 ? 100 : 1000;
-      expect(Math.abs(b - round), `${a} − ${b}`).toBeLessThanOrEqual(3);
-      expect(a, `${a} − ${b}`).toBeGreaterThanOrEqual(round + magnitude);
-      expect(a - b, `${a} − ${b}`).toBeGreaterThanOrEqual(magnitude - 3);
-      expect(a - b).toBeGreaterThanOrEqual(7);
+  it('reaches the answer 10 000 and formats it with digit grouping', () => {
+    const rng = createRng(3);
+    let edge: Exercise | undefined;
+    for (let i = 0; i < 200_000 && !edge; i++) {
+      const exercise = buildExercise(rng, 'compensateAdd');
+      if (exercise.answer === MAX_ANSWER) edge = exercise;
+    }
+    expect(edge).toBeDefined();
+    expect(edge!.explanation.endsWith(` = ${f(10_000)}`)).toBe(true);
+    expect(f(10_000)).toBe('10\u{202f}000');
+  });
+
+  it('compensates a near-round second term (−)', () => {
+    for (const { prompt, answer, explanation } of exercisesOf('compensateSubtract')) {
+      const [a = NaN, b = NaN] = matchNumbers(prompt, /^(\d+) − (\d+)$/);
+      const [explainedA, round = NaN] = matchNumbers(explanation, /^(\d+) − (\d+) [+−] \d+ = /);
+      const magnitude = magnitudeOf(round);
+      const d = Math.abs(b - round);
+      expectRoundInRange(round);
+      expect(explainedA).toBe(a);
+      expect(d).toBeGreaterThanOrEqual(1);
+      expect(d).toBeLessThanOrEqual(3);
+      // a lies beyond the next round number, so a − R never goes below zero.
+      expect(a).toBeGreaterThanOrEqual(round + magnitude);
+      expect(a).toBeLessThanOrEqual(10 * magnitude - 1);
+      expect(answer).toBe(a - b);
+      expect(explanation).toBe(`${f(a)} − ${f(round)} ${b < round ? '+' : '−'} ${d} = ${f(a - b)}`);
     }
   });
 
-  it('completes 100 or 1000', () => {
-    for (const question of ofStrategy('complement')) {
-      const [total, b] = operands(question);
-      expect([100, 1000]).toContain(total);
-      expect(b).toBeGreaterThan(total / 10);
-      expect(b).toBeLessThan(total);
+  it('completes 100 or 1000 with an answer of at least 11', () => {
+    const exercises = exercisesOf('complement');
+    for (const { prompt, answer, explanation } of exercises) {
+      const [total = NaN, b = NaN] = matchNumbers(prompt, /^(100|1000) − (\d+)$/);
+      expect(b).toBeGreaterThanOrEqual(total === 100 ? 11 : 101);
+      expect(b).toBeLessThanOrEqual(total === 100 ? 89 : 989);
       expect(b % 10).not.toBe(0);
-      expect(total - b, `${total} − ${b}`).toBeGreaterThanOrEqual(11);
+      expect(answer).toBe(total - b);
+      expect(answer).toBeGreaterThanOrEqual(11);
+      expect(explanation).toBe(`${f(b)} + ${f(answer)} = ${f(total)}`);
     }
+    const hundreds = exercises.filter(({ prompt }) => prompt.startsWith('100 ')).length;
+    expect(hundreds / exercises.length).toBeGreaterThan(0.45);
+    expect(hundreds / exercises.length).toBeLessThan(0.55);
   });
 
   it('multiplies by 25, 50 or 125 via a round number', () => {
-    for (const question of ofStrategy('splitMultiply')) {
-      const [a, b] = operands(question);
-      expect([25, 50, 125]).toContain(b);
-      expect((a * b) % (b === 125 ? 1000 : 100)).toBe(0);
-      expect(a % 10, `${a} × ${b}`).not.toBe(0);
+    // Per factor: a = divisor · k with k ∈ [minK, maxK], explained as a : divisor × power.
+    const splits: Record<number, SplitFactor> = {
+      25: { divisor: 4, power: 100, minK: 3, maxK: 25 },
+      50: { divisor: 2, power: 100, minK: 6, maxK: 50 },
+      125: { divisor: 8, power: 1000, minK: 2, maxK: 10 },
+    };
+    const factors = new Set<number>();
+    for (const { prompt, answer, explanation } of exercisesOf('splitMultiply')) {
+      const [a = NaN, b = NaN] = matchNumbers(prompt, /^(\d+) × (\d+)$/);
+      const split = splits[b];
+      expect(split, prompt).toBeDefined();
+      const { divisor, power, minK, maxK } = split!;
+      factors.add(b);
+      expect(a % divisor).toBe(0);
+      expect(a / divisor).toBeGreaterThanOrEqual(minK);
+      expect(a / divisor).toBeLessThanOrEqual(maxK);
+      expect(a % 10, prompt).not.toBe(0);
+      expect(answer).toBe(a * b);
+      expect(explanation).toBe(`${f(a)} : ${divisor} × ${f(power)} = ${f(a * b)}`);
     }
+    expect([...factors].sort((x, y) => x - y)).toEqual([25, 50, 125]);
   });
 
-  it('doubles a factor ending in 5 and halves an even one', () => {
-    for (const question of ofStrategy('doubleHalve')) {
-      const [a, b] = operands(question);
-      expect([15, 25, 35, 45, 55, 65, 75]).toContain(a);
-      expect(b % 2).toBe(0);
-      expect(b % 10).not.toBe(0);
+  it('doubles a factor ending in 5 and halves an even one into a table fact times 10', () => {
+    for (const { prompt, answer, explanation } of exercisesOf('doubleHalve')) {
+      const [a = NaN, b = NaN] = matchNumbers(prompt, /^(\d+) × (\d+)$/);
       const half = b / 2;
-      expect(half).toBeGreaterThanOrEqual(6);
-      expect(half).toBeLessThanOrEqual(15);
-      expect(half % 5).not.toBe(0);
-      // 2a × h is a table fact times 10.
-      expect(((2 * a) / 10) * half).toBeLessThanOrEqual(15 * 15);
+      expect([15, 25, 35, 45, 55, 65, 75]).toContain(a);
+      expect([6, 7, 8, 9, 11, 12, 13, 14]).toContain(half);
+      expect(answer).toBe(a * b);
+      expect(explanation).toBe(`${f(2 * a)} × ${f(half)} = ${f(a * b)}`);
     }
   });
 
-  it('divides exactly by 4, 5, 8 or 25', () => {
-    for (const question of ofStrategy('splitDivide')) {
-      const [a, b] = operands(question);
-      expect([4, 5, 8, 25]).toContain(b);
-      expect(a % b).toBe(0);
-      expect(a / b).toBeGreaterThanOrEqual(5);
-      expect(a / b).toBeLessThanOrEqual(199);
+  it('divides exactly by 4, 5, 8 or 25 via easy steps', () => {
+    const splits: Record<number, { minQ: number; maxQ: number; steps: string }> = {
+      4: { minQ: 13, maxQ: 99, steps: ': 2 : 2' },
+      5: { minQ: 13, maxQ: 199, steps: '× 2 : 10' },
+      8: { minQ: 13, maxQ: 99, steps: ': 2 : 2 : 2' },
+      25: { minQ: 5, maxQ: 99, steps: '× 4 : 100' },
+    };
+    const divisors = new Set<number>();
+    for (const { prompt, answer, explanation } of exercisesOf('splitDivide')) {
+      const [a = NaN, divisor = NaN] = matchNumbers(prompt, /^(\d+) : (\d+)$/);
+      const split = splits[divisor];
+      expect(split, prompt).toBeDefined();
+      const { minQ, maxQ, steps } = split!;
+      divisors.add(divisor);
+      expect(a % divisor).toBe(0);
+      const quotient = a / divisor;
+      expect(quotient).toBeGreaterThanOrEqual(minQ);
+      expect(quotient).toBeLessThanOrEqual(maxQ);
+      expect(quotient % 10, prompt).not.toBe(0);
+      expect(answer).toBe(quotient);
+      expect(explanation).toBe(`${f(a)} ${steps} = ${f(quotient)}`);
     }
+    expect([...divisors].sort((x, y) => x - y)).toEqual([4, 5, 8, 25]);
   });
 });

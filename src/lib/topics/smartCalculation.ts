@@ -18,7 +18,7 @@ export const STRATEGIES = [
 ] as const;
 export type Strategy = (typeof STRATEGIES)[number];
 
-interface Exercise {
+export interface Exercise {
   /** Without ' = ?'. */
   prompt: string;
   answer: number;
@@ -120,28 +120,43 @@ const BUILDERS: Record<Strategy, (rng: Rng) => Exercise> = {
     const half = randomIntWhere(rng, 6, 15, (value) => value % 5 !== 0);
     const answer = a * 2 * half;
     return {
-      prompt: `${a} × ${2 * half}`,
+      prompt: `${f(a)} × ${f(2 * half)}`,
       answer,
-      explanation: `${2 * a} × ${half} = ${f(answer)}`,
+      explanation: `${f(2 * a)} × ${f(half)} = ${f(answer)}`,
     };
   },
   // 72 : 4 → 72 : 2 : 2
   splitDivide(rng) {
     const { divisor, minQ, maxQ, steps } = pick(rng, SPLIT_DIVISORS);
-    const answer = randomInt(rng, minQ, maxQ);
+    // Never a multiple of 10: 200 : 4 is not smart calculation.
+    const answer = randomIntWhere(rng, minQ, maxQ, notRound);
     const a = f(divisor * answer);
     return { prompt: `${a} : ${divisor}`, answer, explanation: `${steps(a)} = ${f(answer)}` };
   },
 };
 
+/**
+ * De-duplication key (spec §5.9): the sum itself, with the factors of a product in ascending
+ * order, so `12 × 25` (split) and `25 × 12` (double/halve) count as one calculation.
+ */
+export function dedupKey(prompt: string): string {
+  const factors = prompt.split(' × ');
+  if (factors.length !== 2) return `smartCalculation:${prompt}`;
+  const value = (factor: string) => Number(factor.replace(/\D/g, ''));
+  const sorted = factors.sort((x, y) => value(x) - value(y));
+  return `smartCalculation:${sorted.join(' × ')}`;
+}
+
+/** One exercise of the given strategy, within [MIN_ANSWER, MAX_ANSWER] by construction. */
+export function buildExercise(rng: Rng, strategy: Strategy): Exercise {
+  return BUILDERS[strategy](rng);
+}
+
 /** One of six mental strategies, each equally likely (spec §5.9). */
 export function generateSmartCalculation(rng: Rng): Question {
-  const strategy = pick(rng, STRATEGIES);
-  // Every builder stays within [MIN_ANSWER, MAX_ANSWER] by construction; no redraw needed.
-  const { prompt, answer, explanation } = BUILDERS[strategy](rng);
+  const { prompt, answer, explanation } = buildExercise(rng, pick(rng, STRATEGIES));
   return {
-    // The prompt alone, so a prompt never appears twice under two strategies (spec §5.9).
-    key: `smartCalculation:${prompt}`,
+    key: dedupKey(prompt),
     topic: 'smartCalculation',
     steps: [numberStep({ prompt: `${prompt} = ?`, answer: fromInteger(answer), explanation })],
   };
