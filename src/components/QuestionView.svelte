@@ -96,7 +96,9 @@
   }
 
   .error {
-    min-height: 1.5rem;
+    min-height: 1.25rem;
+    margin-block: -0.5rem;
+    font-size: 1rem;
     text-align: center;
     font-weight: 600;
     color: var(--wrong);

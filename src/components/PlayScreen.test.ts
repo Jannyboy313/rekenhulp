@@ -86,7 +86,7 @@ describe('PlayScreen', () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
     const prime: Question = {
       key: 'prime:91',
-      topic: 'tables',
+      topic: 'prime',
       steps: [
         booleanStep({ prompt: 'Is 91 een priemgetal?', answer: false, explanation: '91 = 7 × 13' }),
       ],

@@ -14,7 +14,7 @@ describe('ResultScreen', () => {
       value: 84,
       explanation: '84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7',
     });
-    const question: Question = { key: 'factorization:84', topic: 'tables', steps: [step] };
+    const question: Question = { key: 'factorization:84', topic: 'factorization', steps: [step] };
     const record: QuestionRecord = {
       question,
       attempts: [{ input: '2^2×21', result: step.check('2^2×21') }],
