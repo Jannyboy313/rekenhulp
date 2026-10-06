@@ -14,7 +14,10 @@ export interface InputModel {
   /** Keys in reading order on a 3-column grid; OK fills the rest of the last row. */
   keys: readonly KeyDef[];
   apply(value: string, key: KeypadKey): string;
-  /** Null when the input can be submitted, otherwise the inline error. */
+  /**
+   * Null when the input can be submitted, otherwise the inline error. The UI only calls this for
+   * non-empty input; empty input is rejected too, so it is safe to call either way.
+   */
   validate(value: string): string | null;
   /** The raw input as shown while typing, in the feedback and in the results. */
   display(value: string): string;

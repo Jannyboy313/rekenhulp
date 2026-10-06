@@ -19,11 +19,9 @@ export function applyKey(value: string, key: KeypadKey): string {
       return value.includes('/') || value.includes(',') || !/\d$/.test(value) || full
         ? value
         : `${value}/`;
-    case '×':
-    case '^':
-      return value;
     default:
-      return full ? value : value + key;
+      // Only digits are appended; any other key is ignored until handled explicitly above.
+      return /^\d$/.test(key) && !full ? value + key : value;
   }
 }
 
@@ -38,17 +36,15 @@ export function applyFactorizationKey(value: string, key: KeypadKey): string {
   if (key === 'backspace') return value.slice(0, -1);
   if (value.length >= MAX_FACTORIZATION_LENGTH) return value;
   const endsWithDigit = /\d$/.test(value);
-  const currentFactor = value.slice(value.lastIndexOf('×') + 1);
   switch (key) {
     case '×':
       return endsWithDigit ? `${value}×` : value;
-    case '^':
+    case '^': {
+      const currentFactor = value.slice(value.lastIndexOf('×') + 1);
       return endsWithDigit && !currentFactor.includes('^') ? `${value}^` : value;
-    case ',':
-    case '-':
-    case '/':
-      return value;
+    }
     default:
-      return value + key;
+      // Only digits are appended; any other key is ignored until handled explicitly above.
+      return /^\d$/.test(key) ? value + key : value;
   }
 }
