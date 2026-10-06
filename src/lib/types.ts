@@ -19,7 +19,8 @@ export type Topic =
   | 'prime'
   | 'factorization'
   | 'divisibility'
-  | 'squares';
+  | 'squares'
+  | 'orderOfOperations';
 
 export interface CheckResult {
   correct: boolean;

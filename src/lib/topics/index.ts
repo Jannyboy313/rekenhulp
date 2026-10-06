@@ -9,6 +9,7 @@ import {
 } from './measurement';
 import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
+import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
 import { generateRatios } from './ratios';
 import { generateSquares } from './squares';
@@ -30,6 +31,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   factorization: generateFactorization,
   divisibility: generateDivisibility,
   squares: generateSquares,
+  orderOfOperations: generateOrderOfOperations,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -49,4 +51,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   factorization: 'Ontbinden in priemfactoren (12 t/m 200)',
   divisibility: 'Deelbaarheid door 2 t/m 15 (zonder 10)',
   squares: 'Kwadraten en wortels (2² t/m 25²)',
+  orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
 };
