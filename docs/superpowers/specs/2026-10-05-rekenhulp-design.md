@@ -163,7 +163,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `gcd` | not a divisor of a or b | "84 is niet deelbaar door 8." |
 | `factorization` | a factor 1 | "1 is geen priemgetal: laat het weg." |
 | `factorization` | a composite factor | "9 is geen priemgetal: ontbind het verder." |
-| `factorization` | primes with another product | "Het product van je factoren is 90, niet 84." (or: groter dan 84) |
+| `factorization` | primes with another product | "Het product van je factoren is 90, niet 84." Above one million: "… is groter dan 84." |
 | `squares`, n² | n × 2 | "17² is 17 × 17, niet 17 × 2." |
 | `squares`, √ | half the square | "√196 is het getal dat keer zichzelf 196 geeft, niet de helft." |
 | `squares`, √ | another positive integer | "15 × 15 = 225, niet 196." |
@@ -190,8 +190,9 @@ Ja/Nee steps (prime, divisibility) and property rewrites get no tips: their expl
 ### 3.6 Kladblok (scratchpad)
 
 A small scratchpad for remembering intermediate results while playing. It holds short sums and
-numbers, separated by spaces (`12×7=84 3,5`), and uses the expression keypad (§6) extended
-with `,`, `=` and a **spatie** key in the place of OK.
+numbers, separated by spaces (`12×7=84 3,5`), and uses the expression keypad (§6) with `^`
+and the breuk key in the place of the parentheses, extended with `,`, `=` and a **spatie** key
+in the place of OK.
 
 - **Layout:** 6 cells in a grid of 2 columns and 3 rows, each 48 px high, between the header
   and the prompt. The size is fixed: cells never grow, wrap to more lines or scroll.
@@ -207,36 +208,45 @@ with `,`, `=` and a **spatie** key in the place of OK.
   it, makes the answer field active again. Tapping is the only way to switch. The active
   field has a `--primary` border. Every new step starts with the answer field active.
 - **While a cell is active**, the keypad is the kladblok keypad, whatever the answer kind: the
-  expression keys plus `,`, `=` and the spatie, in 4 columns and 5 rows (the same height as
-  the other keypads). The spatie takes one column, has the normal key colour, acts on press
-  like the other keys and is always enabled.
+  expression keys with `^` and the breuk key instead of `(` and `)`, plus `,`, `=` and the
+  spatie, in 4 columns and 5 rows (the same height as the other keypads). The spatie takes one
+  column, has the normal key colour, acts on press like the other keys and is always enabled.
+  The kladblok has no parentheses.
 
   ```
   7  8  9  +
   4  5  6  −
   1  2  3  ×
-  (  0  )  :
+  ^  0  /  :
   ⌫  ,  =  ␣
   ```
 
+  `/` is the breuk key, drawn as a small stacked fraction as on the fraction keypad.
+
 - **Typing in a cell.** A cell is a list of items separated by single spaces; an item is a
-  number or a short sum such as `12×7=84` or `−3+(4,5×2)`. A number is digits with at most one
-  comma (at most 12 characters, as in the answer field); the sign is not counted. Per key, for
+  number or a short sum such as `12×7=84`, `2^3=8` or `−3/4+1`. A number is digits with at
+  most one comma (at most 12 characters, as in the answer field); the sign is not counted. A
+  number directly after `^` is an exponent, after the breuk key a denominator. Per key, for
   the last item:
-  - a digit: not directly after `)`
-  - `,`: not directly after `)`, and only when the current number has no comma yet
-  - `+`, `×`, `:`: only after a digit or `)`
-  - `−`: after a digit or `)` it is the operator; at the start of an item, after `(` or after
-    `=` it is the minus sign of the next number (`−5`, `(−3)`, `3−8=−5`); elsewhere ignored
-  - `(`: at the start of an item, after an operator, `(`, `=` or a minus sign
-  - `)`: only after a digit or `)` while the item has more `(` than `)`
-  - `=`: only after a digit or `)`, at most once per item
-  - spatie: only after a digit or `)`: never a leading space, never two in a row
+  - a digit: always, up to the 12 characters
+  - `,`: only when the current number has no comma yet and is not an exponent or denominator
+  - `^`: only after a digit of a number that is not an exponent or denominator (`2^3`,
+    `0,5^2`; never `2^3^4` or `3/4^2`)
+  - breuk: only after a digit of a number without a comma that is not an exponent or
+    denominator (`3/4`, `−3/4`, `1+3/4`; never `0,5/2` or `3/4/5`)
+  - `+`, `×`, `:`: only after a digit
+  - `−`: after a digit it is the operator; at the start of an item or after `=` it is the
+    minus sign of the next number (`−5`, `3−8=−5`); elsewhere ignored
+  - `=`: only after a digit, at most once per item
+  - spatie: only after a digit: never a leading space, never two in a row
   - `⌫` deletes the last character, a space included
   - a cell holds at most 40 characters; extra keys are ignored
 - A cell is never validated. It is shown as typed, compact: no spaces around operators, so a
-  space always separates items. `-` is shown as `−` (`12×7=84`, `−5 0,25`, `3−8=−5`), and a
-  trailing space stays visible. There is no button to clear the scratchpad.
+  space always separates items. `-` is shown as `−` (`12×7=84`, `−5 0,25`, `3−8=−5`), an
+  exponent in superscript (`2^3` as `2³`; a `^` without exponent stays visible) and a breuk
+  inline as `3/4`: a stacked fraction does not fit a 48 px cell, and `12 1/2` would read as a
+  mixed number while the space separates items. A trailing space stays visible. There is no
+  button to clear the scratchpad.
 - **Lifetime:** the notes belong to one question. They stay across the steps of a two-step
   question, including the feedback in between, and are empty again at the next question. The
   feedback screen and the results do not show the scratchpad. Nothing is stored.
@@ -1100,7 +1110,8 @@ These are assumptions made while writing the spec. Each one is easy to change.
     Revised again 2026-10-06: the kladblok uses the expression keypad plus `,`, `=` and a
     one-column spatie shown as `␣`, so a cell holds short sums (`12×7=84`); a minus sign at the
     start of a number stays possible; cells are shown compact, without spaces around
-    operators (§3.6).
+    operators (§3.6). Revised 2026-10-06: `^` and the breuk key replace the parentheses on the
+    kladblok keypad; exponents show in superscript, fractions inline as `3/4` (§3.6).
 16. ~~Bewerkingen~~ — confirmed 2026-10-06: the expression keypad has only `0–9`, `+ − × :`,
     `( )` and `⌫` in 4 columns, and only the rewrite step uses it; every other keypad keeps 3
     columns. Removing parentheses without changing the order of evaluation is not a step
