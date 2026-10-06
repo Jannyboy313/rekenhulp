@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest';
 import {
   formatDuration,
   formatEuro,
+  formatFactorizationInput,
   formatFraction,
   formatInput,
   formatInteger,
   formatMoney,
   formatPowerOfTen,
+  formatPrimeFactors,
   formatRational,
   formatSeconds,
   GROUP_SEPARATOR as S,
@@ -155,5 +157,48 @@ describe('formatFraction', () => {
     expect(formatFraction(rational(25n, 2n))).toBe('25/2');
     expect(formatFraction(rational(-3n, 4n))).toBe(`${MINUS}3/4`);
     expect(formatFraction(rational(7n))).toBe('7/1');
+  });
+});
+
+describe('formatPrimeFactors', () => {
+  it.each([
+    [
+      [
+        { prime: 2, exponent: 2 },
+        { prime: 3, exponent: 1 },
+        { prime: 7, exponent: 1 },
+      ],
+      '2² × 3 × 7',
+    ],
+    [[{ prime: 2, exponent: 7 }], '2⁷'],
+    [[{ prime: 13, exponent: 1 }], '13'],
+    [
+      [
+        { prime: 2, exponent: 10 },
+        { prime: 5, exponent: 1 },
+      ],
+      '2¹⁰ × 5',
+    ],
+  ])('formats %j as %s', (factors, expected) => {
+    expect(formatPrimeFactors(factors)).toBe(expected);
+  });
+});
+
+describe('formatFactorizationInput', () => {
+  it.each([
+    ['', ''],
+    ['2', '2'],
+    ['2^', '2^'],
+    ['2^2', '2²'],
+    ['2^2×3×7', '2² × 3 × 7'],
+    ['2^10', '2¹⁰'],
+    ['2^02', '2⁰²'],
+    ['13×', '13 × '],
+  ])('shows %j as %j', (raw, expected) => {
+    expect(formatFactorizationInput(raw)).toBe(expected);
+  });
+
+  it('writes exponents of any length digit by digit', () => {
+    expect(formatFactorizationInput(`2^${'9'.repeat(18)}`)).toBe(`2${'⁹'.repeat(18)}`);
   });
 });

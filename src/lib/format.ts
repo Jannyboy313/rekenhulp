@@ -1,3 +1,4 @@
+import type { PrimePower } from './primes';
 import { decimalPlaces, type Rational } from './rational';
 
 /** Typographic minus sign (U+2212). */
@@ -86,4 +87,23 @@ export function formatEuro(value: Rational): string {
 /** '25/2'. The sign goes on the numerator, because the denominator is always positive. */
 export function formatFraction(value: Rational): string {
   return `${formatInteger(value.num)}/${formatInteger(value.den)}`;
+}
+
+/** Canonical prime factorization: '2² × 3 × 7' (spec §5.5). */
+export function formatPrimeFactors(factors: readonly PrimePower[]): string {
+  return factors
+    .map(({ prime, exponent }) => formatInteger(prime) + (exponent === 1 ? '' : toSuperscript(exponent)))
+    .join(' × ');
+}
+
+/** Digit by digit, so a typed exponent of any length (or with a leading zero) is shown as is. */
+function superscriptDigits(digits: string): string {
+  return digits.replace(/\d/g, (digit) => SUPERSCRIPT_DIGITS.charAt(Number(digit)));
+}
+
+/** Factorization keypad input '2^2×3×7' as '2² × 3 × 7'. A '^' without exponent stays visible. */
+export function formatFactorizationInput(raw: string): string {
+  return raw
+    .replace(/\^(\d+)/g, (_match, digits: string) => superscriptDigits(digits))
+    .replaceAll('×', ' × ');
 }
