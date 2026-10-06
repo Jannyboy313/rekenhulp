@@ -63,7 +63,7 @@ describe('practice sets', () => {
   });
 
   it('offers the session sizes from the spec with 15 as default', () => {
-    expect(SESSION_SIZES).toEqual([15, 25, 50, 75, 100]);
+    expect(SESSION_SIZES).toEqual([5, 10, 15, 25, 50]);
     expect(DEFAULT_SESSION_SIZE).toBe(15);
   });
 });

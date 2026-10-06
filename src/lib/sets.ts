@@ -1,7 +1,7 @@
 import { TOPIC_LABELS } from './topics';
 import type { PracticeSet } from './types';
 
-export const SESSION_SIZES: readonly number[] = [15, 25, 50, 75, 100];
+export const SESSION_SIZES: readonly number[] = [5, 10, 15, 25, 50];
 export const DEFAULT_SESSION_SIZE = 15;
 
 export const TABLES_SET: PracticeSet = {
