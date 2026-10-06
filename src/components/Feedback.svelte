@@ -5,6 +5,7 @@
 <script lang="ts">
   import { displayAnswer } from '../lib/inputModels';
   import type { AnswerKind, CheckResult } from '../lib/types';
+  import MathText from './MathText.svelte';
 
   interface Props {
     prompt: string;
@@ -30,7 +31,7 @@
 </script>
 
 <div class="feedback" class:correct={result.correct} class:wrong={!result.correct}>
-  <p class="prompt">{prompt}</p>
+  <p class="prompt"><MathText text={prompt} /></p>
   <div class="details">
     {#if result.correct}
       <p class="verdict">Goed!</p>
@@ -38,12 +39,12 @@
       <p class="verdict">Fout</p>
       <dl>
         <dt>Jouw antwoord</dt>
-        <dd>{displayAnswer(kind, input)}</dd>
+        <dd><MathText text={displayAnswer(kind, input)} /></dd>
         <dt>Juist antwoord</dt>
-        <dd>{result.expected}</dd>
+        <dd><MathText text={result.expected} /></dd>
       </dl>
       {#if result.explanation}
-        <p class="explanation">{result.explanation}</p>
+        <p class="explanation"><MathText text={result.explanation} /></p>
       {/if}
     {/if}
   </div>

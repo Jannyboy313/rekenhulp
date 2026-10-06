@@ -4,6 +4,7 @@
   import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
   import Keypad from './Keypad.svelte';
+  import MathText from './MathText.svelte';
 
   interface Props {
     step: Step;
@@ -40,7 +41,7 @@
 </script>
 
 <div class="question">
-  <p class="prompt">{step.prompt}</p>
+  <p class="prompt"><MathText text={step.prompt} /></p>
   {#if model}
     <output class="answer" aria-label="Jouw antwoord" aria-live="off"
       >{#if step.prefix}<span class="prefix">{step.prefix}</span>{/if}{value === ''

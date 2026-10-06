@@ -63,4 +63,19 @@ describe('Feedback', () => {
     expect(screen.getByText('2² × 21')).toBeTruthy();
     expect(screen.getByText('2² × 3 × 7')).toBeTruthy();
   });
+
+  it('stacks fractions in the given and the correct answer', () => {
+    const { container } = render(Feedback, {
+      props: {
+        prompt: '10 is ?% van 80',
+        kind: 'fraction',
+        input: '-12 1/2',
+        result: { correct: false, expected: '12,5 of 25/2' },
+        onnext: vi.fn(),
+      },
+    });
+    const answers = [...container.querySelectorAll('dd')].map((dd) => dd.textContent);
+    expect(answers).toEqual(['−12 1/2', '12,5 of 25/2']);
+    expect(container.querySelectorAll('.fraction')).toHaveLength(2);
+  });
 });

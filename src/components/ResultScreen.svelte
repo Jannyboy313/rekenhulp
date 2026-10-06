@@ -3,6 +3,7 @@
   import { displayAnswer } from '../lib/inputModels';
   import type { SessionSummary } from '../lib/results';
   import type { PracticeSet } from '../lib/types';
+  import MathText from './MathText.svelte';
 
   interface Props {
     set: PracticeSet;
@@ -49,11 +50,13 @@
       <ul class="mistakes">
         {#each wrongSteps as { prompt, kind, attempt }, index (index)}
           <li>
-            <p class="prompt">{prompt}</p>
-            <p>Jouw antwoord: <strong>{displayAnswer(kind, attempt.input)}</strong></p>
-            <p>Juist antwoord: <strong>{attempt.result.expected}</strong></p>
+            <p class="prompt"><MathText text={prompt} /></p>
+            <p>
+              Jouw antwoord: <strong><MathText text={displayAnswer(kind, attempt.input)} /></strong>
+            </p>
+            <p>Juist antwoord: <strong><MathText text={attempt.result.expected} /></strong></p>
             {#if attempt.result.explanation}
-              <p class="explanation">{attempt.result.explanation}</p>
+              <p class="explanation"><MathText text={attempt.result.explanation} /></p>
             {/if}
           </li>
         {/each}
