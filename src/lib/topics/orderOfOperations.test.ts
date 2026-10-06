@@ -111,29 +111,6 @@ describe('generateExpression', () => {
     expect(twoShare).toBeLessThan(0.58);
   });
 
-  it('spreads the power base evenly', () => {
-    const basesByExponent = new Map<number, bigint[]>();
-    for (const expr of expressions) {
-      for (const node of nodes(expr)) {
-        if (node.type !== 'power') continue;
-        const exponent = Number(evaluate(node.exponent)!.num);
-        const bases = basesByExponent.get(exponent) ?? [];
-        bases.push(abs(evaluate(node.base)!.num));
-        basesByExponent.set(exponent, bases);
-      }
-    }
-    for (const exponent of [2, 3]) {
-      const bases = basesByExponent.get(exponent) ?? [];
-      const max = MAX_POWER_BASE[exponent]!;
-      const options = max - MIN_POWER_BASE + 1;
-      for (let base = MIN_POWER_BASE; base <= max; base++) {
-        const share = bases.filter((value) => value === BigInt(base)).length / bases.length;
-        expect(share, `base ${base}, exponent ${exponent}`).toBeGreaterThan(0.5 / options);
-        expect(share, `base ${base}, exponent ${exponent}`).toBeLessThan(1.5 / options);
-      }
-    }
-  });
-
   it('cubes 25% of the powers', () => {
     const powers = expressions.flatMap((expr) =>
       nodes(expr).filter((node) => node.type === 'power'),
@@ -162,6 +139,31 @@ describe('generateFromTemplate', () => {
       }
     },
   );
+
+  // Without a predrawn base, (a + b)² would mostly get bases 10–12 (spec §5.8).
+  it('spreads the power base evenly in the sum template (a + b)² − c × d', () => {
+    const templateRng = createRng(7);
+    const basesByExponent = new Map<number, bigint[]>();
+    for (let i = 0; i < 2000; i++) {
+      for (const node of nodes(generateFromTemplate(templateRng, TEMPLATES[3]!))) {
+        if (node.type !== 'power') continue;
+        const exponent = Number(evaluate(node.exponent)!.num);
+        const bases = basesByExponent.get(exponent) ?? [];
+        bases.push(abs(evaluate(node.base)!.num));
+        basesByExponent.set(exponent, bases);
+      }
+    }
+    for (const exponent of [2, 3]) {
+      const bases = basesByExponent.get(exponent) ?? [];
+      const max = MAX_POWER_BASE[exponent]!;
+      const options = max - MIN_POWER_BASE + 1;
+      for (let base = MIN_POWER_BASE; base <= max; base++) {
+        const share = bases.filter((value) => value === BigInt(base)).length / bases.length;
+        expect(share, `base ${base}, exponent ${exponent}`).toBeGreaterThan(0.5 / options);
+        expect(share, `base ${base}, exponent ${exponent}`).toBeLessThan(1.5 / options);
+      }
+    }
+  });
 
   it('has the 10 templates of spec §5.8', () => {
     expect(TEMPLATES).toHaveLength(10);
