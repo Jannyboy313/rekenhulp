@@ -99,3 +99,20 @@ export function parseFraction(input: string): Rational | null {
   const num = BigInt(numerator);
   return rational(sign ? -num : num, den);
 }
+
+// Optional ASCII or typographic minus, the whole part, one space, then numerator/denominator.
+const MIXED_NUMBER = /^([-−])?(\d+) (\d+)\/(\d+)$/;
+
+/**
+ * Parses a mixed number such as "12 1/2" or "−12 1/2" (= −25/2). The sign applies to the whole
+ * number. An improper part ("12 5/3") is fine. Returns null for anything else, incl. "1 1/0".
+ */
+export function parseMixedNumber(input: string): Rational | null {
+  const match = MIXED_NUMBER.exec(input.trim());
+  if (!match) return null;
+  const [, sign, whole = '', numerator = '', denominator = ''] = match;
+  const den = BigInt(denominator);
+  if (den === 0n) return null;
+  const value = add(rational(BigInt(whole)), rational(BigInt(numerator), den));
+  return sign ? rational(-value.num, value.den) : value;
+}

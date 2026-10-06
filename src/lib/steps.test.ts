@@ -80,12 +80,16 @@ describe('parseAnswer', () => {
   it('parses only decimals for number steps', () => {
     expect(parseAnswer('number', '12,5')).toEqual(rational(25n, 2n));
     expect(parseAnswer('number', '25/2')).toBeNull();
+    expect(parseAnswer('number', '12 1/2')).toBeNull();
   });
 
-  it('parses fractions and decimals for fraction steps', () => {
+  it('parses fractions, mixed numbers and decimals for fraction steps', () => {
     expect(parseAnswer('fraction', '25/2')).toEqual(rational(25n, 2n));
+    expect(parseAnswer('fraction', '12 1/2')).toEqual(rational(25n, 2n));
+    expect(parseAnswer('fraction', '-12 1/2')).toEqual(rational(-25n, 2n));
     expect(parseAnswer('fraction', '12,5')).toEqual(rational(25n, 2n));
     expect(parseAnswer('fraction', '25/')).toBeNull();
+    expect(parseAnswer('fraction', '12 /2')).toBeNull();
     expect(parseAnswer('fraction', '')).toBeNull();
   });
 });
@@ -104,7 +108,7 @@ describe('fractionStep', () => {
   });
 
   it('accepts every equal fraction and the decimal', () => {
-    for (const input of ['25/2', '50/4', '12,5', '12,50']) {
+    for (const input of ['25/2', '50/4', '12 1/2', '11 3/2', '12,5', '12,50']) {
       expect(percent.check(input).correct).toBe(true);
     }
     expect(percent.check('12').correct).toBe(false);

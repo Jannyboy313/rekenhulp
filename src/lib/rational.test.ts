@@ -9,6 +9,7 @@ import {
   multiply,
   parseDutchNumber,
   parseFraction,
+  parseMixedNumber,
   powerOfTen,
   rational,
   subtract,
@@ -161,6 +162,26 @@ describe('parseFraction', () => {
     'rejects %j',
     (input) => {
       expect(parseFraction(input)).toBeNull();
+    },
+  );
+});
+
+describe('parseMixedNumber', () => {
+  it.each([
+    ['12 1/2', rational(25n, 2n)],
+    ['-12 1/2', rational(-25n, 2n)],
+    ['−1 2/3', rational(-5n, 3n)],
+    ['12 5/3', rational(41n, 3n)],
+    ['0 1/2', rational(1n, 2n)],
+    [' 2 0/7 ', rational(2n)],
+  ])('parses %j', (input, expected) => {
+    expect(parseMixedNumber(input)).toEqual(expected);
+  });
+
+  it.each(['', '12', '1/2', '12 1/0', '12 /2', '12 1/', '12  1/2', '12,5 1/2', '12 -1/2', ' 1/2'])(
+    'rejects %j',
+    (input) => {
+      expect(parseMixedNumber(input)).toBeNull();
     },
   );
 });

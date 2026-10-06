@@ -1,7 +1,14 @@
 import { parse, type Expr } from './expr/parser';
 import { formatFraction, formatPrimeFactors, formatRational } from './format';
 import { isPrime, primeFactors } from './primes';
-import { decimalPlaces, equals, parseDutchNumber, parseFraction, type Rational } from './rational';
+import {
+  decimalPlaces,
+  equals,
+  parseDutchNumber,
+  parseFraction,
+  parseMixedNumber,
+  type Rational,
+} from './rational';
 import type { AnswerKind, Step } from './types';
 
 export interface NumberStepOptions {
@@ -14,10 +21,10 @@ export interface NumberStepOptions {
   explanation?: string;
 }
 
-/** Turns keypad input into a value. A fraction step also accepts 'a/b' (spec §6). */
+/** Turns keypad input into a value. A fraction step also accepts 'a/b' and '12 1/2' (spec §6). */
 export function parseAnswer(kind: AnswerKind, input: string): Rational | null {
   return kind === 'fraction'
-    ? (parseFraction(input) ?? parseDutchNumber(input))
+    ? (parseFraction(input) ?? parseMixedNumber(input) ?? parseDutchNumber(input))
     : parseDutchNumber(input);
 }
 
@@ -25,7 +32,7 @@ export function numberStep(options: NumberStepOptions): Step {
   return exactStep('number', options, options.expected ?? formatRational(options.answer));
 }
 
-/** Any value equal to the answer is correct: '25/2', '50/4' and '12,5' alike. */
+/** Any value equal to the answer is correct: '25/2', '50/4', '12 1/2' and '12,5' alike. */
 export function fractionStep(options: NumberStepOptions): Step {
   return exactStep('fraction', options, options.expected ?? formatFractionAnswer(options.answer));
 }
