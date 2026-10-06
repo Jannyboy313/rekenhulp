@@ -234,6 +234,12 @@ describe('nameToPowerTip', () => {
     );
   });
 
+  it('names the English quadrillion', () => {
+    expect(nameToPowerTip(unit('quadriljoen'), 1, 0)(fromInteger(15))).toBe(
+      'Een quadriljoen is 10²⁴; 10¹⁵ is een biljard (Engels: quadrillion).',
+    );
+  });
+
   it('names a forgotten shift of the coefficient', () => {
     expect(nameToPowerTip(unit('miljoen'), 250, 2)(fromInteger(6))).toBe(
       '250 = 2,5 × 10²: tel 2 op bij 6.',

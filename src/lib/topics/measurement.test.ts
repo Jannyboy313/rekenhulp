@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { GROUP_SEPARATOR as S } from '../format';
+import { formatRational, GROUP_SEPARATOR as S } from '../format';
 import { createRng } from '../random';
 import {
   compare,
   decimalPlaces,
+  divide,
   equals,
   fromInteger,
   multiply,
@@ -303,6 +304,19 @@ describe('conversion tips', () => {
     );
   });
 
+  it('names × and : swapped in a time question', () => {
+    expect(step('time', 'uur', 'min', '3', '180').check('0,05').tip).toBe(
+      'Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met 60.',
+    );
+  });
+
+  it('names the length factor for cubic units with a negative shift', () => {
+    // 5000 cm³ = 0,005 m³; two steps of ×10 instead of ×1000 each: 5000 : 10 : 10 = 50.
+    expect(step('volume', 'cm³', 'm³', '5000', '0,005').check('50').tip).toBe(
+      'Bij kubieke eenheden is elke stap ×1000 (10 × 10 × 10), niet ×10.',
+    );
+  });
+
   it('tries extra tips first', () => {
     const question = conversionQuestion('time', 'uur', 'min', n('2'), n('120'), [() => 'eigen']);
     expect(question.steps[0]!.check('7').tip).toBe('eigen');
@@ -449,14 +463,40 @@ describe('timeTip', () => {
     expect(timeTip(HOUR, MINUTE, n('2,5'), true)(n('151'))).toBeUndefined();
   });
 
-  it('is wired into generated time questions', () => {
+  it('never throws on a wrong answer', () => {
     const rng = createRng(7);
     for (let i = 0; i < 1000; i++) {
       const question = generateTime(rng);
       const step = question.steps[0]!;
-      // Every step has a diagnosis: a typed 0 parses, is wrong, and never crashes it.
+      // A typed 0 parses, is wrong, and never crashes the diagnosis.
       expect(step.check('0').correct).toBe(false);
     }
+  });
+
+  it('does not throw for a value that is no terminating decimal', () => {
+    expect(timeTip(HOUR, MINUTE, rational(7n, 3n), true)(fromInteger(1))).toBeUndefined();
+  });
+
+  it('is wired into generated time questions', () => {
+    const tip = '1 uur = 60 min, niet 100 min.';
+    const rng = createRng(7);
+    let seen = 0;
+    for (let i = 0; i < 1000; i++) {
+      const step = generateTime(rng).steps[0]!;
+      const toSmaller = /^(\S+) uur = \? min$/.exec(step.prompt);
+      if (toSmaller) {
+        seen++;
+        const mistaken = multiply(n(typed(toSmaller[1]!)), fromInteger(100));
+        expect(step.check(String(mistaken.num)).tip).toBe(tip);
+      }
+      const toLarger = /^(\S+) min = \? uur$/.exec(step.prompt);
+      if (toLarger) {
+        seen++;
+        const mistaken = divide(n(typed(toLarger[1]!)), fromInteger(100));
+        expect(step.check(typed(formatRational(mistaken))).tip).toBe(tip);
+      }
+    }
+    expect(seen).toBeGreaterThan(20);
   });
 });
 

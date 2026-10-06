@@ -318,6 +318,9 @@ const DECIMAL_TIME_FACTORS: Readonly<Record<string, number>> = {
   'uur>s': 10_000,
 };
 
+/** The minutes in an hour and seconds in a minute: the remainder tips only apply to such pairs. */
+const SIXTY = fromInteger(60);
+
 /** 2,25 → whole 2 and fraction 0,25. Only for non-negative values. */
 function splitWhole(value: Rational): { whole: Rational; fraction: Rational } {
   const whole = rational(value.num / value.den);
@@ -336,15 +339,15 @@ export function timeTip(
   toSmaller: boolean,
 ): Diagnose {
   const factor = larger.seconds / smaller.seconds;
-  const decimal = DECIMAL_TIME_FACTORS[`${larger.symbol}>${smaller.symbol}`];
+  const decimalFactor = DECIMAL_TIME_FACTORS[`${larger.symbol}>${smaller.symbol}`];
   const smallerValue = multiply(largerValue, fromInteger(factor));
   return (given) => {
-    if (decimal !== undefined) {
+    if (decimalFactor !== undefined) {
       const mistaken = toSmaller
-        ? multiply(largerValue, fromInteger(decimal))
-        : divide(smallerValue, fromInteger(decimal));
+        ? multiply(largerValue, fromInteger(decimalFactor))
+        : divide(smallerValue, fromInteger(decimalFactor));
       if (equals(given, mistaken)) {
-        return `1 ${larger.symbol} = ${formatInteger(factor)} ${smaller.symbol}, niet ${formatInteger(decimal)} ${smaller.symbol}.`;
+        return `1 ${larger.symbol} = ${formatInteger(factor)} ${smaller.symbol}, niet ${formatInteger(decimalFactor)} ${smaller.symbol}.`;
       }
     }
     if (factor !== 60) return undefined;
@@ -362,13 +365,13 @@ function decimalsAsMinutesTip(
   given: Rational,
 ): string | undefined {
   const { whole, fraction } = splitWhole(largerValue);
-  if (fraction.num === 0n) return undefined;
+  if (fraction.num === 0n || decimalPlaces(fraction) === null) return undefined;
   const digits = formatRational(fraction).slice(2); // '0,25' → '25'
   const readings = digits.length === 1 ? [Number(digits), Number(digits) * 10] : [Number(digits)];
-  const start = multiply(whole, fromInteger(60));
+  const start = multiply(whole, SIXTY);
   const reading = readings.find((minutes) => equals(given, add(start, fromInteger(minutes))));
   if (reading === undefined) return undefined;
-  const real = formatRational(multiply(fraction, fromInteger(60)));
+  const real = formatRational(multiply(fraction, SIXTY));
   return `${formatRational(fraction)} ${larger.symbol} is ${real} ${smaller.symbol}, niet ${reading} ${smaller.symbol}.`;
 }
 
@@ -380,8 +383,8 @@ function remainderAsDecimalsTip(
   given: Rational,
 ): string | undefined {
   const { whole, fraction } = splitWhole(largerValue);
-  if (fraction.num === 0n) return undefined;
-  const rest = multiply(fraction, fromInteger(60));
+  if (fraction.num === 0n || decimalPlaces(fraction) === null) return undefined;
+  const rest = multiply(fraction, SIXTY);
   const written = divide(rest, fromInteger(100));
   if (!equals(given, add(whole, written))) return undefined;
   return `${formatRational(rest)} ${smaller.symbol} is ${formatRational(fraction)} ${larger.symbol}, niet ${formatRational(written)} ${larger.symbol}.`;
