@@ -1,4 +1,5 @@
 import type { Generator, Topic } from '../types';
+import { generateDivisibility } from './divisibility';
 import {
   generateArea,
   generateLength,
@@ -26,6 +27,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   gcd: generateGcd,
   prime: generatePrime,
   factorization: generateFactorization,
+  divisibility: generateDivisibility,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -43,4 +45,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
   factorization: 'Ontbinden in priemfactoren (12 t/m 200)',
+  divisibility: 'Deelbaarheid door 2 t/m 15 (zonder 10)',
 };

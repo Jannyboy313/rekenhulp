@@ -17,7 +17,8 @@ export type Topic =
   | 'lcm'
   | 'gcd'
   | 'prime'
-  | 'factorization';
+  | 'factorization'
+  | 'divisibility';
 
 export interface CheckResult {
   correct: boolean;
