@@ -73,4 +73,15 @@ describe('App', () => {
     await click('Start');
     expect(screen.getByText('1 / 15')).toBeTruthy();
   });
+
+  it('offers Getallen & delers with its topics and the tables share', async () => {
+    render(App);
+    await click(/Getallen/);
+    expect(screen.getByRole('heading', { name: 'Getallen & delers' })).toBeTruthy();
+    expect(screen.getByText('KGV (kleinste gemene veelvoud)')).toBeTruthy();
+    expect(screen.getByText('Kwadraten en wortels (2² t/m 25²)')).toBeTruthy();
+    expect(screen.getByText('15% tafels')).toBeTruthy();
+    await click('Start');
+    expect(screen.getByText('1 / 15')).toBeTruthy();
+  });
 });

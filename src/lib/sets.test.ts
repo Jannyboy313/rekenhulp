@@ -3,6 +3,7 @@ import {
   DEFAULT_SESSION_SIZE,
   describeSetTopics,
   MEASUREMENT_SET,
+  NUMBERS_SET,
   PRACTICE_SETS,
   PROPORTIONS_SET,
   SESSION_SIZES,
@@ -12,7 +13,25 @@ import type { PracticeSet } from './types';
 
 describe('practice sets', () => {
   it('offers the implemented sets in roadmap order', () => {
-    expect(PRACTICE_SETS.map((set) => set.id)).toEqual(['tafels', 'meten', 'verhoudingen']);
+    expect(PRACTICE_SETS.map((set) => set.id)).toEqual([
+      'tafels',
+      'meten',
+      'verhoudingen',
+      'getallen',
+    ]);
+  });
+
+  it('makes Getallen & delers six equally weighted topics with 15% tables', () => {
+    expect(NUMBERS_SET.name).toBe('Getallen & delers');
+    expect(NUMBERS_SET.tablesPercent).toBe(15);
+    expect(NUMBERS_SET.topics).toEqual([
+      { topic: 'lcm', weight: 1 },
+      { topic: 'gcd', weight: 1 },
+      { topic: 'prime', weight: 1 },
+      { topic: 'factorization', weight: 1 },
+      { topic: 'divisibility', weight: 1 },
+      { topic: 'squares', weight: 1 },
+    ]);
   });
 
   it('makes Verhoudingen two equally weighted topics with 15% tables', () => {
@@ -71,6 +90,18 @@ describe('describeSetTopics', () => {
       'Gewicht (mg t/m ton)',
       'Tijd (s, min, uur, dag)',
       'Grote getallen (duizend t/m quadriljoen)',
+      '15% tafels',
+    ]);
+  });
+
+  it('describes the Getallen & delers set', () => {
+    expect(describeSetTopics(NUMBERS_SET)).toEqual([
+      'KGV (kleinste gemene veelvoud)',
+      'GGD (grootste gemene deler)',
+      'Priemgetal of niet (11 t/m 199)',
+      'Ontbinden in priemfactoren (12 t/m 200)',
+      'Deelbaarheid door 2 t/m 15 (zonder 10)',
+      'Kwadraten en wortels (2² t/m 25²)',
       '15% tafels',
     ]);
   });

@@ -39,11 +39,27 @@ export const PROPORTIONS_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+export const NUMBERS_SET: PracticeSet = {
+  id: 'getallen',
+  name: 'Getallen & delers',
+  description: 'KGV, GGD, priemgetallen, deelbaarheid en kwadraten',
+  topics: [
+    { topic: 'lcm', weight: 1 },
+    { topic: 'gcd', weight: 1 },
+    { topic: 'prime', weight: 1 },
+    { topic: 'factorization', weight: 1 },
+    { topic: 'divisibility', weight: 1 },
+    { topic: 'squares', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
 export const PRACTICE_SETS: readonly PracticeSet[] = [
   TABLES_SET,
   MEASUREMENT_SET,
   PROPORTIONS_SET,
+  NUMBERS_SET,
 ];
 
 export function describeSetTopics(set: PracticeSet): string[] {

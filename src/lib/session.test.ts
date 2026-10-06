@@ -1,7 +1,13 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRng } from './random';
 import { allocateQuotas, buildSession, MAX_UNIQUE_ATTEMPTS, tablesCount } from './session';
-import { MEASUREMENT_SET, PROPORTIONS_SET, SESSION_SIZES, TABLES_SET } from './sets';
+import {
+  MEASUREMENT_SET,
+  NUMBERS_SET,
+  PROPORTIONS_SET,
+  SESSION_SIZES,
+  TABLES_SET,
+} from './sets';
 import { GENERATORS } from './topics';
 import type { Generator, Question } from './types';
 
@@ -157,6 +163,23 @@ describe('buildSession for Verhoudingen', () => {
 
   it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
     const questions = buildSession(PROPORTIONS_SET, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
+describe('buildSession for Getallen & delers', () => {
+  it('mixes 2 tables with 13 exercises over all six topics at n = 15 (spec §4.2)', () => {
+    const questions = buildSession(NUMBERS_SET, 15, createRng(3));
+    const counts = new Map<string, number>();
+    for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    expect(counts.get('tables')).toBe(2);
+    const perTopic = NUMBERS_SET.topics.map(({ topic }) => counts.get(topic) ?? 0);
+    expect(perTopic.sort((a, b) => a - b)).toEqual([2, 2, 2, 2, 2, 3]);
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(NUMBERS_SET, size, createRng(size));
     expect(questions).toHaveLength(size);
     expect(new Set(questions.map((q) => q.key)).size).toBe(size);
   });
