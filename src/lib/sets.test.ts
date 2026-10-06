@@ -4,6 +4,7 @@ import {
   describeSetTopics,
   MEASUREMENT_SET,
   NUMBERS_SET,
+  OPERATIONS_SET,
   PRACTICE_SETS,
   PROPORTIONS_SET,
   SESSION_SIZES,
@@ -18,6 +19,17 @@ describe('practice sets', () => {
       'meten',
       'verhoudingen',
       'getallen',
+      'bewerkingen',
+    ]);
+  });
+
+  it('makes Bewerkingen three topics, properties at half weight, with 15% tables', () => {
+    expect(OPERATIONS_SET.name).toBe('Bewerkingen');
+    expect(OPERATIONS_SET.tablesPercent).toBe(15);
+    expect(OPERATIONS_SET.topics).toEqual([
+      { topic: 'orderOfOperations', weight: 1 },
+      { topic: 'properties', weight: 0.5 },
+      { topic: 'smartCalculation', weight: 1 },
     ]);
   });
 
@@ -102,6 +114,15 @@ describe('describeSetTopics', () => {
       'Ontbinden in priemfactoren (12 t/m 200)',
       'Deelbaarheid door 2 t/m 15 (zonder 10)',
       'Kwadraten en wortels (2² t/m 25²)',
+      '15% tafels',
+    ]);
+  });
+
+  it('describes the Bewerkingen set', () => {
+    expect(describeSetTopics(OPERATIONS_SET)).toEqual([
+      'Volgorde van bewerkingen (ook met negatieve getallen)',
+      'Eigenschappen (commutatief, associatief, distributief)',
+      'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
       '15% tafels',
     ]);
   });

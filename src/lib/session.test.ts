@@ -4,6 +4,7 @@ import { allocateQuotas, buildSession, MAX_UNIQUE_ATTEMPTS, tablesCount } from '
 import {
   MEASUREMENT_SET,
   NUMBERS_SET,
+  OPERATIONS_SET,
   PROPORTIONS_SET,
   SESSION_SIZES,
   TABLES_SET,
@@ -180,6 +181,26 @@ describe('buildSession for Getallen & delers', () => {
 
   it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
     const questions = buildSession(NUMBERS_SET, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
+describe('buildSession for Bewerkingen', () => {
+  it('mixes 2 tables with 5 + 3 + 5 exercises at n = 15 (spec §4.2)', () => {
+    const questions = buildSession(OPERATIONS_SET, 15, createRng(3));
+    const counts = new Map<string, number>();
+    for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    expect(Object.fromEntries(counts)).toEqual({
+      tables: 2,
+      orderOfOperations: 5,
+      properties: 3,
+      smartCalculation: 5,
+    });
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(OPERATIONS_SET, size, createRng(size));
     expect(questions).toHaveLength(size);
     expect(new Set(questions.map((q) => q.key)).size).toBe(size);
   });

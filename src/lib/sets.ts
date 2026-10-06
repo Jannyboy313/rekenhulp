@@ -54,12 +54,26 @@ export const NUMBERS_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+/** properties has half weight: two steps take 2–3× as long (spec §4.1). */
+export const OPERATIONS_SET: PracticeSet = {
+  id: 'bewerkingen',
+  name: 'Bewerkingen',
+  description: 'Volgorde van bewerkingen, eigenschappen en handig rekenen',
+  topics: [
+    { topic: 'orderOfOperations', weight: 1 },
+    { topic: 'properties', weight: 0.5 },
+    { topic: 'smartCalculation', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
 export const PRACTICE_SETS: readonly PracticeSet[] = [
   TABLES_SET,
   MEASUREMENT_SET,
   PROPORTIONS_SET,
   NUMBERS_SET,
+  OPERATIONS_SET,
 ];
 
 export function describeSetTopics(set: PracticeSet): string[] {
