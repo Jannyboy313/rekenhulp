@@ -21,10 +21,14 @@ import {
   generatePercentages,
   INCREASE_PERCENTAGES,
   NICE_WHOLES,
+  backToWholeTip,
   partExplanation,
+  partTip,
   PERCENTAGES,
   percentOf,
   priceChangeExplanation,
+  priceChangeTip,
+  whatPercentageTip,
   wholeExplanation,
   type Percentage,
 } from './percentages';
@@ -392,5 +396,62 @@ describe('every percentage and whole', () => {
         }
       }
     }
+  });
+});
+
+describe('percentage tips', () => {
+  const p = (value: number) =>
+    PERCENTAGES.find((candidate) => equals(candidate.value, fromInteger(value)))!;
+  const n = (text: string) => parseDutchNumber(text)!;
+
+  it('names the rest', () => {
+    expect(partTip(p(25), fromInteger(80))(fromInteger(60))).toBe(
+      'Dat is wat er overblijft; gevraagd is 25% zelf.',
+    );
+  });
+
+  it('names the ratio as a decimal and the inverse', () => {
+    const tip = whatPercentageTip(fromInteger(30), fromInteger(120));
+    expect(tip(n('0,25'))).toBe('Dat is het deel als kommagetal; × 100 geeft het percentage.');
+    const inverse = 'Je hebt het geheel door het deel gedeeld; reken deel : geheel.';
+    expect(tip(fromInteger(4))).toBe(inverse);
+    expect(tip(fromInteger(400))).toBe(inverse);
+    expect(tip(fromInteger(26))).toBeUndefined();
+  });
+
+  it('names the change itself and the wrong direction', () => {
+    const discount = priceChangeTip(p(25), fromInteger(60), false);
+    expect(discount(fromInteger(15))).toBe('Dat is de korting zelf; trek die nog af van de prijs.');
+    expect(discount(fromInteger(75))).toBe('Bij korting wordt de prijs lager: trek de korting af.');
+    const increase = priceChangeTip(p(15), fromInteger(40), true);
+    expect(increase(fromInteger(6))).toBe('Dat is de verhoging zelf; tel die nog op bij de prijs.');
+    expect(increase(fromInteger(34))).toBe(
+      'Bij een verhoging wordt de prijs hoger: tel de verhoging op.',
+    );
+  });
+
+  it('names p% of the part', () => {
+    expect(backToWholeTip(p(20), fromInteger(14))(n('2,8'))).toBe(
+      'Je hebt 20% van 14 berekend, maar 14 is zelf al 20%. Reken terug naar 100%.',
+    );
+  });
+
+  it('wires the discount tip into generated questions', () => {
+    const rng = createRng(11);
+    let seen = 0;
+    for (let i = 0; i < 1000; i++) {
+      const step = generatePercentages(rng).steps[0]!;
+      const match = /^€\u{a0}(\d+) na .* korting/u.exec(step.prompt);
+      if (!match) continue;
+      const answer = parseDutchNumber(step.check('0').expected)!;
+      const change = subtract(fromInteger(Number(match[1])), answer);
+      // At 50% the change is the answer itself, so typing it is correct.
+      if (equals(change, answer)) continue;
+      seen++;
+      expect(step.check(formatRational(change)).tip).toBe(
+        'Dat is de korting zelf; trek die nog af van de prijs.',
+      );
+    }
+    expect(seen).toBeGreaterThan(50);
   });
 });

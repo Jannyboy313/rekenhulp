@@ -13,6 +13,7 @@ import {
   type Rational,
 } from '../rational';
 import { fractionStep, numberStep } from '../steps';
+import type { Diagnose } from '../tips';
 import type { Question, Step } from '../types';
 
 export interface Percentage {
@@ -198,6 +199,7 @@ function partOfWhole(rng: Rng): Question {
       prompt: `${percentLabel(p.value)} van ${formatRational(whole)} = ?`,
       answer: part,
       explanation: partExplanation(p, whole),
+      diagnose: partTip(p, whole),
     }),
   );
 }
@@ -221,6 +223,7 @@ function whatPercentage(rng: Rng): Question {
       answer: p.value,
       suffix: '%',
       explanation: partExplanation(p, whole),
+      diagnose: whatPercentageTip(part, whole),
     }),
   );
 }
@@ -228,6 +231,58 @@ function whatPercentage(rng: Rng): Question {
 function changedPrice(p: Percentage, price: Rational, increase: boolean): Rational {
   const change = percentOf(p.value, price);
   return increase ? add(price, change) : subtract(price, change);
+}
+
+/** p% of the whole answered with the rest: '25% van 80' → 60 (spec §3.4.1). */
+export function partTip(p: Percentage, whole: Rational): Diagnose {
+  const rest = subtract(whole, percentOf(p.value, whole));
+  return (given) =>
+    equals(given, rest)
+      ? `Dat is wat er overblijft; gevraagd is ${percentLabel(p.value)} zelf.`
+      : undefined;
+}
+
+/** `30 is ?% van 120` answered with 0,25, with 120 : 30 = 4, or with 400. */
+export function whatPercentageTip(part: Rational, whole: Rational): Diagnose {
+  const ratio = divide(part, whole);
+  const inverse = divide(whole, part);
+  return (given) => {
+    if (equals(given, ratio)) return 'Dat is het deel als kommagetal; × 100 geeft het percentage.';
+    if (equals(given, inverse) || equals(given, multiply(inverse, HUNDRED))) {
+      return 'Je hebt het geheel door het deel gedeeld; reken deel : geheel.';
+    }
+    return undefined;
+  };
+}
+
+/** The change itself, or the change in the wrong direction. */
+export function priceChangeTip(p: Percentage, price: Rational, increase: boolean): Diagnose {
+  const change = percentOf(p.value, price);
+  const wrongWay = changedPrice(p, price, !increase);
+  return (given) => {
+    if (equals(given, change)) {
+      return increase
+        ? 'Dat is de verhoging zelf; tel die nog op bij de prijs.'
+        : 'Dat is de korting zelf; trek die nog af van de prijs.';
+    }
+    if (equals(given, wrongWay)) {
+      return increase
+        ? 'Bij een verhoging wordt de prijs hoger: tel de verhoging op.'
+        : 'Bij korting wordt de prijs lager: trek de korting af.';
+    }
+    return undefined;
+  };
+}
+
+/** `20% is 14. Hoeveel is 100%?` answered with 20% of 14. */
+export function backToWholeTip(p: Percentage, part: Rational): Diagnose {
+  const mistaken = percentOf(p.value, part);
+  const label = percentLabel(p.value);
+  const shown = formatRational(part);
+  return (given) =>
+    equals(given, mistaken)
+      ? `Je hebt ${label} van ${shown} berekend, maar ${shown} is zelf al ${label}. Reken terug naar 100%.`
+      : undefined;
 }
 
 /** '25% = 60 : 4 = 15 → 60 − 15 = 45', with money formatting. */
@@ -257,6 +312,7 @@ function priceChange(rng: Rng): Question {
       prefix: '€',
       expected: formatMoney(answer),
       explanation: priceChangeExplanation(p, price, increase),
+      diagnose: priceChangeTip(p, price, increase),
     }),
   );
 }
@@ -273,6 +329,7 @@ function backToWhole(rng: Rng): Question {
       prompt: `${percentLabel(p.value)} is ${formatRational(part)}. Hoeveel is 100%?`,
       answer: whole,
       explanation: wholeExplanation(p, whole),
+      diagnose: backToWholeTip(p, part),
     }),
   );
 }
