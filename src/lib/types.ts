@@ -21,7 +21,8 @@ export type Topic =
   | 'divisibility'
   | 'squares'
   | 'orderOfOperations'
-  | 'smartCalculation';
+  | 'smartCalculation'
+  | 'properties';
 
 export interface CheckResult {
   correct: boolean;

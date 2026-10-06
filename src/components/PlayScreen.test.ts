@@ -5,6 +5,7 @@ import { fromInteger } from '../lib/rational';
 import { isCorrect, type QuestionRecord } from '../lib/results';
 import { TABLES_SET } from '../lib/sets';
 import { booleanStep, numberStep } from '../lib/steps';
+import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
 import PlayScreen from './PlayScreen.svelte';
 
@@ -137,5 +138,37 @@ describe('PlayScreen', () => {
   it('shows no kladblok for table questions', () => {
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
     expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+  });
+
+  it('runs a property question through both steps, also after a wrong rewrite', async () => {
+    const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
+    const property = propertyQuestion(
+      {
+        text: '7 × 98',
+        intended: 'distributive',
+        rewrites: { commutative: '98 × 7', distributive: '7 × 100 − 7 × 2' },
+      },
+      'basis',
+      'distributive',
+    );
+    render(PlayScreen, { props: { set: TABLES_SET, questions: [property], onfinish } });
+
+    await press('9', '8', 'keer', '7', 'OK');
+    expect(screen.getByText('Fout')).toBeTruthy();
+    expect(screen.getByText('98 × 7')).toBeTruthy();
+    expect(screen.getByText('7 × 100 − 7 × 2')).toBeTruthy();
+    expect(
+      screen.getByText('Geldige stap (commutatief), maar niet handig. Probeer distributief.'),
+    ).toBeTruthy();
+
+    await press('Verder');
+    expect(screen.getByText('7 × 98 = ?')).toBeTruthy();
+    await press('6', '8', '6', 'OK');
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(onfinish).toHaveBeenCalledOnce();
+    const [records] = onfinish.mock.calls[0]!;
+    expect(records[0]!.attempts.map((attempt) => attempt.result.correct)).toEqual([false, true]);
+    expect(isCorrect(records[0]!)).toBe(false);
   });
 });

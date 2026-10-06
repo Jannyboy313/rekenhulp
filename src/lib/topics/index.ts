@@ -11,6 +11,7 @@ import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
+import { generateProperties } from './properties';
 import { generateRatios } from './ratios';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSquares } from './squares';
@@ -34,6 +35,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   squares: generateSquares,
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
+  properties: generateProperties,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -55,4 +57,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   squares: 'Kwadraten en wortels (2² t/m 25²)',
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
+  properties: 'Eigenschappen (commutatief, associatief, distributief)',
 };
