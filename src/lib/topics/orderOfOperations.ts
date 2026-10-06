@@ -19,8 +19,8 @@ export const MIN_POWER_BASE = 2;
 /** Largest absolute power base per exponent: [2, 12] squared, [2, 5] cubed. */
 export const MAX_POWER_BASE: Readonly<Record<number, number>> = { 2: 12, 3: 5 };
 /**
- * Every template finds a valid draw well within this; the rarest case (a cube base of 2 in
- * template 4) takes about 400 attempts on average.
+ * Every template finds a valid draw well within this; the rarest case (base 2 in template 4,
+ * a = b = 1) takes about 450 attempts on average.
  */
 const MAX_ATTEMPTS = 10_000;
 

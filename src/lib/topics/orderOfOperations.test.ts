@@ -144,7 +144,7 @@ describe('generateFromTemplate', () => {
   it('spreads the power base evenly in the sum template (a + b)² − c × d', () => {
     const templateRng = createRng(7);
     const basesByExponent = new Map<number, bigint[]>();
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < 4000; i++) {
       for (const node of nodes(generateFromTemplate(templateRng, TEMPLATES[3]!))) {
         if (node.type !== 'power') continue;
         const exponent = Number(evaluate(node.exponent)!.num);
