@@ -11,8 +11,9 @@ Read it before changing behaviour. If code and spec disagree, ask which one is w
 
 Implemented sets: **Tafels** (plan: `docs/superpowers/plans/2026-10-05-beta-tafels.md`), **Meten**
 (plan: `docs/superpowers/plans/2026-10-05-meten.md`), **Verhoudingen** v1
-(plan: `docs/superpowers/plans/2026-10-05-verhoudingen.md`) and **Getallen & delers**
-(plan: `docs/superpowers/plans/2026-10-06-getallen-delers.md`).
+(plan: `docs/superpowers/plans/2026-10-05-verhoudingen.md`), **Getallen & delers**
+(plan: `docs/superpowers/plans/2026-10-06-getallen-delers.md`) and **Bewerkingen**
+(plan: `docs/superpowers/plans/2026-10-06-bewerkingen.md`).
 UI feedback round 1 (plan: `docs/superpowers/plans/2026-10-06-feedback-round-1.md`) added stacked
 fractions everywhere, the breuk key with a fraction template and mixed numbers, counts 5–50,
 a light red Stop button and keys that act on press.
@@ -35,7 +36,7 @@ implementation plan per step:
 | 1 | **Meten** | `volume`, `area`, `length`, `mass`, `time` (§5.10), `numberUnits` (§5.14) | One shared conversion engine; number input + unit suffix only; superscript powers of 10 in prompts | v1 | ✅ done |
 | 2 | **Verhoudingen** (v1 part) | `percentages` (§5.12), `ratios` (§5.13) | `Step.prefix` (`€`); `fraction` input (`/` key) brought forward from v2 for `12½%` | v1 | ✅ done |
 | 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (`lib/inputModels.ts`) with inline invalid-input errors; `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` tokenizer and parser (`×`, `^`) | v1 | ✅ done |
-| 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, rewrite checker; `expression` answer kind; negative literals; two-step questions | v1 | planned |
+| 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, evaluation steps, chains, rewrite checker; `expression` answer kind with a 4-column keypad; negative literals; two-step questions | v1 | ✅ done |
 | 5 | **Verhoudingen** (v2 part) | `fractionConversion`, `fractionArithmetic` (§12) | Judging simplified vs unsimplified fractions (the `fraction` input exists since set 2) | v2 | later |
 | 6 | **Toepassingen** | `speed`, `scale`, `average`, `geometry` (§12) | Context/word problems | v3 | later |
 
@@ -52,15 +53,10 @@ Workflow per set (new session each time):
 5. Update the Status column above when the set is done.
 
 Known follow-ups for the next plans:
-- **Bewerkingen (`expression` answer kind):** add `expression: string` to `KeypadStates` and an
-  `expression` entry to `INPUT_MODELS` (`lib/inputModels.ts`, a `textModel` with the "Ongeldige
-  som" message), and extend `lib/expr/parser.ts`,
-  which so far only parses products of powers (`×`, `^`) over numbers, to the full §7 grammar.
-  `QuestionView`, `Feedback` and `ResultScreen` need no change for a new keypad kind whose typing
-  state is a string (otherwise `QuestionView` needs a branch like `fraction`). The parser
-  builds a left-associative binary `×` tree, while spec §7 wants n-ary `Sum`/`Product` chains and
-  `Group` nodes, so set 4 must add chains (e.g. in `lib/expr/chains.ts`) and flip the parser test
-  that currently rejects `(2)`.
+- Prettier was not run during Bewerkingen (`npm run format` is not pre-approved); a few lines exceed
+  the print width. Run `npm run format` once with the user's approval and commit the result.
+- Manual phone check for Bewerkingen (plan Task 15 Step 2) is still open, incl. whether long
+  property prompts with the kladblok keep the keypad on screen.
 - Focus falls back to `body` after a screen or question change (keyboard/screen-reader users only).
   The same happens inside a step when the kladblok's "Naar antwoordveld" overlay is activated by
   keyboard: the overlay is removed while it has focus.
@@ -132,10 +128,13 @@ src/
                         Fraction (stacked fractions), press.ts (act-on-press action)
   lib/
     random.ts           seedable RNG; every generator takes an rng argument
-    steps.ts            step factories (number, fraction, boolean, factorization), parseAnswer
-                        and parseFactorization — all answer parsing and checking goes through here
-    keypadInput.ts      pure key → input reducers (numbers, fraction templates, factorizations)
-    inputModels.ts      per answer kind: keys, typing state, reducer, validate, display, view
+    steps.ts            step factories (number, fraction, boolean, factorization, rewrite),
+                        parseAnswer and parseFactorization — all answer parsing and checking
+                        goes through here
+    keypadInput.ts      pure key → input reducers (numbers, fraction templates, factorizations,
+                        expressions)
+    inputModels.ts      per answer kind: keys, columns, typing state, reducer, validate,
+                        display, view
     scratchpad.ts       kladblok: cell count, keys (spatie), typing, when shown
     fractionText.ts     splits text into plain runs and (mixed) fractions for stacked display
     primes.ts           gcd, lcm, isPrime, prime factorization
@@ -144,8 +143,8 @@ src/
     session.ts          builds a session: quotas, shuffle, de-duplication
     format.ts           Dutch number/expression formatting
     rational.ts         exact bigint fractions (expressions, unit conversions, input parsing)
-    expr/               tokenizer, parser (AST; products of powers so far); evaluate and
-                        rewriteCheck follow with Bewerkingen
+    expr/               tokenizer, parser (AST with groups), evaluate, format (prompt text),
+                        reduce (evaluation steps), chains, rewriteCheck (one property per step)
     topics/             one generator module per topic
 ```
 
