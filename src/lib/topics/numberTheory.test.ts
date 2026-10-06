@@ -1,21 +1,35 @@
 import { describe, expect, it } from 'vitest';
-import { gcd, isPrime, lcm } from '../primes';
+import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes';
 import { createRng, type Rng } from '../random';
+import { NO, YES } from '../steps';
 import type { Generator, Question, Step } from '../types';
 import {
+  divisionLadder,
+  FACTORIZATION_NUMBERS,
   gcdExplanation,
   GCD_COPRIME_SHARE,
+  generateFactorization,
   generateGcd,
   generateLcm,
+  generatePrime,
+  HARD_COMPOSITES,
   LCM_SHARED_FACTOR_SHARE,
   lcmExplanation,
   MAX_COMMON_FACTOR,
+  MAX_FACTORIZATION,
   MAX_GCD_TERM,
   MAX_LCM,
   MAX_LCM_TERM,
+  MAX_PRIME_CANDIDATE,
   MIN_COMMON_FACTOR,
   MIN_COPRIME_TERM,
+  MIN_FACTORIZATION,
   MIN_LCM_TERM,
+  MIN_PRIME_CANDIDATE,
+  MULTIPLES_OF_THREE,
+  primeExplanation,
+  primeFactorCount,
+  PRIMES,
 } from './numberTheory';
 
 const SAMPLES = 3000;
@@ -153,5 +167,146 @@ describe('gcdExplanation', () => {
     [24, 40, '24 = 2³ × 3 en 40 = 2³ × 5 → GGD = 2³ = 8'],
   ])('explains the GCD of %i and %i', (a, b, expected) => {
     expect(gcdExplanation(a, b)).toBe(expected);
+  });
+});
+
+describe('generatePrime', () => {
+  const questions = sample(generatePrime, 13);
+  const numberOf = (question: Question) => Number(question.key.split(':')[1]);
+
+  it('asks whether a number in [11, 199] is prime', () => {
+    for (const question of questions) {
+      const n = numberOf(question);
+      const step = stepOf(question);
+      expect(question.topic).toBe('prime');
+      expect(step.kind).toBe('boolean');
+      expect(step.prompt).toBe(`Is ${n} een priemgetal?`);
+      expect(n).toBeGreaterThanOrEqual(MIN_PRIME_CANDIDATE);
+      expect(n).toBeLessThanOrEqual(MAX_PRIME_CANDIDATE);
+      const expected = isPrime(n) ? YES : NO;
+      expect(step.check(expected)).toEqual({
+        correct: true,
+        expected,
+        explanation: primeExplanation(n),
+      });
+    }
+  });
+
+  it('makes half of the numbers prime and the composites odd and not divisible by 5', () => {
+    const primes = share(questions, (q) => isPrime(numberOf(q)));
+    expect(primes).toBeGreaterThan(0.46);
+    expect(primes).toBeLessThan(0.54);
+    for (const question of questions) {
+      const n = numberOf(question);
+      if (isPrime(n)) continue;
+      expect(n % 2).toBe(1);
+      expect(n % 5).not.toBe(0);
+    }
+  });
+
+  it('takes half of the composites from the hard ones', () => {
+    const hard = share(questions, (q) => HARD_COMPOSITES.includes(numberOf(q)));
+    expect(hard).toBeGreaterThan(0.21);
+    expect(hard).toBeLessThan(0.29);
+  });
+
+  it('lists exactly the odd composites not divisible by 3 or 5 as hard', () => {
+    const hard: number[] = [];
+    for (let n = MIN_PRIME_CANDIDATE; n <= MAX_PRIME_CANDIDATE; n++) {
+      if (!isPrime(n) && n % 2 === 1 && n % 3 !== 0 && n % 5 !== 0) hard.push(n);
+    }
+    expect(HARD_COMPOSITES).toEqual(hard);
+    expect(PRIMES).toHaveLength(42);
+    expect(MULTIPLES_OF_THREE[0]).toBe(21);
+    expect(MULTIPLES_OF_THREE.at(-1)).toBe(189);
+    expect(MULTIPLES_OF_THREE.every((n) => n % 6 === 3 && n % 5 !== 0)).toBe(true);
+  });
+});
+
+describe('primeExplanation', () => {
+  it.each([
+    [91, '91 = 7 × 13'],
+    [27, '27 = 3 × 9'],
+    [169, '169 = 13 × 13'],
+    [151, 'Geen deler tot en met √151'],
+  ])('explains %i', (n, expected) => {
+    expect(primeExplanation(n)).toBe(expected);
+  });
+});
+
+describe('generateFactorization', () => {
+  const questions = sample(generateFactorization, 17);
+  const numberOf = (question: Question) => Number(question.key.split(':')[1]);
+
+  /** The canonical answer as keypad input: 84 → '2^2×3×7'. */
+  function typed(n: number): string {
+    return primeFactors(n)
+      .map(({ prime, exponent }) => (exponent === 1 ? `${prime}` : `${prime}^${exponent}`))
+      .join('×');
+  }
+
+  /** Every prime written out: 84 → '2×2×3×7'. */
+  function expanded(n: number): string {
+    return primeFactors(n)
+      .flatMap(({ prime, exponent }) => Array.from({ length: exponent }, () => prime))
+      .join('×');
+  }
+
+  it('asks to factorize a number with at least 3 prime factors', () => {
+    for (const question of questions) {
+      const n = numberOf(question);
+      const step = stepOf(question);
+      expect(question.topic).toBe('factorization');
+      expect(step.kind).toBe('factorization');
+      expect(step.prompt).toBe(`Ontbind ${n} in priemfactoren`);
+      expect(FACTORIZATION_NUMBERS).toContain(n);
+      for (const input of [typed(n), expanded(n)]) {
+        expect(step.check(input)).toEqual({
+          correct: true,
+          expected: step.check('').expected,
+          explanation: divisionLadder(n),
+        });
+      }
+    }
+  });
+
+  it('offers exactly the composites in [12, 200] with at least 3 prime factors', () => {
+    expect(FACTORIZATION_NUMBERS[0]).toBe(MIN_FACTORIZATION);
+    expect(FACTORIZATION_NUMBERS.at(-1)).toBe(MAX_FACTORIZATION);
+    expect(FACTORIZATION_NUMBERS).toContain(84);
+    expect(FACTORIZATION_NUMBERS).not.toContain(15);
+    expect(FACTORIZATION_NUMBERS).not.toContain(49);
+    expect(FACTORIZATION_NUMBERS.every((n) => primeFactorCount(n) >= 3)).toBe(true);
+  });
+
+  it('shows the canonical form as the expected answer', () => {
+    const first = generateFactorization(() => 0);
+    expect(numberOf(first)).toBe(12);
+    expect(stepOf(first).check('').expected).toBe('2² × 3');
+  });
+});
+
+describe('divisionLadder', () => {
+  it('divides 84 by its smallest primes', () => {
+    expect(divisionLadder(84)).toBe('84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7');
+  });
+
+  it('is a consistent ladder for every number on offer', () => {
+    for (const n of FACTORIZATION_NUMBERS) {
+      const steps = divisionLadder(n)
+        .split(', ')
+        .map((step) => {
+          const match = /^(\d+) : (\d+) = (\d+)$/.exec(step);
+          expect(match, `${n}: ${step}`).not.toBeNull();
+          return match!.slice(1).map(Number) as [number, number, number];
+        });
+      expect(steps[0]![0]).toBe(n);
+      for (const [index, [dividend, divisor, quotient]] of steps.entries()) {
+        expect(divisor).toBe(smallestPrimeFactor(dividend));
+        expect(dividend / divisor).toBe(quotient);
+        if (index > 0) expect(dividend).toBe(steps[index - 1]![2]);
+      }
+      expect(isPrime(steps.at(-1)![2])).toBe(true);
+    }
   });
 });

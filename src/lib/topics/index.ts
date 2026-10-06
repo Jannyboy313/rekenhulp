@@ -7,7 +7,7 @@ import {
   generateVolume,
 } from './measurement';
 import { generateNumberUnits } from './numberUnits';
-import { generateGcd, generateLcm } from './numberTheory';
+import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generatePercentages } from './percentages';
 import { generateRatios } from './ratios';
 import { generateTables } from './tables';
@@ -24,6 +24,8 @@ export const GENERATORS: Record<Topic, Generator> = {
   ratios: generateRatios,
   lcm: generateLcm,
   gcd: generateGcd,
+  prime: generatePrime,
+  factorization: generateFactorization,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -39,4 +41,6 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
+  prime: 'Priemgetal of niet (11 t/m 199)',
+  factorization: 'Ontbinden in priemfactoren (12 t/m 200)',
 };

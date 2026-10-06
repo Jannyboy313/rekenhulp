@@ -15,7 +15,9 @@ export type Topic =
   | 'percentages'
   | 'ratios'
   | 'lcm'
-  | 'gcd';
+  | 'gcd'
+  | 'prime'
+  | 'factorization';
 
 export interface CheckResult {
   correct: boolean;

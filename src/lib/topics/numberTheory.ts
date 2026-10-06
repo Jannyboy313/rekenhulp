@@ -1,8 +1,8 @@
 import { formatInteger, formatPrimeFactors } from '../format';
-import { gcd, isPrime, lcm, primeFactors } from '../primes';
+import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes';
 import { pick, randomInt, type Rng } from '../random';
 import { fromInteger } from '../rational';
-import { numberStep } from '../steps';
+import { booleanStep, factorizationStep, numberStep } from '../steps';
 import type { Question, Step, Topic } from '../types';
 
 /** LCM (spec §5.2). */
@@ -129,4 +129,85 @@ export function gcdExplanation(a: number, b: number): string {
       ? 'geen gemeenschappelijke priemfactor, GGD = 1'
       : `GGD = ${showFactorized(divisor)}`;
   return `${describeFactors(a)} en ${describeFactors(b)} → ${conclusion}`;
+}
+
+/** Prime yes/no (spec §5.4). */
+export const MIN_PRIME_CANDIDATE = 11;
+export const MAX_PRIME_CANDIDATE = 199;
+export const PRIME_SHARE = 0.5;
+/** Share of the composites that is not divisible by 3: the ones that look prime. */
+export const HARD_COMPOSITE_SHARE = 0.5;
+
+const PRIME_CANDIDATES = range(MIN_PRIME_CANDIDATE, MAX_PRIME_CANDIDATE);
+export const PRIMES: readonly number[] = PRIME_CANDIDATES.filter(isPrime);
+/** Odd composites that are not divisible by 3 or 5. */
+export const HARD_COMPOSITES: readonly number[] = [49, 77, 91, 119, 121, 133, 143, 161, 169, 187];
+/** Odd multiples of 3 that are not divisible by 5: 21, 27, 33, …, 189. */
+export const MULTIPLES_OF_THREE: readonly number[] = PRIME_CANDIDATES.filter(
+  (n) => n % 2 === 1 && n % 3 === 0 && n % 5 !== 0,
+);
+
+/** `Is 91 een priemgetal?` */
+export function generatePrime(rng: Rng): Question {
+  const n =
+    rng() < PRIME_SHARE
+      ? pick(rng, PRIMES)
+      : pick(rng, rng() < HARD_COMPOSITE_SHARE ? HARD_COMPOSITES : MULTIPLES_OF_THREE);
+  return question(
+    'prime',
+    String(n),
+    booleanStep({
+      prompt: `Is ${formatInteger(n)} een priemgetal?`,
+      answer: isPrime(n),
+      explanation: primeExplanation(n),
+    }),
+  );
+}
+
+/** '91 = 7 × 13' with the smallest prime factor, or 'Geen deler tot en met √151' for a prime. */
+export function primeExplanation(n: number): string {
+  if (isPrime(n)) return `Geen deler tot en met √${formatInteger(n)}`;
+  const factor = smallestPrimeFactor(n);
+  return `${formatInteger(n)} = ${formatInteger(factor)} × ${formatInteger(n / factor)}`;
+}
+
+/** Prime factorization (spec §5.5). */
+export const MIN_FACTORIZATION = 12;
+export const MAX_FACTORIZATION = 200;
+export const MIN_PRIME_FACTOR_COUNT = 3;
+
+/** Prime factors counted with multiplicity: 84 = 2 × 2 × 3 × 7 → 4. */
+export function primeFactorCount(n: number): number {
+  return primeFactors(n).reduce((count, { exponent }) => count + exponent, 0);
+}
+
+export const FACTORIZATION_NUMBERS: readonly number[] = range(
+  MIN_FACTORIZATION,
+  MAX_FACTORIZATION,
+).filter((n) => primeFactorCount(n) >= MIN_PRIME_FACTOR_COUNT);
+
+/** `Ontbind 84 in priemfactoren` */
+export function generateFactorization(rng: Rng): Question {
+  const n = pick(rng, FACTORIZATION_NUMBERS);
+  return question(
+    'factorization',
+    String(n),
+    factorizationStep({
+      prompt: `Ontbind ${formatInteger(n)} in priemfactoren`,
+      value: n,
+      explanation: divisionLadder(n),
+    }),
+  );
+}
+
+/** '84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7': divide by the smallest prime until a prime is left. */
+export function divisionLadder(n: number): string {
+  const steps: string[] = [];
+  let rest = n;
+  while (!isPrime(rest)) {
+    const factor = smallestPrimeFactor(rest);
+    steps.push(`${formatInteger(rest)} : ${formatInteger(factor)} = ${formatInteger(rest / factor)}`);
+    rest /= factor;
+  }
+  return steps.join(', ');
 }
