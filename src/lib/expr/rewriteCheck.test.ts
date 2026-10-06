@@ -69,6 +69,10 @@ describe('checkRewrite', () => {
     ['7 × 13 + 7 × 87', 'distributive', '7 × (87 + 13)', 'multipleSteps'],
     ['7 × 13 + 7 × 87', 'distributive', '7 × 100', 'multipleSteps'],
     ['38 + 57 + 62', 'any', '38 + 50 + 7 + 62', 'noProperty'],
+    ['(17 + 25) + 75', 'associative', '((17 + 25)) + 75', 'unchanged'],
+    ['((17 + 25)) + 75', 'associative', '17 + (25 + 75)', null],
+    ['7 × 98', 'distributive', '(686)', 'valueOnly'],
+    ['20 − 5 − 3', 'any', '20 − (5 − 3)', 'valueChanged'],
   ])('handles %s, %s: %s', (...row) => {
     expectCase(row);
   });

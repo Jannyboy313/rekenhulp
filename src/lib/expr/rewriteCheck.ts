@@ -96,8 +96,7 @@ function dropRedundantGroups(
 }
 
 /**
- * A single number written differently: `98` → `(100 − 2)`, or `98` → `49 × 2` within a product
- * chain.
+ * A single number written differently: `98` → `(100 − 2)`, or `98` → `49 × 2` within a chain.
  */
 function isRewrittenNumber(from: ChainExpr, to: ChainExpr): boolean {
   if (from.type === 'number') return true;
@@ -160,7 +159,8 @@ function sameNode(a: ChainExpr, b: ChainExpr): boolean {
 }
 
 // Limitation: a step that changes the length of an enclosing chain
-// (7 × 98 + 1 → 7 × 90 + 7 × 8 + 1) is not recognised; no template puts the property below the root.
+// (7 × 98 + 1 → 7 × 90 + 7 × 8 + 1) is not recognised; no template puts the property below
+// the root.
 /** The smallest pair of subtrees that contains every difference; outside it all is identical. */
 function differenceRoot(a: ChainExpr, b: ChainExpr): [ChainExpr, ChainExpr] {
   if (!sameNode(a, b)) return [a, b];
