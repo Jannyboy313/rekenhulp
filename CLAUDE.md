@@ -71,6 +71,10 @@ Known follow-ups for the next plans:
 - Kladblok short-screen thresholds (CSS media queries in `Scratchpad.svelte`: 816 px for 3 rows,
   760 px for 2) are estimates; adjust them after the phone check if the keypad is cut off.
 - Android splash uses the light `background_color` in dark mode (cosmetic).
+- Tips: manual phone check still open: with a long prompt, a tip and an explanation, **Verder**
+  must stay on screen (`.play` has `overflow: hidden`). If not, give `.feedback`
+  `overflow-y: auto` and `justify-content: safe center`. The cross-cutting final review of the
+  tips feature was stopped early; every task bundle was reviewed and fixed individually.
 
 ## Svelte pitfalls
 
