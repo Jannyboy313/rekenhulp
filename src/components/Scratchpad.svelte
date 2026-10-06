@@ -36,16 +36,20 @@
     margin-bottom: auto;
   }
 
-  /* Fixed size: a long number is clipped, never wrapped (spec §3.6). */
+  /* Fixed size: a long number is clipped, never wrapped (spec §3.6). Flex end alignment clips
+     on the left, so the digits just typed stay visible (text-align would clip on the right). */
   .cell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
     height: 3rem;
-    padding: 0 0.75rem;
+    padding: 0 0.5rem;
     overflow: hidden;
     font-size: 1.25rem;
-    text-align: right;
     white-space: nowrap;
     background: var(--surface);
-    border: 2px dashed var(--border);
+    /* Muted, not --border: empty cells must stay visible (≥ 3:1 against the surface). */
+    border: 2px dashed var(--muted);
   }
 
   .cell:active {
