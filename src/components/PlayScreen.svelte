@@ -1,7 +1,10 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { formatDuration } from '../lib/format';
-  import type { QuestionRecord, StepAttempt } from '../lib/results';
+  import { createRng, randomSeed } from '../lib/random';
+  import { isCorrect, type QuestionRecord, type StepAttempt } from '../lib/results';
   import { EMPTY_NOTES, showsScratchpad } from '../lib/scratchpad';
+  import { insertRepeat } from '../lib/session';
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
   import QuestionView from './QuestionView.svelte';
@@ -13,6 +16,18 @@
   }
 
   let { set, questions, onfinish }: Props = $props();
+
+  interface QueueEntry {
+    question: Question;
+    // A wrongly answered question shown again (spec §3.4); it is not recorded again.
+    repeat: boolean;
+  }
+
+  const rng = createRng(randomSeed());
+  // App keys this component on `questions`, so reading the prop once is enough.
+  let queue = $state.raw<QueueEntry[]>(
+    untrack(() => questions.map((question) => ({ question, repeat: false }))),
+  );
 
   const sessionStart = Date.now();
   let now = $state(sessionStart);
@@ -27,7 +42,11 @@
   let attempts: StepAttempt[] = [];
   let records: QuestionRecord[] = [];
 
-  const question = $derived(questions[questionIndex]!);
+  const entry = $derived(queue[questionIndex]!);
+  const question = $derived(entry.question);
+  const originalNumber = $derived(
+    queue.slice(0, questionIndex + 1).filter((queued) => !queued.repeat).length,
+  );
   const step = $derived(question.steps[stepIndex]!);
   const scratchpad = $derived(showsScratchpad(question.topic, step.kind));
 
@@ -48,7 +67,11 @@
     const attempt = { input, result };
     attempts = [...attempts, attempt];
     if (attempts.length === question.steps.length) {
-      records = [...records, { question, attempts, durationMs: Date.now() - questionStart }];
+      const record = { question, attempts, durationMs: Date.now() - questionStart };
+      if (!entry.repeat) records = [...records, record];
+      if (!isCorrect(record)) {
+        queue = insertRepeat(queue, questionIndex, { question, repeat: true }, rng);
+      }
     }
     feedback = attempt;
   }
@@ -57,7 +80,7 @@
     feedback = null;
     if (stepIndex + 1 < question.steps.length) {
       stepIndex++;
-    } else if (questionIndex + 1 < questions.length) {
+    } else if (questionIndex + 1 < queue.length) {
       questionIndex++;
       stepIndex = 0;
       attempts = [];
@@ -80,7 +103,9 @@
 <main class="play">
   <header>
     <span class="set-name">{set.name}</span>
-    <span class="progress">{questionIndex + 1} / {questions.length}</span>
+    <span class="progress">
+      {entry.repeat ? 'Herhaling' : `${originalNumber} / ${questions.length}`}
+    </span>
     <span class="timer">{formatDuration(now - sessionStart)}</span>
     <button type="button" class="stop" onclick={finish}>Stop</button>
   </header>

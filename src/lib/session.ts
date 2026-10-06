@@ -1,4 +1,4 @@
-import { shuffle, type Rng } from './random';
+import { randomInt, shuffle, type Rng } from './random';
 import { GENERATORS } from './topics';
 import type { Generator, PracticeSet, Question, Topic } from './types';
 
@@ -91,4 +91,14 @@ function generateUnique(generate: Generator, rng: Rng, usedKeys: Set<string>): Q
   }
   usedKeys.add(question.key);
   return question;
+}
+
+/**
+ * Puts a wrongly answered question back into the queue (spec §3.4): at a random place after the
+ * current one, but not directly next unless nothing else remains. Returns a new array.
+ */
+export function insertRepeat<T>(queue: readonly T[], currentIndex: number, item: T, rng: Rng): T[] {
+  const earliest = Math.min(currentIndex + 2, queue.length);
+  const index = randomInt(rng, earliest, queue.length);
+  return [...queue.slice(0, index), item, ...queue.slice(index)];
 }

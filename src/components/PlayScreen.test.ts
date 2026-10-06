@@ -38,13 +38,14 @@ describe('PlayScreen', () => {
     await vi.advanceTimersByTimeAsync(600);
 
     expect(screen.getByText('2 / 2')).toBeTruthy();
-    await press('9', 'OK', 'Verder');
+    await press('2', '0', 'OK');
+    await vi.advanceTimersByTimeAsync(600);
 
     expect(onfinish).toHaveBeenCalledOnce();
     const [records, totalMs] = onfinish.mock.calls[0]!;
-    expect(records.map(isCorrect)).toEqual([true, false]);
+    expect(records.map(isCorrect)).toEqual([true, true]);
     expect(records[0]!.durationMs).toBe(2000);
-    expect(totalMs).toBe(2600);
+    expect(totalMs).toBe(3200);
   });
 
   it('shows the elapsed time', async () => {
@@ -99,6 +100,10 @@ describe('PlayScreen', () => {
     expect(screen.getByText('Nee')).toBeTruthy();
     expect(screen.getByText('91 = 7 × 13')).toBeTruthy();
     await press('Verder');
+    // The wrong answer brings the question back; it finishes once answered correctly.
+    expect(onfinish).not.toHaveBeenCalled();
+    await press('Nee');
+    await vi.advanceTimersByTimeAsync(600);
     expect(onfinish).toHaveBeenCalledOnce();
   });
 
@@ -167,9 +172,47 @@ describe('PlayScreen', () => {
     await press('6', '8', '6', 'OK');
     await vi.advanceTimersByTimeAsync(600);
 
+    // One wrong step is enough to bring the whole question back.
+    expect(screen.getByText('Herhaling')).toBeTruthy();
+    await press('Stop');
     expect(onfinish).toHaveBeenCalledOnce();
     const [records] = onfinish.mock.calls[0]!;
     expect(records[0]!.attempts.map((attempt) => attempt.result.correct)).toEqual([false, true]);
     expect(isCorrect(records[0]!)).toBe(false);
+  });
+
+  it('repeats a wrong question until it is correct and records only first attempts', async () => {
+    const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+
+    await press('5', 'OK', 'Verder');
+    // With one question left, the repeat comes after it, not directly next.
+    expect(screen.getByText('4 × 5 = ?')).toBeTruthy();
+    expect(screen.getByText('2 / 2')).toBeTruthy();
+    await press('2', '0', 'OK');
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(screen.getByText('2 × 3 = ?')).toBeTruthy();
+    expect(screen.getByText('Herhaling')).toBeTruthy();
+    await press('7', 'OK', 'Verder');
+
+    expect(screen.getByText('2 × 3 = ?')).toBeTruthy();
+    expect(screen.getByText('Herhaling')).toBeTruthy();
+    await press('6', 'OK');
+    await vi.advanceTimersByTimeAsync(600);
+
+    expect(onfinish).toHaveBeenCalledOnce();
+    const [records] = onfinish.mock.calls[0]!;
+    expect(records.map((record) => record.question.key)).toEqual(['2 × 3 = ?', '4 × 5 = ?']);
+    expect(records.map(isCorrect)).toEqual([false, true]);
+    expect(records[0]!.attempts[0]!.input).toBe('5');
+  });
+
+  it('Stop drops repeats that are still waiting', async () => {
+    const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+    await press('5', 'OK', 'Verder', 'Stop');
+    expect(onfinish).toHaveBeenCalledOnce();
+    expect(onfinish.mock.calls[0]![0].map(isCorrect)).toEqual([false]);
   });
 });

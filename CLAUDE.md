@@ -21,6 +21,9 @@ The kladblok (plan: `docs/superpowers/plans/2026-10-06-kladblok.md`, revised wit
 2×3 scratchpad above the prompt, typed on the number keypad with a spatie in the place of OK
 (numbers separated by spaces); cells are switched by tapping. Notes last one question and are
 hidden for tables and Ja/Nee (spec §3.6).
+Repeat until correct (no plan, spec §3.4): a wrong question returns at a random later place in
+the queue (`insertRepeat` in `lib/session.ts`, queue in `PlayScreen.svelte`) until it is correct;
+repeats show "Herhaling" and are not recorded, so the results cover first attempts only.
 Every other set gets its own implementation plan; do not start one until the user says so. To add a
 set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.

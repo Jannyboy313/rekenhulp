@@ -1,6 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRng } from './random';
-import { allocateQuotas, buildSession, MAX_UNIQUE_ATTEMPTS, tablesCount } from './session';
+import {
+  allocateQuotas,
+  buildSession,
+  insertRepeat,
+  MAX_UNIQUE_ATTEMPTS,
+  tablesCount,
+} from './session';
 import {
   MEASUREMENT_SET,
   NUMBERS_SET,
@@ -203,5 +209,34 @@ describe('buildSession for Bewerkingen', () => {
     const questions = buildSession(OPERATIONS_SET, size, createRng(size));
     expect(questions).toHaveLength(size);
     expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
+describe('insertRepeat', () => {
+  const queue = ['a', 'b', 'c', 'd', 'e'];
+
+  it('never puts the repeat directly next when other questions remain', () => {
+    const rng = createRng(7);
+    const seen = new Set<number>();
+    for (let i = 0; i < 1000; i++) {
+      const result = insertRepeat(queue, 1, 'x', rng);
+      expect(result.filter((item) => item !== 'x')).toEqual(queue);
+      seen.add(result.indexOf('x'));
+    }
+    // After 'b' (index 1) and at least one other question: indices 3, 4 or 5.
+    expect([...seen].sort()).toEqual([3, 4, 5]);
+  });
+
+  it('appends the repeat when nothing else remains', () => {
+    expect(insertRepeat(queue, 4, 'x', createRng(1))).toEqual([...queue, 'x']);
+  });
+
+  it('places the repeat after the only remaining question', () => {
+    expect(insertRepeat(queue, 3, 'x', createRng(1))).toEqual([...queue, 'x']);
+  });
+
+  it('does not modify the queue', () => {
+    insertRepeat(queue, 1, 'x', createRng(1));
+    expect(queue).toEqual(['a', 'b', 'c', 'd', 'e']);
   });
 });
