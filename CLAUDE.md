@@ -13,6 +13,9 @@ Implemented sets: **Tafels** (plan: `docs/superpowers/plans/2026-10-05-beta-tafe
 (plan: `docs/superpowers/plans/2026-10-05-meten.md`), **Verhoudingen** v1
 (plan: `docs/superpowers/plans/2026-10-05-verhoudingen.md`) and **Getallen & delers**
 (plan: `docs/superpowers/plans/2026-10-06-getallen-delers.md`).
+UI feedback round 1 (plan: `docs/superpowers/plans/2026-10-06-feedback-round-1.md`) added stacked
+fractions everywhere, the breuk key with a fraction template and mixed numbers, counts 5–50,
+a light red Stop button and keys that act on press.
 Every other set gets its own implementation plan; do not start one until the user says so. To add a
 set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.
@@ -45,8 +48,9 @@ Workflow per set (new session each time):
 5. Update the Status column above when the set is done.
 
 Known follow-ups for the next plans:
-- **Bewerkingen (`expression` answer kind):** add an `expression` entry to `INPUT_MODELS`
-  (`lib/inputModels.ts`, with the "Ongeldige som" message) and extend `lib/expr/parser.ts`,
+- **Bewerkingen (`expression` answer kind):** add `expression: string` to `KeypadStates` and an
+  `expression` entry to `INPUT_MODELS` (`lib/inputModels.ts`, a `textModel` with the "Ongeldige
+  som" message), and extend `lib/expr/parser.ts`,
   which so far only parses products of powers (`×`, `^`) over numbers, to the full §7 grammar.
   `QuestionView`, `Feedback` and `ResultScreen` need no change for a new keypad kind. The parser
   builds a left-associative binary `×` tree, while spec §7 wants n-ary `Sum`/`Product` chains and
@@ -54,6 +58,13 @@ Known follow-ups for the next plans:
   that currently rejects `(2)`.
 - Focus falls back to `body` after a screen or question change (keyboard/screen-reader users only).
 - Android splash uses the light `background_color` in dark mode (cosmetic).
+
+## Svelte pitfalls
+
+- Inline markup with stacked fractions (`MathText`, `KeypadAnswer`) is whitespace-sensitive: a line
+  break between tags renders as a space, and Svelte trims spaces at the edges of an element's
+  content, so write a deliberate edge space as an expression (`{' en '}`). Tests assert exact
+  `textContent` to catch this.
 
 ## PWA pitfalls
 
@@ -106,14 +117,16 @@ Everything else from the global allowlist still applies (no `git push`, `git che
 ```
 src/
   App.svelte            state machine: sets → setup → playing → results
-  components/           SetOverview, SetupScreen, PlayScreen, QuestionView, Keypad, Feedback,
-                        ResultScreen
+  components/           SetOverview, SetupScreen, PlayScreen, QuestionView, KeypadAnswer
+                        (answer field + error + keypad), Keypad, Feedback, ResultScreen,
+                        MathText + Fraction (stacked fractions), press.ts (act-on-press action)
   lib/
     random.ts           seedable RNG; every generator takes an rng argument
     steps.ts            step factories (number, fraction, boolean, factorization), parseAnswer
                         and parseFactorization — all answer parsing and checking goes through here
-    keypadInput.ts      pure key → input reducers (numbers/fractions, factorizations)
-    inputModels.ts      per answer kind: keys, reducer, validate, display
+    keypadInput.ts      pure key → input reducers (numbers, fraction templates, factorizations)
+    inputModels.ts      per answer kind: keys, typing state, reducer, validate, display, view
+    fractionText.ts     splits text into plain runs and (mixed) fractions for stacked display
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary
     sets.ts             practice sets (config): topics + weights + tables share
