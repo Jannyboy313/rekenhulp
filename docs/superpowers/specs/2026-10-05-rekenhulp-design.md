@@ -340,6 +340,12 @@ topic answers with a number unless stated otherwise.
   above) has exponent 3 in 25% of the exercises. With a negative base, these ranges apply to its
   absolute value.
 - Every division is exact, including its intermediate results.
+- No trivial parts: a divisor and a quotient have an absolute value of at least 2 (no `x : 1`,
+  no `x : x`), no factor of `×` has the value 1 or −1, and no parenthesized part has the
+  value 0 (no `(7 − 7)`).
+- The power base is spread evenly: per exercise, the exponent (2 or 3) and then the absolute
+  value of the base (`[2, 12]` or `[2, 5]`) are drawn first, and the exercise is redrawn until
+  its power has exactly that base. Without this, `(a + b)²` would mostly get bases 10–12.
 - The answer is an integer with `|answer| ≤ 500`. Negative answers are allowed.
 - Values are drawn at random and the exercise is redrawn (same template) until all of the above
   hold.
@@ -981,6 +987,8 @@ These are assumptions made while writing the spec. Each one is easy to change.
     checker review: parentheses that cannot matter are ignored (`(7 × 100) − (7 × 2)` is
     valid), a number only written differently gets its own reason ("Hier is nog geen
     eigenschap toegepast"), and a term `F` counts as `F × 1` (`15 × 100 − 15` is valid).
+    Confirmed after the generator review: order-of-operations exercises have no trivial parts
+    (`x : 1`, `x : x`, `× 1`, `(7 − 7)`) and an evenly spread power base (§5.8).
 
 ## 12. Roadmap (not in v1)
 
