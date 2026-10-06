@@ -3,7 +3,8 @@
 Offline PWA for practising mental arithmetic on a phone, without a calculator. No accounts,
 no tracking, no network traffic after the first load.
 
-Beta: only the **Tafels** practice set (tables 2–15 without 10).
+Practice sets: **Tafels**, **Meten**, **Verhoudingen**, **Getallen & delers** and
+**Bewerkingen**. The roadmap is in `CLAUDE.md`, the design in `docs/superpowers/specs/`.
 
 ## Development
 

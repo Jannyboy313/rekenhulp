@@ -2,6 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> **Status (2026-10-06): executed.** During execution the reviews led to several refinements that
+> were agreed with the user and written into the spec (§5.8, §5.9, §5.11, §7.1). Where this plan
+> and the spec or the code differ (value ranges, feedback messages, de-duplication keys, the
+> checker's `noProperty` reason), the spec and the code are authoritative; this plan is history.
+
 **Goal:** Add the **Bewerkingen** practice set with the topics `orderOfOperations` (spec §5.8), `smartCalculation` (§5.9) and `properties` (§5.11, weight 0.5, two steps). As in every set except Tafels, 15% of the exercises are tables.
 
 **Architecture:**

@@ -86,7 +86,8 @@ deliberate longer sessions.
   no time limit) and a **Stop** button. Stop is light red (the wrong-answer background with
   the wrong-answer text colour), so it stands apart from the neutral buttons.
 - Stop ends the session immediately and goes to results. Results then cover only the answered
-  exercises; the current, unanswered exercise is not counted.
+  exercises; the current, unanswered exercise is not counted. A two-step exercise counts as
+  answered only after its last step, so Stop after step 1 drops it.
 - The time spent on each exercise is recorded, measured from when it is shown until the final
   submission.
 - Most exercises show a kladblok (scratchpad) above the prompt (§3.6).
