@@ -117,9 +117,9 @@ deliberate longer sessions.
 
 ### 3.6 Kladblok (scratchpad)
 
-A small scratchpad for remembering intermediate results while playing. It holds numbers,
-separated by spaces, and uses the standard number keypad with a **spatie** key in the place of
-OK.
+A small scratchpad for remembering intermediate results while playing. It holds short sums and
+numbers, separated by spaces (`12×7=84 3,5`), and uses the expression keypad (§6) extended
+with `,`, `=` and a **spatie** key in the place of OK.
 
 - **Layout:** 6 cells in a grid of 2 columns and 3 rows, each 48 px high, between the header
   and the prompt. The size is fixed: cells never grow, wrap to more lines or scroll.
@@ -134,24 +134,43 @@ OK.
 - **Focus:** tapping a cell makes it active; tapping the answer field, or a fraction slot in
   it, makes the answer field active again. Tapping is the only way to switch. The active
   field has a `--primary` border. Every new step starts with the answer field active.
-- **While a cell is active:**
-  - the keypad shows the number keys (`0–9`, `−`, `,`, `⌫`), whatever the answer kind, so it
-    loses the breuk key for fraction steps and changes from `× ^` to `− ,` for factorization
-  - OK is replaced by **spatie**: same place and width (2 columns), the normal key colour,
-    acts on press like the other keys, always enabled
-  - a cell is a list of numbers separated by single spaces (`12 7 84`). Every key except `⌫`
-    edits the last number with the number reducer, so `−` and `,` apply to that number only
-    and each number has at most 12 digits. A spatie is ignored unless the last number has a
-    digit: never a leading space, never two in a row. `⌫` deletes the last character,
-    a space included. A cell holds at most 40 characters; extra keys are ignored
-- A cell is never validated. It is shown like the answer field: as typed, with `−` for the
-  minus (`−5`, `0,25 −3`, `2500`) and a trailing space kept visible. There is no button to
-  clear the scratchpad.
+- **While a cell is active**, the keypad is the kladblok keypad, whatever the answer kind: the
+  expression keys plus `,`, `=` and the spatie, in 4 columns and 5 rows (the same height as
+  the other keypads). The spatie takes one column, has the normal key colour, acts on press
+  like the other keys and is always enabled.
+
+  ```
+  7  8  9  +
+  4  5  6  −
+  1  2  3  ×
+  (  0  )  :
+  ⌫  ,  =  ␣
+  ```
+
+- **Typing in a cell.** A cell is a list of items separated by single spaces; an item is a
+  number or a short sum such as `12×7=84` or `−3+(4,5×2)`. A number is digits with at most one
+  comma (at most 12 characters, as in the answer field); the sign is not counted. Per key, for
+  the last item:
+  - a digit: not directly after `)`
+  - `,`: not directly after `)`, and only when the current number has no comma yet
+  - `+`, `×`, `:`: only after a digit or `)`
+  - `−`: after a digit or `)` it is the operator; at the start of an item, after `(` or after
+    `=` it is the minus sign of the next number (`−5`, `(−3)`, `3−8=−5`); elsewhere ignored
+  - `(`: at the start of an item, after an operator, `(`, `=` or a minus sign
+  - `)`: only after a digit or `)` while the item has more `(` than `)`
+  - `=`: only after a digit or `)`, at most once per item
+  - spatie: only after a digit or `)`: never a leading space, never two in a row
+  - `⌫` deletes the last character, a space included
+  - a cell holds at most 40 characters; extra keys are ignored
+- A cell is never validated. It is shown as typed, compact: no spaces around operators, so a
+  space always separates items. `-` is shown as `−` (`12×7=84`, `−5 0,25`, `3−8=−5`), and a
+  trailing space stays visible. There is no button to clear the scratchpad.
 - **Lifetime:** the notes belong to one question. They stay across the steps of a two-step
   question, including the feedback in between, and are empty again at the next question. The
   feedback screen and the results do not show the scratchpad. Nothing is stored.
 - **Accessibility:** cells are buttons labelled `Kladblok vak 1: 900` (or `leeg`), with
-  `aria-pressed` for the active cell. The spatie key is labelled `spatie`.
+  `aria-pressed` for the active cell. The spatie key shows `␣` and is labelled `spatie`; `=`
+  is labelled `is`.
 - To make room, keypad keys are 3 rem (48 px) high instead of 3.5 rem.
 
 ## 4. Practice sets & session composition
@@ -1001,6 +1020,10 @@ These are assumptions made while writing the spec. Each one is easy to change.
     notes last one question; hidden for tables and Ja/Nee; keys 3 rem high; on short screens
     only the top row (§3.6). Revised 2026-10-06: 6 cells in 2 columns × 3 rows, rows dropped
     on short screens; OK becomes a spatie (numbers separated by spaces), no Volgende (§3.6).
+    Revised again 2026-10-06: the kladblok uses the expression keypad plus `,`, `=` and a
+    one-column spatie shown as `␣`, so a cell holds short sums (`12×7=84`); a minus sign at the
+    start of a number stays possible; cells are shown compact, without spaces around
+    operators (§3.6).
 16. ~~Bewerkingen~~ — confirmed 2026-10-06: the expression keypad has only `0–9`, `+ − × :`,
     `( )` and `⌫` in 4 columns, and only the rewrite step uses it; every other keypad keeps 3
     columns. Removing parentheses without changing the order of evaluation is not a step
