@@ -110,8 +110,8 @@ src/
                         ResultScreen
   lib/
     random.ts           seedable RNG; every generator takes an rng argument
-    steps.ts            step factories (numberStep, fractionStep) and parseAnswer — all answer
-                        parsing and checking goes through here
+    steps.ts            step factories (number, fraction, boolean, factorization), parseAnswer
+                        and parseFactorization — all answer parsing and checking goes through here
     keypadInput.ts      pure key → input reducers (numbers/fractions, factorizations)
     inputModels.ts      per answer kind: keys, reducer, validate, display
     primes.ts           gcd, lcm, isPrime, prime factorization
