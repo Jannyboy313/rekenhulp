@@ -1,7 +1,7 @@
 import type { Rng } from './random';
 
-/** Later plans add 'boolean' | 'expression' | 'factorization' (spec §6). */
-export type AnswerKind = 'number' | 'fraction';
+/** Bewerkingen adds 'expression' (spec §6). */
+export type AnswerKind = 'number' | 'fraction' | 'boolean' | 'factorization';
 
 /** Topics of the implemented sets. Each later plan adds the topics of its set (spec §4.1). */
 export type Topic =

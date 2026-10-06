@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { fromInteger, rational } from './rational';
-import { fractionStep, numberStep, parseAnswer } from './steps';
+import {
+  booleanStep,
+  factorizationStep,
+  fractionStep,
+  NO,
+  numberStep,
+  parseAnswer,
+  parseFactorization,
+  YES,
+} from './steps';
 
 describe('numberStep', () => {
   const step = numberStep({
@@ -118,5 +127,81 @@ describe('fractionStep', () => {
   it('shows only the fraction when there is no finite decimal', () => {
     const third = fractionStep({ prompt: '1 : 3 = ?', answer: rational(1n, 3n) });
     expect(third.check('1/3')).toEqual({ correct: true, expected: '1/3' });
+  });
+});
+
+describe('booleanStep', () => {
+  const step = booleanStep({
+    prompt: 'Is 91 een priemgetal?',
+    answer: false,
+    explanation: '91 = 7 × 13',
+  });
+
+  it('is a boolean step answered with Ja or Nee', () => {
+    expect(step.kind).toBe('boolean');
+    expect(step.prompt).toBe('Is 91 een priemgetal?');
+    expect([YES, NO]).toEqual(['Ja', 'Nee']);
+  });
+
+  it('accepts the right label and reports the expected one', () => {
+    expect(step.check(NO)).toEqual({ correct: true, expected: 'Nee', explanation: '91 = 7 × 13' });
+    expect(step.check(YES)).toEqual({ correct: false, expected: 'Nee', explanation: '91 = 7 × 13' });
+  });
+
+  it('shows Ja as the expected answer for a true statement', () => {
+    expect(booleanStep({ prompt: 'Is 13 een priemgetal?', answer: true }).check(NO).expected).toBe(
+      'Ja',
+    );
+  });
+});
+
+describe('parseFactorization', () => {
+  it('collects every base with its exponent', () => {
+    expect(parseFactorization('2^2×3×7')).toEqual([
+      { base: 2n, exponent: 2n },
+      { base: 3n, exponent: 1n },
+      { base: 7n, exponent: 1n },
+    ]);
+    expect(parseFactorization('84')).toEqual([{ base: 84n, exponent: 1n }]);
+  });
+
+  it.each(['', '2×', '2^', '2,5×2', '2^1,5', '2+3', '(2)'])('rejects %j', (input) => {
+    expect(parseFactorization(input)).toBeNull();
+  });
+});
+
+describe('factorizationStep', () => {
+  const step = factorizationStep({
+    prompt: 'Ontbind 84 in priemfactoren',
+    value: 84,
+    explanation: '84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7',
+  });
+
+  it('is a factorization step that shows the canonical form', () => {
+    expect(step.kind).toBe('factorization');
+    expect(step.check('')).toEqual({
+      correct: false,
+      expected: '2² × 3 × 7',
+      explanation: '84 : 2 = 42, 42 : 2 = 21, 21 : 3 = 7',
+    });
+  });
+
+  it.each(['2×2×3×7', '2^2×3×7', '7×3×2^2', '3×2^1×7×2'])('accepts %j', (input) => {
+    expect(step.check(input).correct).toBe(true);
+  });
+
+  it.each([
+    '4×3×7',
+    '2^2×21',
+    '84',
+    '2^2×3×7×1',
+    '2^0×2^2×3×7',
+    '2^3×3×7',
+    '2×3×7',
+    '2×',
+    '',
+    '2^99999999999999999999',
+  ])('rejects %j', (input) => {
+    expect(step.check(input).correct).toBe(false);
   });
 });
