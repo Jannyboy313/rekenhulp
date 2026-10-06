@@ -1,5 +1,5 @@
 export type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
-/** ' ' is the kladblok's spatie; the answer reducers ignore it. */
+/** '=' and ' ' (the spatie) are kladblok keys only; the answer reducers ignore them. */
 export type KeypadKey =
   | DigitKey
   | ','
@@ -11,6 +11,7 @@ export type KeypadKey =
   | '('
   | ')'
   | '/'
+  | '='
   | ' '
   | 'backspace';
 
@@ -153,7 +154,7 @@ export function applyExpressionKey(value: string, key: KeypadKey): string {
   if (EXPRESSION_OPERATORS.has(key)) return afterOperand ? value + key : value;
   if (key === '(') return afterOperand ? value : value + key;
   if (key === ')') return afterOperand && openParentheses(value) > 0 ? value + key : value;
-  // The comma, ^, the breuk key and the spatie are not expression keys.
+  // The comma, ^, the breuk key and the kladblok's = and spatie are not expression keys.
   return value;
 }
 

@@ -1,7 +1,7 @@
 <script lang="ts" generics="S">
   import type { InputModel } from '../lib/inputModels';
   import type { FractionSlot, KeypadKey } from '../lib/keypadInput';
-  import { NOTE_KEYS, type ScratchpadInput } from '../lib/scratchpad';
+  import { NOTE_COLUMNS, NOTE_KEYS, type ScratchpadInput } from '../lib/scratchpad';
   import Fraction from './Fraction.svelte';
   import Keypad from './Keypad.svelte';
   import { press } from './press';
@@ -91,7 +91,7 @@
 <p class="error" role="alert">{error ?? ''}</p>
 <Keypad
   keys={inNote ? NOTE_KEYS : model.keys}
-  columns={inNote ? undefined : model.columns}
+  columns={inNote ? NOTE_COLUMNS : model.columns}
   canSubmit={model.canSubmit(value)}
   onkey={handleKey}
   onsubmit={inNote ? undefined : submit}

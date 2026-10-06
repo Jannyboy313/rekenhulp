@@ -18,8 +18,8 @@ UI feedback round 1 (plan: `docs/superpowers/plans/2026-10-06-feedback-round-1.m
 fractions everywhere, the breuk key with a fraction template and mixed numbers, counts 5–50,
 a light red Stop button and keys that act on press.
 The kladblok (plan: `docs/superpowers/plans/2026-10-06-kladblok.md`, revised without a plan) is a
-2×3 scratchpad above the prompt, typed on the number keypad with a spatie in the place of OK
-(numbers separated by spaces); cells are switched by tapping. Notes last one question and are
+2×3 scratchpad above the prompt, typed on the expression keypad plus `,`, `=` and a `␣` spatie
+(numbers and short sums like `12×7=84`, separated by spaces); cells are switched by tapping. Notes last one question and are
 hidden for tables and Ja/Nee (spec §3.6).
 Repeat until correct (no plan, spec §3.4): a wrong question returns at a random later place in
 the queue (`insertRepeat` in `lib/session.ts`, queue in `PlayScreen.svelte`) until it is correct;
@@ -139,7 +139,8 @@ src/
                         expressions)
     inputModels.ts      per answer kind: keys, columns, typing state, reducer, validate,
                         display, view
-    scratchpad.ts       kladblok: cell count, keys (spatie), typing, when shown
+    scratchpad.ts       kladblok: cell count, keys (expression keys + , = spatie), typing,
+                        when shown
     fractionText.ts     splits text into plain runs and (mixed) fractions for stacked display
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary

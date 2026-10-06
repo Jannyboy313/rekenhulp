@@ -286,15 +286,15 @@ describe('QuestionView', () => {
       expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
     });
 
-    it('types into a tapped cell and swaps OK for a spatie', async () => {
+    it('types sums into a tapped cell and swaps OK for a spatie', async () => {
       render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
-      await press(/^Kladblok vak 2:/, '9', '0', '0', 'min');
+      await press(/^Kladblok vak 2:/, 'min', '9', '0', 'keer', '2');
       expect(cell(2).getAttribute('aria-pressed')).toBe('true');
-      expect(cell(2).getAttribute('aria-label')).toBe('Kladblok vak 2: −900');
+      expect(cell(2).getAttribute('aria-label')).toBe('Kladblok vak 2: −90×2');
       await press('wissen');
-      expect(cell(2).textContent).toBe('−90');
-      await press('spatie', '7', 'min');
-      expect(cell(2).textContent).toBe('−90 −7');
+      expect(cell(2).textContent).toBe('−90×');
+      await press('3', 'is', 'min', '2', '7', '0', 'spatie', '1', 'komma', '5');
+      expect(cell(2).textContent).toBe('−90×3=−270 1,5');
       expect(answerText()).toBe('…');
       expect(screen.getByLabelText('Jouw antwoord').classList.contains('focused')).toBe(false);
       expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
@@ -350,7 +350,7 @@ describe('QuestionView', () => {
       expect(screen.getByRole('button', { name: 'breuk' })).toBeTruthy();
     });
 
-    it('swaps in the number keys for fraction and factorization steps', async () => {
+    it('swaps in the kladblok keys for fraction and factorization steps', async () => {
       const percent = fractionStep({
         prompt: '10 is ?% van 80',
         answer: rational(25n, 2n),
@@ -369,19 +369,32 @@ describe('QuestionView', () => {
       const factorization = factorizationStep({ prompt: 'Ontbind 84 in priemfactoren', value: 84 });
       render(QuestionView, { props: { step: factorization, scratchpad: true, onanswer: vi.fn() } });
       await press(/^Kladblok vak 1:/);
-      expect(screen.queryByRole('button', { name: 'keer' })).toBeNull();
-      await press('min', '2', 'komma', '5');
-      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5');
+      expect(screen.queryByRole('button', { name: 'tot de macht' })).toBeNull();
+      await press('min', '2', 'komma', '5', 'plus', '1');
+      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5+1');
     });
 
-    it('swaps the 4-column expression keys for the 3-column number keys', async () => {
+    it('shows the kladblok keys in 4 columns with the spatie in the last one', async () => {
+      function columns(): string {
+        return document.querySelector<HTMLElement>('.keypad')!.style.getPropertyValue('--columns');
+      }
+      const { unmount } = render(QuestionView, {
+        props: { step, scratchpad: true, onanswer: vi.fn() },
+      });
+      expect(columns()).toBe('3');
+      await press(/^Kladblok vak 1:/);
+      expect(columns()).toBe('4');
+      unmount();
+
       render(QuestionView, { props: { step: rewrite, scratchpad: true, onanswer: vi.fn() } });
       expect(screen.getByRole('button', { name: 'OK' }).style.gridColumn).toBe('span 3');
+      expect(screen.queryByRole('button', { name: 'is' })).toBeNull();
       await press(/^Kladblok vak 1:/);
-      expect(screen.queryByRole('button', { name: 'plus' })).toBeNull();
-      expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('span 2');
+      expect(columns()).toBe('4');
+      expect(screen.getByRole('button', { name: 'is' })).toBeTruthy();
+      expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('');
       await press('Naar antwoordveld');
-      expect(screen.getByRole('button', { name: 'plus' })).toBeTruthy();
+      expect(screen.queryByRole('button', { name: 'is' })).toBeNull();
     });
   });
 });

@@ -13,7 +13,7 @@
   let { notes, active, onselect }: Props = $props();
 </script>
 
-<!-- The kladblok (spec §3.6): fixed cells for numbers typed on the keypad. -->
+<!-- The kladblok (spec §3.6): fixed cells for numbers and short sums typed on the keypad. -->
 <div class="scratchpad" role="group" aria-label="Kladblok">
   {#each notes as note, index (index)}
     <button
