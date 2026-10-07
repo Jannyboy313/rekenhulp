@@ -1,5 +1,5 @@
 import { formatInteger } from '../format';
-import { pick, type Rng } from '../random';
+import { drawUntil, pick, type Rng } from '../random';
 import { equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
@@ -46,9 +46,18 @@ export function productCheckTip(
   };
 }
 
-export function generateTables(rng: Rng): Question {
-  const a = pick(rng, TABLE_FACTORS);
-  const b = pick(rng, TABLE_FACTORS);
+/**
+ * At least one factor is a chosen table (spec §5.1). Redrawing the pair keeps every allowed pair
+ * equally likely; with all tables chosen the first draw is always accepted.
+ */
+export function generateTables(rng: Rng, chosen: readonly number[] = TABLE_FACTORS): Question {
+  if (!chosen.some((table) => TABLE_FACTORS.includes(table))) {
+    throw new RangeError('Choose at least one table');
+  }
+  const [a, b] = drawUntil((): [number, number] | null => {
+    const pair: [number, number] = [pick(rng, TABLE_FACTORS), pick(rng, TABLE_FACTORS)];
+    return pair.some((factor) => chosen.includes(factor)) ? pair : null;
+  });
   const product = a * b;
   const [fa, fb, fp] = [formatInteger(a), formatInteger(b), formatInteger(product)];
   const fact = `${fa} × ${fb} = ${fp}`;

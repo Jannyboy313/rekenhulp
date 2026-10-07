@@ -1,15 +1,31 @@
 <script lang="ts">
-  import { DEFAULT_SESSION_SIZE, describeSetTopics, SESSION_SIZES } from '../lib/sets';
+  import {
+    choosesTables,
+    DEFAULT_SESSION_SIZE,
+    describeSetTopics,
+    SESSION_SIZES,
+  } from '../lib/sets';
+  import { TABLE_FACTORS } from '../lib/topics/tables';
   import type { PracticeSet } from '../lib/types';
 
   interface Props {
     set: PracticeSet;
     size?: number;
+    /** Chosen tables; used by the Tafels set only (spec §3.2). */
+    tables?: number[];
     onstart: () => void;
     onback: () => void;
   }
 
-  let { set, size = $bindable(DEFAULT_SESSION_SIZE), onstart, onback }: Props = $props();
+  let {
+    set,
+    size = $bindable(DEFAULT_SESSION_SIZE),
+    tables = $bindable([...TABLE_FACTORS]),
+    onstart,
+    onback,
+  }: Props = $props();
+
+  const canStart = $derived(!choosesTables(set) || tables.length > 0);
 </script>
 
 <main class="setup">
@@ -18,14 +34,34 @@
     <h1>{set.name}</h1>
   </header>
 
-  <section>
-    <h2>Onderwerpen</h2>
-    <ul>
-      {#each describeSetTopics(set) as label (label)}
-        <li>{label}</li>
-      {/each}
-    </ul>
-  </section>
+  {#if choosesTables(set)}
+    <section>
+      <div class="choice-header">
+        <h2 id="tables-heading">Kies tafels</h2>
+        <button type="button" class="secondary quick" onclick={() => (tables = [...TABLE_FACTORS])}>
+          Alle
+        </button>
+        <button type="button" class="secondary quick" onclick={() => (tables = [])}>Geen</button>
+      </div>
+      <div class="tables" role="group" aria-labelledby="tables-heading">
+        {#each TABLE_FACTORS as table (table)}
+          <label>
+            <input type="checkbox" name="tables" value={table} bind:group={tables} />
+            <span>{table}</span>
+          </label>
+        {/each}
+      </div>
+    </section>
+  {:else}
+    <section>
+      <h2>Onderwerpen</h2>
+      <ul>
+        {#each describeSetTopics(set) as label (label)}
+          <li>{label}</li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
 
   <fieldset>
     <legend>Aantal opgaven</legend>
@@ -39,7 +75,7 @@
     </div>
   </fieldset>
 
-  <button type="button" class="primary start" onclick={onstart}>Start</button>
+  <button type="button" class="primary start" disabled={!canStart} onclick={onstart}>Start</button>
 </main>
 
 <style>
@@ -78,8 +114,30 @@
     padding: 0;
   }
 
+  .choice-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .choice-header h2 {
+    margin-bottom: 0;
+    margin-right: auto;
+  }
+
+  .quick {
+    min-height: 2.5rem;
+  }
+
   .sizes {
     display: grid;
+    gap: 0.5rem;
+  }
+
+  .tables {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     gap: 0.5rem;
   }
 

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  choosesTables,
   DEFAULT_SESSION_SIZE,
   describeSetTopics,
   FRACTIONS_SET,
@@ -103,6 +104,12 @@ describe('practice sets', () => {
   it('offers the session sizes from the spec with 15 as default', () => {
     expect(SESSION_SIZES).toEqual([5, 10, 15, 25, 50]);
     expect(DEFAULT_SESSION_SIZE).toBe(15);
+  });
+});
+
+describe('choosesTables', () => {
+  it('is true for the Tafels set only', () => {
+    expect(PRACTICE_SETS.filter(choosesTables)).toEqual([TABLES_SET]);
   });
 });
 

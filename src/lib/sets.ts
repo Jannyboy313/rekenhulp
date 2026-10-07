@@ -104,8 +104,13 @@ export const PRACTICE_SETS: readonly PracticeSet[] = [
   FRACTIONS_SET,
 ];
 
+/** Only the Tafels set lets the user choose which tables to practise (spec §3.2). */
+export function choosesTables(set: PracticeSet): boolean {
+  return set.tablesPercent === 100;
+}
+
 export function describeSetTopics(set: PracticeSet): string[] {
-  if (set.tablesPercent === 100) return [TOPIC_LABELS.tables];
+  if (choosesTables(set)) return [TOPIC_LABELS.tables];
   const labels = set.topics.map(({ topic }) => TOPIC_LABELS[topic]);
   return set.tablesPercent > 0 ? [...labels, `${set.tablesPercent}% tafels`] : labels;
 }

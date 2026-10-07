@@ -1,5 +1,7 @@
 import { randomInt, shuffle, type Rng } from './random';
+import { choosesTables } from './sets';
 import { GENERATORS } from './topics';
+import { generateTables } from './topics/tables';
 import type { Generator, PracticeSet, Question, Topic } from './types';
 
 export const MAX_UNIQUE_ATTEMPTS = 20;
@@ -59,6 +61,15 @@ export function allocateQuotas<K>(
   }
 
   return new Map(shares.map((share) => [share.key, share.count]));
+}
+
+/** The Tafels set practises only the chosen tables; other sets mix in all of them (spec §3.2). */
+export function generatorsFor(
+  set: PracticeSet,
+  tables: readonly number[],
+): Record<Topic, Generator> {
+  if (!choosesTables(set)) return GENERATORS;
+  return { ...GENERATORS, tables: (rng) => generateTables(rng, tables) };
 }
 
 export function buildSession(

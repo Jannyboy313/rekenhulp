@@ -73,10 +73,31 @@ describe('App', () => {
     render(App);
     await click(/Tafels/);
     expect(screen.getByRole('heading', { name: 'Tafels' })).toBeTruthy();
-    expect(screen.getByText('Tafels van 2 t/m 15 (zonder 10)')).toBeTruthy();
-    expect((screen.getByLabelText('15') as HTMLInputElement).checked).toBe(true);
+    expect(screen.getByRole('heading', { name: 'Kies tafels' })).toBeTruthy();
+    expect(screen.getByRole<HTMLInputElement>('radio', { name: '15' }).checked).toBe(true);
     await click('Start');
     expect(screen.getByText('1 / 15')).toBeTruthy();
+  });
+
+  it('practises only the chosen tables, also after Opnieuw and Menu', async () => {
+    render(App);
+    await click(/Tafels/);
+    await click('Geen');
+    await fireEvent.click(screen.getByRole('checkbox', { name: '7' }));
+    await click('Start');
+    for (let round = 0; round < 10; round++) {
+      // Every prompt shows the table itself or a multiple of it (the product).
+      const prompt = document.querySelector('.prompt')!.textContent!;
+      const numbers = [...prompt.matchAll(/\d+/g)].map((m) => Number(m[0]));
+      expect(numbers.some((n) => n % 7 === 0)).toBe(true);
+      await click('Stop');
+      await click('Opnieuw');
+    }
+    await click('Stop');
+    await click('Menu');
+    await click(/Tafels/);
+    const checked = screen.getAllByRole<HTMLInputElement>('checkbox').filter((box) => box.checked);
+    expect(checked.map((box) => box.value)).toEqual(['7']);
   });
 
   it('uses the chosen session size and keeps it after Menu', async () => {

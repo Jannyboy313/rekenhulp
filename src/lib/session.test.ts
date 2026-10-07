@@ -3,6 +3,7 @@ import { createRng } from './random';
 import {
   allocateQuotas,
   buildSession,
+  generatorsFor,
   insertRepeat,
   MAX_UNIQUE_ATTEMPTS,
   tablesCount,
@@ -140,6 +141,24 @@ describe('buildSession', () => {
     });
     expect(questions).toHaveLength(15);
     expect(generate).toHaveBeenCalledTimes(1 + 14 * MAX_UNIQUE_ATTEMPTS);
+  });
+});
+
+describe('generatorsFor', () => {
+  it('limits the Tafels set to the chosen tables', () => {
+    const questions = buildSession(TABLES_SET, 50, createRng(4), generatorsFor(TABLES_SET, [7]));
+    expect(questions).toHaveLength(50);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(50);
+    for (const question of questions) {
+      const numbers = [...question.steps[0]!.prompt.matchAll(/\d+/g)].map((m) => Number(m[0]));
+      numbers.push(Number(question.steps[0]!.check('').expected));
+      // The two smallest numbers are the factors, the largest is the product.
+      expect(numbers.sort((x, y) => x - y).slice(0, 2)).toContain(7);
+    }
+  });
+
+  it('keeps all tables in the other sets', () => {
+    expect(generatorsFor(MEASUREMENT_SET, [7])).toBe(GENERATORS);
   });
 });
 

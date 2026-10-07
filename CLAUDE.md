@@ -31,6 +31,9 @@ Tips (plan: `docs/superpowers/plans/2026-10-06-tips.md`, spec §3.4.1): a wrong 
 Dutch tip that names the likely mistake (`CheckResult.tip`). Each generator passes a `diagnose`
 to its step; number steps fall back to a factor-of-ten tip. A tip may only claim what is certain:
 it fires when the answer equals exactly what that mistake produces.
+Table choice (no plan, spec §3.2, §5.1): the Tafels setup screen has toggles per table with
+Alle/Geen; `generatorsFor` in `lib/session.ts` passes the choice to `generateTables`, which redraws
+pairs until one factor is chosen. The 15% tables in other sets always use all tables.
 Every other set gets its own implementation plan; do not start one until the user says so. To add a
 set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.

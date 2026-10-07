@@ -100,6 +100,46 @@ describe('generateTables', () => {
   });
 });
 
+describe('generateTables with chosen tables', () => {
+  function factorsOf(question: Question): [number, number] {
+    const numbers = [...question.steps[0]!.prompt.matchAll(/\d+/g)].map((m) => Number(m[0]));
+    numbers.push(Number(expectedOf(question)));
+    const [a, b] = numbers.sort((x, y) => x - y) as [number, number, number];
+    return [a, b];
+  }
+
+  it('gives the same questions as without a choice when all tables are chosen', () => {
+    const rng = createRng(1);
+    const chosen = Array.from({ length: SAMPLES }, () => generateTables(rng, TABLE_FACTORS));
+    expect(chosen.map((q) => q.key)).toEqual(sample(1).map((q) => q.key));
+  });
+
+  it('always has a chosen table as one of the factors', () => {
+    const rng = createRng(2);
+    for (let i = 0; i < SAMPLES; i++) {
+      const [a, b] = factorsOf(generateTables(rng, [7, 13]));
+      expect([a, b].some((factor) => factor === 7 || factor === 13)).toBe(true);
+      expect(TABLE_FACTORS).toContain(a);
+      expect(TABLE_FACTORS).toContain(b);
+    }
+  });
+
+  it('pairs a single table with every factor', () => {
+    const rng = createRng(3);
+    const others = new Set<number>();
+    for (let i = 0; i < SAMPLES; i++) {
+      const [a, b] = factorsOf(generateTables(rng, [7]));
+      others.add(a === 7 ? b : a);
+    }
+    expect([...others].sort((x, y) => x - y)).toEqual(TABLE_FACTORS);
+  });
+
+  it('rejects a choice without any table', () => {
+    expect(() => generateTables(createRng(1), [])).toThrow(RangeError);
+    expect(() => generateTables(createRng(1), [10])).toThrow(RangeError);
+  });
+});
+
 describe('table tips', () => {
   it('names a neighbouring row', () => {
     expect(neighbourRowTip(7, 8)(fromInteger(63))).toBe('63 = 7 × 9: je zit één rij ernaast.');

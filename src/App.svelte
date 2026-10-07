@@ -6,8 +6,9 @@
   import { createBackGuard } from './lib/backGuard';
   import { createRng, randomSeed } from './lib/random';
   import { summarize, type QuestionRecord, type SessionSummary } from './lib/results';
-  import { buildSession } from './lib/session';
+  import { buildSession, generatorsFor } from './lib/session';
   import { DEFAULT_SESSION_SIZE, PRACTICE_SETS } from './lib/sets';
+  import { TABLE_FACTORS } from './lib/topics/tables';
   import type { PracticeSet, Question } from './lib/types';
 
   type Screen =
@@ -19,6 +20,7 @@
   let screen = $state.raw<Screen>({ name: 'sets' });
   // Kept in memory only while the app is open (spec §3.2: nothing is persisted).
   let size = $state(DEFAULT_SESSION_SIZE);
+  let tables = $state([...TABLE_FACTORS]);
 
   // A system back never closes the app from another screen (spec §3).
   const backGuard = createBackGuard(history);
@@ -40,7 +42,8 @@
   }
 
   function startSession(set: PracticeSet) {
-    screen = { name: 'playing', set, questions: buildSession(set, size, createRng(randomSeed())) };
+    const questions = buildSession(set, size, createRng(randomSeed()), generatorsFor(set, tables));
+    screen = { name: 'playing', set, questions };
   }
 
   function finishSession(set: PracticeSet, records: QuestionRecord[], totalMs: number) {
@@ -54,7 +57,7 @@
   <SetOverview sets={PRACTICE_SETS} onselect={(set) => (screen = { name: 'setup', set })} />
 {:else if screen.name === 'setup'}
   {@const set = screen.set}
-  <SetupScreen {set} bind:size onstart={() => startSession(set)} onback={showSets} />
+  <SetupScreen {set} bind:size bind:tables onstart={() => startSession(set)} onback={showSets} />
 {:else if screen.name === 'playing'}
   {@const set = screen.set}
   {@const questions = screen.questions}

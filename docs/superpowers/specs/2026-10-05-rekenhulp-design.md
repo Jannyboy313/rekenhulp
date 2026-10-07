@@ -80,8 +80,8 @@ The app is a state machine in `App.svelte` with four states:
 - The header shows the set name and a **Terug** button.
 - Below it is a list of the set's topics. For every set except Tafels, the list includes
   "15% tafels".
-- **Table choice (Tafels only):** instead of the topic list, Tafels shows the heading "Tafels"
-  with two small buttons **Alle** and **Geen**, and a grid of 13 toggles, one per table
+- **Table choice (Tafels only):** instead of the topic list, Tafels shows the heading "Kies
+  tafels" with two small buttons **Alle** and **Geen**, and a grid of 13 toggles, one per table
   (2–9, 11–15, §5.1), five per row. By default all tables are selected. Alle selects all,
   Geen clears all. With no table selected, **Start** is disabled. The choice applies only to
   the Tafels set; the 15% tables in the other sets always use all tables.
