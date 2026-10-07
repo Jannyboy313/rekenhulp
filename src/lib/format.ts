@@ -117,3 +117,21 @@ export function formatNote(raw: string): string {
 export function formatExpressionInput(raw: string): string {
   return raw.replace(/[-+×:]/g, (operator) => ` ${operator === '-' ? MINUS : operator} `);
 }
+
+/** Scientific notation: '4,5 × 10⁶', also '1 × 10⁶' (spec §5.19). */
+export function formatScientific(coefficient: Rational, exponent: number): string {
+  return `${formatRational(coefficient)} × ${formatPowerOfTen(exponent)}`;
+}
+
+/**
+ * Scientific keypad input '4,5×10^-3' as '4,5 × 10⁻³' (spec §6). A '^' without an exponent
+ * stays visible, and so does a minus sign without digits: '10^-' as '10^−'.
+ */
+export function formatScientificInput(raw: string): string {
+  const powers = raw.replace(
+    /\^(-?)(\d+)/g,
+    (_match, sign: string, digits: string) =>
+      (sign === '' ? '' : SUPERSCRIPT_MINUS) + superscriptDigits(digits),
+  );
+  return formatInput(powers).replaceAll('×', ' × ');
+}

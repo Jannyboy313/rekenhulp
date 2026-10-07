@@ -12,6 +12,8 @@ import {
   formatPowerOfTen,
   formatPrimeFactors,
   formatRational,
+  formatScientific,
+  formatScientificInput,
   formatSeconds,
   GROUP_SEPARATOR as S,
   MINUS,
@@ -225,5 +227,29 @@ describe('formatExpressionInput', () => {
     expect(formatExpressionInput('7×100-7×2')).toBe(`7 × 100 ${MINUS} 7 × 2`);
     expect(formatExpressionInput('12:3')).toBe('12 : 3');
     expect(formatExpressionInput('2×')).toBe('2 × ');
+  });
+});
+
+describe('formatScientific', () => {
+  it('writes c × 10ⁿ with a Dutch coefficient and a superscript exponent', () => {
+    expect(formatScientific(rational(9n, 2n), 6)).toBe('4,5 × 10⁶');
+    expect(formatScientific(rational(1n), 6)).toBe('1 × 10⁶');
+    expect(formatScientific(rational(3n), -3)).toBe('3 × 10⁻³');
+    expect(formatScientific(rational(321n, 100n), 9)).toBe('3,21 × 10⁹');
+  });
+});
+
+describe('formatScientificInput', () => {
+  it('pretty-prints keypad input with superscript exponents', () => {
+    expect(formatScientificInput('4,5×10^6')).toBe('4,5 × 10⁶');
+    expect(formatScientificInput('4,5×10^-3')).toBe('4,5 × 10⁻³');
+    expect(formatScientificInput('10^12')).toBe('10¹²');
+    expect(formatScientificInput('4500000')).toBe('4500000');
+  });
+
+  it('keeps an unfinished power visible', () => {
+    expect(formatScientificInput('4,5×')).toBe('4,5 × ');
+    expect(formatScientificInput('4,5×10^')).toBe('4,5 × 10^');
+    expect(formatScientificInput('4,5×10^-')).toBe('4,5 × 10^−');
   });
 });
