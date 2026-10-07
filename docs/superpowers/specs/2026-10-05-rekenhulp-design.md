@@ -126,10 +126,10 @@ A wrong answer can get a **tip**: one Dutch sentence that names the likely mista
 answers and the explanation, in the feedback and on the results screen. Rules:
 
 - Only for a wrong answer that parses; at most one tip. Scoring and repeats are unchanged.
-- `CheckResult.tip` carries it. A step's own diagnosis comes first; for number and fraction steps
-  the fallback is the **factor-of-ten tip**: when the answer is exactly 10ᵏ times the correct one
-  (k ≠ 0): "Je antwoord is 100 keer te groot. Let op de komma en het aantal nullen."
-  Questions whose answer is an exponent (`1 biljard = 10ⁿ`) skip this fallback.
+- `CheckResult.tip` carries it. A step's own diagnosis comes first; for number, fraction and
+  scientific steps the fallback is the **factor-of-ten tip**: when the answer is exactly 10ᵏ
+  times the correct one (k ≠ 0): "Je antwoord is 100 keer te groot. Let op de komma en het
+  aantal nullen." Questions whose answer is an exponent (`1 biljard = 10ⁿ`) skip this fallback.
 - A tip may only claim what is certain from the input: it names a mistake only when the answer
   equals exactly what that mistake produces.
 
@@ -174,6 +174,31 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `smartCalculation`, complement | another positive integer, not 10ᵏ × the answer | "463 + 547 = 1010, niet 1000." |
 | `tables`, product | a neighbouring row | "63 = 7 × 9: je zit één rij ernaast." |
 | `tables`, division or missing factor | another positive integer, not 10ᵏ × the answer | "9 × 7 = 63, niet 56." |
+| `mentalOperations`, remainder (up) | the quotient without the remainder | "Er blijven 6 leerlingen over; daarvoor is nog een busje nodig." (tafels: gasten, tafel) |
+| `mentalOperations`, remainder (down) | the quotient plus 1 | "De laatste doos is niet vol: rond naar beneden af." (kaartjes: "Voor nog een kaartje is het geld niet genoeg: rond naar beneden af.") |
+| `mentalOperations`, remainder (up or down) | the exact quotient, not whole (`28,75`) | "Je kunt geen 28,75 busjes nemen: het antwoord is een heel aantal." |
+| `mentalOperations`, remainder (rest) | the quotient | "Dat is het aantal dozen; gevraagd is wat je overhoudt." (kaartjes: kaartjes) |
+| `negativeNumbers`, `a − (−b)` | `a − b` | "Min een negatief getal is plus: −4 − (−6) = −4 + 6." |
+| `negativeNumbers`, × or : | the answer with the other sign | "Twee negatieve getallen geven een positieve uitkomst, één negatief getal een negatieve." |
+| `negativeNumbers`, + or −, temperature change | the answer with the other sign | "Let op het teken van de uitkomst." |
+| `negativeNumbers`, temperature difference | the difference of the absolute values, one below zero (`7 − 4`) | "Van −7 naar 0 is 7 graden, van 0 naar 4 nog 4: samen 11." |
+| `negativeNumbers`, temperature difference | the sum of the absolute values, both below zero (`12 + 3`) | "Allebei onder nul: het verschil is 12 − 3 = 9." |
+| `rounding` | rounded down instead of up | "Het eerste cijfer dat wegvalt is 8 (5 of meer): rond naar boven af." |
+| `rounding` | rounded up instead of down | "Het eerste cijfer dat wegvalt is 3 (minder dan 5): rond naar beneden af." |
+| `rounding`, tens, hundreds or thousands; whole, 1 or 2 decimals | rounded to the neighbouring place in the same group | "Dat is afgerond op tientallen; gevraagd is honderdtallen." |
+| `powersRoots`, whole-number power | base × exponent | "Een macht is herhaald vermenigvuldigen: 2⁵ = 2 × 2 × 2 × 2 × 2, niet 2 × 5." |
+| `powersRoots`, exponent 0 | 0 | "Elk getal (behalve 0) tot de macht 0 is 1." |
+| `powersRoots`, negative base | the answer with the other sign | "(−3)³ = (−3) × (−3) × (−3): een oneven aantal mintekens geeft min." (even: plus) |
+| `powersRoots`, decimal power | 10ᵏ × the answer, k > 0 (too few decimals) | "0,3 × 0,3 = 0,09: de uitkomst heeft evenveel decimalen als beide getallen samen." |
+| `powersRoots`, `10⁻ⁿ = ?` | −10ⁿ | "Een negatieve exponent maakt geen negatief getal: 10⁻³ = 1 : 1000." |
+| `powersRoots`, `0,001 = 10ⁿ` | n (positive) | "Een getal kleiner dan 1 heeft een negatieve exponent." |
+| `powersRoots`, `0,001 = 10ⁿ` | the number of zeros after the comma (−2) | "Tel de plaatsen waarover de komma schuift: 0,001 = 1 : 1000 = 10⁻³." |
+| `powersRoots`, cube root | n³ : 3 | "∛27 is het getal dat 3 keer met zichzelf vermenigvuldigd 27 geeft, niet 27 : 3." |
+| `scientificNotation`, scientific step | the same value, `c` not in `[1, 10)` | "De waarde klopt, maar het getal vóór × 10 moet minstens 1 en kleiner dan 10 zijn." |
+| `scientificNotation`, scientific step | the same value as a plain number | "Schrijf het als een getal van 1 tot 10 keer een macht van 10." |
+| `scientificNotation`, scientific step | the right `c`, the exponent with the other sign | "Een getal kleiner dan 1 heeft een negatieve exponent." (larger than 10: positive) |
+| `scientificNotation`, to notation | the right `c`, the exponent counts the zeros | "Tel de plaatsen waarover de komma schuift, niet de nullen." |
+| `scientificNotation`, normalise | the right `c`, the exponent shifted the wrong way (`k − s`) | "Het getal vóór × 10 wordt 100 keer kleiner, dus de exponent wordt 2 groter." |
 
 Ja/Nee steps (prime, divisibility) and property rewrites get no tips: their explanation (§5.4,
 §5.6) or rewrite message (§5.11) already names the mistake.
@@ -317,6 +342,8 @@ Examples with `n = 15`:
   chosen at random.
 - **Verhoudingen (v1):** `r = 13` over 2 topics, so 7 + 6.
 - **Meten:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is chosen at
+  random.
+- **Getalbegrip:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen at
   random.
 
 ## 5. Topics
@@ -772,6 +799,192 @@ There are three forms, each picked with equal probability:
   - name ↔ name: as in §5.10, `1 biljoen = 1000 miljard → 3,5 × 1000 = 3500`
   - power → name: `10⁹ = 1000 miljoen → 2,5 × 1000 = 2500`, or `10⁵ = 0,1 miljoen → 2,5 × 0,1 = 0,25`
 
+### 5.15 Mental operations with larger numbers (`mentalOperations`)
+
+Part of the set Getalbegrip. The four operations on larger whole numbers, the way they are done
+mentally: adding in steps (*rijgen*), computing with zeros, and dividing with a remainder in a
+context. Tricks such as compensating or splitting `× 25` belong to `smartCalculation` (§5.9) and
+are left out here.
+
+There are four forms, each picked with equal probability:
+
+| Form              | Example                                                                   | Answer |
+|-------------------|---------------------------------------------------------------------------|--------|
+| Add / subtract    | `6347 + 2800 = ?`, `15 213 − 470 = ?`                                     | 9147, 14 743 |
+| Multiply by zeros | `28 × 500 = ?`, `60 × 700 = ?`                                            | 14 000, 42 000 |
+| Divide by zeros   | `7200 : 80 = ?`, `4800 : 6 = ?`                                           | 90, 800 |
+| Remainder         | `230 leerlingen gaan met busjes van 8 plaatsen. Hoeveel busjes zijn er nodig?` | 29 |
+
+- **Add / subtract** (each 50%): `a ∈ [1000, 99 999]`, and `b` has exactly 2 significant digits
+  followed by 1 or 2 zeros (`b ∈ [110, 9900]`, e.g. `2800`, `470`). The sum needs at least one
+  carry, the difference at least one borrow, so no column can be done on its own. The
+  difference is positive.
+  - Explanation: add the significant digits of `b` one at a time, largest first:
+    `6347 + 2000 = 8347 → 8347 + 800 = 9147`, `15 213 − 400 = 14 813 → 14 813 − 70 = 14 743`.
+- **Multiply by zeros:** `a = p × 10ⁱ` and `b = q × 10ʲ` with `p ∈ [2, 99]` not a multiple of 10,
+  `q ∈ [2, 9]`, `i + j ∈ [1, 4]` and the product at most 1 000 000. The two factors appear in
+  random order. Products that §5.9 also generates (`a × 25`, `a × 50`, `a × 125`) are left out.
+  - Explanation: the table fact, then the zeros: `28 × 5 = 140 → 28 × 500 = 140 × 100 = 14 000`.
+- **Divide by zeros:** the quotient is `p × 10ⁱ` and the divisor `q × 10ʲ`, with
+  `p, q ∈ [2, 12] \ {10}`, `i + j ∈ [1, 4]` and the dividend at most 1 000 000. Because `i + j ≥ 1`,
+  §5.9 never generates the same division (its quotients are no multiples of 10).
+  - Explanation: when the divisor ends in zeros, strike equal zeros first:
+    `7200 : 80 = 720 : 8 = 90`, `36 000 : 900 = 360 : 9 = 40`. Otherwise the table fact, then the
+    zeros: `48 : 6 = 8 → 4800 : 6 = 800`.
+- **Remainder:** a division `N = q × d + r` with `q ∈ [3, 40]`, `r ∈ [1, d − 1]` and `N ≤ 1000`,
+  in a context. The question is one of three, each equally likely, and the context is picked
+  among those that ask it:
+
+  | Context  | Prompt                                                                    | Asks | `d` | Suffix |
+  |----------|---------------------------------------------------------------------------|------|-----|--------|
+  | busjes   | `230 leerlingen gaan met busjes van 8 plaatsen. Hoeveel busjes zijn er nodig?` | up | `[6, 50]` | `busjes` |
+  | tafels   | `Aan een tafel passen 6 gasten. Hoeveel tafels zijn er nodig voor 75 gasten?` | up | `[4, 12]` | `tafels` |
+  | dozen    | `In een doos passen 12 eieren. Hoeveel volle dozen maak je van 200 eieren?` | down | `[6, 30]` | `dozen` |
+  | dozen    | `In een doos passen 12 eieren. Je vult zoveel mogelijk dozen met 200 eieren. Hoeveel eieren houd je over?` | rest | `[6, 30]` | `eieren` |
+  | kaartjes | `Een kaartje kost € 7. Hoeveel kaartjes koop je voor € 100?`               | down | `[3, 25]` | `kaartjes` |
+  | kaartjes | `Een kaartje kost € 7. Je koopt zoveel mogelijk kaartjes voor € 100. Hoeveel geld houd je over?` | rest | `[3, 25]` | prefix `€` |
+
+  - The answer is `q + 1` (up), `q` (down) or `r` (rest).
+  - Explanation: the division with its remainder, then the conclusion:
+    `230 : 8 = 28 rest 6 → 29 busjes`, `200 : 12 = 16 rest 8 → 16 dozen`,
+    `200 = 16 × 12 + 8 → 8 eieren over`, `100 = 14 × 7 + 2 → € 2 over`.
+- Answers are whole numbers. The de-duplication key is the calculation itself, with the factors
+  of a product in ascending order, as in §5.9; for the remainder form it is context, question,
+  `N` and `d`.
+
+### 5.16 Negative numbers (`negativeNumbers`)
+
+Part of the set Getalbegrip. The minus sign is typed with the `−` key of the number keypad (§6),
+which toggles the sign of the whole number.
+
+There are three forms, each picked with equal probability:
+
+| Form             | Example                                                               | Answer |
+|------------------|-----------------------------------------------------------------------|--------|
+| Add / subtract   | `−4 − (−6) = ?`, `3 − 8 = ?`, `−7 + 12 = ?`                           | 2, −5, 5 |
+| Multiply / divide | `−6 × 4 = ?`, `−24 : (−3) = ?`                                       | −24, 8 |
+| Temperature      | `Het is −5 °C. Het wordt 8 graden warmer. Hoeveel graden is het dan?` | 3 |
+
+- Negative literals are written as in §5.8: in parentheses, except as the first term.
+- **Add / subtract** (each 50%): `a, b ∈ [−20, 20] \ {0}`. At least one of `a`, `b` or the answer
+  is negative, so `5 + 7` never occurs. The answer is not 0.
+- **Multiply / divide** (each 50%): `|x|, |y| ∈ [2, 12]` with at least one of them negative. A
+  division is written as `(x × y) : y`, so it is always exact.
+- **Temperature** (each 50%):
+  - *change:* a start temperature in `[−15, 15]`, `n ∈ [2, 20]` degrees `warmer` or `kouder`,
+    the result in `[−20, 25]`. The start or the result is below zero. Suffix `°C`.
+  - *difference:* `'s Nachts is het −7 °C, overdag 4 °C. Hoeveel graden is het verschil?` Night
+    in `[−20, 5]`, day in `[−10, 30]`, the night colder than the day and at least one of them
+    below zero. Suffix `graden`.
+- Explanations:
+  - subtracting a negative number: `−4 − (−6) = −4 + 6 = 2`; adding one:
+    `5 + (−8) = 5 − 8 = −3`
+  - crossing zero, split at zero: `3 − 8 = 3 − 3 − 5 = −5`, `−7 + 12 = −7 + 7 + 5 = 5`
+  - otherwise the sum itself: `−4 − 6 = −10`
+  - multiply / divide: the sum without signs, then the sign rule:
+    `6 × 4 = 24; één negatief getal → −24`, `24 : 3 = 8; twee negatieve getallen → 8`
+  - temperature: the sum with the explanation above, e.g. `−5 + 8 = −5 + 5 + 3 = 3`, and for the
+    difference `4 − (−7) = 4 + 7 = 11`
+
+### 5.17 Rounding (`rounding`)
+
+Part of the set Getalbegrip. Rounding follows the Dutch school rule: the first digit that is
+dropped decides; 5 or more rounds up, less than 5 rounds down. Only positive numbers occur.
+
+Prompt: `Rond 4386 af op honderdtallen`, `Rond 3,746 af op 1 decimaal`. Seven places, each
+equally likely:
+
+| Place          | Prompt ends in          | Source number                                | Example            |
+|----------------|-------------------------|----------------------------------------------|--------------------|
+| tens           | `op tientallen`         | `[101, 9999]`                                | `4386 → 4390`      |
+| hundreds       | `op honderdtallen`      | `[1001, 99 999]`                             | `4386 → 4400`      |
+| thousands      | `op duizendtallen`      | `[10 001, 999 999]`                          | `48 512 → 49 000`  |
+| millions       | `op miljoenen`          | `[1 000 001, 99 999 999]`                    | `2 456 789 → 2 000 000` |
+| whole number   | `op een heel getal`     | `(0, 1000)` with 1 or 2 decimals             | `12,5 → 13`        |
+| 1 decimal      | `op 1 decimaal`         | `(0, 100)` with 2 or 3 decimals              | `3,746 → 3,7`      |
+| 2 decimals     | `op 2 decimalen`        | `(0, 100)` with 3 decimals                   | `0,385 → 0,39`     |
+
+- The source number is never already rounded: at least one dropped digit is not 0. The answer is
+  never 0.
+- The first dropped digit is 5 in 20% of the exercises (the rule's edge case). In another 15%,
+  rounding up carries over a 9 (`3970 → 4000` on hundreds, `2,96 → 3,0` on 1 decimal).
+- The answer is the full number (`2 000 000`, not `2 miljoen`). Any equal value is correct, so
+  `3` counts for `3,0`; the expected answer is shown with the asked number of decimals (`3,0`).
+- Explanation: the two neighbours, the decisive digit and the result:
+  `4386 ligt tussen 4300 en 4400; het eerste cijfer dat wegvalt is 8 → 4400`,
+  `3,746 ligt tussen 3,7 en 3,8; het eerste cijfer dat wegvalt is 4 → 3,7`.
+
+### 5.18 Powers and roots (`powersRoots`)
+
+Part of the set Getalbegrip. Extends `squares` (§5.7): squares and square roots of the whole
+numbers 2 to 25 stay there and do not occur here.
+
+There are four forms, each picked with equal probability:
+
+| Form              | Example                                | Answer |
+|-------------------|----------------------------------------|--------|
+| Whole-number power | `2⁵ = ?`, `(−3)³ = ?`, `7⁰ = ?`       | 32, −27, 1 |
+| Decimal power     | `0,3² = ?`, `0,2³ = ?`, `1,5² = ?`     | 0,09, 0,008, 2,25 |
+| Negative exponent | `10⁻³ = ?`, `0,001 = 10ⁿ. n = ?`       | 0,001, −3 |
+| Root              | `∛64 = ?`, `√0,49 = ?`, `√6400 = ?`    | 4, 0,7, 80 |
+
+- **Whole-number power:**
+  - 70%: a positive base with exponent ≥ 3: base 2 with exponent `[3, 10]`, 3 with `[3, 5]`, 4
+    and 5 with `[3, 4]`, 6 to 9 with 3, and 10 with `[3, 6]`. The (base, exponent) pair is drawn
+    uniformly from these 23 pairs.
+  - 20%: a negative base `(−b)ⁿ` with `b ∈ [2, 5]`, `n ∈ [2, 4]` and `bⁿ ≤ 125`: 10 pairs, from
+    `(−2)²` to `(−5)³`. The base is always written in parentheses (§5.8, §11 item 8).
+  - 10%: exponent 0 or 1 with a base in `[2, 20]`.
+- **Decimal power:** a base `0,1` to `0,9` with exponent 2 or 3, a base `0,01` to `0,09` with
+  exponent 2, or a base `1,1`, `1,2`, `1,5`, `2,5` or `3,5` with exponent 2. Each of these three
+  groups is equally likely.
+- **Negative exponent:** base 10 only, `n ∈ [1, 6]`. Two questions, each 50%: `10⁻ⁿ = ?` with a
+  decimal answer, or `0,001 = 10ⁿ. n = ?` with a negative whole-number answer. Negative
+  exponents with other bases (`2⁻³ = 1/8`) wait for *Breuken & kommagetallen*.
+- **Root** (each 50%):
+  - cube root `∛n³` with `n ∈ [2, 10]`
+  - square root of a scaled square: `√m²` with `m = k : 10` or `m = k × 10` and
+    `k ∈ [2, 15] \ {10}`, so `√0,49`, `√1,44`, `√6400` and `√14 400`
+- Explanations:
+  - `2⁵ = 2 × 2 × 2 × 2 × 2 = 32`, `(−3)³ = (−3) × (−3) × (−3) = −27`
+  - `7⁰ = 1: elk getal (behalve 0) tot de macht 0 is 1`, `7¹ = 7`
+  - `0,3² = 0,3 × 0,3 = 0,09`
+  - `10⁻³ = 1 : 10³ = 1 : 1000 = 0,001`, and for the exponent question
+    `0,001 = 1 : 1000 = 1 : 10³ = 10⁻³`
+  - `∛64 = 4, want 4 × 4 × 4 = 64`, `√0,49 = 0,7, want 0,7 × 0,7 = 0,49`
+- The exponent question skips the factor-of-ten tip, like §5.14.
+
+### 5.19 Scientific notation (`scientificNotation`)
+
+Part of the set Getalbegrip. A number in scientific notation is `c × 10ⁿ` with `1 ≤ c < 10`.
+Large numbers with names (`miljard`) stay in `numberUnits` (§5.14).
+
+There are three forms, each picked with equal probability:
+
+| Form             | Prompt                                             | Answer        | Answer kind |
+|------------------|----------------------------------------------------|---------------|-------------|
+| To notation      | `Schrijf in wetenschappelijke notatie: 4 500 000`  | `4,5 × 10⁶`   | `scientific` |
+| To number        | `4,5 × 10⁻³ = ?`                                   | `0,0045`      | `number`    |
+| Normalise        | `Schrijf in wetenschappelijke notatie: 450 × 10⁴`  | `4,5 × 10⁶`   | `scientific` |
+
+- `c` has 1 to 3 significant digits. `c = 1` occurs; a prompt then writes just `10⁶` (as in
+  §5.14), and the expected answer is `1 × 10⁶`. The exponent `n ∈ [−6, −1] ∪ [2, 9]`, so a written-out number has at most 10 digits
+  (`3 210 000 000`, `0,00000125`).
+- **Normalise:** the prompt shows `m × 10ᵏ` with `m = c × 10ˢ`, `s ∈ {−2, −1, 1, 2, 3}` and
+  `k ≠ 0`, e.g. `450 × 10⁴` or `0,3 × 10⁻²`. The result exponent `n = k + s` is in the range
+  above.
+- **Judging a `scientific` answer:** correct when the value is equal **and** the form is
+  `c × 10ⁿ` with `1 ≤ c < 10`. `10⁶` alone counts as `1 × 10⁶`. Trailing zeros in `c` are
+  allowed (`4,50 × 10⁶`). An equal value in another form (`45 × 10⁵`, `4500000`) is wrong and
+  gets a tip (§3.4.1).
+- The expected answer is shown as `4,5 × 10⁶`.
+- Explanations:
+  - to notation: `4 500 000 = 4,5 × 1 000 000 = 4,5 × 10⁶`,
+    `0,000045 = 4,5 × 0,00001 = 4,5 × 10⁻⁵`
+  - to number: `4,5 × 10⁻³ = 4,5 × 0,001 = 0,0045`
+  - normalise: `450 × 10⁴ = 4,5 × 10² × 10⁴ = 4,5 × 10⁶`,
+    `0,3 × 10⁻² = 3 × 10⁻¹ × 10⁻² = 3 × 10⁻³`
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -783,6 +996,7 @@ The keypad is custom. The system keyboard is never opened.
 | boolean            | two large buttons: `Ja` / `Nee`; a tap submits at once, no `OK` |
 | expression         | `0–9`, `+ − × :`, `( )`, `⌫`, `OK`, in 4 columns               |
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
+| scientific         | `0–9`, `,`, `−`, `×`, `^`, `⌫`, `OK`, in 4 columns              |
 
 - Every answer kind has its own input model: keys, key reducer, validation and display.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
@@ -792,15 +1006,16 @@ The keypad is custom. The system keyboard is never opened.
   the height it has above a number keypad, so it does not jump between questions.
 - Input that cannot be submitted, such as `−`, `25/0` or `2 ×`, gives an inline error and does
   **not** count as the attempt: "Ongeldig getal" for number and fraction, "Ongeldige
-  ontbinding" for factorization and "Ongeldige som" for expressions. The error disappears at
-  the next key press.
+  ontbinding" for factorization, "Ongeldige som" for expressions and "Ongeldige notatie" for
+  scientific notation. The error disappears at the next key press.
 - **Factorization input:** `×` is allowed only directly after a number. `^` is allowed only
   directly after a base, so never at the start, after `×`, or after an exponent. Exponents are
   digits. `2^2×3×7` is shown as `2² × 3 × 7`.
 - **Expression input** (only the rewrite step of §5.11 uses it): integers, `+ − × :` and
   parentheses. The rewrites never need a decimal comma, a power or a negative number, so these
-  keys are left out, and `−` is always the operator. It is the only keypad with 4 columns; all
-  other keypads keep 3. Five rows, the same height as the other keypads:
+  keys are left out, and `−` is always the operator. It and the scientific keypad are the only
+  keypads with 4 columns; all other keypads keep 3. Five rows, the same height as the other
+  keypads:
 
   ```
   7  8  9  +
@@ -814,6 +1029,34 @@ The keypad is custom. The system keyboard is never opened.
   or after `(`; `)` only after a number or `)` while a `(` is open; a digit not directly after
   `)`. At most 30 characters. `7×(13+87)` is shown as `7 × (13 + 87)`. What the keys cannot
   prevent (a trailing operator, an unclosed `(`) gives "Ongeldige som".
+- **Scientific input** (only the scientific-notation steps of §5.19 use it): the user writes the
+  notation itself, `4,5×10^6`, with the existing keys. No new key is needed. Four columns like
+  the expression keypad, but four rows, because it has fewer keys. The keypad is therefore one row lower than
+  the others and the prompt sits a little lower; empty grid cells to keep five rows are not
+  worth it:
+
+  ```
+  7  8  9  ×
+  4  5  6  ^
+  1  2  3  −
+  ⌫  0  ,  OK
+  ```
+
+  The input is a number, optionally followed by `×` and a number, `^` and an exponent: `c`,
+  `c×b^n` or `b^n`. Per key:
+  - a digit: always, except when the exponent already has 2 digits
+  - `,`: only in the number before `×`, once, and not after `^`
+  - `×`: only after a digit of the first number, once
+  - `^`: only after a digit of the number after `×`, or of the first number when there is no
+    `×`; once
+  - `−`: only directly after `^` (a negative exponent); elsewhere ignored. `c` is never
+    negative in §5.19.
+  - at most 16 characters
+  - `4,5×10^-3` is shown as `4,5 × 10⁻³`; a `^` without an exponent stays visible.
+- What the keys cannot prevent (`4,5×`, `4,5×10^`, a base other than 10 such as `4,5×2^6`)
+  gives "Ongeldige notatie" and does not count as the attempt. A plain number (`4500000`) is
+  valid input; it is judged wrong with a tip when its value is right (§5.19). Parsing is a small
+  dedicated parser next to `parseFactorization`, not `lib/expr`.
 - Units are shown next to the input field, and the user never types them. `€` is a fixed
   prefix (`€ 45`); other units (`%`, `cm³`, …) are a fixed suffix.
 - While the input is empty, the field shows `…` in the muted colour as a placeholder. Empty
@@ -1012,18 +1255,25 @@ src/
       numberUnits.ts        large numbers: names and powers of 10 (reuses the engine)
       percentages.ts
       ratios.ts
+      mentalOperations.ts
+      negativeNumbers.ts
+      rounding.ts
+      powersRoots.ts
+      scientificNotation.ts
 ```
 
 Core types:
 
 ```ts
-type AnswerKind = 'number' | 'fraction' | 'boolean' | 'expression' | 'factorization';
+type AnswerKind =
+  | 'number' | 'fraction' | 'boolean' | 'expression' | 'factorization' | 'scientific';
 
 type Topic =
   | 'tables' | 'lcm' | 'gcd' | 'prime' | 'factorization' | 'divisibility' | 'squares'
   | 'orderOfOperations' | 'smartCalculation' | 'properties'
   | 'volume' | 'area' | 'length' | 'mass' | 'time' | 'numberUnits'
-  | 'percentages' | 'ratios';
+  | 'percentages' | 'ratios'
+  | 'mentalOperations' | 'negativeNumbers' | 'rounding' | 'powersRoots' | 'scientificNotation';
 
 interface CheckResult {
   correct: boolean;
@@ -1070,6 +1320,9 @@ interface PracticeSet {
   - Rewrite checker: the table in §7.1, plus generated cases taken from each template's
     example rewrite.
   - Divisibility: every generated explanation agrees with actual divisibility.
+  - Scientific input: table-driven parser and judging tests (`4,5×10^6` ✔, `10^6` ✔ for
+    `1 × 10⁶`, `45×10^5` ✘ with tip, `4500000` ✘ with tip, `4,5×2^6` invalid).
+  - Rounding: every expected answer agrees with half-up rounding computed independently.
   - Sets and session builder:
     - quotas for every set × every allowed `n` (incl. the examples in §4.2)
     - every topic is present when `r ≥ topics`
@@ -1151,6 +1404,21 @@ These are assumptions made while writing the spec. Each one is easy to change.
     - `speed` in *Meten* and `scale` in *Verhoudingen*
     - fractions as a separate set instead of part of *Verhoudingen*
     - estimating moves to v3 as multiple choice
+19. ~~Getalbegrip~~ — confirmed 2026-10-07: scientific notation is typed as the notation itself
+    (`4,5×10^6`) with the existing `×`, `^`, `,` and `−` keys on a new `scientific` keypad, and
+    only `c × 10ⁿ` with `1 ≤ c < 10` is correct (an equal value in another form gets a tip).
+    Division with a remainder is asked in a context (round up, round down, or the remainder).
+    Negative exponents only with base 10. Rounded large numbers are typed in full. The number
+    keypad already had `−`, so no new key was needed for negative numbers (§5.15–§5.19, §6).
+    Assumed in the same revision (open for veto in the plan review):
+    - the forms and ranges per topic, e.g. add / subtract with a 2-significant-digit number
+      (`6347 + 2800`) and the four remainder contexts (§5.15)
+    - temperature as the only context for negative numbers (§5.16)
+    - the seven rounding places, 20% with a 5 as decisive digit, and `3` counting for `3,0`
+      (§5.17)
+    - decimal powers, `(−b)ⁿ` up to 125, and roots `∛n³` and `√0,49`-style (§5.18)
+    - the scientific keypad with four rows instead of five (§6)
+    - the tips per topic (§3.4.1)
 
 ## 12. Roadmap (not in v1)
 
@@ -1166,16 +1434,17 @@ answer. Prompts describe figures in words; there are no pictures.
 The sets are built in this order, one implementation plan each. The topic details are decided
 in each set's own spec iteration.
 
-1. **Getalbegrip** (new set)
+1. **Getalbegrip** (new set; specified in §5.15–§5.19)
    - `mentalOperations`: the four operations on larger numbers without a calculator, including
-     division with a remainder: `13 576 − 4 999`, `28 × 500`, `7 200 : 80`.
+     division with a remainder in a context: `6347 + 2800`, `28 × 500`, `7200 : 80`.
    - `negativeNumbers`: computing with negative numbers, including temperature differences.
    - `rounding`: rounding to tens, thousands, millions or a number of decimals.
    - `powersRoots`: powers beyond squares (`2⁵`, `10⁻²`, `0,3²`) and roots (`∛27`); extends
      `squares` (§5.7).
    - `scientificNotation`: `4 500 000 = 4,5 × 10⁶` and back, including negative exponents;
      extends `numberUnits` (§5.14).
-   - Infrastructure: a minus sign on the number keypad, and an input for `a × 10ⁿ`.
+   - Infrastructure: a `scientific` answer kind that reuses the existing `×`, `^`, `,` and `−`
+     keys (§6). The number keypad already has `−`.
 2. **Breuken & kommagetallen** (new set; replaces the earlier plan to put fractions in
    *Verhoudingen*)
    - `fractionConversion`: fraction ↔ decimal ↔ percentage: `3/8 = ?`, `0,125 = ?%`,

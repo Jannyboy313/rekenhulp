@@ -46,7 +46,7 @@ order, one implementation plan per step:
 | 2 | **Verhoudingen** (v1 part) | `percentages` (§5.12), `ratios` (§5.13) | `Step.prefix` (`€`); `fraction` input (`/` key) brought forward from v2 for `12½%` | v1 | ✅ done |
 | 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (`lib/inputModels.ts`) with inline invalid-input errors; `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` tokenizer and parser (`×`, `^`) | v1 | ✅ done |
 | 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, evaluation steps, chains, rewrite checker; `expression` answer kind with a 4-column keypad; negative literals; two-step questions | v1 | ✅ done |
-| 5 | **Getalbegrip** | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` (§12.1) | Minus sign on the number keypad; input for `a × 10ⁿ` | v2 | next |
+| 5 | **Getalbegrip** | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` (§12.1) | `scientific` answer kind for `a × 10ⁿ`, typed with the existing `×`, `^`, `,`, `−` keys (spec §5.15–§5.19, §6) | v2 | spec ready |
 | 6 | **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic` (§12.1) | Judging simplified vs unsimplified fractions; mixed numbers as expected answers (the `fraction` input exists since set 2) | v2 | later |
 | 7 | **Verhoudingen** (v2 part) | `percentChange`, `scale` (§12.1) | — | v2 | later |
 | 8 | **Meten** (v2 part) | `speed` (§12.1) | Compound units in the conversion engine | v2 | later |
