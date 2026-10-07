@@ -10,10 +10,12 @@ import {
   numberStep,
   parseAnswer,
   parseFactorization,
+  parseFractionAnswer,
   parseScientific,
   rewriteStep,
   scientificStep,
   scientificValue,
+  simplestFractionStep,
   YES,
 } from './steps';
 
@@ -137,6 +139,160 @@ describe('fractionStep', () => {
   it('shows only the fraction when there is no finite decimal', () => {
     const third = fractionStep({ prompt: '1 : 3 = ?', answer: rational(1n, 3n) });
     expect(third.check('1/3')).toEqual({ correct: true, expected: '1/3' });
+  });
+});
+
+describe('parseFractionAnswer', () => {
+  it.each([
+    ['4', 'whole', true],
+    ['3/4', 'fraction', true],
+    ['17/12', 'fraction', true],
+    ['-3/4', 'fraction', true],
+    ['9/12', 'fraction', false],
+    ['12/3', 'fraction', false],
+    ['4/1', 'fraction', false],
+    ['0/5', 'fraction', false],
+    ['1 5/12', 'mixed', true],
+    ['0 3/4', 'mixed', false],
+    ['1 2/4', 'mixed', false],
+    ['1 14/12', 'mixed', false],
+    ['1 0/4', 'mixed', false],
+    ['0,3', 'decimal', false],
+    [',5', 'decimal', false],
+  ])('reads %s as %s (simplest: %s)', (input, form, simplest) => {
+    expect(parseFractionAnswer(input)).toMatchObject({ form, simplest });
+  });
+
+  it('returns the value', () => {
+    expect(parseFractionAnswer('1 5/12')?.value).toEqual(rational(17n, 12n));
+    expect(parseFractionAnswer('0,30')?.value).toEqual(rational(3n, 10n));
+  });
+
+  it('returns null for unparsable input', () => {
+    expect(parseFractionAnswer('')).toBeNull();
+    expect(parseFractionAnswer('3/0')).toBeNull();
+    expect(parseFractionAnswer('1 1/')).toBeNull();
+  });
+});
+
+describe('simplestFractionStep', () => {
+  const sum = simplestFractionStep({
+    prompt: '2/3 + 3/4 = ?',
+    answer: rational(17n, 12n),
+    decimalAllowed: true,
+    explanation: '2/3 + 3/4 = 8/12 + 9/12 = 17/12 = 1 5/12',
+  });
+
+  it('is a fraction step that shows a mixed number as the expected answer', () => {
+    expect(sum.kind).toBe('fraction');
+    expect(sum.prompt).toBe('2/3 + 3/4 = ?');
+    expect(sum.check('1 5/12')).toEqual({
+      correct: true,
+      expected: '1 5/12',
+      explanation: '2/3 + 3/4 = 8/12 + 9/12 = 17/12 = 1 5/12',
+    });
+  });
+
+  it('accepts the improper fraction in lowest terms too', () => {
+    expect(sum.check('17/12').correct).toBe(true);
+  });
+
+  it('rejects an equal value that is not in simplest form, with a tip', () => {
+    expect(sum.check('34/24')).toMatchObject({
+      correct: false,
+      tip: 'De waarde klopt, maar vereenvoudig nog: 34/24 = 1 5/12.',
+    });
+    expect(sum.check('1 10/24').tip).toBe(
+      'De waarde klopt, maar vereenvoudig nog: 1 10/24 = 1 5/12.',
+    );
+    expect(sum.check('0 17/12').correct).toBe(false);
+  });
+
+  it('shows a whole answer as a whole number and rejects it as a fraction', () => {
+    const step = simplestFractionStep({
+      prompt: '6 × 2/3 = ?',
+      answer: rational(4n),
+      decimalAllowed: true,
+    });
+    expect(step.check('4')).toMatchObject({ correct: true, expected: '4' });
+    expect(step.check('12/3').tip).toBe('De waarde klopt, maar vereenvoudig nog: 12/3 = 4.');
+  });
+
+  it('accepts an equal decimal only when the step allows it', () => {
+    const allowed = simplestFractionStep({
+      prompt: '3/4 × 2/5 = ?',
+      answer: rational(3n, 10n),
+      decimalAllowed: true,
+    });
+    expect(allowed.check('0,3').correct).toBe(true);
+    expect(allowed.check('0,30').correct).toBe(true);
+    const fractionOnly = simplestFractionStep({
+      prompt: 'Schrijf als breuk: 0,3',
+      answer: rational(3n, 10n),
+      decimalAllowed: false,
+    });
+    expect(fractionOnly.check('0,3')).toMatchObject({
+      correct: false,
+      tip: 'Schrijf het antwoord als breuk, niet als kommagetal.',
+    });
+    expect(fractionOnly.check('3/10').correct).toBe(true);
+  });
+
+  it('names a rounded or cut-off decimal of a non-terminating answer', () => {
+    const step = simplestFractionStep({
+      prompt: '1/3 + 1/3 = ?',
+      answer: rational(2n, 3n),
+      decimalAllowed: true,
+    });
+    const tip = '2/3 is geen eindig kommagetal: schrijf het antwoord als breuk.';
+    for (const input of ['0,67', '0,66', '0,666', '0,667', '0,6', '0,7']) {
+      expect(step.check(input).tip, input).toBe(tip);
+    }
+    expect(step.check('0,65').tip).toBeUndefined();
+    const mixed = simplestFractionStep({
+      prompt: 'Vereenvoudig 20/12',
+      answer: rational(5n, 3n),
+      decimalAllowed: false,
+    });
+    expect(mixed.check('1,67').tip).toBe(
+      '1 2/3 is geen eindig kommagetal: schrijf het antwoord als breuk.',
+    );
+  });
+
+  it('tries the diagnosis before the fallbacks', () => {
+    const step = simplestFractionStep({
+      prompt: '3/4 − 1/2 = ?',
+      answer: rational(1n, 4n),
+      decimalAllowed: true,
+      diagnose: (given) => (given.num === 5n ? 'diagnosed' : undefined),
+    });
+    expect(step.check('5/2').tip).toBe('diagnosed');
+    expect(step.check('10/4').tip).toBe('diagnosed');
+    expect(step.check('5/2').correct).toBe(false);
+    expect(step.check('25/10').tip).toBe('diagnosed');
+    expect(step.check('2,5').tip).toBe('diagnosed');
+    expect(step.check('25/1').tip).toBe(
+      'Je antwoord is 100 keer te groot. Let op de komma en het aantal nullen.',
+    );
+  });
+
+  it('gives no tip for an unrelated or unparsable answer', () => {
+    expect(sum.check('1/2').tip).toBeUndefined();
+    expect(sum.check('1/0')).toEqual({
+      correct: false,
+      expected: '1 5/12',
+      explanation: '2/3 + 3/4 = 8/12 + 9/12 = 17/12 = 1 5/12',
+    });
+  });
+
+  it('passes the suffix', () => {
+    const step = simplestFractionStep({
+      prompt: 'p',
+      answer: rational(1n, 2n),
+      decimalAllowed: false,
+      suffix: '%',
+    });
+    expect(step.suffix).toBe('%');
   });
 });
 

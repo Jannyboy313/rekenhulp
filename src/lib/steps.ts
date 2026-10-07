@@ -2,7 +2,9 @@ import { parse, type Expr } from './expr/parser';
 import { checkRewrite, type Property, type RewriteReason } from './expr/rewriteCheck';
 import {
   formatFraction,
+  formatInput,
   formatInteger,
+  formatMixedNumber,
   formatPrimeFactors,
   formatRational,
   formatScientific,
@@ -58,6 +60,116 @@ function formatFractionAnswer(answer: Rational): string {
   if (answer.den === 1n) return formatRational(answer);
   const fraction = formatFraction(answer);
   return decimalPlaces(answer) === null ? fraction : `${formatRational(answer)} of ${fraction}`;
+}
+
+/** How a fraction answer is written (spec §6). */
+export type FractionForm = 'whole' | 'fraction' | 'mixed' | 'decimal';
+
+export interface FractionAnswer {
+  value: Rational;
+  form: FractionForm;
+  /** A whole number, a/b in lowest terms with b ≥ 2, or w a/b with w ≥ 1 and 0 < a < b. */
+  simplest: boolean;
+}
+
+// The typed terms of a fraction or a mixed number, after an optional sign.
+const FRACTION_TERMS = /^[-−]?(?:(\d+) )?(\d+)\/(\d+)$/;
+
+/** a/b with b ≥ 2 and gcd(a, b) = 1: normalising leaves the typed denominator as it is. */
+function inLowestTerms(num: bigint, den: bigint): boolean {
+  return den >= 2n && num > 0n && rational(num, den).den === den;
+}
+
+/** The value of fraction input and the form it was written in (spec §6). */
+export function parseFractionAnswer(input: string): FractionAnswer | null {
+  const value = parseAnswer('fraction', input);
+  if (value === null) return null;
+  const terms = FRACTION_TERMS.exec(input.trim());
+  if (terms === null) {
+    const decimal = input.includes(',');
+    return { value, form: decimal ? 'decimal' : 'whole', simplest: !decimal };
+  }
+  const [, whole, numerator = '', denominator = ''] = terms;
+  const num = BigInt(numerator);
+  const den = BigInt(denominator);
+  if (whole === undefined) return { value, form: 'fraction', simplest: inLowestTerms(num, den) };
+  const simplest = BigInt(whole) >= 1n && num < den && inLowestTerms(num, den);
+  return { value, form: 'mixed', simplest };
+}
+
+export interface SimplestFractionStepOptions {
+  prompt: string;
+  answer: Rational;
+  /** Whether an equal decimal is correct too (spec §5.21 sums: '0,3' for 3/10). */
+  decimalAllowed: boolean;
+  suffix?: string;
+  explanation?: string;
+  /** Topic-specific mistakes (spec §3.4.1); tried after the generic form tip. */
+  diagnose?: Diagnose;
+}
+
+/**
+ * Correct when the value is equal and the input is in simplest form (spec §6). An equal value
+ * in another form gets a generic tip; then the topic's diagnosis; then the approximation tip for
+ * a decimal of a non-terminating answer; then the factor-of-ten fallback.
+ */
+export function simplestFractionStep({
+  prompt,
+  answer,
+  decimalAllowed,
+  suffix,
+  explanation,
+  diagnose,
+}: SimplestFractionStepOptions): Step {
+  const expected = formatMixedNumber(answer);
+  return {
+    kind: 'fraction',
+    prompt,
+    suffix,
+    check(input) {
+      const given = parseFractionAnswer(input);
+      // Validation keeps unparsable input away; should it get here, it is simply wrong.
+      if (given === null) return { correct: false, expected, explanation };
+      const equal = equals(given.value, answer);
+      const decimal = given.form === 'decimal';
+      if (equal && (decimal ? decimalAllowed : given.simplest)) {
+        return { correct: true, expected, explanation };
+      }
+      const tip = equal
+        ? formTip(input, decimal, expected)
+        : (diagnose?.(given.value) ??
+          (decimal ? approximationTip(input, given.value, answer, expected) : undefined) ??
+          powerOfTenTip(given.value, answer));
+      return { correct: false, expected, tip, explanation };
+    },
+  };
+}
+
+/** The right value in another form (spec §3.4.1). */
+function formTip(input: string, decimal: boolean, expected: string): string {
+  return decimal
+    ? 'Schrijf het antwoord als breuk, niet als kommagetal.'
+    : `De waarde klopt, maar vereenvoudig nog: ${formatInput(input.trim())} = ${expected}.`;
+}
+
+/** A decimal that is a non-terminating answer cut off or rounded half up (spec §3.4.1). */
+function approximationTip(
+  input: string,
+  given: Rational,
+  answer: Rational,
+  expected: string,
+): string | undefined {
+  if (decimalPlaces(answer) !== null || answer.num <= 0n) return undefined;
+  const decimals = input.trim().split(',')[1]?.length ?? 0;
+  if (decimals === 0) return undefined;
+  const scale = 10n ** BigInt(decimals);
+  const scaled = answer.num * scale;
+  const down = scaled / answer.den;
+  const up = 2n * (scaled % answer.den) >= answer.den ? down + 1n : down;
+  const approximated = [down, up].some((digits) => equals(rational(digits, scale), given));
+  return approximated
+    ? `${expected} is geen eindig kommagetal: schrijf het antwoord als breuk.`
+    : undefined;
 }
 
 function exactStep(
