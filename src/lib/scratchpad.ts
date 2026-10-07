@@ -51,10 +51,11 @@ function noteKeyText(item: string, key: KeypadKey): string {
     case ':':
       return afterDigit ? key : '';
     case '-':
-      // The operator after a number; otherwise the sign, only at the item start or after '='.
-      return afterDigit || /(^|=)$/.test(item) ? key : '';
+      // The operator after a number; otherwise the sign, at the item start or after '=' or an
+      // operator. A '-' after a digit is the operator, so '5--3' is possible but '--' is not.
+      return afterDigit || /(^|[+×:=]|\d-)$/.test(item) ? key : '';
     case '=':
-      return afterDigit && !item.includes('=') ? key : '';
+      return afterDigit ? key : '';
     case '^':
       return afterDigit && !numberIsPart ? key : '';
     case '/':
