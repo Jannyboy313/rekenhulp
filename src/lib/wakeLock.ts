@@ -1,5 +1,5 @@
 /** The parts of the Screen Wake Lock API used here, so tests can pass fakes. */
-export interface WakeLockSentinelLike {
+interface WakeLockSentinelLike {
   readonly released: boolean;
   release(): Promise<unknown>;
 }
@@ -8,7 +8,7 @@ export interface WakeLockLike {
   request(type: 'screen'): Promise<WakeLockSentinelLike>;
 }
 
-export interface VisibilitySource extends EventTarget {
+interface VisibilitySource extends EventTarget {
   readonly visibilityState: DocumentVisibilityState;
 }
 

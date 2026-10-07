@@ -1,6 +1,6 @@
 import { splitFractions } from './fractionText';
 
-export type PromptSize = 'large' | 'medium' | 'small';
+type PromptSize = 'large' | 'medium' | 'small';
 
 // Estimates; adjust after the phone check (spec §3.3).
 const LARGE_MAX = 18;

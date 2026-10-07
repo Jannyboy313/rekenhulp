@@ -6,7 +6,7 @@ import type { Question } from '../types';
 /** Divisors with a rule of their own (spec §5.6). 7 and 13 use chunking. */
 export type RuleDivisor = 2 | 3 | 4 | 5 | 7 | 8 | 9 | 11 | 13;
 /** Divisors that combine the rules of two coprime factors. */
-export type CombinedDivisor = 6 | 12 | 14 | 15;
+type CombinedDivisor = 6 | 12 | 14 | 15;
 export type Divisor = RuleDivisor | CombinedDivisor;
 
 /** 2 to 15 without 10, like the tables. */
@@ -24,7 +24,7 @@ export const SHORT_NUMBER_DIVISORS: readonly Divisor[] = [7, 13, 14];
 export const MIN_DIGITS = 3;
 export const MAX_DIGITS = 5;
 export const MAX_SHORT_DIGITS = 4;
-export const DIVISIBLE_SHARE = 0.5;
+const DIVISIBLE_SHARE = 0.5;
 
 /** Remainders of the non-divisible numbers: close calls, in one or two groups (spec §5.6). */
 export const NEAR_MISS_REMAINDERS: Record<Divisor, readonly (readonly number[])[]> = {
@@ -81,7 +81,7 @@ export function generateDivisibility(rng: Rng): Question {
   };
 }
 
-export interface RuleCheck {
+interface RuleCheck {
   divisible: boolean;
   /** Lowercase evidence, e.g. 'cijfersom 2 + 7 + 1 + 8 = 18'. */
   reason: string;

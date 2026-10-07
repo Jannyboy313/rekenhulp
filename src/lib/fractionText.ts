@@ -1,4 +1,4 @@
-export type TextSegment =
+type TextSegment =
   | { type: 'text'; text: string }
   /** Mixed: the fraction belongs to the whole number before it, as in `12½` or `−12 1/2`. */
   | { type: 'fraction'; num: string; den: string; mixed: boolean };

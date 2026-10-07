@@ -26,7 +26,7 @@ import type { AnswerKind } from './types';
  * The answer field while typing: plain text, or an open fraction template with its cursor.
  * A mixed template follows a whole number, as in `12 1/2`.
  */
-export type FieldSegment =
+type FieldSegment =
   | { type: 'text'; text: string }
   | { type: 'template'; num: string; den: string; active: FractionSlot; mixed: boolean };
 

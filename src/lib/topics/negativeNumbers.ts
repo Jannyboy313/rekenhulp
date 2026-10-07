@@ -32,7 +32,7 @@ export const PRODUCT_SIGN_TIP =
   'Twee negatieve getallen geven een positieve uitkomst, één negatief getal een negatieve.';
 
 /** A literal in a sum (§5.8): a negative one in parentheses, except as the first term. */
-export function literal(value: number, first = false): string {
+function literal(value: number, first = false): string {
   return value < 0 && !first ? `(${f(value)})` : f(value);
 }
 

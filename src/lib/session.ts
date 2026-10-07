@@ -6,7 +6,7 @@ import type { Generator, PracticeSet, Question, Topic } from './types';
 
 export const MAX_UNIQUE_ATTEMPTS = 20;
 
-export interface Weighted<K> {
+interface Weighted<K> {
   key: K;
   weight: number;
 }

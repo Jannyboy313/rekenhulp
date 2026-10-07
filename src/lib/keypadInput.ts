@@ -62,7 +62,7 @@ export function applyFactorizationKey(value: string, key: KeypadKey): string {
 export type FractionSlot = 'num' | 'den';
 
 /** An open fraction template: numerator, denominator and the slot that has the cursor. */
-export interface FractionTemplate {
+interface FractionTemplate {
   num: string;
   den: string;
   slot: FractionSlot;

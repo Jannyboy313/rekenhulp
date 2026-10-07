@@ -78,7 +78,7 @@
   }
 
   /* Shorter screens drop rows from the bottom, so the keypad stays on screen. Each row costs
-     56 px; the thresholds are estimates from the kladblok plan (spec §3.6). There is no
+     56 px; the thresholds are estimates (spec §3.6). There is no
      Volgende, so a hidden cell can never become active. */
   @media (max-height: 815px) {
     .cell:nth-child(n + 5) {

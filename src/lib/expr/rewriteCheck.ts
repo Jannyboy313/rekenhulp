@@ -18,7 +18,7 @@ export type RewriteReason =
   | 'multipleSteps';
 
 /** `detected`: every property of which the step is a single valid application. */
-export type RewriteResult =
+type RewriteResult =
   | { valid: true; detected: Property[]; reason: null }
   | { valid: false; detected: [Property, ...Property[]]; reason: 'otherProperty' }
   | { valid: false; detected: Property[]; reason: Exclude<RewriteReason, 'otherProperty'> };

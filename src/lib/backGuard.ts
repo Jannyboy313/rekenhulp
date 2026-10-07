@@ -1,10 +1,10 @@
 /** The part of `window.history` the guard uses, so tests can pass a fake. */
-export interface HistoryLike {
+interface HistoryLike {
   pushState(data: unknown, unused: string): void;
   back(): void;
 }
 
-export interface BackGuard {
+interface BackGuard {
   /** Keeps one entry above the current one, so a system back stays inside the app. */
   arm(): void;
   /** Removes the entry again, when the app returns to its start screen by itself. */

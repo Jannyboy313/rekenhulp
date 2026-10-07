@@ -9,7 +9,7 @@ export type AnswerKind =
   | 'factorization'
   | 'scientific';
 
-/** Topics of the implemented sets. Each later plan adds the topics of its set (spec §4.1). */
+/** Topics of the implemented sets. Each new set adds its topics (spec §4.1). */
 export type Topic =
   | 'tables'
   | 'volume'
@@ -66,7 +66,7 @@ export interface Question {
 
 export type Generator = (rng: Rng) => Question;
 
-export interface TopicWeight {
+interface TopicWeight {
   topic: Topic;
   weight: number;
 }

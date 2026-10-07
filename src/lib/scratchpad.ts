@@ -31,7 +31,7 @@ export const NOTE_COLUMNS = 4;
  * One key typed into a note: items (numbers or short sums like `12×7=84`) separated by single
  * spaces. Every key acts on the last item; the rules per key are in spec §3.6.
  */
-export function applyNote(note: string, key: KeypadKey): string {
+function applyNote(note: string, key: KeypadKey): string {
   if (key === 'backspace') return note.slice(0, -1);
   const next = note + noteKeyText(note.slice(note.lastIndexOf(' ') + 1), key);
   return next.length > MAX_NOTE_LENGTH ? note : next;
