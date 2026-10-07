@@ -1,6 +1,7 @@
 import type { Generator, Topic } from '../types';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
+import { generateFractionArithmetic } from './fractionArithmetic';
 import { generateFractionConversion } from './fractionConversion';
 import {
   generateArea,
@@ -50,6 +51,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   scientificNotation: generateScientificNotation,
   decimalArithmetic: generateDecimalArithmetic,
   fractionConversion: generateFractionConversion,
+  fractionArithmetic: generateFractionArithmetic,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -79,4 +81,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
+  fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
 };

@@ -35,7 +35,8 @@ export type Topic =
   | 'powersRoots'
   | 'scientificNotation'
   | 'decimalArithmetic'
-  | 'fractionConversion';
+  | 'fractionConversion'
+  | 'fractionArithmetic';
 
 export interface CheckResult {
   correct: boolean;
