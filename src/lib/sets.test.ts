@@ -3,6 +3,7 @@ import {
   DEFAULT_SESSION_SIZE,
   describeSetTopics,
   MEASUREMENT_SET,
+  NUMBER_SENSE_SET,
   NUMBERS_SET,
   OPERATIONS_SET,
   PRACTICE_SETS,
@@ -20,6 +21,19 @@ describe('practice sets', () => {
       'verhoudingen',
       'getallen',
       'bewerkingen',
+      'getalbegrip',
+    ]);
+  });
+
+  it('makes Getalbegrip five equally weighted topics with 15% tables', () => {
+    expect(NUMBER_SENSE_SET.name).toBe('Getalbegrip');
+    expect(NUMBER_SENSE_SET.tablesPercent).toBe(15);
+    expect(NUMBER_SENSE_SET.topics).toEqual([
+      { topic: 'mentalOperations', weight: 1 },
+      { topic: 'negativeNumbers', weight: 1 },
+      { topic: 'rounding', weight: 1 },
+      { topic: 'powersRoots', weight: 1 },
+      { topic: 'scientificNotation', weight: 1 },
     ]);
   });
 
@@ -123,6 +137,17 @@ describe('describeSetTopics', () => {
       'Volgorde van bewerkingen (ook met negatieve getallen)',
       'Eigenschappen (commutatief, associatief, distributief)',
       'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
+      '15% tafels',
+    ]);
+  });
+
+  it('describes the Getalbegrip set', () => {
+    expect(describeSetTopics(NUMBER_SENSE_SET)).toEqual([
+      'Hoofdrekenen met grote getallen (ook delen met rest)',
+      'Negatieve getallen (ook temperatuur)',
+      'Afronden (tientallen t/m miljoenen, decimalen)',
+      'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
+      'Wetenschappelijke notatie (4,5 × 10⁶)',
       '15% tafels',
     ]);
   });
