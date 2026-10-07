@@ -7,6 +7,7 @@ import {
   generateTime,
   generateVolume,
 } from './measurement';
+import { generateMentalOperations } from './mentalOperations';
 import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
@@ -36,6 +37,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
+  mentalOperations: generateMentalOperations,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -58,4 +60,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
+  mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
 };

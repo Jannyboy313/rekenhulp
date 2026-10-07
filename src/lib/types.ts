@@ -28,7 +28,8 @@ export type Topic =
   | 'squares'
   | 'orderOfOperations'
   | 'smartCalculation'
-  | 'properties';
+  | 'properties'
+  | 'mentalOperations';
 
 export interface CheckResult {
   correct: boolean;
