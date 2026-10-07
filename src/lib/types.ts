@@ -29,7 +29,8 @@ export type Topic =
   | 'orderOfOperations'
   | 'smartCalculation'
   | 'properties'
-  | 'mentalOperations';
+  | 'mentalOperations'
+  | 'negativeNumbers';
 
 export interface CheckResult {
   correct: boolean;

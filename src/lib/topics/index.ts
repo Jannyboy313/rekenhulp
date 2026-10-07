@@ -8,6 +8,7 @@ import {
   generateVolume,
 } from './measurement';
 import { generateMentalOperations } from './mentalOperations';
+import { generateNegativeNumbers } from './negativeNumbers';
 import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
@@ -38,6 +39,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
   mentalOperations: generateMentalOperations,
+  negativeNumbers: generateNegativeNumbers,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -61,4 +63,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
+  negativeNumbers: 'Negatieve getallen (ook temperatuur)',
 };
