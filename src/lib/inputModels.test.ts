@@ -5,6 +5,7 @@ import {
   INVALID_EXPRESSION,
   INVALID_FACTORIZATION,
   INVALID_NUMBER,
+  INVALID_SCIENTIFIC,
   type KeypadKind,
 } from './inputModels';
 import type { FractionInput, KeypadKey } from './keypadInput';
@@ -58,6 +59,17 @@ describe('INPUT_MODELS keys', () => {
       'wissen',
     ]);
     expect(INPUT_MODELS.expression.columns).toBe(4);
+  });
+
+  it('lays out the scientific keypad in 4 columns with ×, ^ and − on the right', () => {
+    // prettier-ignore
+    expect(labels('scientific')).toEqual([
+      '7', '8', '9', '×',
+      '4', '5', '6', '^',
+      '1', '2', '3', '−',
+      '⌫', '0', ',',
+    ]);
+    expect(INPUT_MODELS.scientific.columns).toBe(4);
     expect(INPUT_MODELS.number.columns).toBeUndefined();
   });
 });
@@ -139,6 +151,12 @@ describe('INPUT_MODELS validation and display', () => {
     ['expression', '7×100-7×2', null],
     ['expression', '2×', INVALID_EXPRESSION],
     ['expression', '(2+3', INVALID_EXPRESSION],
+    ['scientific', '4,5×10^6', null],
+    ['scientific', '10^-3', null],
+    ['scientific', '4500000', null],
+    ['scientific', '4,5×10^', INVALID_SCIENTIFIC],
+    ['scientific', '4,5×', INVALID_SCIENTIFIC],
+    ['scientific', '4,5×2^6', INVALID_SCIENTIFIC],
   ] as const)('validates %s input %j as %j', (kind, value, expected) => {
     expect(INPUT_MODELS[kind].validate(value)).toBe(expected);
   });
@@ -147,6 +165,7 @@ describe('INPUT_MODELS validation and display', () => {
     expect(INVALID_NUMBER).toBe('Ongeldig getal');
     expect(INVALID_FACTORIZATION).toBe('Ongeldige ontbinding');
     expect(INVALID_EXPRESSION).toBe('Ongeldige som');
+    expect(INVALID_SCIENTIFIC).toBe('Ongeldige notatie');
   });
 
   it('pretty-prints a submitted input', () => {
@@ -154,6 +173,7 @@ describe('INPUT_MODELS validation and display', () => {
     expect(INPUT_MODELS.fraction.display('-12 1/2')).toBe('−12 1/2');
     expect(INPUT_MODELS.factorization.display('2^2×3')).toBe('2² × 3');
     expect(INPUT_MODELS.expression.display('7×100-7×2')).toBe('7 × 100 − 7 × 2');
+    expect(INPUT_MODELS.scientific.display('4,5×10^-3')).toBe('4,5 × 10⁻³');
   });
 });
 
@@ -164,5 +184,6 @@ describe('displayAnswer', () => {
     expect(displayAnswer('factorization', '2^2×21')).toBe('2² × 21');
     expect(displayAnswer('boolean', 'Ja')).toBe('Ja');
     expect(displayAnswer('expression', '7×(13+87)')).toBe('7 × (13 + 87)');
+    expect(displayAnswer('scientific', '10^6')).toBe('10⁶');
   });
 });

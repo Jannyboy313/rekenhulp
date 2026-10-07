@@ -1,7 +1,13 @@
 import type { Rng } from './random';
 
 /** How a step is answered (spec §6). */
-export type AnswerKind = 'number' | 'fraction' | 'boolean' | 'expression' | 'factorization';
+export type AnswerKind =
+  | 'number'
+  | 'fraction'
+  | 'boolean'
+  | 'expression'
+  | 'factorization'
+  | 'scientific';
 
 /** Topics of the implemented sets. Each later plan adds the topics of its set (spec §4.1). */
 export type Topic =

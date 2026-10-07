@@ -6,7 +6,7 @@
 
   interface Props {
     keys: readonly KeyDef[];
-    /** Grid columns; only the expression keypad has 4 (spec §6). */
+    /** Grid columns; the expression and scientific keypads have 4 (spec §6). */
     columns?: number;
     canSubmit: boolean;
     onkey: (key: KeypadKey) => void;

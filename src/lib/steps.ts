@@ -1,6 +1,12 @@
 import { parse, type Expr } from './expr/parser';
 import { checkRewrite, type Property, type RewriteReason } from './expr/rewriteCheck';
-import { formatFraction, formatInteger, formatPrimeFactors, formatRational } from './format';
+import {
+  formatFraction,
+  formatInteger,
+  formatPrimeFactors,
+  formatRational,
+  formatScientific,
+} from './format';
 import { isPrime, primeFactors } from './primes';
 import {
   compare,
@@ -288,4 +294,69 @@ const TEN = rational(10n);
 /** c × 10ⁿ with 1 ≤ c < 10; a plain number is never normalised. */
 export function isNormalised({ coefficient, exponent }: ScientificInput): boolean {
   return exponent !== null && compare(coefficient, ONE) >= 0 && compare(coefficient, TEN) < 0;
+}
+
+export interface ScientificStepOptions {
+  prompt: string;
+  /** c of the answer c × 10ⁿ, with 1 ≤ c < 10. */
+  coefficient: Rational;
+  exponent: number;
+  explanation?: string;
+  /** Topic-specific mistakes (spec §3.4.1); tried after the generic notation tips. */
+  diagnose?: (given: ScientificInput) => string | undefined;
+}
+
+/**
+ * Only c × 10ⁿ with 1 ≤ c < 10 and the right value is correct (spec §5.19). An equal value in
+ * another form, or the right c with the exponent's sign flipped, gets a generic tip; then the
+ * topic's diagnosis; then the factor-of-ten fallback.
+ */
+export function scientificStep({
+  prompt,
+  coefficient,
+  exponent,
+  explanation,
+  diagnose,
+}: ScientificStepOptions): Step {
+  const answer = multiply(coefficient, powerOfTen(exponent));
+  const expected = formatScientific(coefficient, exponent);
+  return {
+    kind: 'scientific',
+    prompt,
+    check(input) {
+      const given = parseScientific(input);
+      // Validation keeps unparsable input away; should it get here, it is simply wrong.
+      if (given === null) return { correct: false, expected, explanation };
+      const value = scientificValue(given);
+      if (equals(value, answer) && isNormalised(given)) {
+        return { correct: true, expected, explanation };
+      }
+      const tip =
+        notationTip(given, value, answer, coefficient, exponent) ??
+        diagnose?.(given) ??
+        powerOfTenTip(value, answer);
+      return { correct: false, expected, tip, explanation };
+    },
+  };
+}
+
+/** The generic mistakes of spec §3.4.1: the right value in another form, or the sign of n. */
+function notationTip(
+  given: ScientificInput,
+  value: Rational,
+  answer: Rational,
+  coefficient: Rational,
+  exponent: number,
+): string | undefined {
+  if (equals(value, answer)) {
+    return given.exponent === null
+      ? 'Schrijf het als een getal van 1 tot 10 keer een macht van 10.'
+      : 'De waarde klopt, maar het getal vóór × 10 moet minstens 1 en kleiner dan 10 zijn.';
+  }
+  if (given.exponent === -exponent && equals(given.coefficient, coefficient)) {
+    return exponent < 0
+      ? 'Een getal kleiner dan 1 heeft een negatieve exponent.'
+      : 'Een getal groter dan 10 heeft een positieve exponent.';
+  }
+  return undefined;
 }

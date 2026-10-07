@@ -2,7 +2,13 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { fromInteger, rational } from '../lib/rational';
-import { booleanStep, factorizationStep, fractionStep, numberStep } from '../lib/steps';
+import {
+  booleanStep,
+  factorizationStep,
+  fractionStep,
+  numberStep,
+  scientificStep,
+} from '../lib/steps';
 import type { Step } from '../lib/types';
 import QuestionView from './QuestionView.svelte';
 
@@ -243,6 +249,31 @@ describe('QuestionView', () => {
     expect(onanswer).toHaveBeenCalledWith(
       '7×(100-2)',
       expect.objectContaining({ correct: false, expected: '7 × 100 − 7 × 2' }),
+    );
+  });
+
+  it('types scientific notation with the existing keys and rejects an unfinished power', async () => {
+    const onanswer = vi.fn();
+    const scientific = scientificStep({
+      prompt: 'Schrijf in wetenschappelijke notatie: 0,0045',
+      coefficient: rational(9n, 2n),
+      exponent: -3,
+    });
+    render(QuestionView, { props: { step: scientific, onanswer } });
+
+    await press('4', 'komma', '5', 'keer', '1', '0', 'tot de macht', 'min');
+    expect(answerText()).toBe('4,5 × 10^−');
+    await press('OK');
+    expect(errorText()).toBe('Ongeldige notatie');
+    expect(onanswer).not.toHaveBeenCalled();
+
+    await press('3');
+    expect(errorText()).toBe('');
+    expect(answerText()).toBe('4,5 × 10⁻³');
+    await press('OK');
+    expect(onanswer).toHaveBeenCalledWith(
+      '4,5×10^-3',
+      expect.objectContaining({ correct: true, expected: '4,5 × 10⁻³' }),
     );
   });
 

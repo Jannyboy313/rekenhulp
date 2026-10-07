@@ -12,6 +12,7 @@ import {
   parseFactorization,
   parseScientific,
   rewriteStep,
+  scientificStep,
   scientificValue,
   YES,
 } from './steps';
@@ -423,5 +424,74 @@ describe('isNormalised', () => {
     [rational(9n, 2n), null, false],
   ] as const)('judges %o × 10^%s as %s', (coefficient, exponent, expected) => {
     expect(isNormalised({ coefficient, exponent })).toBe(expected);
+  });
+});
+
+describe('scientificStep', () => {
+  const step = scientificStep({
+    prompt: 'Schrijf in wetenschappelijke notatie: 4\u{202f}500\u{202f}000',
+    coefficient: rational(9n, 2n),
+    exponent: 6,
+    explanation: 'uitleg',
+  });
+
+  it('is a scientific step that shows c × 10ⁿ as the expected answer', () => {
+    expect(step.kind).toBe('scientific');
+    expect(step.check('4,5×10^6')).toEqual({
+      correct: true,
+      expected: '4,5 × 10⁶',
+      explanation: 'uitleg',
+    });
+  });
+
+  it('accepts trailing zeros, and 10ⁿ alone for c = 1', () => {
+    expect(step.check('4,50×10^6').correct).toBe(true);
+    const one = scientificStep({ prompt: 'p', coefficient: rational(1n), exponent: 6 });
+    expect(one.check('10^6').correct).toBe(true);
+    expect(one.check('1×10^6')).toMatchObject({ correct: true, expected: '1 × 10⁶' });
+  });
+
+  it('rejects an equal value in another form with a tip', () => {
+    expect(step.check('45×10^5')).toMatchObject({
+      correct: false,
+      tip: 'De waarde klopt, maar het getal vóór × 10 moet minstens 1 en kleiner dan 10 zijn.',
+    });
+    expect(step.check('0,45×10^7').correct).toBe(false);
+    expect(step.check('4500000')).toMatchObject({
+      correct: false,
+      tip: 'Schrijf het als een getal van 1 tot 10 keer een macht van 10.',
+    });
+  });
+
+  it('names an exponent with the wrong sign', () => {
+    expect(step.check('4,5×10^-6').tip).toBe(
+      'Een getal groter dan 10 heeft een positieve exponent.',
+    );
+    const small = scientificStep({ prompt: 'p', coefficient: rational(3n), exponent: -3 });
+    expect(small.check('3×10^3').tip).toBe(
+      'Een getal kleiner dan 1 heeft een negatieve exponent.',
+    );
+  });
+
+  it('tries the topic diagnosis before the factor-of-ten fallback', () => {
+    const diagnosed = scientificStep({
+      prompt: 'p',
+      coefficient: rational(9n, 2n),
+      exponent: 6,
+      diagnose: (given) => (given.exponent === 5 ? 'telfout' : undefined),
+    });
+    expect(diagnosed.check('4,5×10^5').tip).toBe('telfout');
+    expect(step.check('4,5×10^5').tip).toBe(
+      'Je antwoord is 10 keer te klein. Let op de komma en het aantal nullen.',
+    );
+  });
+
+  it('gives no tip for an unrelated or unparsable answer', () => {
+    expect(step.check('3×10^6').tip).toBeUndefined();
+    expect(step.check('4,5×2^6')).toEqual({
+      correct: false,
+      expected: '4,5 × 10⁶',
+      explanation: 'uitleg',
+    });
   });
 });

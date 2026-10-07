@@ -1,10 +1,16 @@
 import { parse } from './expr/parser';
-import { formatExpressionInput, formatFactorizationInput, formatInput } from './format';
+import {
+  formatExpressionInput,
+  formatFactorizationInput,
+  formatInput,
+  formatScientificInput,
+} from './format';
 import {
   applyExpressionKey,
   applyFactorizationKey,
   applyFractionKey,
   applyKey,
+  applyScientificKey,
   EMPTY_FRACTION_INPUT,
   fractionInputToString,
   selectFractionSlot,
@@ -13,7 +19,7 @@ import {
   type KeypadKey,
 } from './keypadInput';
 import { keyDefs, type KeyDef } from './keys';
-import { parseAnswer, parseFactorization } from './steps';
+import { parseAnswer, parseFactorization, parseScientific } from './steps';
 import type { AnswerKind } from './types';
 
 /**
@@ -28,7 +34,7 @@ export type FieldSegment =
 export interface InputModel<S> {
   /** Keys in reading order; OK fills the rest of the last row. */
   keys: readonly KeyDef[];
-  /** Keypad columns; 3 when absent. Only the expression keypad has 4 (spec §6). */
+  /** Keypad columns; 3 when absent. The expression and scientific keypads have 4 (spec §6). */
   columns?: number;
   /** The state before the first key press. */
   empty: S;
@@ -56,11 +62,13 @@ interface KeypadStates {
   fraction: FractionInput;
   expression: string;
   factorization: string;
+  scientific: string;
 }
 
 export const INVALID_NUMBER = 'Ongeldig getal';
 export const INVALID_EXPRESSION = 'Ongeldige som';
 export const INVALID_FACTORIZATION = 'Ongeldige ontbinding';
+export const INVALID_SCIENTIFIC = 'Ongeldige notatie';
 
 // Keypads are written one grid row per line; OK fills the rest of the last row.
 
@@ -102,6 +110,18 @@ const FACTORIZATION_KEYS = keyDefs(
   '1', '2', '3',
   '×', '0', '^',
   'backspace',
+);
+
+/**
+ * The notation is typed with existing keys (spec §6): four columns like the expression keypad,
+ * but four rows, because OK fills the last cell.
+ */
+// prettier-ignore
+const SCIENTIFIC_KEYS = keyDefs(
+  '7', '8', '9', '×',
+  '4', '5', '6', '^',
+  '1', '2', '3', '-',
+  'backspace', '0', ',',
 );
 
 /** A model whose typing state is the input string itself. */
@@ -171,6 +191,15 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
     (input) => (parseFactorization(input) === null ? INVALID_FACTORIZATION : null),
     formatFactorizationInput,
   ),
+  scientific: {
+    ...textModel(
+      SCIENTIFIC_KEYS,
+      applyScientificKey,
+      (input) => (parseScientific(input) === null ? INVALID_SCIENTIFIC : null),
+      formatScientificInput,
+    ),
+    columns: 4,
+  },
 };
 
 /** A given answer as it was shown while typing; Ja and Nee are shown as they are. */
