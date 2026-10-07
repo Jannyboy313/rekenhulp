@@ -1,5 +1,11 @@
-import { formatInteger as f, formatPowerOfTen, formatRational, toSuperscript } from '../format';
-import { pick, randomInt, randomIntWhere, type Rng } from '../random';
+import {
+  formatInteger as f,
+  formatPowerOfTen,
+  formatRational,
+  toSuperscript,
+  UNKNOWN_EXPONENT,
+} from '../format';
+import { pick, randomInt, randomIntWhere, range, type Rng } from '../random';
 import {
   divide,
   equals,
@@ -22,7 +28,7 @@ export type PowerForm = (typeof POWER_FORMS)[number];
 type Pair = readonly [base: number, exponent: number];
 
 function pairs(base: number, from: number, to: number): Pair[] {
-  return Array.from({ length: to - from + 1 }, (_, index) => [base, from + index] as const);
+  return range(from, to).map((exponent) => [base, exponent] as const);
 }
 
 /** Positive bases with exponent ≥ 3: 23 pairs, drawn uniformly. */
@@ -53,7 +59,7 @@ export const MAX_SMALL_EXPONENT_BASE = 20;
 
 type DecimalPair = readonly [base: Rational, exponent: number];
 
-const digits = Array.from({ length: 9 }, (_, index) => index + 1);
+const digits = range(1, 9);
 
 /** The three equally likely groups of decimal powers (spec §5.18). */
 export const DECIMAL_POWERS: readonly (readonly DecimalPair[])[] = [
@@ -64,9 +70,6 @@ export const DECIMAL_POWERS: readonly (readonly DecimalPair[])[] = [
   digits.map((k): DecimalPair => [rational(BigInt(k), 100n), 2]),
   [11n, 12n, 15n, 25n, 35n].map((k): DecimalPair => [rational(k, 10n), 2]),
 ];
-
-/** Superscript n (U+207F) for the unknown exponent. */
-const UNKNOWN_EXPONENT = 'ⁿ';
 
 /** A base as a factor: a negative one in parentheses (§5.8). */
 function factorText(base: Rational): string {

@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest';
 import {
   createRng,
   drawUntil,
+  notRound,
   pick,
   randomInt,
   randomIntWhere,
   randomSeed,
+  range,
   shuffle,
 } from './random';
 
@@ -113,5 +115,19 @@ describe('drawUntil', () => {
 
   it('throws when no draw is accepted', () => {
     expect(() => drawUntil(() => null)).toThrow(RangeError);
+  });
+});
+
+describe('range', () => {
+  it('lists the integers of an inclusive range in ascending order', () => {
+    expect(range(3, 6)).toEqual([3, 4, 5, 6]);
+    expect(range(4, 4)).toEqual([4]);
+  });
+});
+
+describe('notRound', () => {
+  it('accepts exactly the numbers that are no multiple of 10', () => {
+    expect([7, 35, 101].map(notRound)).toEqual([true, true, true]);
+    expect([0, 30, 1200].map(notRound)).toEqual([false, false, false]);
   });
 });

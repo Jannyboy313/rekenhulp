@@ -4,7 +4,7 @@ import { evaluateMisconception, type Misconception } from '../expr/misconception
 import type { BinaryOperator, Expr } from '../expr/parser';
 import { explainEvaluation } from '../expr/reduce';
 import { pick, randomInt, shuffle, type Rng } from '../random';
-import { equals, fromInteger, negate, type Rational } from '../rational';
+import { equals, fromInteger, isInteger, negate, type Rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
 import type { Question } from '../types';
@@ -32,7 +32,7 @@ const abs = (value: bigint) => (value < 0n ? -value : value);
  * Builds an expression from a literal source and a power slot. The shapes must be the parser's
  * (left-associative chains, explicit groups); the tests check parse(formatExpr(e)) equals e.
  */
-export type Template = (literal: () => Expr, power: (base: Expr) => Expr) => Expr;
+type Template = (literal: () => Expr, power: (base: Expr) => Expr) => Expr;
 
 function binary(operator: BinaryOperator, left: Expr, right: Expr): Expr {
   return { type: 'binary', operator, left, right };
@@ -138,18 +138,18 @@ function negateLiterals(rng: Rng, expr: Expr, count: number): Expr {
  */
 function isValid(expr: Expr, powerBase: bigint): boolean {
   const value = evaluate(expr);
-  if (value === null || value.den !== 1n) return false;
+  if (value === null || !isInteger(value)) return false;
   return abs(value.num) <= BigInt(MAX_ANSWER) && partsValid(expr, powerBase);
 }
 
 /** An integer with an absolute value of at least 2; null (division by zero) is not. */
 function isNonTrivialInteger(value: Rational | null): boolean {
-  return value !== null && value.den === 1n && abs(value.num) >= 2n;
+  return value !== null && isInteger(value) && abs(value.num) >= 2n;
 }
 
 /** 1 or −1: a factor that changes nothing but the sign. */
 function isUnit(value: Rational | null): boolean {
-  return value !== null && value.den === 1n && abs(value.num) === 1n;
+  return value !== null && isInteger(value) && abs(value.num) === 1n;
 }
 
 function partsValid(expr: Expr, powerBase: bigint): boolean {
@@ -162,7 +162,7 @@ function partsValid(expr: Expr, powerBase: bigint): boolean {
     }
     case 'power': {
       const base = evaluate(expr.base);
-      if (base === null || base.den !== 1n || abs(base.num) !== powerBase) return false;
+      if (base === null || !isInteger(base) || abs(base.num) !== powerBase) return false;
       return partsValid(expr.base, powerBase);
     }
     case 'binary': {

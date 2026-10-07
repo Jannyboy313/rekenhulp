@@ -14,11 +14,12 @@ import {
   type Exercise,
   generateSmartCalculation,
   MAX_ANSWER,
-  MIN_ANSWER,
   STRATEGIES,
   type Strategy,
 } from './smartCalculation';
 
+/** Smallest answer of any strategy (spec §5.9). */
+const MIN_ANSWER = 1;
 const SAMPLES = 3000;
 const PER_STRATEGY = 1000;
 

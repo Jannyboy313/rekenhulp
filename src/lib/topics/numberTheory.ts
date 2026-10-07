@@ -1,6 +1,6 @@
 import { formatInteger, formatPrimeFactors } from '../format';
 import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes';
-import { pick, randomInt, type Rng } from '../random';
+import { drawUntil, pick, randomInt, range, type Rng } from '../random';
 import { fromInteger } from '../rational';
 import { booleanStep, factorizationStep, numberStep } from '../steps';
 import { positiveInteger, type Diagnose } from '../tips';
@@ -21,10 +21,6 @@ export const MIN_COPRIME_TERM = 10;
 
 type Pair = readonly [number, number];
 
-function range(min: number, max: number): number[] {
-  return Array.from({ length: max - min + 1 }, (_, index) => min + index);
-}
-
 function question(topic: Topic, key: string, step: Step): Question {
   return { key: `${topic}:${key}`, topic, steps: [step] };
 }
@@ -35,7 +31,7 @@ function pairKey([a, b]: Pair): string {
 }
 
 /** '12 = 2² × 3', or '13 is priem'. */
-export function describeFactors(n: number): string {
+function describeFactors(n: number): string {
   return isPrime(n)
     ? `${formatInteger(n)} is priem`
     : `${formatInteger(n)} = ${formatPrimeFactors(primeFactors(n))}`;
@@ -137,11 +133,11 @@ function sharedFactorPair(rng: Rng): Pair {
 
 /** Two different composites without a common factor, e.g. 35 and 48. */
 function coprimeComposites(rng: Rng): Pair {
-  for (;;) {
+  return drawUntil((): Pair | null => {
     const a = pick(rng, COPRIME_CANDIDATES);
     const b = pick(rng, COPRIME_CANDIDATES);
-    if (a !== b && gcd(a, b) === 1) return [a, b];
-  }
+    return a !== b && gcd(a, b) === 1 ? [a, b] : null;
+  });
 }
 
 /** GGD mistakes: the KGV, a smaller common divisor, or not a divisor of a or b. */
@@ -174,9 +170,9 @@ export function gcdExplanation(a: number, b: number): string {
 /** Prime yes/no (spec §5.4). */
 export const MIN_PRIME_CANDIDATE = 11;
 export const MAX_PRIME_CANDIDATE = 199;
-export const PRIME_SHARE = 0.5;
+const PRIME_SHARE = 0.5;
 /** Share of the composites that is not divisible by 3: the ones that look prime. */
-export const HARD_COMPOSITE_SHARE = 0.5;
+const HARD_COMPOSITE_SHARE = 0.5;
 
 const PRIME_CANDIDATES = range(MIN_PRIME_CANDIDATE, MAX_PRIME_CANDIDATE);
 export const PRIMES: readonly number[] = PRIME_CANDIDATES.filter(isPrime);
@@ -214,10 +210,10 @@ export function primeExplanation(n: number): string {
 /** Prime factorization (spec §5.5). */
 export const MIN_FACTORIZATION = 12;
 export const MAX_FACTORIZATION = 200;
-export const MIN_PRIME_FACTOR_COUNT = 3;
+const MIN_PRIME_FACTOR_COUNT = 3;
 
 /** Prime factors counted with multiplicity: 84 = 2 × 2 × 3 × 7 → 4. */
-export function primeFactorCount(n: number): number {
+function primeFactorCount(n: number): number {
   return primeFactors(n).reduce((count, { exponent }) => count + exponent, 0);
 }
 

@@ -23,8 +23,16 @@ export function fromInteger(value: number): Rational {
   return rational(BigInt(value));
 }
 
+export const ONE = rational(1n);
+export const HUNDRED = rational(100n);
+
 export function equals(a: Rational, b: Rational): boolean {
   return a.num === b.num && a.den === b.den;
+}
+
+/** Whether the value is a whole number; normalised, so the denominator is then 1. */
+export function isInteger(value: Rational): boolean {
+  return value.den === 1n;
 }
 
 // Optional ASCII or typographic minus, optional integer part, optional ",digits".
@@ -76,6 +84,13 @@ export function decimalPlaces(value: Rational): number | null {
     fives++;
   }
   return den === 1n ? Math.max(twos, fives) : null;
+}
+
+/** decimalPlaces for a value that must terminate; throws for e.g. 1/3. */
+export function finiteDecimalPlaces(value: Rational): number {
+  const decimals = decimalPlaces(value);
+  if (decimals === null) throw new RangeError('Value has no finite decimal representation');
+  return decimals;
 }
 
 export function add(a: Rational, b: Rational): Rational {

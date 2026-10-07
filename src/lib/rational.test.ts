@@ -5,9 +5,13 @@ import {
   decimalPlaces,
   divide,
   equals,
+  finiteDecimalPlaces,
   fromInteger,
+  HUNDRED,
+  isInteger,
   multiply,
   negate,
+  ONE,
   parseDutchNumber,
   parseFraction,
   parseMixedNumber,
@@ -41,10 +45,25 @@ describe('fromInteger', () => {
   });
 });
 
+describe('constants', () => {
+  it('holds 1 and 100', () => {
+    expect(ONE).toEqual(rational(1n));
+    expect(HUNDRED).toEqual(rational(100n));
+  });
+});
+
 describe('equals', () => {
   it('compares normalised values', () => {
     expect(equals(rational(1n, 2n), rational(2n, 4n))).toBe(true);
     expect(equals(rational(1n, 2n), rational(1n, 3n))).toBe(false);
+  });
+});
+
+describe('isInteger', () => {
+  it('is true for whole numbers only', () => {
+    expect(isInteger(rational(8n, 4n))).toBe(true);
+    expect(isInteger(rational(-3n))).toBe(true);
+    expect(isInteger(rational(1n, 2n))).toBe(false);
   });
 });
 
@@ -132,6 +151,17 @@ describe('decimalPlaces', () => {
   it('returns null for values that do not terminate', () => {
     expect(decimalPlaces(rational(1n, 3n))).toBeNull();
     expect(decimalPlaces(rational(1n, 60n))).toBeNull();
+  });
+});
+
+describe('finiteDecimalPlaces', () => {
+  it('returns the decimals of a terminating value', () => {
+    expect(finiteDecimalPlaces(rational(3n, 40n))).toBe(3);
+    expect(finiteDecimalPlaces(rational(12n))).toBe(0);
+  });
+
+  it('throws for values that do not terminate', () => {
+    expect(() => finiteDecimalPlaces(rational(1n, 3n))).toThrow(/no finite decimal/);
   });
 });
 

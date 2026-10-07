@@ -1,5 +1,5 @@
 import { formatEuro, formatInteger, formatMoney, formatRational, MINUS } from '../format';
-import { pick, type Rng } from '../random';
+import { pick, range, type Rng } from '../random';
 import {
   add,
   compare,
@@ -7,6 +7,8 @@ import {
   divide,
   equals,
   fromInteger,
+  HUNDRED,
+  isInteger,
   multiply,
   rational,
   subtract,
@@ -49,7 +51,6 @@ export const PERCENTAGES: readonly Percentage[] = [
   percentage(150, 50),
 ];
 
-const HUNDRED = fromInteger(100);
 const FIFTY = fromInteger(50);
 const FIFTEEN = fromInteger(15);
 const TEN = fromInteger(10);
@@ -63,8 +64,8 @@ export const INCREASE_PERCENTAGES: readonly Percentage[] = PERCENTAGES.filter(
   ({ value }) => compare(value, FIFTY) <= 0,
 );
 
-export const MIN_WHOLE = 10;
-export const MAX_WHOLE = 1000;
+const MIN_WHOLE = 10;
+const MAX_WHOLE = 1000;
 
 function hasAtMostTwoSignificantDigits(value: number): boolean {
   let digits = value;
@@ -73,14 +74,13 @@ function hasAtMostTwoSignificantDigits(value: number): boolean {
 }
 
 /** Integers in [10, 1000] with at most 2 significant digits: 85 and 470, not 487. */
-export const NICE_WHOLES: readonly number[] = Array.from(
-  { length: MAX_WHOLE - MIN_WHOLE + 1 },
-  (_, index) => MIN_WHOLE + index,
-).filter(hasAtMostTwoSignificantDigits);
+export const NICE_WHOLES: readonly number[] = range(MIN_WHOLE, MAX_WHOLE).filter(
+  hasAtMostTwoSignificantDigits,
+);
 
 /** '15' or '12½'. Percentages are whole or half (spec §8). */
 export function formatPercentage(value: Rational): string {
-  if (value.den === 1n) return formatRational(value);
+  if (isInteger(value)) return formatRational(value);
   if (value.den === 2n && value.num > 0n) return `${formatInteger((value.num - 1n) / 2n)}½`;
   throw new RangeError('Only whole and half percentages are supported');
 }
@@ -125,7 +125,7 @@ export function wholeExplanation(p: Percentage, whole: Rational): string {
 }
 
 /** Share of integer answers (spec §5.12); the rest has 1 or 2 decimals. */
-export const INTEGER_SHARE = 0.8;
+const INTEGER_SHARE = 0.8;
 const MAX_DECIMALS = 2;
 
 const WHOLES: readonly Rational[] = NICE_WHOLES.map(fromInteger);
@@ -149,10 +149,6 @@ export function generatePercentages(rng: Rng): Question {
     case 'backToWhole':
       return backToWhole(rng);
   }
-}
-
-function isInteger(value: Rational): boolean {
-  return value.den === 1n;
 }
 
 function hasAtMostTwoDecimals(value: Rational): boolean {

@@ -1,5 +1,5 @@
 import { formatEuro, formatInteger as f, formatRational } from '../format';
-import { drawUntil, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { drawUntil, notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
 import { decimalPlaces, divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
@@ -38,7 +38,7 @@ export function hasCarry(a: number, b: number): boolean {
 /** Whether smartCalculation (§5.9) also generates this product. */
 export function isSmartProduct(x: number, y: number): boolean {
   const smart = (factor: number, other: number) =>
-    SMART_FACTORS.includes(factor) && other % 10 !== 0;
+    SMART_FACTORS.includes(factor) && notRound(other);
   return smart(x, y) || smart(y, x);
 }
 
@@ -101,7 +101,7 @@ function addSubtract(rng: Rng): Question {
   const { a, b } = drawUntil(() => {
     const a = randomInt(rng, MIN_TERM, MAX_TERM);
     // Two significant digits, then one or two zeros: 2800, 470.
-    const digits = randomIntWhere(rng, 11, 99, (value) => value % 10 !== 0);
+    const digits = randomIntWhere(rng, 11, 99, notRound);
     const b = digits * 10 ** randomInt(rng, 1, 2);
     // A borrow in a − b is a carry in (a − b) + b.
     const ok = add ? hasCarry(a, b) : a > b && hasCarry(a - b, b);
@@ -114,7 +114,7 @@ function addSubtract(rng: Rng): Question {
 /** `28 × 500`: p × 10ⁱ and q × 10ʲ with i + j ∈ [1, 4], in random order. */
 function multiplyByZeros(rng: Rng): Question {
   const { first, second } = drawUntil(() => {
-    const p = randomIntWhere(rng, 2, 99, (value) => value % 10 !== 0);
+    const p = randomIntWhere(rng, 2, 99, notRound);
     const q = randomInt(rng, 2, 9);
     const zeros = randomInt(rng, 1, 4);
     const i = randomInt(rng, 0, zeros);
@@ -144,10 +144,10 @@ function divideByZeros(rng: Rng): Question {
 }
 
 /** What a remainder question asks: round up, round down, or the remainder itself. */
-export type Ask = 'up' | 'down' | 'rest';
+type Ask = 'up' | 'down' | 'rest';
 const ASKS: readonly Ask[] = ['up', 'down', 'rest'];
 
-export interface RemainderContext {
+interface RemainderContext {
   id: string;
   ask: Ask;
   minDivisor: number;

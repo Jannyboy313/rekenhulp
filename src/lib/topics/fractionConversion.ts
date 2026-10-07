@@ -4,7 +4,8 @@ import { pick, randomIntWhere, type Rng } from '../random';
 import {
   decimalPlaces,
   equals,
-  fromInteger,
+  finiteDecimalPlaces,
+  HUNDRED,
   multiply,
   parseDutchNumber,
   rational,
@@ -30,7 +31,6 @@ export const TERMINATING_DENOMINATORS: readonly number[] = [2, 4, 5, 8, 10, 20, 
 /** Fraction ↔ percentage also uses thirds and sixths: 33 1/3%. */
 export const PERCENTAGE_DENOMINATORS: readonly number[] = [2, 3, 4, 5, 6, 8, 10, 20, 25, 50];
 
-const HUNDRED = fromInteger(100);
 const TO_PERCENT_TIP = 'Procent betekent honderdste: vermenigvuldig met 100.';
 const FROM_PERCENT_TIP = 'Procent betekent honderdste: deel door 100.';
 
@@ -44,16 +44,14 @@ function tipFor(wrong: Rational, tip: string): Diagnose {
 }
 
 /** 37,5, or a mixed number for thirds and sixths: 33 1/3. Without the % sign. */
-export function formatPercentNumber(fraction: Rational): string {
+function formatPercentNumber(fraction: Rational): string {
   const percent = multiply(fraction, HUNDRED);
   return decimalPlaces(percent) === null ? formatMixedNumber(percent) : formatRational(percent);
 }
 
 /** 3/8 → '375/1000'; null when the denominator is a power of ten already (7/10). */
 function overPowerOfTen(fraction: Rational): string | null {
-  const decimals = decimalPlaces(fraction);
-  if (decimals === null) throw new RangeError('Value has no finite decimal representation');
-  const power = 10n ** BigInt(decimals);
+  const power = 10n ** BigInt(finiteDecimalPlaces(fraction));
   if (power === fraction.den) return null;
   return `${formatInteger((fraction.num * power) / fraction.den)}/${formatInteger(power)}`;
 }

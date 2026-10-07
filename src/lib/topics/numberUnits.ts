@@ -1,10 +1,11 @@
-import { formatInteger, formatPowerOfTen, formatRational } from '../format';
+import { formatInteger, formatPowerOfTen, formatRational, UNKNOWN_EXPONENT } from '../format';
 import { pick, randomInt, type Rng } from '../random';
 import { divide, equals, fromInteger, multiply, powerOfTen, type Rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
 import type { Question } from '../types';
 import {
+  coefficientOf,
   conversionQuestion,
   isNiceValue,
   MAX_DECIMALS,
@@ -33,13 +34,10 @@ export const NUMBER_LIMITS: ScaleLimits = { maxShift: 3, maxValueExponent: 5 };
  * Share of name → power questions that ask for a bare name, e.g. `1 miljard = 10ⁿ`.
  * The effective share is slightly higher: randomMantissa can also return 1.
  */
-export const BARE_NAME_SHARE = 0.4;
+const BARE_NAME_SHARE = 0.4;
 
 /** Power → name prompts start at 10³: the topic skips tien and honderd. */
 export const MIN_POWER = 3;
-
-/** Superscript n (U+207F) for the unknown exponent. */
-const UNKNOWN_EXPONENT = 'ⁿ';
 
 type NumberUnitForm = 'nameToPower' | 'nameToName' | 'powerToName';
 const FORMS: readonly NumberUnitForm[] = ['nameToPower', 'nameToName', 'powerToName'];
@@ -134,7 +132,7 @@ function nameToPowerExplanation(
 function powerToName(rng: Rng): Question {
   const unit = pick(rng, NUMBER_UNITS);
   const mantissa = randomMantissa(rng);
-  const coefficient = divide(fromInteger(mantissa), powerOfTen(String(mantissa).length - 1));
+  const coefficient = coefficientOf(mantissa);
   // The answer is coefficient × 10^(exponent − unit.exponent). Shift 0 always fits.
   const options: { exponent: number; answer: Rational }[] = [];
   const lowest = Math.max(MIN_POWER, unit.exponent - MAX_DECIMALS);

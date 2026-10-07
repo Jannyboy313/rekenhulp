@@ -1,9 +1,9 @@
 import { formatInteger, formatPowerOfTen, formatRational, formatScientific } from '../format';
 import { drawUntil, pick, type Rng } from '../random';
-import { divide, equals, fromInteger, multiply, powerOfTen, type Rational } from '../rational';
+import { equals, multiply, ONE, powerOfTen, type Rational } from '../rational';
 import { numberStep, scientificStep, type ScientificInput } from '../steps';
 import type { Question } from '../types';
-import { randomMantissa } from './measurement';
+import { coefficientOf, randomMantissa } from './measurement';
 
 // Scientific notation (spec §5.19).
 export const NOTATION_FORMS = ['toNotation', 'toNumber', 'normalise'] as const;
@@ -12,15 +12,9 @@ export type NotationForm = (typeof NOTATION_FORMS)[number];
 /** n of c × 10ⁿ: a written-out number has at most 10 digits. */
 export const EXPONENTS: readonly number[] = [-6, -5, -4, -3, -2, -1, 2, 3, 4, 5, 6, 7, 8, 9];
 /** s of the prompt's m = c × 10ˢ in the normalise form. */
-export const SHIFTS: readonly number[] = [-2, -1, 1, 2, 3];
+const SHIFTS: readonly number[] = [-2, -1, 1, 2, 3];
 
-const ONE = fromInteger(1);
 const NOTATION_PROMPT = 'Schrijf in wetenschappelijke notatie:';
-
-/** c in [1, 10) from a mantissa with 1 to 3 significant digits: 45 → 4,5. */
-function coefficientOf(mantissa: number): Rational {
-  return divide(fromInteger(mantissa), powerOfTen(String(mantissa).length - 1));
-}
 
 /** The number written out: 4 500 000, 0,000045. */
 function writtenOut(coefficient: Rational, exponent: number): string {

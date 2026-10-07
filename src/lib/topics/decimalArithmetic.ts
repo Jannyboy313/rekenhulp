@@ -1,11 +1,13 @@
-import { formatInteger, formatRational, MINUS } from '../format';
-import { drawUntil, pick, randomInt, randomIntWhere, shuffle, type Rng } from '../random';
+import { formatFixed, formatInteger, formatRational, MINUS } from '../format';
+import { drawUntil, notRound, pick, randomInt, randomIntWhere, shuffle, type Rng } from '../random';
 import {
   add,
   compare,
-  decimalPlaces,
   equals,
+  finiteDecimalPlaces,
   fromInteger,
+  HUNDRED,
+  isInteger,
   multiply,
   powerOfTen,
   subtract,
@@ -14,30 +16,21 @@ import {
 import { numberStep } from '../steps';
 import { powerOfTenShift, type Diagnose } from '../tips';
 import type { Question } from '../types';
-import { formatFixed } from './rounding';
 
 // Decimal arithmetic (spec §5.22).
 export const DECIMAL_FORMS = ['addSubtract', 'multiply', 'divide'] as const;
 export type DecimalForm = (typeof DECIMAL_FORMS)[number];
 
 /** p of the factor p × 10⁻ⁱ; q of the other factor is in [2, 9]. */
-export const MULTIPLY_DIGITS: readonly number[] = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 25];
+const MULTIPLY_DIGITS: readonly number[] = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 25];
 /** p of the quotient and q of the divisor: [2, 12] without 10. */
-export const DIVIDE_DIGITS: readonly number[] = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12];
+const DIVIDE_DIGITS: readonly number[] = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12];
 
-const HUNDRED = fromInteger(100);
 const THOUSAND = fromInteger(1000);
 
 /** digits × 10^exponent, exactly. */
 function scaled(digits: number, exponent: number): Rational {
   return multiply(fromInteger(digits), powerOfTen(exponent));
-}
-
-/** Decimals of a value that terminates; every value in this topic does. */
-function decimalsOf(value: Rational): number {
-  const decimals = decimalPlaces(value);
-  if (decimals === null) throw new RangeError('Value has no finite decimal representation');
-  return decimals;
 }
 
 /**
@@ -46,14 +39,14 @@ function decimalsOf(value: Rational): number {
  */
 function randomDecimal(rng: Rng, decimals: number): Rational {
   const max = decimals === 0 ? 99 : 999;
-  const digits = randomIntWhere(rng, 1, max, (n) => decimals === 0 || n % 10 !== 0);
+  const digits = randomIntWhere(rng, 1, max, (n) => decimals === 0 || notRound(n));
   return scaled(digits, -decimals);
 }
 
 /** The digits of both numbers aligned on the right, as whole numbers are (spec §3.4.1). */
 function rightAligned(a: Rational, b: Rational, subtracting: boolean): Rational {
-  const decimalsA = decimalsOf(a);
-  const decimalsB = decimalsOf(b);
+  const decimalsA = finiteDecimalPlaces(a);
+  const decimalsB = finiteDecimalPlaces(b);
   const digitsA = multiply(a, powerOfTen(decimalsA));
   const digitsB = multiply(b, powerOfTen(decimalsB));
   const combined = subtracting ? subtract(digitsA, digitsB) : add(digitsA, digitsB);
@@ -63,7 +56,7 @@ function rightAligned(a: Rational, b: Rational, subtracting: boolean): Rational 
 /** `4,7 + 0,35 = ?` or `5 − 0,25 = ?`; a subtraction has a > b. */
 export function addSubtractQuestion(a: Rational, b: Rational, subtracting: boolean): Question {
   const answer = subtracting ? subtract(a, b) : add(a, b);
-  const decimals = Math.max(decimalsOf(a), decimalsOf(b));
+  const decimals = Math.max(finiteDecimalPlaces(a), finiteDecimalPlaces(b));
   const operator = subtracting ? MINUS : '+';
   const aligned = `${formatFixed(a, decimals)} ${operator} ${formatFixed(b, decimals)}`;
   const wrong = rightAligned(a, b, subtracting);
@@ -86,7 +79,7 @@ export function addSubtractQuestion(a: Rational, b: Rational, subtracting: boole
 }
 
 /** A factor digits × 10^−decimals. */
-export interface DecimalFactor {
+interface DecimalFactor {
   digits: number;
   decimals: number;
 }
@@ -134,10 +127,10 @@ export function divideQuestion(p: number, s: number, q: number, t: number): Ques
   const divisor = scaled(q, t);
   const dividend = multiply(quotient, divisor);
   const sum = `${formatRational(dividend)} : ${formatRational(divisor)}`;
-  const factor = powerOfTen(decimalsOf(divisor));
+  const factor = powerOfTen(finiteDecimalPlaces(divisor));
   const madeWhole =
     `${formatRational(multiply(dividend, factor))} : ` + formatRational(multiply(divisor, factor));
-  const wholeDivisor = divisor.den === 1n;
+  const wholeDivisor = isInteger(divisor);
   const diagnose: Diagnose = (given) =>
     !wholeDivisor && powerOfTenShift(given, quotient) !== null
       ? `Maak eerst van de deler een heel getal: ${sum} = ${madeWhole}.`
@@ -191,8 +184,8 @@ function divideForm(rng: Rng): Question {
     const quotient = scaled(p, s);
     const divisor = scaled(q, t);
     const dividend = multiply(quotient, divisor);
-    if (dividend.den === 1n && divisor.den === 1n) return null;
-    if ([dividend, divisor, quotient].some((part) => decimalsOf(part) > 3)) return null;
+    if (isInteger(dividend) && isInteger(divisor)) return null;
+    if ([dividend, divisor, quotient].some((part) => finiteDecimalPlaces(part) > 3)) return null;
     return compare(dividend, THOUSAND) < 0 ? divideQuestion(p, s, q, t) : null;
   });
 }

@@ -25,6 +25,16 @@ export function randomInt(rng: Rng, min: number, max: number): number {
   return min + Math.floor(rng() * (max - min + 1));
 }
 
+/** The integers in [min, max], both inclusive, in ascending order. */
+export function range(min: number, max: number): number[] {
+  return Array.from({ length: max - min + 1 }, (_, index) => min + index);
+}
+
+/** Not a multiple of 10: a draw predicate for numbers that must not be round. */
+export function notRound(value: number): boolean {
+  return value % 10 !== 0;
+}
+
 /** Uniform integer in [min, max] that passes `accept`, by rejection. Throws if none turns up. */
 export function randomIntWhere(
   rng: Rng,

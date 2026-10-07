@@ -4,6 +4,7 @@ import {
   formatEuro,
   formatExpressionInput,
   formatFactorizationInput,
+  formatFixed,
   formatFraction,
   formatInput,
   formatInteger,
@@ -56,6 +57,15 @@ describe('formatRational', () => {
 
   it('rejects values without a finite decimal representation', () => {
     expect(() => formatRational(rational(1n, 3n))).toThrow(RangeError);
+  });
+});
+
+describe('formatFixed', () => {
+  it('formats with a fixed number of decimals', () => {
+    expect(formatFixed(rational(3n), 1)).toBe('3,0');
+    expect(formatFixed(rational(39n, 100n), 2)).toBe('0,39');
+    expect(formatFixed(rational(37n, 10n), 1)).toBe('3,7');
+    expect(formatFixed(rational(2_000_000n), 0)).toBe(`2${S}000${S}000`);
   });
 });
 

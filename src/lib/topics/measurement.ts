@@ -1,5 +1,5 @@
 import { formatInteger, formatRational } from '../format';
-import { pick, randomInt, type Rng } from '../random';
+import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
 import {
   add,
   compare,
@@ -7,7 +7,10 @@ import {
   divide,
   equals,
   fromInteger,
+  HUNDRED,
+  isInteger,
   multiply,
+  ONE,
   powerOfTen,
   rational,
   subtract,
@@ -47,7 +50,7 @@ export const AREA_UNITS: readonly ScaleUnit[] = [
   { symbol: 'km²', exponent: 6 },
 ];
 
-/** Base unit m. No dam/hm (spec §11.10). */
+/** Base unit m. No dam/hm (spec §5.10). */
 export const LENGTH_UNITS: readonly ScaleUnit[] = [
   { symbol: 'mm', exponent: -3 },
   { symbol: 'cm', exponent: -2 },
@@ -56,7 +59,7 @@ export const LENGTH_UNITS: readonly ScaleUnit[] = [
   { symbol: 'km', exponent: 3 },
 ];
 
-/** Base unit g. No cg/dg (spec §11.10). */
+/** Base unit g. No cg/dg (spec §5.10). */
 export const MASS_UNITS: readonly ScaleUnit[] = [
   { symbol: 'mg', exponent: -3 },
   { symbol: 'g', exponent: 0 },
@@ -80,7 +83,7 @@ export const METRIC_LIMITS: ScaleLimits = { maxShift: 6, maxValueExponent: 7 };
 /** Values have at most 3 decimals, so the smallest allowed value is 0,001. */
 export const MAX_DECIMALS = 3;
 
-export interface ScaleConversion {
+interface ScaleConversion {
   from: ScaleUnit;
   to: ScaleUnit;
   value: Rational;
@@ -116,10 +119,12 @@ export function isNiceValue(
 /** An integer with 1 to 3 significant digits, e.g. 7, 35 or 125 (never 30 or 120). */
 export function randomMantissa(rng: Rng): number {
   const digits = randomInt(rng, 1, 3);
-  for (;;) {
-    const mantissa = randomInt(rng, 10 ** (digits - 1), 10 ** digits - 1);
-    if (mantissa % 10 !== 0) return mantissa;
-  }
+  return randomIntWhere(rng, 10 ** (digits - 1), 10 ** digits - 1, notRound);
+}
+
+/** c in [1, 10) from a mantissa with 1 to 3 significant digits: 45 → 4,5. */
+export function coefficientOf(mantissa: number): Rational {
+  return divide(fromInteger(mantissa), powerOfTen(String(mantissa).length - 1));
 }
 
 export function randomScaleConversion(
@@ -156,9 +161,9 @@ export function conversionExplanation(
   answer: Rational,
 ): string {
   const ratio = divide(answer, value);
-  if (equals(ratio, fromInteger(1))) return `1 ${from} = 1 ${to}`;
+  if (equals(ratio, ONE)) return `1 ${from} = 1 ${to}`;
   const [shownValue, shownAnswer] = [formatRational(value), formatRational(answer)];
-  if (ratio.den === 1n) {
+  if (isInteger(ratio)) {
     const factor = formatInteger(ratio.num);
     return `1 ${from} = ${factor} ${to} → ${shownValue} × ${factor} = ${shownAnswer}`;
   }
@@ -167,13 +172,11 @@ export function conversionExplanation(
   return `1 ${to} = ${factor} ${from} → ${shownValue} : ${factor} = ${shownAnswer}`;
 }
 
-const ONE = fromInteger(1);
-
 /**
  * × and : swapped (spec §3.4.1): the value divided by the factor instead of multiplied, or the
  * other way round. Units with factor 1 (ml and cm³) have no such mistake.
  */
-export function swappedConversionTip(value: Rational, answer: Rational): Diagnose {
+function swappedConversionTip(value: Rational, answer: Rational): Diagnose {
   const ratio = divide(answer, value);
   return (given) => {
     if (equals(ratio, ONE) || !equals(given, divide(value, ratio))) return undefined;
@@ -191,7 +194,7 @@ function lengthFactorDimensions(topic: Topic, from: string, to: string): 2 | 3 |
 }
 
 /** The length factor used for area or volume: 3 m² = 30 dm² instead of 300 (spec §3.4.1). */
-export function lengthFactorTip(dimensions: 2 | 3, value: Rational, answer: Rational): Diagnose {
+function lengthFactorTip(dimensions: 2 | 3, value: Rational, answer: Rational): Diagnose {
   const shift = powerOfTenShift(answer, value);
   return (given) => {
     if (shift === null || shift % dimensions !== 0) return undefined;
@@ -257,8 +260,6 @@ const MINUTE: TimeUnit = { symbol: 'min', seconds: 60 };
 const HOUR: TimeUnit = { symbol: 'uur', seconds: 3600 };
 const DAY: TimeUnit = { symbol: 'dag', seconds: 86_400 };
 
-export const TIME_UNITS: readonly TimeUnit[] = [SECOND, MINUTE, HOUR, DAY];
-
 /** [larger, smaller]. s ↔ dag (factor 86 400) is left out (spec §5.10). */
 export const TIME_PAIRS: readonly (readonly [TimeUnit, TimeUnit])[] = [
   [MINUTE, SECOND],
@@ -297,7 +298,7 @@ export function largerTimeValues(
     if (BigInt(denominator) % value.den !== 0n) continue;
     if (earlier.some((d) => BigInt(d) % value.den === 0n)) continue;
     const smallerValue = multiply(value, factor);
-    if (smallerValue.den === 1n && smallerValue.num <= BigInt(MAX_SMALLER_TIME_VALUE)) {
+    if (isInteger(smallerValue) && smallerValue.num <= BigInt(MAX_SMALLER_TIME_VALUE)) {
       values.push(value);
     }
   }
@@ -385,7 +386,7 @@ function remainderAsDecimalsTip(
   const { whole, fraction } = splitWhole(largerValue);
   if (fraction.num === 0n || decimalPlaces(fraction) === null) return undefined;
   const rest = multiply(fraction, SIXTY);
-  const written = divide(rest, fromInteger(100));
+  const written = divide(rest, HUNDRED);
   if (!equals(given, add(whole, written))) return undefined;
   return `${formatRational(rest)} ${smaller.symbol} is ${formatRational(fraction)} ${larger.symbol}, niet ${formatRational(written)} ${larger.symbol}.`;
 }

@@ -16,7 +16,6 @@ import {
   CARRY_SHARE,
   digitAt,
   FIVE_SHARE,
-  formatFixed,
   generateRounding,
   PLACES,
   roundHalfUp,
@@ -234,12 +233,5 @@ describe('helpers', () => {
     expect(roundHalfUp(4349, 2)).toBe(4300);
     expect(roundHalfUp(4350, 2)).toBe(4400);
     expect(roundHalfUp(3970, 2)).toBe(4000);
-  });
-
-  it('formats with a fixed number of decimals', () => {
-    expect(formatFixed(rational(3n), 1)).toBe('3,0');
-    expect(formatFixed(rational(39n, 100n), 2)).toBe('0,39');
-    expect(formatFixed(rational(37n, 10n), 1)).toBe('3,7');
-    expect(formatFixed(rational(2_000_000n), 0)).toBe('2\u{202f}000\u{202f}000');
   });
 });

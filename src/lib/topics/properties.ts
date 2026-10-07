@@ -2,13 +2,13 @@ import { evaluate } from '../expr/evaluate';
 import { parse } from '../expr/parser';
 import { explainEvaluation } from '../expr/reduce';
 import { PROPERTIES, type Property } from '../expr/rewriteCheck';
-import { pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
 import { numberStep, rewriteStep } from '../steps';
 import type { Question } from '../types';
 
 // Properties: commutative, associative and distributive (spec §5.11).
 
-export type Variant = 'basis' | 'gevorderd';
+type Variant = 'basis' | 'gevorderd';
 
 /** A drawn template: the expression and an example rewrite per applicable property. */
 export interface PropertyExercise {
@@ -48,8 +48,6 @@ const ATTRIBUTIVES: Record<Property, string> = {
   associative: 'associatieve',
   distributive: 'distributieve',
 };
-
-const notRound = (value: number) => value % 10 !== 0;
 
 /** a ∈ [3, 19] without 10 of the distributive templates, unequal to `other`. */
 function factor(rng: Rng, other?: number): number {
@@ -94,7 +92,7 @@ function freeFactor(rng: Rng, others: readonly number[]): number {
 }
 
 /** The seven templates of spec §5.11, each equally likely. */
-export const PROPERTY_TEMPLATES: readonly ((rng: Rng) => PropertyExercise)[] = [
+const PROPERTY_TEMPLATES: readonly ((rng: Rng) => PropertyExercise)[] = [
   // a × n with n close to round: 7 × 98
   (rng) => {
     const round = pick(rng, ROUND_NUMBERS);

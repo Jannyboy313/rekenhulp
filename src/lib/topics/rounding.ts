@@ -1,4 +1,4 @@
-import { formatRational } from '../format';
+import { formatFixed, formatRational } from '../format';
 import { drawUntil, pick, randomInt, type Rng } from '../random';
 import { equals, rational, type Rational } from '../rational';
 import { numberStep } from '../steps';
@@ -6,7 +6,7 @@ import type { Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Rounding, half up (spec §5.17).
-export interface Place {
+interface Place {
   /** Dutch, after 'op': 'honderdtallen', '1 decimaal'. */
   label: string;
   /** The place as a power of ten: 2 for hundreds, −1 for one decimal. */
@@ -63,14 +63,6 @@ export function roundHalfUp(scaled: number, k: number): number {
 
 function toValue(scaled: number, decimals: number): Rational {
   return rational(BigInt(scaled), 10n ** BigInt(decimals));
-}
-
-/** Dutch notation with exactly `decimals` decimals: 3 → '3,0' for one decimal. */
-export function formatFixed(value: Rational, decimals: number): string {
-  const text = formatRational(value);
-  if (decimals === 0) return text;
-  const [whole = '', fraction = ''] = text.split(',');
-  return `${whole},${fraction.padEnd(decimals, '0')}`;
 }
 
 /** The facts of rounding `scaled` (with `decimals` decimals) on `place`. */

@@ -14,7 +14,9 @@ import {
   compare,
   decimalPlaces,
   equals,
+  isInteger,
   multiply,
+  ONE,
   parseDutchNumber,
   parseFraction,
   parseMixedNumber,
@@ -25,7 +27,7 @@ import {
 import { powerOfTenTip, type Diagnose } from './tips';
 import type { AnswerKind, Step } from './types';
 
-export interface NumberStepOptions {
+interface NumberStepOptions {
   prompt: string;
   answer: Rational;
   prefix?: string;
@@ -57,15 +59,15 @@ export function fractionStep(options: NumberStepOptions): Step {
 
 /** '25', or both notations: '12,5 of 25/2'. Only the fraction when the decimal never ends. */
 function formatFractionAnswer(answer: Rational): string {
-  if (answer.den === 1n) return formatRational(answer);
+  if (isInteger(answer)) return formatRational(answer);
   const fraction = formatFraction(answer);
   return decimalPlaces(answer) === null ? fraction : `${formatRational(answer)} of ${fraction}`;
 }
 
 /** How a fraction answer is written (spec §6). */
-export type FractionForm = 'whole' | 'fraction' | 'mixed' | 'decimal';
+type FractionForm = 'whole' | 'fraction' | 'mixed' | 'decimal';
 
-export interface FractionAnswer {
+interface FractionAnswer {
   value: Rational;
   form: FractionForm;
   /** A whole number, a/b in lowest terms with b ≥ 2, or w a/b with w ≥ 1 and 0 < a < b. */
@@ -97,7 +99,7 @@ export function parseFractionAnswer(input: string): FractionAnswer | null {
   return { value, form: 'mixed', simplest };
 }
 
-export interface SimplestFractionStepOptions {
+interface SimplestFractionStepOptions {
   prompt: string;
   answer: Rational;
   /** Whether an equal decimal is correct too (spec §5.21 sums: '0,3' for 3/10). */
@@ -198,7 +200,7 @@ function exactStep(
 export const YES = 'Ja';
 export const NO = 'Nee';
 
-export interface BooleanStepOptions {
+interface BooleanStepOptions {
   prompt: string;
   answer: boolean;
   explanation?: string;
@@ -225,7 +227,7 @@ export function parseFactorization(input: string): Factor[] | null {
   const factors: Factor[] = [];
   // The parser also reads negative literals; factors must be non-negative integers.
   const integer = (node: Expr): bigint | null =>
-    node.type === 'number' && node.value.den === 1n && node.value.num >= 0n
+    node.type === 'number' && isInteger(node.value) && node.value.num >= 0n
       ? node.value.num
       : null;
   const collect = (node: Expr): boolean => {
@@ -241,7 +243,7 @@ export function parseFactorization(input: string): Factor[] | null {
   return collect(expr) ? factors : null;
 }
 
-export interface FactorizationStepOptions {
+interface FactorizationStepOptions {
   prompt: string;
   value: number;
   explanation?: string;
@@ -292,7 +294,7 @@ function boundedProduct(factors: readonly Factor[], limit: bigint): bigint | nul
 const PRODUCT_LIMIT = 1_000_000n;
 
 /** Spec §3.4.1: a factor 1, a composite factor, or primes with another product. */
-export function factorizationTip(factors: readonly Factor[], value: number): string | undefined {
+function factorizationTip(factors: readonly Factor[], value: number): string | undefined {
   const target = BigInt(value);
   if (factors.some(({ base }) => base === 1n)) return '1 is geen priemgetal: laat het weg.';
   const composite = factors.find(
@@ -310,7 +312,7 @@ export function factorizationTip(factors: readonly Factor[], value: number): str
 }
 
 /** Dutch reasons of spec §5.11; a valid step with another property gets the topic's own hint. */
-export const REWRITE_MESSAGES: Record<Exclude<RewriteReason, 'otherProperty'>, string> = {
+const REWRITE_MESSAGES: Record<Exclude<RewriteReason, 'otherProperty'>, string> = {
   valueOnly: 'Schrijf een som op, niet alleen de uitkomst.',
   unchanged: 'Er is niets veranderd.',
   valueChanged: 'Deze stap verandert de uitkomst.',
@@ -319,7 +321,7 @@ export const REWRITE_MESSAGES: Record<Exclude<RewriteReason, 'otherProperty'>, s
   notForMinusOrDivide: 'Deze eigenschap geldt niet voor − en :.',
 };
 
-export interface RewriteStepOptions {
+interface RewriteStepOptions {
   prompt: string;
   /** The expression to rewrite. */
   original: Expr;
@@ -366,7 +368,7 @@ export interface ScientificInput {
 }
 
 /** Largest exponent magnitude accepted; matches the two exponent digits the keypad allows. */
-export const MAX_SCIENTIFIC_EXPONENT = 99;
+const MAX_SCIENTIFIC_EXPONENT = 99;
 
 // An optional coefficient and ×, then 10, ^ and an integer exponent: '4,5×10^-3', '10^6'.
 const SCIENTIFIC = /^(?:([\d,]+)×)?10\^([-−]?\d+)$/;
@@ -383,8 +385,7 @@ export function parseScientific(input: string): ScientificInput | null {
   }
   const coefficientText = match[1];
   const exponentText = match[2] as string; // the group is not optional in SCIENTIFIC
-  const coefficient =
-    coefficientText === undefined ? rational(1n) : parseDutchNumber(coefficientText);
+  const coefficient = coefficientText === undefined ? ONE : parseDutchNumber(coefficientText);
   if (coefficient === null) return null;
   const negative = exponentText.startsWith('-') || exponentText.startsWith('−');
   const digits = exponentText.replace(/^[-−]/, '').replace(/^0+(?=\d)/, '');
@@ -400,7 +401,6 @@ export function scientificValue({ coefficient, exponent }: ScientificInput): Rat
   return exponent === null ? coefficient : multiply(coefficient, powerOfTen(exponent));
 }
 
-const ONE = rational(1n);
 const TEN = rational(10n);
 
 /** c × 10ⁿ with 1 ≤ c < 10; a plain number is never normalised. */
@@ -408,7 +408,7 @@ export function isNormalised({ coefficient, exponent }: ScientificInput): boolea
   return exponent !== null && compare(coefficient, ONE) >= 0 && compare(coefficient, TEN) < 0;
 }
 
-export interface ScientificStepOptions {
+interface ScientificStepOptions {
   prompt: string;
   /** c of the answer c × 10ⁿ, with 1 ≤ c < 10. */
   coefficient: Rational;

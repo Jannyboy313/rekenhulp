@@ -1,5 +1,5 @@
 import type { PrimePower } from './primes';
-import { decimalPlaces, rational, type Rational } from './rational';
+import { decimalPlaces, finiteDecimalPlaces, isInteger, rational, type Rational } from './rational';
 
 /** Typographic minus sign (U+2212). */
 export const MINUS = '−';
@@ -21,8 +21,7 @@ export function formatInteger(value: number | bigint): string {
 
 /** Formats a terminating decimal in Dutch notation; throws for e.g. 1/3 (fractions come in v2). */
 export function formatRational(value: Rational): string {
-  const decimals = decimalPlaces(value);
-  if (decimals === null) throw new RangeError('Value has no finite decimal representation');
+  const decimals = finiteDecimalPlaces(value);
   if (decimals > MAX_DECIMALS) throw new RangeError(`Too many decimals: ${decimals}`);
   const negative = value.num < 0n;
   const absolute = negative ? -value.num : value.num;
@@ -33,6 +32,14 @@ export function formatRational(value: Rational): string {
   return (
     (negative ? MINUS : '') + groupDigits(integerPart) + (decimals > 0 ? `,${fractionPart}` : '')
   );
+}
+
+/** Dutch notation with exactly `decimals` decimals: 3 → '3,0' for one decimal. */
+export function formatFixed(value: Rational, decimals: number): string {
+  const text = formatRational(value);
+  if (decimals === 0) return text;
+  const [whole = '', fraction = ''] = text.split(',');
+  return `${whole},${fraction.padEnd(decimals, '0')}`;
 }
 
 /** Keypad input uses ASCII '-'; the UI shows a typographic minus. */
@@ -67,6 +74,9 @@ export function toSuperscript(exponent: number): string {
   return (exponent < 0 ? SUPERSCRIPT_MINUS : '') + superscriptDigits(String(Math.abs(exponent)));
 }
 
+/** Superscript n (U+207F) for the unknown exponent: 10ⁿ. */
+export const UNKNOWN_EXPONENT = 'ⁿ';
+
 /** 10 with a superscript exponent, e.g. 10⁹ (spec §5.14). */
 export function formatPowerOfTen(exponent: number): string {
   return `10${toSuperscript(exponent)}`;
@@ -79,8 +89,7 @@ export const NO_BREAK_SPACE = '\u{a0}';
 export function formatMoney(value: Rational): string {
   const decimals = decimalPlaces(value);
   if (decimals === null || decimals > 2) throw new RangeError('Not a whole number of cents');
-  const text = formatRational(value);
-  return decimals === 1 ? `${text}0` : text;
+  return formatFixed(value, decimals === 0 ? 0 : 2);
 }
 
 /** '€ 25,50' with a no-break space. */
@@ -98,7 +107,7 @@ export function formatFraction(value: Rational): string {
  * '1 5/12' (spec §8). The sign goes in front of the whole: '−1 1/2'.
  */
 export function formatMixedNumber(value: Rational): string {
-  if (value.den === 1n) return formatInteger(value.num);
+  if (isInteger(value)) return formatInteger(value.num);
   const negative = value.num < 0n;
   const absolute = negative ? -value.num : value.num;
   const whole = absolute / value.den;

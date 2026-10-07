@@ -35,7 +35,6 @@ import {
   randomScaleConversion,
   TIME_DENOMINATORS,
   TIME_PAIRS,
-  TIME_UNITS,
   timeTip,
   VOLUME_UNITS,
   type ScaleUnit,
@@ -43,6 +42,11 @@ import {
 } from './measurement';
 
 const SAMPLES = 1000;
+
+/** The units of TIME_PAIRS, from short to long. */
+const TIME_UNITS: readonly TimeUnit[] = [...new Set(TIME_PAIRS.flat())].sort(
+  (a, b) => a.seconds - b.seconds,
+);
 
 function significantDigits(value: Rational): number {
   const scaled = multiply(value, powerOfTen(decimalPlaces(value)!));
@@ -378,7 +382,7 @@ describe('volume generator', () => {
 });
 
 describe('time units', () => {
-  it('lists the units with their length in seconds', () => {
+  it('pairs exactly these units, with their length in seconds', () => {
     expect(TIME_UNITS.map((unit) => [unit.symbol, unit.seconds])).toEqual([
       ['s', 1],
       ['min', 60],

@@ -6,6 +6,7 @@ import {
   compare,
   equals,
   fromInteger,
+  isInteger,
   multiply,
   rational,
   subtract,
@@ -27,7 +28,7 @@ export const ARITHMETIC_FORMS = [
 export type ArithmeticForm = (typeof ARITHMETIC_FORMS)[number];
 
 /** Four equally likely groups; a group with two forms picks one of them (spec §5.21). */
-export const ARITHMETIC_GROUPS: readonly (readonly ArithmeticForm[])[] = [
+const ARITHMETIC_GROUPS: readonly (readonly ArithmeticForm[])[] = [
   ['simplify', 'equivalent'],
   ['addSubtract'],
   ['multiplyDivide'],
@@ -40,7 +41,7 @@ export const EQUIVALENT_VARIANTS = [
   'downNumerator',
   'downDenominator',
 ] as const;
-export type EquivalentVariant = (typeof EQUIVALENT_VARIANTS)[number];
+type EquivalentVariant = (typeof EQUIVALENT_VARIANTS)[number];
 
 /** p/q in lowest terms with q ∈ [2, 12] and p < 2q that pass `accept`. */
 function fractionsWhere(accept: (p: number, q: number) => boolean): Rational[] {
@@ -203,7 +204,7 @@ function simplifySteps(num: bigint, den: bigint): string[] {
   if (den === 1n) return [formatInteger(num)];
   const value = rational(num, den);
   const steps = [terms(num, den)];
-  if (value.den === 1n) return [...steps, formatInteger(value.num)];
+  if (isInteger(value)) return [...steps, formatInteger(value.num)];
   if (value.den !== den) steps.push(formatFraction(value));
   if (value.num > value.den) steps.push(formatMixedNumber(value));
   return steps;
@@ -305,7 +306,7 @@ export function addSubtractQuestion(left: Term, right: Term, subtracting: boolea
 
 /** '9/4', or '2' for a whole number: an inverse is shown as written, not as a mixed number. */
 function formatPlain(value: Rational): string {
-  return value.den === 1n ? formatInteger(value.num) : formatFraction(value);
+  return isInteger(value) ? formatInteger(value.num) : formatFraction(value);
 }
 
 /** `3/4 × 2/5 = ?`, `6 × 2/3 = ?`, `2/3 : 4/9 = ?`, `3/4 : 3 = ?` or `6 : 2/3 = ?`. */
@@ -322,7 +323,7 @@ export function multiplyDivideQuestion(x: Rational, y: Rational, dividing: boole
   const diagnose: Diagnose = (given) => {
     if (!dividing) {
       // Both terms of the fraction times the whole number: 6 × 2/3 → 12/18 = 2/3.
-      const wholeNumber = x.den === 1n ? x : y.den === 1n ? y : null;
+      const wholeNumber = isInteger(x) ? x : isInteger(y) ? y : null;
       if (wholeNumber === null) return undefined;
       const fraction = wholeNumber === x ? y : x;
       if (!equals(given, fraction)) return undefined;
@@ -330,11 +331,11 @@ export function multiplyDivideQuestion(x: Rational, y: Rational, dividing: boole
       return `Alleen de teller gaat keer ${formatInteger(wholeNumber.num)}: ${shown} = ${product}.`;
     }
     if (equals(given, multiply(x, y))) {
-      return y.den === 1n
+      return isInteger(y)
         ? `Delen door ${formatInteger(y.num)} is keer 1/${formatInteger(y.num)}.`
         : `Delen door ${formatFraction(y)} is keer het omgekeerde: × ${formatFraction(inverse)}.`;
     }
-    if (x.den !== 1n && y.den !== 1n && equals(given, rational(answer.den, answer.num))) {
+    if (!isInteger(x) && !isInteger(y) && equals(given, rational(answer.den, answer.num))) {
       return 'Draai de breuk om waardoor je deelt, niet de eerste.';
     }
     return undefined;

@@ -1,12 +1,11 @@
 import { formatInteger as f } from '../format';
-import { pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
 import { equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Smart calculation (spec §5.9).
-export const MIN_ANSWER = 1;
 export const MAX_ANSWER = 10_000;
 
 export const STRATEGIES = [
@@ -28,7 +27,7 @@ export interface Exercise {
 }
 
 /** R ± d with R = k·m, m ∈ {10, 100, 1000}, k ∈ [1, 8] (k ≥ 2 for m = 10) and d ∈ [1, 3]. */
-export interface NearRound {
+interface NearRound {
   value: number;
   round: number;
   offset: number;
@@ -69,8 +68,6 @@ export function complementTip(b: number, total: number, answer: number): Diagnos
     return `${f(b)} + ${f(value)} = ${f(b + value)}, niet ${f(total)}.`;
   };
 }
-
-const notRound = (value: number) => value % 10 !== 0;
 
 /** Split (×): a × factor = a : divisor × power, with a a multiple of the divisor. */
 const SPLIT_FACTORS = [
@@ -132,7 +129,7 @@ const BUILDERS: Record<Strategy, (rng: Rng) => Exercise> = {
   splitMultiply(rng) {
     const { factor, divisor, power, minK, maxK } = pick(rng, SPLIT_FACTORS);
     // Never a multiple of 10: 100 × 25 is not smart calculation.
-    const a = divisor * randomIntWhere(rng, minK, maxK, (k) => (divisor * k) % 10 !== 0);
+    const a = divisor * randomIntWhere(rng, minK, maxK, (k) => notRound(divisor * k));
     const answer = a * factor;
     return {
       prompt: `${f(a)} × ${factor}`,
@@ -176,7 +173,7 @@ export function dedupKey(prompt: string): string {
   return `smartCalculation:${sorted.join(' × ')}`;
 }
 
-/** One exercise of the given strategy, within [MIN_ANSWER, MAX_ANSWER] by construction. */
+/** One exercise of the given strategy, with an answer in [1, MAX_ANSWER] by construction. */
 export function buildExercise(rng: Rng, strategy: Strategy): Exercise {
   return BUILDERS[strategy](rng);
 }

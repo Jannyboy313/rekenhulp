@@ -1,6 +1,6 @@
 import { formatEuro, formatInteger } from '../format';
 import { gcd } from '../primes';
-import { pick, randomInt, type Rng } from '../random';
+import { drawUntil, pick, randomInt, type Rng } from '../random';
 import { divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { positiveInteger, type Diagnose } from '../tips';
@@ -68,11 +68,11 @@ export function generateRatios(rng: Rng): Question {
 
 /** p : q with p ≠ q, both in [1, 12], and gcd(p, q) = 1. */
 function randomSimplifiedRatio(rng: Rng): [number, number] {
-  for (;;) {
+  return drawUntil((): [number, number] | null => {
     const p = randomInt(rng, 1, MAX_RATIO_TERM);
     const q = randomInt(rng, 1, MAX_RATIO_TERM);
-    if (p !== q && gcd(p, q) === 1) return [p, q];
-  }
+    return p !== q && gcd(p, q) === 1 ? [p, q] : null;
+  });
 }
 
 /** A different integer in [min, max]: draws from one value fewer and skips `excluded`. */
