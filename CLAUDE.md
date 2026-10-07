@@ -12,8 +12,9 @@ Read it before changing behaviour. If code and spec disagree, ask which one is w
 Implemented sets: **Tafels** (plan: `docs/superpowers/plans/2026-10-05-beta-tafels.md`), **Meten**
 (plan: `docs/superpowers/plans/2026-10-05-meten.md`), **Verhoudingen** v1
 (plan: `docs/superpowers/plans/2026-10-05-verhoudingen.md`), **Getallen & delers**
-(plan: `docs/superpowers/plans/2026-10-06-getallen-delers.md`) and **Bewerkingen**
-(plan: `docs/superpowers/plans/2026-10-06-bewerkingen.md`).
+(plan: `docs/superpowers/plans/2026-10-06-getallen-delers.md`),
+**Bewerkingen** (plan: `docs/superpowers/plans/2026-10-06-bewerkingen.md`) and **Getalbegrip**
+(plan: `docs/superpowers/plans/2026-10-07-getalbegrip.md`).
 UI feedback round 1 (plan: `docs/superpowers/plans/2026-10-06-feedback-round-1.md`) added stacked
 fractions everywhere, the breuk key with a fraction template and mixed numbers, counts 5–50,
 a light red Stop button and keys that act on press.
@@ -46,8 +47,8 @@ order, one implementation plan per step:
 | 2 | **Verhoudingen** (v1 part) | `percentages` (§5.12), `ratios` (§5.13) | `Step.prefix` (`€`); `fraction` input (`/` key) brought forward from v2 for `12½%` | v1 | ✅ done |
 | 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (`lib/inputModels.ts`) with inline invalid-input errors; `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` tokenizer and parser (`×`, `^`) | v1 | ✅ done |
 | 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, evaluation steps, chains, rewrite checker; `expression` answer kind with a 4-column keypad; negative literals; two-step questions | v1 | ✅ done |
-| 5 | **Getalbegrip** | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` (§12.1) | `scientific` answer kind for `a × 10ⁿ`, typed with the existing `×`, `^`, `,`, `−` keys (spec §5.15–§5.19, §6) | v2 | spec ready |
-| 6 | **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic` (§12.1) | Judging simplified vs unsimplified fractions; mixed numbers as expected answers (the `fraction` input exists since set 2) | v2 | later |
+| 5 | **Getalbegrip** | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` (§12.1) | `scientific` answer kind for `a × 10ⁿ`, typed with the existing `×`, `^`, `,`, `−` keys (spec §5.15–§5.19, §6) | v2 | ✅ done |
+| 6 | **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic` (§12.1) | Judging simplified vs unsimplified fractions; mixed numbers as expected answers (the `fraction` input exists since set 2) | v2 | next |
 | 7 | **Verhoudingen** (v2 part) | `percentChange`, `scale` (§12.1) | — | v2 | later |
 | 8 | **Meten** (v2 part) | `speed` (§12.1) | Compound units in the conversion engine | v2 | later |
 | 9 | **Meetkunde** | `perimeterArea`, `solids`, `pythagoras`, `angles` (§12.1) | Figures described in words, no pictures | v2 | later |
@@ -88,6 +89,9 @@ Known follow-ups for the next plans:
   must stay on screen (`.play` has `overflow: hidden`). If not, give `.feedback`
   `overflow-y: auto` and `justify-content: safe center`. The cross-cutting final review of the
   tips feature was stopped early; every task bundle was reviewed and fixed individually.
+- Manual phone check for Getalbegrip: the scientific keypad has 4 rows instead of 5 (the prompt
+  sits lower), and the long remainder prompts (`Een kaartje kost € 7. Je koopt zoveel mogelijk
+  …`) must keep the keypad on screen.
 
 ## Svelte pitfalls
 
@@ -156,12 +160,13 @@ src/
                         Scratchpad (kladblok cells), Feedback, ResultScreen, MathText +
                         Fraction (stacked fractions), press.ts (act-on-press action)
   lib/
-    random.ts           seedable RNG; every generator takes an rng argument
-    steps.ts            step factories (number, fraction, boolean, factorization, rewrite),
-                        parseAnswer and parseFactorization — all answer parsing and checking
-                        goes through here
+    random.ts           seedable RNG; every generator takes an rng argument; drawUntil redraws
+                        until all rules of an exercise hold
+    steps.ts            step factories (number, fraction, boolean, factorization, rewrite,
+                        scientific), parseAnswer, parseFactorization and parseScientific — all
+                        answer parsing and checking goes through here
     keypadInput.ts      pure key → input reducers (numbers, fraction templates, factorizations,
-                        expressions)
+                        expressions, scientific notation)
     keys.ts             key catalogue (label, aria label per key) and keyDefs; keypads list key
                         names one grid row per line. A new key: widen KeypadKey, add it to KEYS,
                         handle it in the reducers that should accept it
