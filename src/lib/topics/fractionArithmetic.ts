@@ -1,18 +1,36 @@
-import { formatFraction, formatInteger, formatMixedNumber } from '../format';
-import { gcd } from '../primes';
-import { pick, randomInt, randomIntWhere, type Rng } from '../random';
-import { equals, fromInteger, multiply, rational, type Rational } from '../rational';
+import { formatFraction, formatInteger, formatMixedNumber, MINUS } from '../format';
+import { gcd, lcm } from '../primes';
+import { drawUntil, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import {
+  add,
+  compare,
+  equals,
+  fromInteger,
+  multiply,
+  rational,
+  subtract,
+  type Rational,
+} from '../rational';
 import { numberStep, simplestFractionStep } from '../steps';
 import type { Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Fraction arithmetic (spec §5.21).
-export const ARITHMETIC_FORMS = ['simplify', 'equivalent', 'part', 'whole'] as const;
+export const ARITHMETIC_FORMS = [
+  'simplify',
+  'equivalent',
+  'addSubtract',
+  'multiplyDivide',
+  'part',
+  'whole',
+] as const;
 export type ArithmeticForm = (typeof ARITHMETIC_FORMS)[number];
 
-/** Equally likely groups; a group with two forms picks one of them (spec §5.21). */
+/** Four equally likely groups; a group with two forms picks one of them (spec §5.21). */
 export const ARITHMETIC_GROUPS: readonly (readonly ArithmeticForm[])[] = [
   ['simplify', 'equivalent'],
+  ['addSubtract'],
+  ['multiplyDivide'],
   ['part', 'whole'],
 ];
 
@@ -180,6 +198,162 @@ export function wholeQuestion(fraction: Rational, m: number): Question {
   };
 }
 
+/** 18/12 → ['18/12', '3/2', '1 1/2']; 12/3 → ['12/3', '4']; 12/1 → ['12']; 3/4 → ['3/4']. */
+function simplifySteps(num: bigint, den: bigint): string[] {
+  if (den === 1n) return [formatInteger(num)];
+  const value = rational(num, den);
+  const steps = [terms(num, den)];
+  if (value.den === 1n) return [...steps, formatInteger(value.num)];
+  if (value.den !== den) steps.push(formatFraction(value));
+  if (value.num > value.den) steps.push(formatMixedNumber(value));
+  return steps;
+}
+
+/** A term of a sum: a proper fraction, written as a mixed number when `whole` > 0. */
+export interface Term {
+  whole: number;
+  fraction: Rational;
+}
+
+function termValue({ whole, fraction }: Term): Rational {
+  return add(fromInteger(whole), fraction);
+}
+
+/** '8/12', or '2 8/12' when there is a whole part. */
+function mixedTerms(whole: number, num: bigint, den: bigint): string {
+  return whole === 0 ? terms(num, den) : `${formatInteger(whole)} ${terms(num, den)}`;
+}
+
+function formatTerm({ whole, fraction }: Term): string {
+  return mixedTerms(whole, fraction.num, fraction.den);
+}
+
+/**
+ * `2/3 + 1/4 = ?` or `3 1/2 − 1 3/4 = ?`. Both terms are mixed numbers or neither is; a
+ * subtraction has a positive result.
+ */
+export function addSubtractQuestion(left: Term, right: Term, subtracting: boolean): Question {
+  const a = left.fraction;
+  const b = right.fraction;
+  const common = BigInt(lcm(Number(a.den), Number(b.den)));
+  const numA = (a.num * common) / a.den;
+  const numB = (b.num * common) / b.den;
+  const answer = subtracting
+    ? subtract(termValue(left), termValue(right))
+    : add(termValue(left), termValue(right));
+  const operator = subtracting ? ` ${MINUS} ` : ' + ';
+  const shown = formatTerm(left) + operator + formatTerm(right);
+  const rightTerm = mixedTerms(right.whole, numB, common);
+  const chain = [shown, mixedTerms(left.whole, numA, common) + operator + rightTerm];
+  let wholeA = left.whole;
+  let numLeft = numA;
+  // Only mixed numbers can need this: without wholes, a subtraction has a > b.
+  if (subtracting && numA < numB) {
+    wholeA -= 1;
+    numLeft += common;
+    chain.push(mixedTerms(wholeA, numLeft, common) + operator + rightTerm);
+  }
+  const resultWhole = subtracting ? wholeA - right.whole : wholeA + right.whole;
+  const resultNum = subtracting ? numLeft - numB : numLeft + numB;
+  if (resultWhole === 0) {
+    chain.push(...simplifySteps(resultNum, common));
+  } else {
+    const written = mixedTerms(resultWhole, resultNum, common);
+    const simplest = formatMixedNumber(answer);
+    chain.push(...(written === simplest ? [written] : [written, simplest]));
+  }
+  const diagnose: Diagnose = (given) => {
+    if (left.whole === 0) {
+      // Numerators and denominators added (or subtracted) separately: 2/3 + 1/4 → 3/7.
+      const num = subtracting ? a.num - b.num : a.num + b.num;
+      const den = subtracting ? a.den - b.den : a.den + b.den;
+      if (num <= 0n || den <= 0n) return undefined;
+      const wrong = rational(num, den);
+      const then = subtracting
+        ? 'trek daarna alleen de tellers af'
+        : 'tel daarna alleen de tellers op';
+      return !equals(wrong, answer) && equals(given, wrong)
+        ? `Maak eerst de noemers gelijk; ${then}.`
+        : undefined;
+    }
+    if (subtracting && compare(a, b) < 0) {
+      // The fraction parts subtracted the wrong way round: 3 1/2 − 1 3/4 → 2 1/4.
+      const swapped = add(fromInteger(left.whole - right.whole), subtract(b, a));
+      if (equals(given, swapped)) {
+        return (
+          `Je kunt ${formatFraction(b)} niet van ${formatFraction(a)} aftrekken: wissel eerst ` +
+          `1 geheel om, ${formatTerm(left)} = ${mixedTerms(left.whole - 1, numA + common, common)}.`
+        );
+      }
+    }
+    return undefined;
+  };
+  return {
+    key: `fractionArithmetic:addSubtract:${shown}`,
+    topic: 'fractionArithmetic',
+    steps: [
+      simplestFractionStep({
+        prompt: `${shown} = ?`,
+        answer,
+        decimalAllowed: true,
+        explanation: chain.join(' = '),
+        diagnose,
+      }),
+    ],
+  };
+}
+
+/** '9/4', or '2' for a whole number: an inverse is shown as written, not as a mixed number. */
+function formatPlain(value: Rational): string {
+  return value.den === 1n ? formatInteger(value.num) : formatFraction(value);
+}
+
+/** `3/4 × 2/5 = ?`, `6 × 2/3 = ?`, `2/3 : 4/9 = ?`, `3/4 : 3 = ?` or `6 : 2/3 = ?`. */
+export function multiplyDivideQuestion(x: Rational, y: Rational, dividing: boolean): Question {
+  const shown = `${formatMixedNumber(x)} ${dividing ? ':' : '×'} ${formatMixedNumber(y)}`;
+  const inverse = rational(y.den, y.num);
+  const by = dividing ? inverse : y;
+  const answer = multiply(x, by);
+  const chain = [
+    shown,
+    ...(dividing ? [`${formatMixedNumber(x)} × ${formatPlain(inverse)}`] : []),
+    ...simplifySteps(x.num * by.num, x.den * by.den),
+  ];
+  const diagnose: Diagnose = (given) => {
+    if (!dividing) {
+      // Both terms of the fraction times the whole number: 6 × 2/3 → 12/18 = 2/3.
+      const wholeNumber = x.den === 1n ? x : y.den === 1n ? y : null;
+      if (wholeNumber === null) return undefined;
+      const fraction = wholeNumber === x ? y : x;
+      if (!equals(given, fraction)) return undefined;
+      const product = terms(wholeNumber.num * fraction.num, fraction.den);
+      return `Alleen de teller gaat keer ${formatInteger(wholeNumber.num)}: ${shown} = ${product}.`;
+    }
+    if (equals(given, multiply(x, y))) {
+      return y.den === 1n
+        ? `Delen door ${formatInteger(y.num)} is keer 1/${formatInteger(y.num)}.`
+        : `Delen door ${formatFraction(y)} is keer het omgekeerde: × ${formatFraction(inverse)}.`;
+    }
+    if (x.den !== 1n && y.den !== 1n && equals(given, rational(answer.den, answer.num))) {
+      return 'Draai de breuk om waardoor je deelt, niet de eerste.';
+    }
+    return undefined;
+  };
+  return {
+    key: `fractionArithmetic:multiplyDivide:${shown}`,
+    topic: 'fractionArithmetic',
+    steps: [
+      simplestFractionStep({
+        prompt: `${shown} = ?`,
+        answer,
+        decimalAllowed: true,
+        explanation: chain.join(' = '),
+        diagnose,
+      }),
+    ],
+  };
+}
+
 function simplify(rng: Rng): Question {
   const answer = rng() < 0.8 ? pick(rng, PROPER_FRACTIONS) : pick(rng, IMPROPER_FRACTIONS);
   const k = randomIntWhere(
@@ -197,6 +371,51 @@ function equivalent(rng: Rng): Question {
   return equivalentQuestion(base, k, pick(rng, EQUIVALENT_VARIANTS));
 }
 
+function addSubtract(rng: Rng): Question {
+  return drawUntil(() => {
+    const a = pick(rng, PROPER_FRACTIONS);
+    const b = pick(rng, PROPER_FRACTIONS);
+    if (a.den === b.den || lcm(Number(a.den), Number(b.den)) > 36) return null;
+    const subtracting = rng() < 0.5;
+    if (rng() < 0.3) {
+      const first = randomInt(rng, subtracting ? 2 : 1, 5);
+      const second = subtracting ? randomInt(rng, 1, first - 1) : randomInt(rng, 1, 5);
+      return addSubtractQuestion(
+        { whole: first, fraction: a },
+        { whole: second, fraction: b },
+        subtracting,
+      );
+    }
+    // Separate variables: destructuring an array literal would give `Rational | undefined`.
+    const swap = subtracting && compare(a, b) < 0;
+    const x = swap ? b : a;
+    const y = swap ? a : b;
+    return addSubtractQuestion({ whole: 0, fraction: x }, { whole: 0, fraction: y }, subtracting);
+  });
+}
+
+/**
+ * Multiply (50%): two fractions (60%) or a whole number and a fraction (40%, either order).
+ * Divide (50%): two different fractions (60%), fraction : whole (20%), whole : fraction (20%).
+ */
+function multiplyDivide(rng: Rng): Question {
+  const x = pick(rng, PROPER_FRACTIONS);
+  const n = fromInteger(randomInt(rng, 2, 12));
+  if (rng() < 0.5) {
+    if (rng() < 0.6) return multiplyDivideQuestion(x, pick(rng, PROPER_FRACTIONS), false);
+    return rng() < 0.5 ? multiplyDivideQuestion(n, x, false) : multiplyDivideQuestion(x, n, false);
+  }
+  const roll = rng();
+  if (roll < 0.6) {
+    const y = drawUntil(() => {
+      const candidate = pick(rng, PROPER_FRACTIONS);
+      return equals(candidate, x) ? null : candidate;
+    });
+    return multiplyDivideQuestion(x, y, true);
+  }
+  return roll < 0.8 ? multiplyDivideQuestion(x, n, true) : multiplyDivideQuestion(n, x, true);
+}
+
 function part(rng: Rng): Question {
   return partQuestion(pick(rng, PROPER_FRACTIONS), randomInt(rng, 2, 12));
 }
@@ -208,6 +427,8 @@ function whole(rng: Rng): Question {
 const BUILDERS: Record<ArithmeticForm, (rng: Rng) => Question> = {
   simplify,
   equivalent,
+  addSubtract,
+  multiplyDivide,
   part,
   whole,
 };

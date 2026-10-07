@@ -1,10 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { gcd } from '../primes';
+import { gcd, lcm } from '../primes';
 import { createRng } from '../random';
-import { divide, fromInteger, multiply, rational, type Rational } from '../rational';
+import {
+  add,
+  divide,
+  fromInteger,
+  multiply,
+  rational,
+  subtract,
+  type Rational,
+} from '../rational';
 import { parseFractionAnswer } from '../steps';
 import type { Question, Step } from '../types';
 import {
+  addSubtractQuestion,
   ARITHMETIC_FORMS,
   type ArithmeticForm,
   buildFractionArithmetic,
@@ -12,9 +21,11 @@ import {
   equivalentQuestion,
   generateFractionArithmetic,
   IMPROPER_FRACTIONS,
+  multiplyDivideQuestion,
   PROPER_FRACTIONS,
   partQuestion,
   simplifyQuestion,
+  type Term,
   wholeQuestion,
 } from './fractionArithmetic';
 
@@ -23,6 +34,17 @@ const SIMPLIFY = /^Vereenvoudig (\d+)\/(\d+)$/u;
 const EQUIVALENT = /^(\d+)\/(\d+) = (\?|\d+)\/(\?|\d+)$/u;
 const PART = /^(\d+)\/(\d+) van (\d+) = \?$/u;
 const WHOLE = /^(\d+)\/(\d+) is (\d+)\. Hoeveel is het geheel\?$/u;
+const ADD_SUBTRACT = /^(?:(\d) )?(\d+)\/(\d+) ([+−]) (?:(\d) )?(\d+)\/(\d+) = \?$/u;
+const MULTIPLY_DIVIDE = /^(\d+)(?:\/(\d+))? ([×:]) (\d+)(?:\/(\d+))? = \?$/u;
+
+const term = (whole: number, num: bigint, den: bigint): Term => ({
+  whole,
+  fraction: rational(num, den),
+});
+
+function isProper(value: Rational): boolean {
+  return value.num > 0n && value.num < value.den && value.den <= 12n;
+}
 
 function questionsOf(form: ArithmeticForm): Question[] {
   const rng = createRng(900 + ARITHMETIC_FORMS.indexOf(form));
@@ -226,5 +248,208 @@ describe('back to the whole', () => {
     const unit = stepOf(wholeQuestion(rational(1n, 4n), 6));
     expect(unit.prompt).toBe('1/4 is 6. Hoeveel is het geheel?');
     expect(unit.check('24').explanation).toBe('1/4 = 6 → 4/4 = 4 × 6 = 24');
+  });
+});
+
+describe('group shares', () => {
+  it('picks the four groups about equally often', () => {
+    const rng = createRng(2);
+    const counts = new Map<string, number>();
+    for (let i = 0; i < 4000; i++) {
+      const form = generateFractionArithmetic(rng).key.split(':')[1]!;
+      counts.set(form, (counts.get(form) ?? 0) + 1);
+    }
+    for (const group of ['addSubtract', 'multiplyDivide']) {
+      expect(counts.get(group)).toBeGreaterThan(800);
+      expect(counts.get(group)).toBeLessThan(1200);
+    }
+    for (const form of ['simplify', 'equivalent', 'part', 'whole']) {
+      expect(counts.get(form)).toBeGreaterThan(350);
+      expect(counts.get(form)).toBeLessThan(650);
+    }
+  });
+});
+
+describe('add / subtract', () => {
+  const questions = questionsOf('addSubtract');
+
+  it('adds or subtracts two proper fractions with different denominators, LCM up to 36', () => {
+    let mixed = 0;
+    for (const question of questions) {
+      const step = stepOf(question);
+      expect(step.kind).toBe('fraction');
+      const match = ADD_SUBTRACT.exec(step.prompt);
+      expect(match, step.prompt).not.toBeNull();
+      const [, wholeA, numA = '', denA = '', operator, wholeB, numB = '', denB = ''] = match!;
+      const a = fraction(numA, denA);
+      const b = fraction(numB, denB);
+      expect(isProper(a) && isProper(b)).toBe(true);
+      expect(a.den).toBe(BigInt(denA));
+      expect(b.den).toBe(BigInt(denB));
+      expect(denA).not.toBe(denB);
+      expect(lcm(Number(denA), Number(denB))).toBeLessThanOrEqual(36);
+      expect(wholeA === undefined).toBe(wholeB === undefined);
+      const left = add(fromInteger(Number(wholeA ?? 0)), a);
+      const right = add(fromInteger(Number(wholeB ?? 0)), b);
+      if (wholeA !== undefined) {
+        mixed++;
+        for (const whole of [wholeA, wholeB!]) {
+          expect(Number(whole)).toBeGreaterThanOrEqual(1);
+          expect(Number(whole)).toBeLessThanOrEqual(5);
+        }
+        if (operator === '−') expect(Number(wholeA)).toBeGreaterThan(Number(wholeB));
+      }
+      const answer = operator === '−' ? subtract(left, right) : add(left, right);
+      expect(answer.num > 0n, step.prompt).toBe(true);
+      expect(answerOf(step)).toEqual(answer);
+      expect(parseFractionAnswer(step.check('').expected)!.simplest).toBe(true);
+    }
+    expect(mixed).toBeGreaterThan(200);
+    expect(mixed).toBeLessThan(400);
+  });
+
+  it('makes the denominators equal, then simplifies and takes out the wholes', () => {
+    const step = stepOf(addSubtractQuestion(term(0, 2n, 3n), term(0, 1n, 4n), false));
+    expect(step.prompt).toBe('2/3 + 1/4 = ?');
+    expect(step.check('11/12')).toMatchObject({
+      correct: true,
+      expected: '11/12',
+      explanation: '2/3 + 1/4 = 8/12 + 3/12 = 11/12',
+    });
+    expect(step.check('3/7').tip).toBe(
+      'Maak eerst de noemers gelijk; tel daarna alleen de tellers op.',
+    );
+    expect(step.check('22/24').tip).toBe('De waarde klopt, maar vereenvoudig nog: 22/24 = 11/12.');
+    const improper = stepOf(addSubtractQuestion(term(0, 2n, 3n), term(0, 3n, 4n), false));
+    expect(improper.check('17/12')).toMatchObject({
+      correct: true,
+      expected: '1 5/12',
+      explanation: '2/3 + 3/4 = 8/12 + 9/12 = 17/12 = 1 5/12',
+    });
+    expect(improper.check('1 5/12').correct).toBe(true);
+    const half = stepOf(addSubtractQuestion(term(0, 1n, 6n), term(0, 1n, 3n), false));
+    expect(half.check('1/2').explanation).toBe('1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2');
+    expect(half.check('0,5').correct).toBe(true);
+  });
+
+  it('subtracts and names subtracting numerators and denominators', () => {
+    const step = stepOf(addSubtractQuestion(term(0, 3n, 4n), term(0, 1n, 6n), true));
+    expect(step.prompt).toBe('3/4 − 1/6 = ?');
+    expect(step.check('7/12').explanation).toBe('3/4 − 1/6 = 9/12 − 2/12 = 7/12');
+    const other = stepOf(addSubtractQuestion(term(0, 5n, 6n), term(0, 1n, 4n), true));
+    expect(other.check('2').tip).toBe(
+      'Maak eerst de noemers gelijk; trek daarna alleen de tellers af.',
+    );
+  });
+
+  it('keeps the wholes of mixed numbers', () => {
+    const sum = stepOf(addSubtractQuestion(term(2, 2n, 3n), term(1, 3n, 4n), false));
+    expect(sum.prompt).toBe('2 2/3 + 1 3/4 = ?');
+    expect(sum.check('4 5/12')).toMatchObject({
+      correct: true,
+      explanation: '2 2/3 + 1 3/4 = 2 8/12 + 1 9/12 = 3 17/12 = 4 5/12',
+    });
+    expect(sum.check('53/12').correct).toBe(true);
+    const plain = stepOf(addSubtractQuestion(term(3, 3n, 4n), term(1, 1n, 2n), true));
+    expect(plain.check('2 1/4').explanation).toBe('3 3/4 − 1 1/2 = 3 3/4 − 1 2/4 = 2 1/4');
+  });
+
+  it('exchanges a whole when needed and names subtracting the wrong way round', () => {
+    const step = stepOf(addSubtractQuestion(term(3, 1n, 2n), term(1, 3n, 4n), true));
+    expect(step.prompt).toBe('3 1/2 − 1 3/4 = ?');
+    expect(step.check('1 3/4')).toMatchObject({
+      correct: true,
+      explanation: '3 1/2 − 1 3/4 = 3 2/4 − 1 3/4 = 2 6/4 − 1 3/4 = 1 3/4',
+    });
+    expect(step.check('2 1/4').tip).toBe(
+      'Je kunt 3/4 niet van 1/2 aftrekken: wissel eerst 1 geheel om, 3 1/2 = 2 6/4.',
+    );
+    const belowOne = stepOf(addSubtractQuestion(term(2, 1n, 2n), term(1, 3n, 4n), true));
+    expect(belowOne.check('3/4').explanation).toBe(
+      '2 1/2 − 1 3/4 = 2 2/4 − 1 3/4 = 1 6/4 − 1 3/4 = 3/4',
+    );
+  });
+});
+
+describe('multiply / divide', () => {
+  const questions = questionsOf('multiplyDivide');
+
+  it('combines proper fractions and at most one whole number from 2 to 12', () => {
+    const seen = new Set<string>();
+    for (const question of questions) {
+      const step = stepOf(question);
+      expect(step.kind).toBe('fraction');
+      const match = MULTIPLY_DIVIDE.exec(step.prompt);
+      expect(match, step.prompt).not.toBeNull();
+      const [, numX = '', denX, operator, numY = '', denY] = match!;
+      expect(denX === undefined && denY === undefined).toBe(false);
+      const x = fraction(numX, denX ?? '1');
+      const y = fraction(numY, denY ?? '1');
+      for (const [value, den] of [
+        [x, denX],
+        [y, denY],
+      ] as const) {
+        if (den === undefined) {
+          expect(Number(value.num)).toBeGreaterThanOrEqual(2);
+          expect(Number(value.num)).toBeLessThanOrEqual(12);
+        } else {
+          expect(isProper(value)).toBe(true);
+          expect(value.den).toBe(BigInt(den));
+        }
+      }
+      if (operator === ':') expect(x).not.toEqual(y);
+      const answer = operator === ':' ? divide(x, y) : multiply(x, y);
+      expect(answerOf(step)).toEqual(answer);
+      expect(parseFractionAnswer(step.check('').expected)!.simplest).toBe(true);
+      const shape = `${denX === undefined ? 'n' : 'f'}${operator}${denY === undefined ? 'n' : 'f'}`;
+      seen.add(shape);
+    }
+    expect([...seen].sort()).toEqual(['f:f', 'f:n', 'f×f', 'f×n', 'n:f', 'n×f'].sort());
+  });
+
+  it('multiplies numerators and denominators, then simplifies', () => {
+    const step = stepOf(multiplyDivideQuestion(rational(3n, 4n), rational(2n, 5n), false));
+    expect(step.prompt).toBe('3/4 × 2/5 = ?');
+    expect(step.check('3/10')).toMatchObject({
+      correct: true,
+      explanation: '3/4 × 2/5 = 6/20 = 3/10',
+    });
+    expect(step.check('0,3').correct).toBe(true);
+    expect(step.check('6/20').tip).toBe('De waarde klopt, maar vereenvoudig nog: 6/20 = 3/10.');
+  });
+
+  it('multiplies only the numerator by a whole number', () => {
+    const step = stepOf(multiplyDivideQuestion(fromInteger(6), rational(2n, 3n), false));
+    expect(step.prompt).toBe('6 × 2/3 = ?');
+    expect(step.check('4')).toMatchObject({
+      correct: true,
+      expected: '4',
+      explanation: '6 × 2/3 = 12/3 = 4',
+    });
+    expect(step.check('2/3').tip).toBe('Alleen de teller gaat keer 6: 6 × 2/3 = 12/3.');
+    const swapped = stepOf(multiplyDivideQuestion(rational(2n, 3n), fromInteger(6), false));
+    expect(swapped.check('2/3').tip).toBe('Alleen de teller gaat keer 6: 2/3 × 6 = 12/3.');
+  });
+
+  it('divides by multiplying with the inverse, and names both mistakes', () => {
+    const step = stepOf(multiplyDivideQuestion(rational(2n, 3n), rational(4n, 9n), true));
+    expect(step.prompt).toBe('2/3 : 4/9 = ?');
+    expect(step.check('1 1/2')).toMatchObject({
+      correct: true,
+      explanation: '2/3 : 4/9 = 2/3 × 9/4 = 18/12 = 3/2 = 1 1/2',
+    });
+    expect(step.check('8/27').tip).toBe('Delen door 4/9 is keer het omgekeerde: × 9/4.');
+    expect(step.check('2/3').tip).toBe('Draai de breuk om waardoor je deelt, niet de eerste.');
+  });
+
+  it('divides by and into whole numbers', () => {
+    const byWhole = stepOf(multiplyDivideQuestion(rational(3n, 4n), fromInteger(3), true));
+    expect(byWhole.check('1/4').explanation).toBe('3/4 : 3 = 3/4 × 1/3 = 3/12 = 1/4');
+    expect(byWhole.check('9/4').tip).toBe('Delen door 3 is keer 1/3.');
+    const intoWhole = stepOf(multiplyDivideQuestion(fromInteger(6), rational(2n, 3n), true));
+    expect(intoWhole.check('9').explanation).toBe('6 : 2/3 = 6 × 3/2 = 18/2 = 9');
+    expect(intoWhole.check('4').tip).toBe('Delen door 2/3 is keer het omgekeerde: × 3/2.');
+    const byHalf = stepOf(multiplyDivideQuestion(fromInteger(6), rational(1n, 2n), true));
+    expect(byHalf.check('12').explanation).toBe('6 : 1/2 = 6 × 2 = 12');
   });
 });
