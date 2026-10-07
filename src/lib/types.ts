@@ -31,7 +31,8 @@ export type Topic =
   | 'properties'
   | 'mentalOperations'
   | 'negativeNumbers'
-  | 'rounding';
+  | 'rounding'
+  | 'powersRoots';
 
 export interface CheckResult {
   correct: boolean;

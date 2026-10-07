@@ -13,6 +13,7 @@ import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
+import { generatePowersRoots } from './powersRoots';
 import { generateProperties } from './properties';
 import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
@@ -42,6 +43,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
   rounding: generateRounding,
+  powersRoots: generatePowersRoots,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -67,4 +69,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
+  powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
 };
