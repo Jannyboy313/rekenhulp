@@ -4,7 +4,8 @@ export type TextSegment =
   | { type: 'fraction'; num: string; den: string; mixed: boolean };
 
 // 'a/b', where the digits may be grouped with thin spaces, or the ½ glyph of 12½% (spec §8).
-const FRACTION = /(\d[\d\u{202f}]*)\/(\d[\d\u{202f}]*)|½/gu;
+// A '?' can take the place of either term: '3/4 = ?/12'.
+const FRACTION = /(\d[\d\u{202f}]*|\?)\/(\d[\d\u{202f}]*|\?)|½/gu;
 
 // The whole part of a mixed number, optionally followed by the one space of '12 1/2'.
 const WHOLE_PART_END = /\d( ?)$/u;

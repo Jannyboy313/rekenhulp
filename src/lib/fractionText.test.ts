@@ -23,6 +23,9 @@ describe('splitFractions', () => {
     ['1\u{202f}000/3', [fraction('1\u{202f}000', '3')]],
     ['½', [fraction('1', '2')]],
     ['3  1/2', [text('3  '), fraction('1', '2')]],
+    ['3/4 = ?/12', [fraction('3', '4'), text(' = '), fraction('?', '12')]],
+    ['9/12 = 3/?', [fraction('9', '12'), text(' = '), fraction('3', '?')]],
+    ['Hoeveel is het geheel?', [text('Hoeveel is het geheel?')]],
   ])('splits %j', (input, expected) => {
     expect(splitFractions(input)).toEqual(expected);
   });
