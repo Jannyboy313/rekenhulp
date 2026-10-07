@@ -34,7 +34,8 @@ export type Topic =
   | 'rounding'
   | 'powersRoots'
   | 'scientificNotation'
-  | 'decimalArithmetic';
+  | 'decimalArithmetic'
+  | 'fractionConversion';
 
 export interface CheckResult {
   correct: boolean;

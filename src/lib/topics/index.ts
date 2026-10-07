@@ -1,6 +1,7 @@
 import type { Generator, Topic } from '../types';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
+import { generateFractionConversion } from './fractionConversion';
 import {
   generateArea,
   generateLength,
@@ -48,6 +49,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   powersRoots: generatePowersRoots,
   scientificNotation: generateScientificNotation,
   decimalArithmetic: generateDecimalArithmetic,
+  fractionConversion: generateFractionConversion,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -76,4 +78,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
+  fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
 };
