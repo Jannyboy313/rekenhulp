@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { splitFractions } from './fractionText';
+import { splitFractions, splitNoteFractions } from './fractionText';
 
 const text = (value: string) => ({ type: 'text', text: value });
 const fraction = (num: string, den: string, mixed = false) => ({
@@ -28,5 +28,23 @@ describe('splitFractions', () => {
     ['Hoeveel is het geheel?', [text('Hoeveel is het geheel?')]],
   ])('splits %j', (input, expected) => {
     expect(splitFractions(input)).toEqual(expected);
+  });
+});
+
+describe('splitNoteFractions', () => {
+  it.each([
+    ['', []],
+    ['2³=8 −5 0,25', [text('2³=8 −5 0,25')]],
+    ['3/4', [fraction('3', '4')]],
+    ['−3/4+1', [text('−'), fraction('3', '4'), text('+1')]],
+    ['12×7/2=42', [text('12×'), fraction('7', '2'), text('=42')]],
+    // A space separates items, so a fraction never belongs to the number before it (spec §3.6).
+    ['12 3/4', [text('12 '), fraction('3', '4')]],
+    ['1/2 3/4 ', [fraction('1', '2'), text(' '), fraction('3', '4'), text(' ')]],
+    // The breuk key is typed before the denominator: the slot is still empty.
+    ['3/', [fraction('3', '')]],
+    ['12×7/', [text('12×'), fraction('7', '')]],
+  ])('splits %j', (input, expected) => {
+    expect(splitNoteFractions(input)).toEqual(expected);
   });
 });

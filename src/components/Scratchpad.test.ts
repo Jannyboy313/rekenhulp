@@ -37,11 +37,35 @@ describe('Scratchpad', () => {
     ]);
   });
 
-  it('shows exponents in superscript and fractions inline', () => {
+  it('shows exponents in superscript and fractions stacked', () => {
     render(Scratchpad, { props: { notes: ['2^3=8 -3/4'], active: 0, onselect: vi.fn() } });
     const cell = screen.getByRole('button');
     expect(cell.textContent).toBe('2³=8 −3/4');
     expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 2³=8 −3/4');
+    const fractions = cell.querySelectorAll('.fraction');
+    expect(fractions).toHaveLength(1);
+    expect(fractions[0]?.querySelector('.numerator')?.textContent).toBe('3');
+    expect(fractions[0]?.querySelector('.denominator')?.textContent).toBe('4');
+  });
+
+  it('does not read a fraction as a mixed number, because a space separates items', () => {
+    render(Scratchpad, { props: { notes: ['12 3/4'], active: 0, onselect: vi.fn() } });
+    const cell = screen.getByRole('button');
+    expect(cell.textContent).toBe('12 3/4');
+    // Only the slash of the fraction: no hidden ' en '.
+    expect([...cell.querySelectorAll('.sr-only')].map((el) => el.textContent)).toEqual(['/']);
+  });
+
+  it('shows a breuk without denominator stacked, with a placeholder', () => {
+    render(Scratchpad, { props: { notes: ['3/'], active: 0, onselect: vi.fn() } });
+    const cell = screen.getByRole('button');
+    expect(cell.querySelector('.numerator')?.textContent).toBe('3');
+    expect(cell.querySelector('.denominator')?.textContent).toBe('…');
+  });
+
+  it('keeps a trailing space after a fraction', () => {
+    render(Scratchpad, { props: { notes: ['3/4 '], active: 0, onselect: vi.fn() } });
+    expect(screen.getByRole('button').textContent).toBe('3/4 ');
   });
 
   it('keeps a trailing space, so a typed spatie shows', () => {

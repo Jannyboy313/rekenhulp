@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { splitNoteFractions } from '../lib/fractionText';
   import { formatNote } from '../lib/format';
+  import Fraction from './Fraction.svelte';
   import { press } from './press';
 
   interface Props {
@@ -22,7 +24,14 @@
       class:active={index === active}
       aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNote(note)}`}
       aria-pressed={index === active}
-      use:press={() => onselect(index)}>{formatNote(note)}</button
+      use:press={() => onselect(index)}
+      ><!-- One flex item for the text runs and fractions, so the end alignment clips them as one. --><span
+        >{#each splitNoteFractions(formatNote(note)) as segment, part (part)}{#if segment.type === 'text'}{segment.text}{:else}<Fraction
+              >{#snippet numerator()}{segment.num}{/snippet}{#snippet denominator()}{#if segment.den === ''}<span
+                    class="placeholder">…</span
+                  >{:else}{segment.den}{/if}{/snippet}</Fraction
+            >{/if}{/each}</span
+      ></button
     >
   {/each}
 </div>
@@ -53,6 +62,10 @@
     background: var(--surface);
     /* Muted, not --border: empty cells must stay visible (≥ 3:1 against the surface). */
     border: 2px dashed var(--muted);
+  }
+
+  .placeholder {
+    color: var(--muted);
   }
 
   .cell:active {
