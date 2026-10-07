@@ -201,7 +201,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `scientificNotation`, normalise | the right `c`, the exponent shifted the wrong way (`k − s`) | "Het getal vóór × 10 wordt 100 keer kleiner, dus de exponent wordt 2 groter." |
 | fraction step in simplest form (§6) | the same value, not in simplest form | "De waarde klopt, maar vereenvoudig nog: 9/12 = 3/4." |
 | fraction step in simplest form, no decimal allowed | the same value as a decimal | "Schrijf het antwoord als breuk, niet als kommagetal." |
-| fraction step in simplest form, decimal allowed | a decimal that is the non-terminating answer rounded or cut off (`0,67`, `0,66` for 2/3) | "2/3 is geen eindig kommagetal: schrijf het antwoord als breuk." |
+| fraction step in simplest form | a decimal that is the non-terminating answer rounded or cut off (`0,67`, `0,66` for 2/3) | "2/3 is geen eindig kommagetal: schrijf het antwoord als breuk." |
 | `fractionConversion`, fraction → decimal | numerator and denominator side by side (`3/8` → `3,8`) | "3/8 betekent 3 : 8, niet 3,8." |
 | `fractionConversion`, → percentage | the decimal value itself (`0,375`) | "Procent betekent honderdste: vermenigvuldig met 100." |
 | `fractionConversion`, percentage → decimal | the percentage itself (`37,5`) | "Procent betekent honderdste: deel door 100." |
@@ -1086,7 +1086,7 @@ unless stated otherwise):
     `6 : 2/3`)
   - Explanation: numerator times numerator and denominator times denominator; dividing is
     multiplying by the inverse. Simplify and take out the wholes at the end:
-    `3/4 × 2/5 = 6/20 = 3/10`, `6 × 2/3 = 12/3 = 4`, `2/3 : 4/9 = 2/3 × 9/4 = 18/12 = 1 1/2`,
+    `3/4 × 2/5 = 6/20 = 3/10`, `6 × 2/3 = 12/3 = 4`, `2/3 : 4/9 = 2/3 × 9/4 = 18/12 = 3/2 = 1 1/2`,
     `3/4 : 3 = 3/4 × 1/3 = 3/12 = 1/4`, `6 : 2/3 = 6 × 3/2 = 18/2 = 9`.
 - **Part of a number:** a proper fraction `p/q` and a whole `N = q × m` with `m ∈ [2, 12]`.
   - part: `3/4 van 24 = ?`, answer `p × m`. Explanation: `1/4 van 24 = 24 : 4 = 6 → 3/4 = 3 × 6
@@ -1106,7 +1106,7 @@ There are three forms, each picked with equal probability:
 | Form             | Example                                    | Answer        |
 |------------------|--------------------------------------------|---------------|
 | Add / subtract   | `4,7 + 0,35 = ?`, `5 − 0,25 = ?`           | 5,05, 4,75    |
-| Multiply         | `0,3 × 0,4 = ?`, `12 × 0,25 = ?`           | 0,12, 3       |
+| Multiply         | `0,3 × 0,4 = ?`, `0,25 × 8 = ?`            | 0,12, 2       |
 | Divide           | `2,5 : 0,05 = ?`, `0,36 : 4 = ?`           | 50, 0,09      |
 
 - **Add / subtract** (each 50%): two positive numbers below 100 with 0 to 2 decimals and at most
@@ -1117,7 +1117,8 @@ There are three forms, each picked with equal probability:
 - **Multiply:** `p × 10⁻ⁱ` and `q × 10⁻ʲ` with `p ∈ {2, …, 9, 11, 12, 15, 25}`, `q ∈ [2, 9]`,
   `i, j ∈ [0, 2]` and `i + j ∈ [1, 3]`, in random order.
   - Explanation: the product without commas, then the decimals:
-    `3 × 4 = 12; 1 + 1 = 2 decimalen → 0,12`, `25 × 4 = 100; 2 + 0 = 2 decimalen → 1`.
+    `3 × 4 = 12; 1 + 1 = 2 decimalen → 0,12`, `25 × 4 = 100; 2 + 0 = 2 decimalen → 1`,
+    `7 × 6 = 42; 0 + 1 = 1 decimaal → 4,2`.
 - **Divide:** the quotient `p × 10ˢ` and the divisor `q × 10ᵗ` with `p, q ∈ [2, 12] \ {10}`,
   `s ∈ [−2, 1]` and `t ∈ [−2, 0]`. The dividend is their product. The dividend or the divisor
   is not whole; dividend, divisor and quotient have at most 3 decimals, and the dividend is
