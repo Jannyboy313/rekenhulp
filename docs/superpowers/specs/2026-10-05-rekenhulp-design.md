@@ -199,6 +199,25 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `scientificNotation`, scientific step | the right `c`, the exponent with the other sign | "Een getal kleiner dan 1 heeft een negatieve exponent." (larger than 10: positive) |
 | `scientificNotation`, to notation | the right `c`, the exponent counts the zeros | "Tel de plaatsen waarover de komma schuift, niet de nullen." |
 | `scientificNotation`, normalise | the right `c`, the exponent shifted the wrong way (`k − s`) | "Het getal vóór × 10 wordt 100 keer kleiner, dus de exponent wordt 2 groter." |
+| fraction step in simplest form (§6) | the same value, not in simplest form | "De waarde klopt, maar vereenvoudig nog: 9/12 = 3/4." |
+| fraction step in simplest form, no decimal allowed | the same value as a decimal | "Schrijf het antwoord als breuk, niet als kommagetal." |
+| fraction step in simplest form, decimal allowed | a decimal that is the non-terminating answer rounded or cut off (`0,67`, `0,66` for 2/3) | "2/3 is geen eindig kommagetal: schrijf het antwoord als breuk." |
+| `fractionConversion`, fraction → decimal | numerator and denominator side by side (`3/8` → `3,8`) | "3/8 betekent 3 : 8, niet 3,8." |
+| `fractionConversion`, → percentage | the decimal value itself (`0,375`) | "Procent betekent honderdste: vermenigvuldig met 100." |
+| `fractionConversion`, percentage → decimal | the percentage itself (`37,5`) | "Procent betekent honderdste: deel door 100." |
+| `fractionArithmetic`, equivalent | the additive answer (equal difference, `3/4 = 11/12`) | "Vermenigvuldig of deel teller en noemer met hetzelfde getal; het verschil blijft niet gelijk." |
+| `fractionArithmetic`, add / subtract, no mixed numbers | numerators and denominators added (subtracted) separately (`3/7`) | "Maak eerst de noemers gelijk; tel daarna alleen de tellers op." (aftrekken: "trek … af") |
+| `fractionArithmetic`, subtract mixed numbers | the fraction parts subtracted the wrong way round (`3 1/2 − 1 3/4` → `2 1/4`) | "Je kunt 3/4 niet van 1/2 aftrekken: wissel eerst 1 geheel om, 3 1/2 = 2 6/4." |
+| `fractionArithmetic`, whole × fraction | the fraction itself (numerator and denominator both × n) | "Alleen de teller gaat keer 6: 6 × 2/3 = 12/3." |
+| `fractionArithmetic`, divide | the product instead of the quotient | "Delen door 4/9 is keer het omgekeerde: × 9/4." (by a whole number: "Delen door 3 is keer 1/3.") |
+| `fractionArithmetic`, fraction : fraction | the inverse of the answer | "Draai de breuk om waardoor je deelt, niet de eerste." |
+| `fractionArithmetic`, part of a number | one part (`24 : 4`, numerator > 1) | "Dat is 1/4 van 24; 3/4 is 3 keer zoveel." |
+| `fractionArithmetic`, part of a number | the number divided by the fraction (`24 × 4 : 3`) | "Je hebt gedeeld; 3/4 van 24 is 24 : 4 × 3." |
+| `fractionArithmetic`, back to the whole | the fraction of the given part (`3/4 × 18`) | "Je hebt 3/4 van 18 berekend, maar 18 is zelf al 3/4. Reken terug naar het geheel." |
+| `fractionArithmetic`, back to the whole | one part (`18 : 3`, numerator > 1) | "Dat is 1/4; het geheel is 4/4." |
+| `decimalArithmetic`, add / subtract | the numbers added (subtracted) as if aligned on the right (`4,7 + 0,35` → `0,82`) | "Zet de komma's onder elkaar: 4,70 + 0,35." |
+| `decimalArithmetic`, multiply | 10ᵏ × the answer, k > 0 (too few decimals) | "De uitkomst heeft evenveel decimalen als beide getallen samen: 1 + 1 = 2." |
+| `decimalArithmetic`, divide by a decimal | 10ᵏ × the answer, k ≠ 0 | "Maak eerst van de deler een heel getal: 2,5 : 0,05 = 250 : 5." |
 
 Ja/Nee steps (prime, divisibility) and property rewrites get no tips: their explanation (§5.4,
 §5.6) or rewrite message (§5.11) already names the mistake.
@@ -345,6 +364,8 @@ Examples with `n = 15`:
   random.
 - **Getalbegrip:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen at
   random.
+- **Breuken & kommagetallen:** `r = 13` over 3 topics, so 5 + 4 + 4. The topic with 5 is chosen
+  at random.
 
 ## 5. Topics
 
@@ -940,7 +961,8 @@ There are four forms, each picked with equal probability:
   groups is equally likely.
 - **Negative exponent:** base 10 only, `n ∈ [1, 6]`. Two questions, each 50%: `10⁻ⁿ = ?` with a
   decimal answer, or `0,001 = 10ⁿ. n = ?` with a negative whole-number answer. Negative
-  exponents with other bases (`2⁻³ = 1/8`) wait for *Breuken & kommagetallen*.
+  exponents with other bases (`2⁻³ = 1/8`) are left out; *Breuken & kommagetallen* does not add
+  them either.
 - **Root** (each 50%):
   - cube root `∛n³` with `n ∈ [2, 10]`
   - square root of a scaled square: `√m²` with `m = k : 10` or `m = k × 10` and
@@ -984,6 +1006,125 @@ There are three forms, each picked with equal probability:
   - to number: `4,5 × 10⁻³ = 4,5 × 0,001 = 0,0045`
   - normalise: `450 × 10⁴ = 4,5 × 10² × 10⁴ = 4,5 × 10⁶`,
     `0,3 × 10⁻² = 3 × 10⁻¹ × 10⁻² = 3 × 10⁻³`
+
+### 5.20 Fraction conversion (`fractionConversion`)
+
+Part of the set Breuken & kommagetallen. Converting between fraction, decimal and percentage, for
+the fractions that are worth knowing by heart.
+
+- **Fractions:** `p/q` in lowest terms with `0 < p < q` and `q ∈ {2, 4, 5, 8, 10, 20, 25, 50}`.
+  Fraction ↔ percentage also uses `q ∈ {3, 6}`: `1/3`, `2/3`, `1/6` and `5/6`
+  (`33 1/3%`, `66 2/3%`, `16 2/3%`, `83 1/3%`). `q` is drawn uniformly, then `p`.
+
+There are six directions, each picked with equal probability:
+
+| Direction             | Prompt                          | Answer   | Answer kind |
+|-----------------------|---------------------------------|----------|-------------|
+| fraction → decimal    | `Schrijf als kommagetal: 3/8`   | `0,375`  | number      |
+| decimal → fraction    | `Schrijf als breuk: 0,375`      | `3/8`    | fraction, simplest form, no decimal |
+| fraction → percentage | `3/8 = ?%`                      | `37,5`   | fraction, any equal value |
+| percentage → fraction | `Schrijf als breuk: 37,5%`      | `3/8`    | fraction, simplest form, no decimal |
+| decimal → percentage  | `0,375 = ?%`                    | `37,5`   | number      |
+| percentage → decimal  | `Schrijf als kommagetal: 37,5%` | `0,375`  | number      |
+
+- A percentage prompt uses a decimal comma (`37,5%`), or a mixed number for thirds and sixths
+  (`33 1/3%`, drawn stacked). The `%` answers have the suffix `%`.
+- Fraction → percentage always uses the fraction keypad, as in §5.12, so the breuk key does not
+  give away the thirds. Any equal value is correct (`37,5`, `75/2`); the expected answer is
+  `37,5` or `33 1/3`.
+- Explanations:
+  - fraction → decimal, via the smallest power of ten the denominator divides:
+    `3/8 = 375/1000 = 0,375`, `7/20 = 35/100 = 0,35`
+  - decimal → fraction, the other way round: `0,375 = 375/1000 = 3/8`, `0,7 = 7/10`
+  - fraction → percentage: `3/8 = 0,375 = 37,5%`; thirds and sixths via 100%:
+    `1/3 = 100% : 3 = 33 1/3%`, `5/6 = 5 × 16 2/3% = 83 1/3%`
+  - percentage → fraction: `37,5% = 0,375 = 375/1000 = 3/8`, `33 1/3% = 100% : 3 = 1/3`,
+    `66 2/3% = 2 × 33 1/3% = 2/3`
+  - decimal → percentage: `0,375 = 0,375 × 100% = 37,5%`
+  - percentage → decimal: `37,5% = 37,5 : 100 = 0,375`
+- The de-duplication key is the direction and the fraction.
+
+### 5.21 Fraction arithmetic (`fractionArithmetic`)
+
+Part of the set Breuken & kommagetallen. A **proper fraction** below is `p/q` in lowest terms
+with `0 < p < q` and `q ∈ [2, 12]`.
+
+There are four groups, each picked with equal probability, with two forms each (50% each,
+unless stated otherwise):
+
+| Group                 | Form              | Example                               | Answer          | Answer kind |
+|-----------------------|-------------------|---------------------------------------|-----------------|-------------|
+| Simplify, equivalent  | simplify          | `Vereenvoudig 18/24`                  | `3/4`           | fraction, simplest form, no decimal |
+|                       | equivalent        | `3/4 = ?/12`                          | `9`             | number      |
+| Add, subtract         | add / subtract    | `2/3 + 1/4 = ?`, `3 1/2 − 1 3/4 = ?`  | `11/12`, `1 3/4` | fraction, simplest form, decimal allowed |
+| Multiply, divide      | multiply / divide | `3/4 × 2/5 = ?`, `2/3 : 4/9 = ?`      | `3/10`, `1 1/2` | fraction, simplest form, decimal allowed |
+| Part of a number      | part              | `3/4 van 24 = ?`                      | `18`            | number      |
+|                       | back to the whole | `3/4 is 18. Hoeveel is het geheel?`   | `24`            | number      |
+
+- **Simplify:** the answer `p/q` is in lowest terms with `q ∈ [2, 12]`: a proper fraction in
+  80%, and an improper one with `q < p < 2q` in 20% (`Vereenvoudig 15/12` → `5/4` or `1 1/4`).
+  The prompt multiplies both by `k ∈ [2, 10]`, with both terms at most 100.
+  - Explanation: `18/24 = 3/4 (teller en noemer : 6)`, improper: `15/12 = 5/4 = 1 1/4 (teller
+    en noemer : 3)`.
+- **Equivalent:** a proper fraction `p/q` and `kp/kq` with `k ∈ [2, 10]` and `kq ≤ 100`. Four
+  variants, each equally likely: `3/4 = ?/12`, `3/4 = 9/?`, `9/12 = ?/4` and `9/12 = 3/?`. The
+  `?` is drawn as a slot of the stacked fraction (§8).
+  - Explanation: `3/4 = 9/12 (teller en noemer × 3)`, `9/12 = 3/4 (teller en noemer : 3)`.
+- **Add / subtract** (each 50%): two proper fractions with different denominators whose LCM is at
+  most 36. In 30% both terms are mixed numbers with whole parts in `[1, 5]`. A difference is
+  positive; with mixed numbers the first whole part is larger than the second.
+  - Explanation: make the denominators equal (the LCM), then add, simplify and take out the
+    wholes as needed: `2/3 + 1/4 = 8/12 + 3/12 = 11/12`, `1/6 + 1/3 = 1/6 + 2/6 = 3/6 = 1/2`,
+    `2/3 + 3/4 = 8/12 + 9/12 = 17/12 = 1 5/12`. Mixed numbers keep their wholes:
+    `2 2/3 + 1 3/4 = 2 8/12 + 1 9/12 = 3 17/12 = 4 5/12`, and a subtraction that needs it
+    exchanges one whole: `3 1/2 − 1 3/4 = 3 2/4 − 1 3/4 = 2 6/4 − 1 3/4 = 1 3/4`.
+- **Multiply / divide** (each 50%):
+  - multiply: two proper fractions (60%, `3/4 × 2/5`), or a whole number `n ∈ [2, 12]` and a
+    proper fraction in either order (40%, `6 × 2/3`)
+  - divide: two different proper fractions (60%, `2/3 : 4/9`), a proper fraction by a whole
+    number `n ∈ [2, 12]` (20%, `3/4 : 3`), or a whole number by a proper fraction (20%,
+    `6 : 2/3`)
+  - Explanation: numerator times numerator and denominator times denominator; dividing is
+    multiplying by the inverse. Simplify and take out the wholes at the end:
+    `3/4 × 2/5 = 6/20 = 3/10`, `6 × 2/3 = 12/3 = 4`, `2/3 : 4/9 = 2/3 × 9/4 = 18/12 = 1 1/2`,
+    `3/4 : 3 = 3/4 × 1/3 = 3/12 = 1/4`, `6 : 2/3 = 6 × 3/2 = 18/2 = 9`.
+- **Part of a number:** a proper fraction `p/q` and a whole `N = q × m` with `m ∈ [2, 12]`.
+  - part: `3/4 van 24 = ?`, answer `p × m`. Explanation: `1/4 van 24 = 24 : 4 = 6 → 3/4 = 3 × 6
+    = 18` (for `p = 1` only the first part).
+  - back to the whole: `3/4 is 18. Hoeveel is het geheel?`, answer `N`. Explanation:
+    `3/4 = 18 → 1/4 = 18 : 3 = 6 → 4/4 = 4 × 6 = 24`, or `1/4 = 6 → 4/4 = 4 × 6 = 24`.
+- Fraction answers may be improper or whole (`6 × 2/3 = 4`); see §6 for what counts as the
+  simplest form. The de-duplication key is the form and its numbers.
+
+### 5.22 Decimal arithmetic (`decimalArithmetic`)
+
+Part of the set Breuken & kommagetallen. The four operations with decimals, the way they are done
+mentally.
+
+There are three forms, each picked with equal probability:
+
+| Form             | Example                                    | Answer        |
+|------------------|--------------------------------------------|---------------|
+| Add / subtract   | `4,7 + 0,35 = ?`, `5 − 0,25 = ?`           | 5,05, 4,75    |
+| Multiply         | `0,3 × 0,4 = ?`, `12 × 0,25 = ?`           | 0,12, 3       |
+| Divide           | `2,5 : 0,05 = ?`, `0,36 : 4 = ?`           | 50, 0,09      |
+
+- **Add / subtract** (each 50%): two positive numbers below 100 with 0 to 2 decimals and at most
+  3 significant digits, written without trailing zeros. Their numbers of decimals differ, so the
+  commas must be aligned. The sum is below 100; the difference is positive.
+  - Explanation: the commas aligned with trailing zeros: `4,70 + 0,35 = 5,05`,
+    `5,00 − 0,25 = 4,75`.
+- **Multiply:** `p × 10⁻ⁱ` and `q × 10⁻ʲ` with `p ∈ {2, …, 9, 11, 12, 15, 25}`, `q ∈ [2, 9]`,
+  `i, j ∈ [0, 2]` and `i + j ∈ [1, 3]`, in random order.
+  - Explanation: the product without commas, then the decimals:
+    `3 × 4 = 12; 1 + 1 = 2 decimalen → 0,12`, `25 × 4 = 100; 2 + 0 = 2 decimalen → 1`.
+- **Divide:** the quotient `p × 10ˢ` and the divisor `q × 10ᵗ` with `p, q ∈ [2, 12] \ {10}`,
+  `s ∈ [−2, 1]` and `t ∈ [−2, 0]`. The dividend is their product. The dividend or the divisor
+  is not whole; dividend, divisor and quotient have at most 3 decimals, and the dividend is
+  below 1000.
+  - Explanation: a decimal divisor is made whole first, `2,5 : 0,05 = 250 : 5 = 50 (beide
+    × 100)`; with a whole divisor, the table fact, then the comma: `36 : 4 = 9 → 0,36 : 4 = 0,09`.
+- The de-duplication key is the calculation, with the factors of a product in ascending order.
 
 ## 6. Input (keypad)
 
@@ -1082,6 +1223,19 @@ The keypad is custom. The system keyboard is never opened.
     answer is correct.
   - The submitted input is a string: `25/2`, `12 1/2` or `12,5`, with `-` for the sign. Parsing,
     checking and results work on that string.
+- **Judging a fraction answer** (added with Breuken & kommagetallen). A fraction step has one of
+  two rules:
+  - **any equal value** (§5.12, §5.20 fraction → percentage): `12,5`, `25/2` and `12 1/2` are all
+    correct.
+  - **simplest form** (fraction answers of §5.20 and §5.21): correct when the value is equal
+    **and** the input is in simplest form. Simplest forms are a whole number (`4`), a fraction
+    `a/b` in lowest terms with `b ≥ 2` (`3/4`, also improper: `17/12`), and a mixed number
+    `w a/b` with `w ≥ 1`, `0 < a < b` and `a/b` in lowest terms (`1 5/12`). Not simplest: `9/12`,
+    `12/3`, `4/1`, `0 3/4`, `1 2/4`, `1 14/12`. A decimal (any input with a comma) is correct
+    when the step allows decimals (§5.21 sums: `0,3` and `0,30` for `3/10`) and wrong otherwise
+    (§5.20 → fraction, §5.21 simplify). Wrong answers with the right value get a tip (§3.4.1).
+  - The expected answer of a simplest-form step is the whole number, the proper fraction, or the
+    mixed number for an improper value (`1 5/12`), never both notations.
 
 ## 7. Expression engine (`lib/expr`)
 
@@ -1200,6 +1354,13 @@ Required test cases (accept ✔ / reject ✘):
     stacked, with a hidden `/` so screen readers still read a fraction.
   - mixed numbers show the whole part at normal height next to the stacked fraction: `12½%`
     is rendered as `12` with a stacked `1/2`
+  - an expected answer with an improper value is a mixed number: `1 5/12` (§6)
+  - a `?` can take the place of the numerator or the denominator (`3/4 = ?/12`); it is drawn
+    stacked like a digit
+  - a whole number directly followed by one space and a fraction always reads as a mixed number
+    (`3 1/2`). Text must therefore never put a number, a space and a fraction side by side when
+    they are not a mixed number, and never put a decimal next to `/` (`37,5/100`): both would be
+    drawn wrong.
 - **Language:** UI text is in Dutch. Code, comments, tests and documentation are in English.
 
 ## 9. Code structure
@@ -1260,6 +1421,9 @@ src/
       rounding.ts
       powersRoots.ts
       scientificNotation.ts
+      fractionConversion.ts
+      fractionArithmetic.ts
+      decimalArithmetic.ts
 ```
 
 Core types:
@@ -1273,7 +1437,8 @@ type Topic =
   | 'orderOfOperations' | 'smartCalculation' | 'properties'
   | 'volume' | 'area' | 'length' | 'mass' | 'time' | 'numberUnits'
   | 'percentages' | 'ratios'
-  | 'mentalOperations' | 'negativeNumbers' | 'rounding' | 'powersRoots' | 'scientificNotation';
+  | 'mentalOperations' | 'negativeNumbers' | 'rounding' | 'powersRoots' | 'scientificNotation'
+  | 'fractionConversion' | 'fractionArithmetic' | 'decimalArithmetic';
 
 interface CheckResult {
   correct: boolean;
@@ -1323,6 +1488,11 @@ interface PracticeSet {
   - Scientific input: table-driven parser and judging tests (`4,5×10^6` ✔, `10^6` ✔ for
     `1 × 10⁶`, `45×10^5` ✘ with tip, `4500000` ✘ with tip, `4,5×2^6` invalid).
   - Rounding: every expected answer agrees with half-up rounding computed independently.
+  - Fraction judging: table-driven tests of the simplest form (§6), e.g. `3/4` ✔, `9/12` ✘ with
+    tip, `1 5/12` ✔ and `17/12` ✔ for 17/12, `1 14/12` ✘, `12/3` ✘ for 4, `0,3` ✔ only when
+    decimals are allowed.
+  - Fraction arithmetic: every expected answer agrees with the value computed independently, and
+    is in simplest form.
   - Sets and session builder:
     - quotas for every set × every allowed `n` (incl. the examples in §4.2)
     - every topic is present when `r ≥ topics`
@@ -1419,6 +1589,21 @@ These are assumptions made while writing the spec. Each one is easy to change.
     - decimal powers, `(−b)ⁿ` up to 125, and roots `∛n³` and `√0,49`-style (§5.18)
     - the scientific keypad with four rows instead of five (§6)
     - the tips per topic (§3.4.1)
+20. ~~Breuken & kommagetallen~~ — confirmed 2026-10-07: a fraction answer must be in simplest
+    form (`2/4` is wrong with a tip); an improper fraction in lowest terms and a mixed number are
+    both correct (`17/12`, `1 5/12`), and the expected answer is the mixed number. In fraction
+    sums an equal decimal is correct (`0,3` for `3/10`). Fraction arithmetic covers simplifying
+    and equivalent fractions, adding and subtracting (also mixed numbers), multiplying and
+    dividing, and a fraction of a number (§5.21, §6).
+    Assumed in the same revision (open for veto in the plan review):
+    - the conversion fractions (denominators 2 to 50, thirds and sixths only with percentages)
+      and the six directions; no values above 1 (§5.20)
+    - no decimal answer for `Vereenvoudig` and for conversions to a fraction (§5.20, §5.21)
+    - the ranges per form, e.g. denominators up to 12 with an LCM up to 36, 30% mixed numbers in
+      sums (§5.21), and decimals with at most 3 significant digits (§5.22)
+    - three topics with weight 1 (§4.2)
+    - no negative exponents with other bases than 10 (`2⁻³`, §5.18)
+    - the tips per topic (§3.4.1)
 
 ## 12. Roadmap (not in v1)
 
@@ -1445,16 +1630,16 @@ in each set's own spec iteration.
      extends `numberUnits` (§5.14).
    - Infrastructure: a `scientific` answer kind that reuses the existing `×`, `^`, `,` and `−`
      keys (§6). The number keypad already has `−`.
-2. **Breuken & kommagetallen** (new set; replaces the earlier plan to put fractions in
-   *Verhoudingen*)
+2. **Breuken & kommagetallen** (new set; specified in §5.20–§5.22; replaces the earlier plan to
+   put fractions in *Verhoudingen*)
    - `fractionConversion`: fraction ↔ decimal ↔ percentage: `3/8 = ?`, `0,125 = ?%`,
      `40% = ?/?`.
    - `fractionArithmetic`: simplifying, making like denominators and the four operations,
      including mixed numbers: `2/3 + 1/4`, `3/4 × 2/5`, `vereenvoudig 18/24`.
    - `decimalArithmetic`: `0,3 × 0,4`, `2,5 : 0,05`, `4,7 + 0,35`.
    - Infrastructure: the `fraction` answer kind exists since Verhoudingen v1 (§6). This set
-     adds judging of the simplified versus the unsimplified form, and mixed numbers as
-     expected answers.
+     adds judging of the simplest form, mixed numbers as expected answers, and `?` as a
+     fraction slot in prompts (§6, §8).
 3. **Verhoudingen** (v2 part)
    - `percentChange`: increase and decrease, VAT (21% and 9%), reasoning back to 100%, and
      the percentage of a change.
