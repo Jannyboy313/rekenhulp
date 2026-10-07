@@ -39,6 +39,18 @@ export function randomIntWhere(
   throw new RangeError(`No accepted integer found in [${min}, ${max}]`);
 }
 
+/**
+ * The first non-null result of `draw`, by rejection: "redrawn until all rules hold". Throws if
+ * none turns up.
+ */
+export function drawUntil<T>(draw: () => T | null): T {
+  for (let attempt = 0; attempt < 1000; attempt++) {
+    const value = draw();
+    if (value !== null) return value;
+  }
+  throw new RangeError('No accepted draw found');
+}
+
 export function pick<T>(rng: Rng, items: readonly T[]): T {
   if (items.length === 0) throw new RangeError('Cannot pick from an empty list');
   return items[Math.floor(rng() * items.length)]!;

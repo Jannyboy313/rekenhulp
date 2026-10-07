@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { createRng, pick, randomInt, randomIntWhere, randomSeed, shuffle } from './random';
+import {
+  createRng,
+  drawUntil,
+  pick,
+  randomInt,
+  randomIntWhere,
+  randomSeed,
+  shuffle,
+} from './random';
 
 describe('createRng', () => {
   it('is deterministic for the same seed', () => {
@@ -88,5 +96,22 @@ describe('randomIntWhere', () => {
 
   it('throws when no value is accepted', () => {
     expect(() => randomIntWhere(createRng(1), 1, 5, () => false)).toThrow(RangeError);
+  });
+});
+
+describe('drawUntil', () => {
+  it('returns the first accepted draw', () => {
+    const rng = createRng(1);
+    for (let i = 0; i < 100; i++) {
+      const even = drawUntil(() => {
+        const value = randomInt(rng, 1, 10);
+        return value % 2 === 0 ? value : null;
+      });
+      expect(even % 2).toBe(0);
+    }
+  });
+
+  it('throws when no draw is accepted', () => {
+    expect(() => drawUntil(() => null)).toThrow(RangeError);
   });
 });
