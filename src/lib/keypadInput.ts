@@ -172,3 +172,37 @@ export function openParentheses(text: string): number {
   }
   return open;
 }
+
+/** The longest useful input is 1,25×10^-6 (10 characters); 16 leaves room. */
+export const MAX_SCIENTIFIC_LENGTH = 16;
+
+/** §5.19 exponents stay within two digits (10⁻⁹ … 10¹¹ in the normalise prompts). */
+const MAX_EXPONENT_DIGITS = 2;
+
+/**
+ * Scientific input (spec §6): '4,5×10^-3', '10^6' or a plain number. The comma only in the first
+ * number; × once, after a digit of the first number; ^ once, after a digit; '-' only directly
+ * after ^ (a negative exponent); an exponent of at most two digits.
+ */
+export function applyScientificKey(value: string, key: KeypadKey): string {
+  if (key === 'backspace') return value.slice(0, -1);
+  if (value.length >= MAX_SCIENTIFIC_LENGTH) return value;
+  const caret = value.indexOf('^');
+  const endsWithDigit = /\d$/.test(value);
+  switch (key) {
+    case ',':
+      return /^\d*$/.test(value) ? `${value},` : value;
+    case '×':
+      return endsWithDigit && !value.includes('×') && caret === -1 ? `${value}×` : value;
+    case '^':
+      return endsWithDigit && caret === -1 ? `${value}^` : value;
+    case '-':
+      return value.endsWith('^') ? `${value}-` : value;
+    default: {
+      // Only digits are appended; any other key is ignored.
+      if (!/^\d$/.test(key)) return value;
+      const exponentDigits = caret === -1 ? 0 : value.slice(caret + 1).replace('-', '').length;
+      return exponentDigits < MAX_EXPONENT_DIGITS ? value + key : value;
+    }
+  }
+}

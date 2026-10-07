@@ -4,12 +4,14 @@ import {
   applyFractionKey,
   applyKey,
   applyExpressionKey,
+  applyScientificKey,
   EMPTY_FRACTION_INPUT,
   endsWithOperand,
   MAX_EXPRESSION_LENGTH,
   fractionInputToString,
   MAX_FACTORIZATION_LENGTH,
   MAX_INPUT_LENGTH,
+  MAX_SCIENTIFIC_LENGTH,
   MAX_SLOT_LENGTH,
   openParentheses,
   selectFractionSlot,
@@ -259,5 +261,59 @@ describe('openParentheses', () => {
     expect(openParentheses('((3+4')).toBe(2);
     expect(openParentheses('(3+4)×(2')).toBe(1);
     expect(openParentheses('(3+4)')).toBe(0);
+  });
+});
+
+describe('applyScientificKey', () => {
+  const typeScientific = (keys: KeypadKey[], start = '') => keys.reduce(applyScientificKey, start);
+
+  it('types the notation with ×, ^ and a negative exponent', () => {
+    expect(typeScientific(['4', ',', '5', '×', '1', '0', '^', '-', '3'])).toBe('4,5×10^-3');
+    expect(typeScientific(['1', '0', '^', '6'])).toBe('10^6');
+    expect(typeScientific(['4', '5', '0', '0'])).toBe('4500');
+  });
+
+  it('allows the comma once, only in the first number', () => {
+    expect(typeScientific([','])).toBe(',');
+    expect(typeScientific(['4', ',', '5', ','])).toBe('4,5');
+    expect(typeScientific(['4', '×', '1', ','])).toBe('4×1');
+    expect(typeScientific(['1', '0', '^', ','])).toBe('10^');
+  });
+
+  it('allows × once, only after a digit of the first number', () => {
+    expect(typeScientific(['×'])).toBe('');
+    expect(typeScientific(['4', ',', '×'])).toBe('4,');
+    expect(typeScientific(['4', '×', '1', '0', '×'])).toBe('4×10');
+    expect(typeScientific(['1', '0', '^', '2', '×'])).toBe('10^2');
+  });
+
+  it('allows ^ once, only after a digit', () => {
+    expect(typeScientific(['^'])).toBe('');
+    expect(typeScientific(['4', '×', '^'])).toBe('4×');
+    expect(typeScientific(['4', '×', '1', '0', '^', '2', '^'])).toBe('4×10^2');
+  });
+
+  it('allows a minus sign only directly after ^', () => {
+    expect(typeScientific(['-', '4'])).toBe('4');
+    expect(typeScientific(['4', '-'])).toBe('4');
+    expect(typeScientific(['1', '0', '^', '-', '-'])).toBe('10^-');
+    expect(typeScientific(['1', '0', '^', '2', '-'])).toBe('10^2');
+  });
+
+  it('keeps the exponent to two digits', () => {
+    expect(typeScientific(['1', '0', '^', '1', '2', '3'])).toBe('10^12');
+    expect(typeScientific(['1', '0', '^', '-', '1', '2', '3'])).toBe('10^-12');
+  });
+
+  it('ignores the keys of other keypads', () => {
+    expect(typeScientific(['4', '+', ':', '(', ')', '/', '=', ' '])).toBe('4');
+  });
+
+  it('removes the last character on backspace and stops at the maximum length', () => {
+    expect(typeScientific(['4', '×', 'backspace'])).toBe('4');
+    expect(typeScientific(['backspace'])).toBe('');
+    const full = '1'.repeat(MAX_SCIENTIFIC_LENGTH);
+    expect(applyScientificKey(full, '1')).toBe(full);
+    expect(applyScientificKey(full, 'backspace')).toBe(full.slice(0, -1));
   });
 });
