@@ -1,7 +1,7 @@
 # Rekenhulp — Design Spec
 
-- Date: 2026-10-05
-- Status: Draft, under iteration (not approved for implementation yet)
+- Started: 2026-10-05
+- Status: living spec, the source of truth for behaviour. Decision history is in git.
 
 ## 1. Goal
 
@@ -250,7 +250,7 @@ in the place of OK.
   screen edge: 3 rows from 816 px viewport height, 2 rows (4 cells) from 760 px
   (`max-height: 815px`), and only the top row (2 cells) below that (`max-height: 759px`).
   This is CSS only: a hidden cell cannot be tapped, so it never becomes active. The thresholds
-  come from a height estimate (kladblok plan, plus 56 px per row) and are checked on a phone.
+  come from a height estimate (56 px per row) and are checked on a phone.
 - **When shown:** for every step that is not Ja/Nee, unless the question is a table exercise
   (topic `tables`, including the tables mixed into other sets). Tables are practised from
   memory.
@@ -357,9 +357,9 @@ Given a set and a session size `n`:
 
 Table share for each count:
 
-| `n`         | 15 | 25 | 50 | 75 | 100 |
-|-------------|----|----|----|----|-----|
-| tables      | 2  | 4  | 8  | 11 | 15  |
+| `n`         | 5 | 10 | 15 | 25 | 50 |
+|-------------|---|----|----|----|----|
+| tables      | 1 | 2  | 2  | 4  | 8  |
 
 Examples with `n = 15`:
 
@@ -536,7 +536,7 @@ topic answers with a number unless stated otherwise.
     first term of the expression or of a parenthesized part, where unary minus is allowed
     (§7): `−7 − (−12)`, `5 × (−3) + 8`, `(−3 + 5) × 2`.
   - A negative power base is always written in parentheses: `(−4)² − 10`. The form `−3²` is
-    not generated (§11).
+    not generated, because it is a common source of confusion.
 - The convention from §8 applies: `×` and `:` have equal priority and are evaluated left to
   right.
 - Explanation on error: the evaluation one operation at a time, in the order of §8 (innermost
@@ -968,7 +968,7 @@ There are four forms, each picked with equal probability:
     and 5 with `[3, 4]`, 6 to 9 with 3, and 10 with `[3, 6]`. The (base, exponent) pair is drawn
     uniformly from these 23 pairs.
   - 20%: a negative base `(−b)ⁿ` with `b ∈ [2, 5]`, `n ∈ [2, 4]` and `bⁿ ≤ 125`: 10 pairs, from
-    `(−2)²` to `(−5)³`. The base is always written in parentheses (§5.8, §11 item 8).
+    `(−2)²` to `(−5)³`. The base is always written in parentheses (§5.8).
   - 10%: exponent 0 or 1 with a base in `[2, 20]`.
 - **Decimal power:** a base `0,1` to `0,9` with exponent 2 or 3, a base `0,01` to `0,09` with
   exponent 2, or a base `1,1`, `1,2`, `1,5`, `2,5` or `3,5` with exponent 2. Each of these three
@@ -1380,110 +1380,7 @@ Required test cases (accept ✔ / reject ✘):
 
 ## 9. Code structure
 
-```
-src/
-  App.svelte
-  main.ts
-  components/
-    SetOverview.svelte      start screen: set cards
-    SetupScreen.svelte      topics (or table choice for Tafels) + count selector + Start
-    PlayScreen.svelte       header (progress, timer, Stop) + question/feedback loop
-    QuestionView.svelte     renders scratchpad + prompt + input for any answer kind
-    Scratchpad.svelte       the 2×3 kladblok cells (§3.6)
-    Keypad.svelte           layout chosen by answer kind
-    Feedback.svelte
-    ResultScreen.svelte
-  lib/
-    random.ts               seedable PRNG (e.g. mulberry32), helpers: int, pick, shuffle
-    rational.ts             exact bigint fractions; Dutch decimal parsing; used everywhere
-    format.ts
-    steps.ts                step factories, e.g. numberStep (shared answer checking)
-    keypadInput.ts          pure key → input-string reducers used by Keypad
-    inputModels.ts          per answer kind: keys, reducer, validation, display (§6)
-    scratchpad.ts           kladblok: cell count, keys, typing, when it is shown (§3.6)
-    primes.ts               gcd, lcm, isPrime, prime factorization (shared math helpers)
-    results.ts              per-question records + session summary
-    sets.ts                 practice set definitions (§4.1)
-    session.ts              quota algorithm (§4.2), generation, shuffle, de-duplication
-    backGuard.ts            history entry that keeps the system back inside the app (§3)
-    wakeLock.ts             keeps the screen on during a session (§2)
-    tips.ts                 Diagnose, firstTip, factor-of-ten fallback tip (§3.4.1)
-    types.ts                Question, Step, AnswerKind, CheckResult, Topic, PracticeSet
-    expr/
-      tokenizer.ts
-      parser.ts
-      evaluate.ts
-      format.ts
-      reduce.ts             evaluation steps, one operation at a time (explanations)
-      chains.ts
-      rewriteCheck.ts
-      misconceptions.ts     values of order-of-operations mistakes, for tips (§3.4.1)
-    topics/
-      index.ts              Topic → generator registry
-      tables.ts
-      numberTheory.ts       lcm, gcd, prime, factorization
-      divisibility.ts
-      squares.ts
-      orderOfOperations.ts
-      smartCalculation.ts
-      properties.ts
-      measurement.ts        conversion engine + volume, area, length, mass, time
-      numberUnits.ts        large numbers: names and powers of 10 (reuses the engine)
-      percentages.ts
-      ratios.ts
-      mentalOperations.ts
-      negativeNumbers.ts
-      rounding.ts
-      powersRoots.ts
-      scientificNotation.ts
-      fractionConversion.ts
-      fractionArithmetic.ts
-      decimalArithmetic.ts
-```
-
-Core types:
-
-```ts
-type AnswerKind =
-  | 'number' | 'fraction' | 'boolean' | 'expression' | 'factorization' | 'scientific';
-
-type Topic =
-  | 'tables' | 'lcm' | 'gcd' | 'prime' | 'factorization' | 'divisibility' | 'squares'
-  | 'orderOfOperations' | 'smartCalculation' | 'properties'
-  | 'volume' | 'area' | 'length' | 'mass' | 'time' | 'numberUnits'
-  | 'percentages' | 'ratios'
-  | 'mentalOperations' | 'negativeNumbers' | 'rounding' | 'powersRoots' | 'scientificNotation'
-  | 'fractionConversion' | 'fractionArithmetic' | 'decimalArithmetic';
-
-interface CheckResult {
-  correct: boolean;
-  expected: string;
-  tip?: string; // likely mistake, wrong answers only (§3.4.1)
-  explanation?: string;
-}
-
-interface Step {
-  kind: AnswerKind;
-  prompt: string;
-  prefix?: string;  // fixed unit shown before the input: '€'
-  suffix?: string;  // fixed unit shown after the input, e.g. 'cm³', '%'
-  check(input: string): CheckResult;
-}
-
-interface Question {
-  key: string;      // canonical, for de-duplication
-  topic: Topic;
-  steps: Step[];    // 1 step, or 2 for properties
-}
-
-interface PracticeSet {
-  id: string;
-  name: string;           // Dutch, e.g. 'Getallen & delers'
-  description: string;    // Dutch, one line
-  topics: { topic: Topic; weight: number }[];   // excludes the mixed-in tables
-  tablesPercent: number;  // 100 for Tafels, 15 otherwise
-}
-```
+See the Architecture section in `CLAUDE.md` and the core types in `src/lib/types.ts`.
 
 ## 10. Testing strategy
 
@@ -1518,108 +1415,13 @@ interface PracticeSet {
   spatie, keypad switch, hidden for tables and Ja/Nee, notes reset per question).
 - **Manual:** install the PWA on iOS Safari and Android Chrome, then verify offline mode.
 
-## 11. Decisions to confirm during iteration
+## 11. Open assumptions
 
-These are assumptions made while writing the spec. Each one is easy to change.
+While a set's spec is iterated, assumptions that still need the user's confirmation are listed
+here. Once confirmed, the decision lives in its own section and the item is removed; the history
+is in git.
 
-1. ~~Table ranges~~ — confirmed: factors `{2, …, 15} \ {10}` (see §5.1).
-2. ~~Session quotas~~ — replaced by practice sets with 15% tables (§4).
-3. ~~Basis property~~ — confirmed: Basis property exercises require the *useful* property. A
-   different valid property is rejected with a hint.
-4. In property exercises, a wrong step 1 still continues to step 2.
-5. Feedback for a correct answer lasts 600 ms before auto-advancing.
-6. Stop counts only the exercises that have been answered.
-7. ~~Invalid input~~ — confirmed: input that cannot be submitted gives an inline error and
-   does not consume the attempt, for every keypad answer kind (§6).
-8. ~~`−3²`~~ — confirmed: the form `−3²` (which equals −9) is not generated, because it is a
-   common source of confusion. A negative power base is always written in parentheses.
-9. ~~Divisors~~ — confirmed: 2 to 15 without 10, like the tables. 7 and 13 are explained by
-   chunking, and with 14 they use numbers of at most 4 digits (§5.6).
-10. ~~Units~~ — confirmed: length `mm, cm, dm, m, km` without `dam`/`hm`, mass
-    `mg, g, kg, ton` without `cg`/`dg`. Metric conversions span at most a factor 10⁶, and time
-    leaves out `s ↔ dag` (§5.10). Large numbers (§5.14) were added to Meten.
-11. ~~Default set~~ — confirmed: the app opens on the set overview, with no set preselected.
-    Choosing a set leads to a separate setup screen (§3.1, §3.2).
-12. ~~Verhoudingen v1~~ — confirmed: `€` is an input prefix and money answers show 2 decimals
-    when not whole. `12½` is written as a fraction in prompts, and as an answer both `25/2`
-    and `12,5` are correct, which brings the `fraction` input (`/` key) forward from v2.
-    Discount uses `p < 100` and increase `p ≤ 50`. A missing ratio term can be in any of the
-    four positions (§5.12, §5.13).
-13. ~~Getallen & delers~~ — confirmed: a tap on `Ja` or `Nee` submits at once (§6). A prime
-    is explained as `Geen deler tot en met √n` with the actual number (§5.4).
-14. ~~Feedback round 1~~ — confirmed: `…` placeholder in muted grey; fractions shown stacked
-    everywhere, including `12½%` in prompts; a breuk key with a template that also builds mixed
-    numbers (`12 2/3`), improper parts allowed; counts 5, 10, 15, 25, 50 in one column; a light
-    red Stop button; keys act on press (§3.2, §3.3, §6, §8). The expected answer stays
-    `12,5 of 25/2` (stacked). Mixed numbers as expected answers wait for v2.
-15. ~~Kladblok~~ — confirmed: numbers only, on the standard number keypad; 4 cells in a 2×2
-    grid of fixed size, the user picks a cell by tapping; OK becomes Volgende; no clear button;
-    notes last one question; hidden for tables and Ja/Nee; keys 3 rem high; on short screens
-    only the top row (§3.6). Revised 2026-10-06: 6 cells in 2 columns × 3 rows, rows dropped
-    on short screens; OK becomes a spatie (numbers separated by spaces), no Volgende (§3.6).
-    Revised again 2026-10-06: the kladblok uses the expression keypad plus `,`, `=` and a
-    one-column spatie shown as `␣`, so a cell holds short sums (`12×7=84`); a minus sign at the
-    start of a number stays possible; cells are shown compact, without spaces around
-    operators (§3.6). Revised 2026-10-06: `^` and the breuk key replace the parentheses on the
-    kladblok keypad; exponents show in superscript, fractions inline as `3/4` (§3.6).
-    Revised 2026-10-07: less restrictive typing: `=` may occur more than once per item, and a
-    minus sign may also follow an operator (`19×−12`) (§3.6). Revised 2026-10-07: a breuk in
-    a cell is shown stacked in a smaller font instead of inline `3/4` (§3.6).
-16. ~~Bewerkingen~~ — confirmed 2026-10-06: the expression keypad has only `0–9`, `+ − × :`,
-    `( )` and `⌫` in 4 columns, and only the rewrite step uses it; every other keypad keeps 3
-    columns. Removing parentheses without changing the order of evaluation is not a step
-    ("Er is niets veranderd"). Assumed in the same revision (open for veto in the plan
-    review): the 10 order-of-operations templates with 2 to 5 operations and a step-by-step
-    explanation (§5.8), the value ranges per strategy (§5.9) and per property template, the
-    example rewrite per applicable property and the feedback messages (§5.11), the checker's
-    decision order (§7.1), and unary minus only in front of a number (§7). Confirmed after the
-    checker review: parentheses that cannot matter are ignored (`(7 × 100) − (7 × 2)` is
-    valid), a number only written differently gets its own reason ("Hier is nog geen
-    eigenschap toegepast"), and a term `F` counts as `F × 1` (`15 × 100 − 15` is valid).
-    Confirmed after the generator review: order-of-operations exercises have no trivial parts
-    (`x : 1`, `x : x`, `× 1`, `(7 − 7)`) and an evenly spread power base (§5.8).
-17. ~~Repeat until correct~~ — confirmed 2026-10-06: always on, no setting. A wrong exercise
-    returns unchanged at a random later place (not directly next when avoidable) until it is
-    answered correctly. The count keeps the original total and shows **Herhaling** for a
-    repeat; score, average and mistakes cover first attempts only (§3.3–§3.5).
-18. ~~v2 scope~~ — confirmed 2026-10-07: v2 targets the RWT and the LKT, with mental
-    arithmetic and basic knowledge only. Heuristieken is in v2. Multiple choice and calculator
-    problems move to v3, and anything that needs pictures is out of scope (§12).
-    Assumed in the same revision (open for veto):
-    - the grouping into sets and their order (§4.1, §12.1)
-    - `speed` in *Meten* and `scale` in *Verhoudingen*
-    - fractions as a separate set instead of part of *Verhoudingen*
-    - estimating moves to v3 as multiple choice
-19. ~~Getalbegrip~~ — confirmed 2026-10-07: scientific notation is typed as the notation itself
-    (`4,5×10^6`) with the existing `×`, `^`, `,` and `−` keys on a new `scientific` keypad, and
-    only `c × 10ⁿ` with `1 ≤ c < 10` is correct (an equal value in another form gets a tip).
-    Division with a remainder is asked in a context (round up, round down, or the remainder).
-    Negative exponents only with base 10. Rounded large numbers are typed in full. The number
-    keypad already had `−`, so no new key was needed for negative numbers (§5.15–§5.19, §6).
-    Assumed in the same revision (open for veto in the plan review):
-    - the forms and ranges per topic, e.g. add / subtract with a 2-significant-digit number
-      (`6347 + 2800`) and the four remainder contexts (§5.15)
-    - temperature as the only context for negative numbers (§5.16)
-    - the seven rounding places, 20% with a 5 as decisive digit, and `3` counting for `3,0`
-      (§5.17)
-    - decimal powers, `(−b)ⁿ` up to 125, and roots `∛n³` and `√0,49`-style (§5.18)
-    - the scientific keypad with four rows instead of five (§6)
-    - the tips per topic (§3.4.1)
-20. ~~Breuken & kommagetallen~~ — confirmed 2026-10-07: a fraction answer must be in simplest
-    form (`2/4` is wrong with a tip); an improper fraction in lowest terms and a mixed number are
-    both correct (`17/12`, `1 5/12`), and the expected answer is the mixed number. In fraction
-    sums an equal decimal is correct (`0,3` for `3/10`). Fraction arithmetic covers simplifying
-    and equivalent fractions, adding and subtracting (also mixed numbers), multiplying and
-    dividing, and a fraction of a number (§5.21, §6).
-    Assumed in the same revision (open for veto in the plan review):
-    - the conversion fractions (denominators 2 to 50, thirds and sixths only with percentages)
-      and the six directions; no values above 1 (§5.20)
-    - no decimal answer for `Vereenvoudig` and for conversions to a fraction (§5.20, §5.21)
-    - the ranges per form, e.g. denominators up to 12 with an LCM up to 36, 30% mixed numbers in
-      sums (§5.21), and decimals with at most 3 significant digits (§5.22)
-    - three topics with weight 1 (§4.2)
-    - no negative exponents with other bases than 10 (`2⁻³`, §5.18)
-    - the tips per topic (§3.4.1)
+None at the moment.
 
 ## 12. Roadmap (not in v1)
 
@@ -1635,27 +1437,8 @@ answer. Prompts describe figures in words; there are no pictures.
 The sets are built in this order, one implementation plan each. The topic details are decided
 in each set's own spec iteration.
 
-1. **Getalbegrip** (new set; specified in §5.15–§5.19)
-   - `mentalOperations`: the four operations on larger numbers without a calculator, including
-     division with a remainder in a context: `6347 + 2800`, `28 × 500`, `7200 : 80`.
-   - `negativeNumbers`: computing with negative numbers, including temperature differences.
-   - `rounding`: rounding to tens, thousands, millions or a number of decimals.
-   - `powersRoots`: powers beyond squares (`2⁵`, `10⁻²`, `0,3²`) and roots (`∛27`); extends
-     `squares` (§5.7).
-   - `scientificNotation`: `4 500 000 = 4,5 × 10⁶` and back, including negative exponents;
-     extends `numberUnits` (§5.14).
-   - Infrastructure: a `scientific` answer kind that reuses the existing `×`, `^`, `,` and `−`
-     keys (§6). The number keypad already has `−`.
-2. **Breuken & kommagetallen** (new set; specified in §5.20–§5.22; replaces the earlier plan to
-   put fractions in *Verhoudingen*)
-   - `fractionConversion`: fraction ↔ decimal ↔ percentage: `3/8 = ?`, `0,125 = ?%`,
-     `40% = ?/?`.
-   - `fractionArithmetic`: simplifying, making like denominators and the four operations,
-     including mixed numbers: `2/3 + 1/4`, `3/4 × 2/5`, `vereenvoudig 18/24`.
-   - `decimalArithmetic`: `0,3 × 0,4`, `2,5 : 0,05`, `4,7 + 0,35`.
-   - Infrastructure: the `fraction` answer kind exists since Verhoudingen v1 (§6). This set
-     adds judging of the simplest form, mixed numbers as expected answers, and `?` as a
-     fraction slot in prompts (§6, §8).
+1. **Getalbegrip** — done, specified in §5.15–§5.19.
+2. **Breuken & kommagetallen** — done, specified in §5.20–§5.22.
 3. **Verhoudingen** (v2 part)
    - `percentChange`: increase and decrease, VAT (21% and 9%), reasoning back to 100%, and
      the percentage of a change.
