@@ -289,9 +289,11 @@ in the place of OK.
 - A cell is never validated. It is shown as typed, compact: no spaces around operators, so a
   space always separates items. `-` is shown as `−` (`12×7=84`, `−5 0,25`, `3−8=−5`), an
   exponent in superscript (`2^3` as `2³`; a `^` without exponent stays visible) and a breuk
-  inline as `3/4`: a stacked fraction does not fit a 48 px cell, and `12 1/2` would read as a
-  mixed number while the space separates items. A trailing space stays visible. There is no
-  button to clear the scratchpad.
+  as a stacked fraction in a smaller font (0.8 em, as everywhere), which fits a 48 px cell.
+  A breuk without denominator yet (`3/`) shows the stacked fraction with a `…` in the
+  denominator. A fraction never belongs to the number before it: `12 3/4` is the items `12`
+  and `3/4`, not a mixed number, because the space separates items. A trailing space stays
+  visible. There is no button to clear the scratchpad.
 - **Lifetime:** the notes belong to one question. They stay across the steps of a two-step
   question, including the feedback in between, and are empty again at the next question. The
   feedback screen and the results do not show the scratchpad. Nothing is stored.
@@ -1549,7 +1551,8 @@ These are assumptions made while writing the spec. Each one is easy to change.
     operators (§3.6). Revised 2026-10-06: `^` and the breuk key replace the parentheses on the
     kladblok keypad; exponents show in superscript, fractions inline as `3/4` (§3.6).
     Revised 2026-10-07: less restrictive typing: `=` may occur more than once per item, and a
-    minus sign may also follow an operator (`19×−12`) (§3.6).
+    minus sign may also follow an operator (`19×−12`) (§3.6). Revised 2026-10-07: a breuk in
+    a cell is shown stacked in a smaller font instead of inline `3/4` (§3.6).
 16. ~~Bewerkingen~~ — confirmed 2026-10-06: the expression keypad has only `0–9`, `+ − × :`,
     `( )` and `⌫` in 4 columns, and only the rewrite step uses it; every other keypad keeps 3
     columns. Removing parentheses without changing the order of evaluation is not a step

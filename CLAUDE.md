@@ -22,7 +22,7 @@ a light red Stop button and keys that act on press.
 The kladblok (plan: `docs/superpowers/plans/2026-10-06-kladblok.md`, revised without a plan) is a
 2×3 scratchpad above the prompt, typed on the expression keypad with `^` and breuk instead of the
 parentheses, plus `,`, `=` and a `␣` spatie (numbers and short sums like `12×7=84`, `2^3` shown as
-`2³`, inline `3/4`, separated by spaces); cells are switched by tapping. Notes last one question
+`2³`, stacked `3/4`, separated by spaces); cells are switched by tapping. Notes last one question
 and are hidden for tables and Ja/Nee (spec §3.6).
 Repeat until correct (no plan, spec §3.4): a wrong question returns at a random later place in
 the queue (`insertRepeat` in `lib/session.ts`, queue in `PlayScreen.svelte`) until it is correct;
