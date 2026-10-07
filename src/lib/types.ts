@@ -33,7 +33,8 @@ export type Topic =
   | 'negativeNumbers'
   | 'rounding'
   | 'powersRoots'
-  | 'scientificNotation';
+  | 'scientificNotation'
+  | 'decimalArithmetic';
 
 export interface CheckResult {
   correct: boolean;

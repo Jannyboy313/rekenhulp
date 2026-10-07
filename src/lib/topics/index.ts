@@ -1,4 +1,5 @@
 import type { Generator, Topic } from '../types';
+import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
 import {
   generateArea,
@@ -46,6 +47,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   scientificNotation: generateScientificNotation,
+  decimalArithmetic: generateDecimalArithmetic,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -73,4 +75,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
+  decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
 };
