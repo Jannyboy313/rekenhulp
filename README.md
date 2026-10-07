@@ -3,8 +3,9 @@
 Offline PWA for practising mental arithmetic on a phone, without a calculator. No accounts,
 no tracking, no network traffic after the first load.
 
-Practice sets: **Tafels**, **Meten**, **Verhoudingen**, **Getallen & delers** and
-**Bewerkingen**. The roadmap is in `CLAUDE.md`, the design in `docs/superpowers/specs/`.
+Practice sets: **Tafels**, **Meten**, **Verhoudingen**, **Getallen & delers**,
+**Bewerkingen**, **Getalbegrip** and **Breuken & kommagetallen**. The design and roadmap are in
+`docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
 
 ## Development
 
@@ -38,8 +39,3 @@ npm run preview # serve dist/ locally
 
 After the first visit the app works in airplane mode. New versions are installed silently and
 become active on the next launch.
-
-## Docs
-
-- Design spec: `docs/superpowers/specs/2026-10-05-rekenhulp-design.md`
-- Beta plan: `docs/superpowers/plans/2026-10-05-beta-tafels.md`
