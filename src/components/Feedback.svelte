@@ -52,7 +52,9 @@
     {/if}
   </div>
   {#if !result.correct}
-    <button type="button" class="primary next" bind:this={nextButton} onclick={onnext}>Verder</button>
+    <button type="button" class="primary next" bind:this={nextButton} onclick={onnext}
+      >Verder</button
+    >
   {/if}
 </div>
 

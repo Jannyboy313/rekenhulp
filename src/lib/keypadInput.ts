@@ -1,19 +1,7 @@
 type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 /** '=' and ' ' (the spatie) are kladblok keys only; the answer reducers ignore them. */
 export type KeypadKey =
-  | DigitKey
-  | ','
-  | '-'
-  | '+'
-  | '×'
-  | ':'
-  | '^'
-  | '('
-  | ')'
-  | '/'
-  | '='
-  | ' '
-  | 'backspace';
+  DigitKey | ',' | '-' | '+' | '×' | ':' | '^' | '(' | ')' | '/' | '=' | ' ' | 'backspace';
 
 /** Maximum number of digits and comma; the sign is not counted. */
 export const MAX_INPUT_LENGTH = 12;
@@ -91,7 +79,9 @@ export function applyFractionKey(state: FractionInput, key: KeypadKey): Fraction
   if (key === '-') return { ...state, negative: !negative };
   if (template === null) {
     if (key === '/') {
-      return whole.includes(',') ? state : { ...state, template: { num: '', den: '', slot: 'num' } };
+      return whole.includes(',')
+        ? state
+        : { ...state, template: { num: '', den: '', slot: 'num' } };
     }
     if (key === 'backspace' && whole === '') return { ...state, negative: false };
     // Without a template the whole part behaves like a number input.

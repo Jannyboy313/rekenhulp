@@ -17,8 +17,7 @@ import {
 
 const PER_FORM = 1000;
 const TO_NOTATION = /^Schrijf in wetenschappelijke notatie: ([\d,\u{202f}]+)$/u;
-const NORMALISE =
-  /^Schrijf in wetenschappelijke notatie: ([\d,\u{202f}]+) × 10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)$/u;
+const NORMALISE = /^Schrijf in wetenschappelijke notatie: ([\d,\u{202f}]+) × 10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)$/u;
 const TO_NUMBER = /^(?:([\d,]+) × )?10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+) = \?$/u;
 
 function questionsOf(form: NotationForm): Question[] {

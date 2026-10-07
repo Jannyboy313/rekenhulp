@@ -99,7 +99,10 @@ describe('applyFactorizationKey', () => {
   });
 });
 
-function typeFraction(keys: KeypadKey[], start: FractionInput = EMPTY_FRACTION_INPUT): FractionInput {
+function typeFraction(
+  keys: KeypadKey[],
+  start: FractionInput = EMPTY_FRACTION_INPUT,
+): FractionInput {
   return keys.reduce(applyFractionKey, start);
 }
 

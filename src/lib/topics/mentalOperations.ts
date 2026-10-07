@@ -58,8 +58,7 @@ export function explainAddSubtract(a: number, b: number, add: boolean): string {
   const middle = add ? a + high : a - high;
   const answer = add ? middle + low : middle - low;
   return (
-    `${f(a)} ${sign} ${f(high)} = ${f(middle)} → ` +
-    `${f(middle)} ${sign} ${f(low)} = ${f(answer)}`
+    `${f(a)} ${sign} ${f(high)} = ${f(middle)} → ` + `${f(middle)} ${sign} ${f(low)} = ${f(answer)}`
   );
 }
 

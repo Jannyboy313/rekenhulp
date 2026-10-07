@@ -142,7 +142,10 @@ export function randomScaleConversion(
   for (let exponent = -MAX_DECIMALS; exponent <= limits.maxValueExponent; exponent++) {
     const value = multiply(mantissa, powerOfTen(exponent));
     const answer = multiply(value, factor);
-    if (isNiceValue(value, limits.maxValueExponent) && isNiceValue(answer, limits.maxValueExponent)) {
+    if (
+      isNiceValue(value, limits.maxValueExponent) &&
+      isNiceValue(answer, limits.maxValueExponent)
+    ) {
       options.push({ value, answer });
     }
   }

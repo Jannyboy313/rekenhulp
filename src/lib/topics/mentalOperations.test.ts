@@ -170,7 +170,10 @@ describe('multiply by zeros', () => {
 
   it('keys a product by its factors in ascending order', () => {
     for (const question of questions) {
-      const factors = sumOf(question).split(' × ').map(Number).sort((u, v) => u - v);
+      const factors = sumOf(question)
+        .split(' × ')
+        .map(Number)
+        .sort((u, v) => u - v);
       expect(plain(question.key)).toBe(`mentalOperations:${factors.join(' × ')}`);
     }
   });

@@ -19,12 +19,7 @@
 
 <div class="keypad" style:--columns={columns}>
   {#each keys as { key, label, ariaLabel, icon } (key)}
-    <button
-      type="button"
-      class="key"
-      aria-label={ariaLabel ?? label}
-      use:press={() => onkey(key)}
-    >
+    <button type="button" class="key" aria-label={ariaLabel ?? label} use:press={() => onkey(key)}>
       {#if icon === 'fraction'}<Fraction
           >{#snippet numerator()}□{/snippet}{#snippet denominator()}□{/snippet}</Fraction
         >{:else}{label}{/if}

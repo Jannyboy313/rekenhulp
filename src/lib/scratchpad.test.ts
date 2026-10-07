@@ -98,11 +98,26 @@ describe('scratchpad', () => {
   it('swaps the parentheses for ^ and breuk and adds comma, = and a spatie, in 5 rows of 4', () => {
     expect(NOTE_COLUMNS).toBe(4);
     expect(NOTE_KEYS.map(({ key }) => key)).toEqual([
-      '7', '8', '9', '+',
-      '4', '5', '6', '-',
-      '1', '2', '3', '×',
-      '^', '0', '/', ':',
-      'backspace', ',', '=', ' ',
+      '7',
+      '8',
+      '9',
+      '+',
+      '4',
+      '5',
+      '6',
+      '-',
+      '1',
+      '2',
+      '3',
+      '×',
+      '^',
+      '0',
+      '/',
+      ':',
+      'backspace',
+      ',',
+      '=',
+      ' ',
     ]);
   });
 

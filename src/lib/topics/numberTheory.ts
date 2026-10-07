@@ -245,7 +245,9 @@ export function divisionLadder(n: number): string {
   let rest = n;
   while (!isPrime(rest)) {
     const factor = smallestPrimeFactor(rest);
-    steps.push(`${formatInteger(rest)} : ${formatInteger(factor)} = ${formatInteger(rest / factor)}`);
+    steps.push(
+      `${formatInteger(rest)} : ${formatInteger(factor)} = ${formatInteger(rest / factor)}`,
+    );
     rest /= factor;
   }
   return steps.join(', ');

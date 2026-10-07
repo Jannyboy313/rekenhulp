@@ -127,9 +127,11 @@ describe('name → power', () => {
       expect(expectedOf(question)).toBe(String(exponent));
       expect(stepOf(question).suffix).toBeUndefined();
       expect(stepOf(question).prompt).toMatch(/ = (\d(,\d+)? × )?10ⁿ\. n = \?$/);
-      expect(stepOf(question).check('').explanation!.endsWith(`10${toSuperscript(exponent)}`)).toBe(
-        true,
-      );
+      expect(
+        stepOf(question)
+          .check('')
+          .explanation!.endsWith(`10${toSuperscript(exponent)}`),
+      ).toBe(true);
     }
   });
 
@@ -161,10 +163,7 @@ describe('name → power', () => {
 
   it.each([
     ['numberUnits:power:7:miljard', '7 miljard = 7 × 10⁹'],
-    [
-      'numberUnits:power:250:miljoen',
-      '250 miljoen = 2,5 × 10² × 10⁶ = 2,5 × 10⁸',
-    ],
+    ['numberUnits:power:250:miljoen', '250 miljoen = 2,5 × 10² × 10⁶ = 2,5 × 10⁸'],
   ])('explains %s exactly', (key, explanation) => {
     expect(explanationOf(key)).toBe(explanation);
   });
@@ -183,12 +182,10 @@ describe('power → name', () => {
       expect(String(exponent)).toBe(keyExponent);
       expect(exponent).toBeGreaterThanOrEqual(MIN_POWER);
       // Without a coefficient the prompt shows a bare power: the mantissa is 1.
-      const coefficient = coefficientText
-        ? parseDutchNumber(coefficientText)!
-        : rational(1n, 1n);
-      expect(equals(coefficient, rational(BigInt(mantissa!), 10n ** BigInt(mantissa!.length - 1)))).toBe(
-        true,
-      );
+      const coefficient = coefficientText ? parseDutchNumber(coefficientText)! : rational(1n, 1n);
+      expect(
+        equals(coefficient, rational(BigInt(mantissa!), 10n ** BigInt(mantissa!.length - 1))),
+      ).toBe(true);
       const answer = multiply(coefficient, powerOfTen(exponent - exponentOf.get(symbol!)!));
       expect(equals(parseDutchNumber(typed(expectedOf(question)))!, answer)).toBe(true);
       expect(isNiceValue(answer, NUMBER_LIMITS.maxValueExponent)).toBe(true);

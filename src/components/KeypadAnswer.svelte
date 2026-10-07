@@ -70,10 +70,15 @@
     class:focused={scratch !== undefined && !inNote}
     aria-label="Jouw antwoord"
     aria-live="off"
-    >{#if prefix}<span class="prefix">{prefix}</span>{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}{#if segment.mixed}<span
+    >{#if prefix}<span class="prefix">{prefix}</span
+      >{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}{#if segment.mixed}<span
             class="sr-only">{' en '}</span
           >{/if}<Fraction
-          >{#snippet numerator()}{@render slotButton('num', segment.num, segment.active)}{/snippet}{#snippet denominator()}{@render slotButton(
+          >{#snippet numerator()}{@render slotButton(
+              'num',
+              segment.num,
+              segment.active,
+            )}{/snippet}{#snippet denominator()}{@render slotButton(
               'den',
               segment.den,
               segment.active,

@@ -107,9 +107,7 @@ export function equivalentQuestion(
   const unknownNumerator = variant === 'upNumerator' || variant === 'downNumerator';
   const answer = unknownNumerator ? other[0] : other[1];
   const left = terms(known[0], known[1]);
-  const right = unknownNumerator
-    ? `?/${formatInteger(other[1])}`
-    : `${formatInteger(other[0])}/?`;
+  const right = unknownNumerator ? `?/${formatInteger(other[1])}` : `${formatInteger(other[0])}/?`;
   // The additive mistake keeps the difference: 3/4 = ?/12 → 3 + (12 − 4) = 11.
   const additive = unknownNumerator
     ? known[0] + (other[1] - known[1])

@@ -55,9 +55,7 @@ describe('parse', () => {
   it('keeps explicit parentheses as groups', () => {
     expect(parse('(2+3)×4')).toEqual(bin('×', group(bin('+', num(2n), num(3n))), num(4n)));
     expect(parse('(2)')).toEqual(group(num(2n)));
-    expect(parse('17+(25+75)')).toEqual(
-      bin('+', num(17n), group(bin('+', num(25n), num(75n)))),
-    );
+    expect(parse('17+(25+75)')).toEqual(bin('+', num(17n), group(bin('+', num(25n), num(75n)))));
   });
 
   it('reads a minus at the start or after ( as a negative literal', () => {

@@ -117,12 +117,23 @@ function missingTerm(rng: Rng): Question {
  */
 export function missingTermExplanation(terms: Terms, position: number): string {
   const [a, b, c, d] = terms;
-  const [known, completed]: [Pair, Pair] = position < 2 ? [[c, d], [a, b]] : [[a, b], [c, d]];
+  const [known, completed]: [Pair, Pair] =
+    position < 2
+      ? [
+          [c, d],
+          [a, b],
+        ]
+      : [
+          [a, b],
+          [c, d],
+        ];
   const knownFactor = gcd(known[0], known[1]);
   const simplified: Pair = [known[0] / knownFactor, known[1] / knownFactor];
   const completedFactor = completed[0] / simplified[0];
-  if (knownFactor === 1) return `${showPair(known)} = ${showPair(completed)} (× ${completedFactor})`;
-  if (completedFactor === 1) return `${showPair(known)} = ${showPair(completed)} (: ${knownFactor})`;
+  if (knownFactor === 1)
+    return `${showPair(known)} = ${showPair(completed)} (× ${completedFactor})`;
+  if (completedFactor === 1)
+    return `${showPair(known)} = ${showPair(completed)} (: ${knownFactor})`;
   return `${showPair(known)} = ${showPair(simplified)} = ${showPair(completed)}`;
 }
 
@@ -184,9 +195,7 @@ function scaling(rng: Rng): Question {
   const scaled = (amount: number) => (amount / (a / g)) * (b / g);
   const amounts = NICE_WHOLES.filter(
     (amount) =>
-      amount <= context.maxAmount &&
-      amount % (a / g) === 0 &&
-      scaled(amount) <= MAX_SCALED_ANSWER,
+      amount <= context.maxAmount && amount % (a / g) === 0 && scaled(amount) <= MAX_SCALED_ANSWER,
   );
   const amount = pick(rng, amounts);
   return ratioQuestion(

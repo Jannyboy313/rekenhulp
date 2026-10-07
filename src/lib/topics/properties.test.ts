@@ -118,7 +118,10 @@ describe('drawPropertyExercise', () => {
     const counts = SHAPES.map(() => 0);
     for (const { text } of exercises) {
       const matches = SHAPES.map(({ pattern }) => pattern.exec(text));
-      expect(matches.filter((match) => match !== null), text).toHaveLength(1);
+      expect(
+        matches.filter((match) => match !== null),
+        text,
+      ).toHaveLength(1);
       const index = matches.findIndex((match) => match !== null);
       counts[index]!++;
       SHAPES[index]!.check(matches[index]!.slice(1).map(Number));

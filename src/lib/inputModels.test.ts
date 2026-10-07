@@ -43,10 +43,22 @@ describe('INPUT_MODELS keys', () => {
 
   it('lays out the expression keypad in 4 columns, operators on the right', () => {
     expect(labels('expression')).toEqual([
-      '7', '8', '9', '+',
-      '4', '5', '6', '−',
-      '1', '2', '3', '×',
-      '(', '0', ')', ':',
+      '7',
+      '8',
+      '9',
+      '+',
+      '4',
+      '5',
+      '6',
+      '−',
+      '1',
+      '2',
+      '3',
+      '×',
+      '(',
+      '0',
+      ')',
+      ':',
       '⌫',
     ]);
     expect(ariaLabels('expression').filter((label) => !/^\d$/.test(label))).toEqual([

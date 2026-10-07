@@ -227,9 +227,7 @@ export function parseFactorization(input: string): Factor[] | null {
   const factors: Factor[] = [];
   // The parser also reads negative literals; factors must be non-negative integers.
   const integer = (node: Expr): bigint | null =>
-    node.type === 'number' && isInteger(node.value) && node.value.num >= 0n
-      ? node.value.num
-      : null;
+    node.type === 'number' && isInteger(node.value) && node.value.num >= 0n ? node.value.num : null;
   const collect = (node: Expr): boolean => {
     if (node.type === 'binary') {
       return node.operator === '×' && collect(node.left) && collect(node.right);

@@ -119,7 +119,10 @@ export function formatMixedNumber(value: Rational): string {
 /** Canonical prime factorization: '2² × 3 × 7' (spec §5.5). */
 export function formatPrimeFactors(factors: readonly PrimePower[]): string {
   return factors
-    .map(({ prime, exponent }) => formatInteger(prime) + (exponent === 1 ? '' : toSuperscript(exponent)))
+    .map(
+      ({ prime, exponent }) =>
+        formatInteger(prime) + (exponent === 1 ? '' : toSuperscript(exponent)),
+    )
     .join(' × ');
 }
 

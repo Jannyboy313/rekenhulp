@@ -87,8 +87,23 @@ function integerShare(values: readonly Rational[]): number {
 describe('PERCENTAGES', () => {
   it('lists the percentages from the spec', () => {
     expect(labels(PERCENTAGES)).toEqual([
-      '1', '2', '5', '10', '12½', '15', '20', '25', '30', '40', '50', '60', '75', '80', '90',
-      '120', '150',
+      '1',
+      '2',
+      '5',
+      '10',
+      '12½',
+      '15',
+      '20',
+      '25',
+      '30',
+      '40',
+      '50',
+      '60',
+      '75',
+      '80',
+      '90',
+      '120',
+      '150',
     ]);
   });
 
@@ -101,10 +116,34 @@ describe('PERCENTAGES', () => {
 
   it('limits discounts to below 100% and increases to at most 50%', () => {
     expect(labels(DISCOUNT_PERCENTAGES)).toEqual([
-      '1', '2', '5', '10', '12½', '15', '20', '25', '30', '40', '50', '60', '75', '80', '90',
+      '1',
+      '2',
+      '5',
+      '10',
+      '12½',
+      '15',
+      '20',
+      '25',
+      '30',
+      '40',
+      '50',
+      '60',
+      '75',
+      '80',
+      '90',
     ]);
     expect(labels(INCREASE_PERCENTAGES)).toEqual([
-      '1', '2', '5', '10', '12½', '15', '20', '25', '30', '40', '50',
+      '1',
+      '2',
+      '5',
+      '10',
+      '12½',
+      '15',
+      '20',
+      '25',
+      '30',
+      '40',
+      '50',
     ]);
   });
 });
@@ -294,11 +333,13 @@ describe('discount and increase', () => {
         `${formatEuro(price)} na ${formatPercentage(p.value)}% ${increase ? 'verhoging' : 'korting'} = ?`,
       );
       const change = percentOf(p.value, price);
-      expect(equals(answerOf(question), increase ? add(price, change) : subtract(price, change))).toBe(
-        true,
-      );
+      expect(
+        equals(answerOf(question), increase ? add(price, change) : subtract(price, change)),
+      ).toBe(true);
       // Independent check: answer × 100 = price × (100 ∓ p).
-      const factor = increase ? add(fromInteger(100), p.value) : subtract(fromInteger(100), p.value);
+      const factor = increase
+        ? add(fromInteger(100), p.value)
+        : subtract(fromInteger(100), p.value);
       expect(equals(multiply(answerOf(question), fromInteger(100)), multiply(price, factor))).toBe(
         true,
       );
@@ -344,9 +385,9 @@ describe('back to 100%', () => {
       // Independent check, parsing the part from the prompt: part × 100 = p × answer.
       const shownText = stepOf(question).prompt.split('% is ')[1]!.split('. Hoeveel')[0]!;
       const shownPart = parseDutchNumber(shownText)!;
-      expect(equals(multiply(shownPart, fromInteger(100)), multiply(p.value, answerOf(question)))).toBe(
-        true,
-      );
+      expect(
+        equals(multiply(shownPart, fromInteger(100)), multiply(p.value, answerOf(question))),
+      ).toBe(true);
       expect(stepOf(question).check('').explanation).toBe(wholeExplanation(p, whole));
     }
   });
@@ -369,9 +410,10 @@ describe('every percentage and whole', () => {
       expect(parts.length, formatPercentage(p.value)).toBeGreaterThan(0);
       const isInteger = (whole: Rational) => percentOf(p.value, whole).den === 1n;
       expect(parts.some(isInteger), `${formatPercentage(p.value)} integer`).toBe(true);
-      expect(parts.some((whole) => !isInteger(whole)), `${formatPercentage(p.value)} other`).toBe(
-        true,
-      );
+      expect(
+        parts.some((whole) => !isInteger(whole)),
+        `${formatPercentage(p.value)} other`,
+      ).toBe(true);
       for (const whole of parts) {
         expect(() => partExplanation(p, whole)).not.toThrow();
         expect(() => wholeExplanation(p, whole)).not.toThrow();
@@ -390,7 +432,10 @@ describe('every percentage and whole', () => {
         expect(prices.length, name).toBeGreaterThan(0);
         const isInteger = (price: Rational) => percentOf(p.value, price).den === 1n;
         expect(prices.some(isInteger), `${name} integer`).toBe(true);
-        expect(prices.some((price) => !isInteger(price)), `${name} other`).toBe(true);
+        expect(
+          prices.some((price) => !isInteger(price)),
+          `${name} other`,
+        ).toBe(true);
         for (const price of prices) {
           expect(() => priceChangeExplanation(p, price, increase)).not.toThrow();
         }

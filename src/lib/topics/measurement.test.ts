@@ -81,7 +81,8 @@ describe('unit scales', () => {
   });
 
   it('puts capacity and cubic units on one scale', () => {
-    const exponent = (symbol: string) => VOLUME_UNITS.find((unit) => unit.symbol === symbol)!.exponent;
+    const exponent = (symbol: string) =>
+      VOLUME_UNITS.find((unit) => unit.symbol === symbol)!.exponent;
     expect(exponent('cm³')).toBe(exponent('ml'));
     expect(exponent('dm³')).toBe(exponent('L'));
     expect(exponent('m³') - exponent('L')).toBe(3);
@@ -238,7 +239,9 @@ describe('conversionExplanation', () => {
   });
 
   it('only states the fact for a factor-1 link', () => {
-    expect(conversionExplanation('dm³', 'L', rational(7n, 2n), rational(7n, 2n))).toBe('1 dm³ = 1 L');
+    expect(conversionExplanation('dm³', 'L', rational(7n, 2n), rational(7n, 2n))).toBe(
+      '1 dm³ = 1 L',
+    );
   });
 
   it('groups large factors and results', () => {
@@ -248,7 +251,9 @@ describe('conversionExplanation', () => {
   });
 
   it('rejects units that do not differ by an integer factor', () => {
-    expect(() => conversionExplanation('a', 'b', fromInteger(2), fromInteger(3))).toThrow(RangeError);
+    expect(() => conversionExplanation('a', 'b', fromInteger(2), fromInteger(3))).toThrow(
+      RangeError,
+    );
   });
 });
 
@@ -424,7 +429,10 @@ describe('largerTimeValues', () => {
       for (const denominator of TIME_DENOMINATORS) {
         for (const value of largerTimeValues(larger, smaller, denominator)) {
           expect(BigInt(denominator) % value.den).toBe(0n);
-          for (const earlier of TIME_DENOMINATORS.slice(0, TIME_DENOMINATORS.indexOf(denominator))) {
+          for (const earlier of TIME_DENOMINATORS.slice(
+            0,
+            TIME_DENOMINATORS.indexOf(denominator),
+          )) {
             expect(BigInt(earlier) % value.den).not.toBe(0n);
           }
           expect(compare(value, fromInteger(MAX_LARGER_TIME_VALUE))).toBeLessThanOrEqual(0);
@@ -546,7 +554,9 @@ describe('generateTime', () => {
   });
 
   it('uses the ten directed pairs and never s ↔ dag', () => {
-    const pairs = new Set(questions.map((question) => `${parts(question).from}>${parts(question).to}`));
+    const pairs = new Set(
+      questions.map((question) => `${parts(question).from}>${parts(question).to}`),
+    );
     expect(pairs.size).toBe(10);
     expect(pairs.has('s>dag')).toBe(false);
     expect(pairs.has('dag>s')).toBe(false);

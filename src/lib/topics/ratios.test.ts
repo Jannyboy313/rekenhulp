@@ -252,7 +252,10 @@ describe('every reachable case', () => {
               expect([...last], message).toEqual(side);
               const times = /\(× (\d+)\)$/.exec(text);
               if (times) {
-                expect(last, message).toEqual([first[0] * Number(times[1]), first[1] * Number(times[1])]);
+                expect(last, message).toEqual([
+                  first[0] * Number(times[1]),
+                  first[1] * Number(times[1]),
+                ]);
               }
               const divided = /\(: (\d+)\)$/.exec(text);
               if (divided) {

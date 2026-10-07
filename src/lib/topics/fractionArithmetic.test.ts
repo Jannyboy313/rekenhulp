@@ -1,15 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { gcd, lcm } from '../primes';
 import { createRng } from '../random';
-import {
-  add,
-  divide,
-  fromInteger,
-  multiply,
-  rational,
-  subtract,
-  type Rational,
-} from '../rational';
+import { add, divide, fromInteger, multiply, rational, subtract, type Rational } from '../rational';
 import { parseFractionAnswer } from '../steps';
 import type { Question, Step } from '../types';
 import {

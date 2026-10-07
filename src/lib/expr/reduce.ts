@@ -56,8 +56,18 @@ function collect(
         found.push({ node: expr, depth, rank: RANK[operator], replace: rebuild });
         return;
       }
-      collect(left, depth, (node) => rebuild({ type: 'binary', operator, left: node, right }), found);
-      collect(right, depth, (node) => rebuild({ type: 'binary', operator, left, right: node }), found);
+      collect(
+        left,
+        depth,
+        (node) => rebuild({ type: 'binary', operator, left: node, right }),
+        found,
+      );
+      collect(
+        right,
+        depth,
+        (node) => rebuild({ type: 'binary', operator, left, right: node }),
+        found,
+      );
       return;
     }
   }

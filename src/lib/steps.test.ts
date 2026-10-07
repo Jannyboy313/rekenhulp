@@ -132,7 +132,11 @@ describe('fractionStep', () => {
   });
 
   it('shows a whole answer once and accepts it as a fraction', () => {
-    const whole = fractionStep({ prompt: '30 is ?% van 120', answer: fromInteger(25), suffix: '%' });
+    const whole = fractionStep({
+      prompt: '30 is ?% van 120',
+      answer: fromInteger(25),
+      suffix: '%',
+    });
     expect(whole.check('50/2')).toEqual({ correct: true, expected: '25' });
   });
 
@@ -311,7 +315,11 @@ describe('booleanStep', () => {
 
   it('accepts the right label and reports the expected one', () => {
     expect(step.check(NO)).toEqual({ correct: true, expected: 'Nee', explanation: '91 = 7 × 13' });
-    expect(step.check(YES)).toEqual({ correct: false, expected: 'Nee', explanation: '91 = 7 × 13' });
+    expect(step.check(YES)).toEqual({
+      correct: false,
+      expected: 'Nee',
+      explanation: '91 = 7 × 13',
+    });
   });
 
   it('shows Ja as the expected answer for a true statement', () => {
@@ -624,9 +632,7 @@ describe('scientificStep', () => {
       'Een getal groter dan 10 heeft een positieve exponent.',
     );
     const small = scientificStep({ prompt: 'p', coefficient: rational(3n), exponent: -3 });
-    expect(small.check('3×10^3').tip).toBe(
-      'Een getal kleiner dan 1 heeft een negatieve exponent.',
-    );
+    expect(small.check('3×10^3').tip).toBe('Een getal kleiner dan 1 heeft een negatieve exponent.');
   });
 
   it('tries the topic diagnosis before the factor-of-ten fallback', () => {

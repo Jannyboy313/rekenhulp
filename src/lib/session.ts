@@ -54,7 +54,9 @@ export function allocateQuotas<K>(
   if (total >= shares.length) {
     for (const share of shares) {
       if (share.count > 0) continue;
-      const donor = shares.reduce((max, candidate) => (candidate.count > max.count ? candidate : max));
+      const donor = shares.reduce((max, candidate) =>
+        candidate.count > max.count ? candidate : max,
+      );
       donor.count--;
       share.count++;
     }

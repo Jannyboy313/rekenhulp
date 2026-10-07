@@ -106,9 +106,9 @@ describe('allocateQuotas', () => {
   });
 
   it('returns zero quotas for a zero total', () => {
-    expect(Object.fromEntries(allocateQuotas([{ key: 'a', weight: 1 }], 0, createRng(1)))).toEqual(
-      { a: 0 },
-    );
+    expect(Object.fromEntries(allocateQuotas([{ key: 'a', weight: 1 }], 0, createRng(1)))).toEqual({
+      a: 0,
+    });
     expect(allocateQuotas([], 0, createRng(1)).size).toBe(0);
   });
 

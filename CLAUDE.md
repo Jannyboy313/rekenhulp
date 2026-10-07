@@ -22,15 +22,15 @@ and Breuken & kommagetallen, plus stacked fractions, the kladblok (§3.6), repea
 Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
 says so:
 
-| # | Set | New infrastructure |
-|---|---|---|
-| 7 | **Verhoudingen** v2: `percentChange`, `scale` | — |
-| 8 | **Meten** v2: `speed` | compound units in the conversion engine |
-| 9 | **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles` | figures described in words |
-| 10 | **Verbanden & statistiek**: `statistics`, `sequences`, `formulas`, `equations`, `probability` | — |
-| 11 | **Talstelsels** (LKT): `numberSystems`, `romanNumerals` | text answer kind with letter keys |
-| 12 | **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem` | long prompts must keep the keypad on screen |
-| — | v3: multiple choice, calculator problems (§12.2) | multiple-choice answer kind |
+| #   | Set                                                                                                  | New infrastructure                          |
+| --- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 7   | **Verhoudingen** v2: `percentChange`, `scale`                                                        | —                                           |
+| 8   | **Meten** v2: `speed`                                                                                | compound units in the conversion engine     |
+| 9   | **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`                                     | figures described in words                  |
+| 10  | **Verbanden & statistiek**: `statistics`, `sequences`, `formulas`, `equations`, `probability`        | —                                           |
+| 11  | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                              | text answer kind with letter keys           |
+| 12  | **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem` | long prompts must keep the keypad on screen |
+| —   | v3: multiple choice, calculator problems (§12.2)                                                     | multiple-choice answer kind                 |
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.
@@ -38,6 +38,7 @@ To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators 
 ## Workflow
 
 **New set or large infrastructure** (new session each time):
+
 1. Read this file and the spec sections listed above.
 2. Ask the user about open assumptions (list them in spec §11 while open). Update and commit the
    spec.
