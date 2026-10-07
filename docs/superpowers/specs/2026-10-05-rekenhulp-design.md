@@ -59,7 +59,7 @@ The app is a state machine in `App.svelte` with four states:
 `sets → setup → playing → results`.
 
 - "Terug" moves from `setup` back to `sets`.
-- "Opnieuw" moves from `results` back to `playing`, with the same set and count.
+- "Opnieuw" moves from `results` back to `playing`, with the same set, count and table choice.
 - "Menu" moves from `results` to `sets`.
 - The system back action (Android back button or gesture, iOS swipe back) never closes the app
   from another screen. On `setup` and `results` it moves to `sets`, like Terug and Menu. During
@@ -80,10 +80,16 @@ The app is a state machine in `App.svelte` with four states:
 - The header shows the set name and a **Terug** button.
 - Below it is a list of the set's topics. For every set except Tafels, the list includes
   "15% tafels".
+- **Table choice (Tafels only):** instead of the topic list, Tafels shows the heading "Tafels"
+  with two small buttons **Alle** and **Geen**, and a grid of 13 toggles, one per table
+  (2–9, 11–15, §5.1), five per row. By default all tables are selected. Alle selects all,
+  Geen clears all. With no table selected, **Start** is disabled. The choice applies only to
+  the Tafels set; the 15% tables in the other sets always use all tables.
 - **Count:** 5, 10, 15, 25 or 50 exercises, shown as full-width options stacked in one column.
   The default is 15.
 - A **Start** button.
-- The chosen count is kept in memory only while the app stays open; nothing is persisted.
+- The chosen count and table choice are kept in memory only while the app stays open; nothing is
+  persisted. **Opnieuw** reuses both.
 
 Note: the 3-minute target corresponds to roughly 15 exercises (~12 s each). Larger counts are
 deliberate longer sessions.
@@ -380,6 +386,12 @@ topic answers with a number unless stated otherwise.
   - No table of 1, so ×1 never occurs.
   - No table of 10. The exclusion applies to both factors, so `7 × 10` and `70 : 10` never
     occur either.
+- **Chosen tables** (Tafels set only, §3.2): at least one factor is a chosen table; the other
+  factor is any value of the range. "Tafel van 7" thus covers `7 × 13`, `13 × 7`, `91 : 13`,
+  `91 : 7` and the missing-factor forms. The pair `(a, b)` is drawn uniformly from the range and
+  redrawn until one factor is chosen, so every allowed pair is equally likely and choosing all
+  tables gives exactly the distribution above. With one table chosen there are 25 pairs, enough
+  unique keys for 50 exercises across the three forms.
 - There are three forms, each picked with equal probability:
   - product: `13 × 7 = ?`
   - division: `91 : 7 = ?`, where the dividend is always `a × b`
@@ -1374,7 +1386,7 @@ src/
   main.ts
   components/
     SetOverview.svelte      start screen: set cards
-    SetupScreen.svelte      topics of the chosen set + count selector + Start
+    SetupScreen.svelte      topics (or table choice for Tafels) + count selector + Start
     PlayScreen.svelte       header (progress, timer, Stop) + question/feedback loop
     QuestionView.svelte     renders scratchpad + prompt + input for any answer kind
     Scratchpad.svelte       the 2×3 kladblok cells (§3.6)
