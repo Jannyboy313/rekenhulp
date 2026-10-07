@@ -1,5 +1,5 @@
 import type { PrimePower } from './primes';
-import { decimalPlaces, type Rational } from './rational';
+import { decimalPlaces, rational, type Rational } from './rational';
 
 /** Typographic minus sign (U+2212). */
 export const MINUS = '−';
@@ -91,6 +91,20 @@ export function formatEuro(value: Rational): string {
 /** '25/2'. The sign goes on the numerator, because the denominator is always positive. */
 export function formatFraction(value: Rational): string {
   return `${formatInteger(value.num)}/${formatInteger(value.den)}`;
+}
+
+/**
+ * A whole number, a proper fraction, or a mixed number for an improper value: '4', '3/4',
+ * '1 5/12' (spec §8). The sign goes in front of the whole: '−1 1/2'.
+ */
+export function formatMixedNumber(value: Rational): string {
+  if (value.den === 1n) return formatInteger(value.num);
+  const negative = value.num < 0n;
+  const absolute = negative ? -value.num : value.num;
+  const whole = absolute / value.den;
+  const sign = negative ? MINUS : '';
+  const rest = formatFraction(rational(absolute % value.den, value.den));
+  return whole === 0n ? sign + rest : `${sign}${formatInteger(whole)} ${rest}`;
 }
 
 /** Canonical prime factorization: '2² × 3 × 7' (spec §5.5). */

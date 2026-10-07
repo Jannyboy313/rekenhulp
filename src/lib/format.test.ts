@@ -7,6 +7,7 @@ import {
   formatFraction,
   formatInput,
   formatInteger,
+  formatMixedNumber,
   formatMoney,
   formatNote,
   formatPowerOfTen,
@@ -161,6 +162,20 @@ describe('formatFraction', () => {
     expect(formatFraction(rational(25n, 2n))).toBe('25/2');
     expect(formatFraction(rational(-3n, 4n))).toBe(`${MINUS}3/4`);
     expect(formatFraction(rational(7n))).toBe('7/1');
+  });
+});
+
+describe('formatMixedNumber', () => {
+  it.each([
+    [4, 1, '4'],
+    [3, 4, '3/4'],
+    [17, 12, '1 5/12'],
+    [100, 3, '33 1/3'],
+    [-3, 2, '−1 1/2'],
+    [-1, 2, '−1/2'],
+    [-6, 1, '−6'],
+  ])('formats %i/%i as %s', (num, den, expected) => {
+    expect(formatMixedNumber(rational(BigInt(num), BigInt(den)))).toBe(expected);
   });
 });
 
