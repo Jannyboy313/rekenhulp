@@ -44,9 +44,14 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 ### Mobile UX requirements
 
 - Portrait layout for 360–430 px wide screens. Respects `env(safe-area-inset-*)`.
-- `touch-action: manipulation` disables double-tap zoom, and the page cannot scroll while
-  answering.
-- Tap targets are ≥ 48 px. Feedback is announced via `aria-live`.
+- `touch-action: manipulation` disables double-tap zoom.
+- The page never scrolls while playing: the play screen is exactly one screen high. When the
+  content does not fit, the question view lets only the prompt shrink and scroll (the kladblok
+  and the keypad keep their size), and the feedback scrolls its prompt, answers, tip and
+  explanation while **Verder** stays fixed below them. The other screens scroll as usual.
+- Tap targets are ≥ 48 px, except the small **Alle**/**Geen** buttons (40 px, §3.2) and the
+  fraction slots in the answer field (compact, so the keypad fits; the breuk key selects slots
+  too). Feedback is announced via `aria-live`.
 - Supports `prefers-color-scheme` (light/dark) and `prefers-reduced-motion`.
 - The system keyboard is never used for answers; the app has its own keypad (§6).
 - The screen stays on during a session (Screen Wake Lock API). The lock is requested again when
@@ -118,7 +123,10 @@ deliberate longer sessions.
   reduced motion, a static colour is shown instead of an animation.
 - **Wrong:** red, with "Jouw antwoord", "Juist antwoord", an optional tip (§3.4.1) and an
   optional explanation (e.g. `91 = 7 × 13`). The user moves on by tapping **Verder**.
-- Each exercise allows exactly one attempt (two steps for property exercises, §5.11).
+- Each time an exercise is shown, it allows exactly one attempt (one per step for property
+  exercises, §5.11).
+- The feedback shows the prompt with the size steps of §3.3, one step smaller: 2rem, 1.5rem and
+  1.25rem.
 - **Repeat until correct:** an exercise answered wrong (any step wrong) comes back later in the
   same session, unchanged, with all its steps and an empty kladblok. It is inserted at a random
   place among the remaining exercises, but never directly next unless nothing else remains. A
@@ -132,8 +140,10 @@ A wrong answer can get a **tip**: one Dutch sentence that names the likely mista
 answers and the explanation, in the feedback and on the results screen. Rules:
 
 - Only for a wrong answer that parses; at most one tip. Scoring and repeats are unchanged.
-- `CheckResult.tip` carries it. A step's own diagnosis comes first; for number, fraction and
-  scientific steps the fallback is the **factor-of-ten tip**: when the answer is exactly 10ᵏ
+- `CheckResult.tip` carries it. Order: first the form tips of simplest-fraction and scientific
+  steps (the right value written in the wrong form), then the topic's own diagnosis, then the
+  approximation tip of simplest-fraction steps; for number, fraction and scientific steps the
+  last fallback is the **factor-of-ten tip**: when the answer is exactly 10ᵏ
   times the correct one (k ≠ 0): "Je antwoord is 100 keer te groot. Let op de komma en het
   aantal nullen." Questions whose answer is an exponent (`1 biljard = 10ⁿ`) skip this fallback.
 - A tip may only claim what is certain from the input: it names a mistake only when the answer
@@ -172,7 +182,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `factorization` | primes with another product | "Het product van je factoren is 90, niet 84." Above one million: "… is groter dan 84." |
 | `squares`, n² | n × 2 | "17² is 17 × 17, niet 17 × 2." |
 | `squares`, √ | half the square | "√196 is het getal dat keer zichzelf 196 geeft, niet de helft." |
-| `squares`, √ | another positive integer, not 10ᵏ × the root (that gets the factor-of-ten tip) | "15 × 15 = 225, niet 196." |
+| `squares`, √ | another positive integer, not 10ᵏ × the root (that gets the factor-of-ten tip) | "15 × 15 = 225, niet 196." (only for answers up to 10 000) |
 | `orderOfOperations` | a power as base × exponent | "Een macht is herhaald vermenigvuldigen: 3² = 3 × 3, niet 3 × 2." |
 | `orderOfOperations` | strictly left to right | "Je hebt van links naar rechts gerekend. Eerst machten, dan × en :, daarna pas + en −." |
 | `orderOfOperations` | × before : | "× en : zijn even sterk: reken die van links naar rechts." |
@@ -182,7 +192,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `tables`, division or missing factor | another positive integer, not 10ᵏ × the answer | "9 × 7 = 63, niet 56." |
 | `mentalOperations`, remainder (up) | the quotient without the remainder | "Er blijven 6 leerlingen over; daarvoor is nog een busje nodig." (tafels: gasten, tafel) |
 | `mentalOperations`, remainder (down) | the quotient plus 1 | "De laatste doos is niet vol: rond naar beneden af." (kaartjes: "Voor nog een kaartje is het geld niet genoeg: rond naar beneden af.") |
-| `mentalOperations`, remainder (up or down) | the exact quotient, not whole (`28,75`) | "Je kunt geen 28,75 busjes nemen: het antwoord is een heel aantal." |
+| `mentalOperations`, remainder (up or down) | the exact quotient, not whole (`28,75`) | "Je kunt geen 28,75 busjes nemen: het antwoord is een heel aantal." (tafels nemen, dozen vullen, kaartjes kopen) |
 | `mentalOperations`, remainder (rest) | the quotient | "Dat is het aantal dozen; gevraagd is wat je overhoudt." (kaartjes: kaartjes) |
 | `negativeNumbers`, `a − (−b)` | `a − b` | "Min een negatief getal is plus: −4 − (−6) = −4 + 6." |
 | `negativeNumbers`, × or : | the answer with the other sign | "Twee negatieve getallen geven een positieve uitkomst, één negatief getal een negatieve." |
@@ -195,7 +205,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `powersRoots`, whole-number power | base × exponent | "Een macht is herhaald vermenigvuldigen: 2⁵ = 2 × 2 × 2 × 2 × 2, niet 2 × 5." |
 | `powersRoots`, exponent 0 | 0 | "Elk getal (behalve 0) tot de macht 0 is 1." |
 | `powersRoots`, negative base | the answer with the other sign | "(−3)³ = (−3) × (−3) × (−3): een oneven aantal mintekens geeft min." (even: plus) |
-| `powersRoots`, decimal power | 10ᵏ × the answer, k > 0 (too few decimals) | "0,3 × 0,3 = 0,09: de uitkomst heeft evenveel decimalen als beide getallen samen." |
+| `powersRoots`, decimal power | 10ᵏ × the answer, k > 0 (too few decimals) | "0,3 × 0,3 = 0,09: de uitkomst heeft evenveel decimalen als beide getallen samen." (exponent 3: "alle getallen") |
 | `powersRoots`, `10⁻ⁿ = ?` | −10ⁿ | "Een negatieve exponent maakt geen negatief getal: 10⁻³ = 1 : 1000." |
 | `powersRoots`, `0,001 = 10ⁿ` | n (positive) | "Een getal kleiner dan 1 heeft een negatieve exponent." |
 | `powersRoots`, `0,001 = 10ⁿ` | the number of zeros after the comma (−2) | "Tel de plaatsen waarover de komma schuift: 0,001 = 1 : 1000 = 10⁻³." |
@@ -204,7 +214,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `scientificNotation`, scientific step | the same value as a plain number | "Schrijf het als een getal van 1 tot 10 keer een macht van 10." |
 | `scientificNotation`, scientific step | the right `c`, the exponent with the other sign | "Een getal kleiner dan 1 heeft een negatieve exponent." (larger than 10: positive) |
 | `scientificNotation`, to notation | the right `c`, the exponent counts the zeros | "Tel de plaatsen waarover de komma schuift, niet de nullen." |
-| `scientificNotation`, normalise | the right `c`, the exponent shifted the wrong way (`k − s`) | "Het getal vóór × 10 wordt 100 keer kleiner, dus de exponent wordt 2 groter." |
+| `scientificNotation`, normalise | the right `c`, the exponent shifted the wrong way (`k − s`) | "Het getal vóór × 10 wordt 100 keer kleiner, dus de exponent wordt 2 groter." (the other way: "… keer groter, dus de exponent wordt … kleiner") |
 | fraction step in simplest form (§6) | the same value, not in simplest form | "De waarde klopt, maar vereenvoudig nog: 9/12 = 3/4." |
 | fraction step in simplest form, no decimal allowed | the same value as a decimal | "Schrijf het antwoord als breuk, niet als kommagetal." |
 | fraction step in simplest form | a decimal that is the non-terminating answer rounded or cut off (`0,67`, `0,66` for 2/3) | "2/3 is geen eindig kommagetal: schrijf het antwoord als breuk." |
@@ -230,12 +240,15 @@ Ja/Nee steps (prime, divisibility) and property rewrites get no tips: their expl
 
 ### 3.5 Results
 
-- Score `x / n` and percentage, over first attempts only: repeats (§3.4) do not count
+- Score `x / n` and percentage, over first attempts only: repeats (§3.4) do not count. `n` is
+  the number of answered exercises (after Stop, fewer than the count). With none answered the
+  screen shows "Geen opgaven beantwoord."
 - Total time (wall clock, repeats included), and average time per exercise (first attempts)
-- A list of wrong exercises, each showing the prompt, the user's answer, the correct answer
-  and the tip and explanation. These are the first-attempt mistakes, also when a repeat was
-  correct.
-- Buttons **Opnieuw** (new session with the same set and count) and **Menu**
+- A list "Fouten" with one entry per wrong step, each showing the prompt, the user's answer, the
+  correct answer and the tip and explanation; a correct step of a two-step exercise is left
+  out. These are the first-attempt mistakes, also when a repeat was correct. Without mistakes:
+  "Alles goed!"
+- Buttons **Opnieuw** (new session with the same set, count and table choice) and **Menu**
 
 ### 3.6 Kladblok (scratchpad)
 
@@ -259,7 +272,8 @@ in the place of OK.
   field has a `--primary` border. Every new step starts with the answer field active.
 - **While a cell is active**, the keypad is the kladblok keypad, whatever the answer kind: the
   expression keys with `^` and the breuk key instead of `(` and `)`, plus `,`, `=` and the
-  spatie, in 4 columns and 5 rows (the same height as the other keypads). The spatie takes one
+  spatie, in 4 columns and 5 rows (the same height as the other keypads, except the
+  4-row scientific keypad: there the keypad grows one row while a cell is active). The spatie takes one
   column, has the normal key colour, acts on press like the other keys and is always enabled.
   The kladblok has no parentheses.
 
@@ -279,7 +293,8 @@ in the place of OK.
   number directly after `^` is an exponent, after the breuk key a denominator. Per key, for
   the last item:
   - a digit: always, up to the 12 characters
-  - `,`: only when the current number has no comma yet and is not an exponent or denominator
+  - `,`: only when the current number has no comma yet and is not an exponent or denominator;
+    also at the start of a number (`,5`)
   - `^`: only after a digit of a number that is not an exponent or denominator (`2^3`,
     `0,5^2`; never `2^3^4` or `3/4^2`)
   - breuk: only after a digit of a number without a comma that is not an exponent or
@@ -336,6 +351,10 @@ moves to v3.
 `properties` has weight 0.5 because it is a two-step exercise and takes about 2–3× as long as
 the others.
 
+The set overview (§3.1) shows the implemented sets in the build order of §12.1 (Tafels, Meten,
+Verhoudingen, Getallen & delers, Bewerkingen, Getalbegrip, Breuken & kommagetallen, …), not in
+the order of this table.
+
 ### 4.2 Quota algorithm
 
 Given a set and a session size `n`:
@@ -349,11 +368,14 @@ Given a set and a session size `n`:
    - The leftover exercises go one at a time to the topics with the largest fractional parts.
    - Ties are broken by the session RNG.
 3. If `r` is at least the number of topics, every topic gets at least 1 exercise. If a topic
-   ended up with 0, it takes 1 from the topic with the largest quota.
+   ended up with 0, it takes 1 from the topic with the largest quota (on a tie, the first in
+   the set's order).
 4. Questions are generated per quota, then the whole list is shuffled (Fisher–Yates with the
    session RNG).
-5. **De-duplication:** each question has a canonical `key`. The builder retries a generator up
-   to 20 times to obtain an unused key. After that, a duplicate is accepted.
+5. **De-duplication:** each question has a canonical `key`. A question is a duplicate when its
+   key or its first prompt was already used, because two topics can ask the same thing under
+   different keys (`10⁻³ = ?` from §5.18 and §5.19). The builder calls a generator at most 20
+   times to obtain a question that is not a duplicate. After that, a duplicate is accepted.
 
 Table share for each count:
 
@@ -504,7 +526,7 @@ topic answers with a number unless stated otherwise.
 
 ### 5.8 Order of operations (`orderOfOperations`)
 
-- Expressions are built from these 10 templates (2 to 5 operations, a power counts as one),
+- Expressions are built from these 10 templates (2 to 4 operations, a power counts as one),
   each equally likely:
   - `a + b × c`
   - `a × (b − c) + d`
@@ -613,8 +635,9 @@ Value rules for `time`:
 - Unit pairs: `s ↔ min`, `min ↔ uur`, `uur ↔ dag`, `s ↔ uur` and `min ↔ dag`, in both
   directions. `s ↔ dag` (factor 86 400) is left out.
 - The value in the larger unit is at most 100 and is a whole number, a half, a quarter, or a
-  number of tenths such as 0,2 or 0,7 (these four groups equally likely). The value in the
-  smaller unit is a whole number of at most 10 000. As a result both values have at most 2 decimals, e.g.
+  number of tenths such as 0,2 or 0,7 (these four groups equally likely; a group without values
+  for the pair, such as tenths for `uur ↔ dag`, is left out). The value in the smaller unit is
+  a whole number of at most 10 000. As a result both values have at most 2 decimals, e.g.
   `135 min = 2,25 uur` or `3,5 dag = 84 uur`.
 - Prompts never contain mixed notation such as `1 uur 45 min`.
 
@@ -658,7 +681,7 @@ A two-step exercise:
 
 | Intended property | Template                         | Example                  | Constraint                    |
 |-------------------|----------------------------------|--------------------------|-------------------------------|
-| distributive      | `a × n`, n close to round        | `7 × 98`, `15 × 99`      | `n = R ± d`, `d ∈ [1,3]`, `a ∈ [3,19]` |
+| distributive      | `a × n`, n close to round        | `7 × 98`, `15 × 99`      | `n = R ± d`, `d ∈ [1,3]`, `a ∈ [3,19]`, `a ≠ n` |
 | distributive      | `a × (b + c)`                    | `6 × (40 + 3)`           | `b` round                     |
 | distributive      | `a × b + a × c` (factor out)     | `7 × 13 + 7 × 87`        | `b + c` round                 |
 | associative       | `(a + b) + c`                    | `(17 + 25) + 75`         | `b + c` round                 |
@@ -745,7 +768,8 @@ There are four forms, each picked with equal probability:
   - **Part of a whole** and **discount / increase:** 80% of the answers are integers.
   - **What percentage:** the part and the whole are integers. The answer is `p`, so it is an
     integer except for `12½`. This form uses the `fraction` answer kind (§6): `12,5`, `25/2`
-    and `12 1/2` are all correct, and so is any other equal value. All exercises of this form
+    and `12 1/2` are all correct, and so is any other equal value. The expected answer is the
+    mixed number `12 1/2` (§8). All exercises of this form
     use it, so the breuk key does not give away the answer.
   - **Back to 100%:** the answer is the whole, so it is always an integer. In 80% of the
     exercises the given part is an integer as well; otherwise it has 1 or 2 decimals, e.g.
@@ -858,7 +882,8 @@ There are four forms, each picked with equal probability:
     `6347 + 2000 = 8347 → 8347 + 800 = 9147`, `15 213 − 400 = 14 813 → 14 813 − 70 = 14 743`.
 - **Multiply by zeros:** `a = p × 10ⁱ` and `b = q × 10ʲ` with `p ∈ [2, 99]` not a multiple of 10,
   `q ∈ [2, 9]`, `i + j ∈ [1, 4]` and the product at most 1 000 000. The two factors appear in
-  random order. Products that §5.9 also generates (`a × 25`, `a × 50`, `a × 125`) are left out.
+  random order. Products that look like §5.9 are left out: `25`, `50` or `125` times a factor
+  that is not a multiple of 10 (`27 × 50` too, although §5.9 only makes even ones).
   - Explanation: the table fact, then the zeros: `28 × 5 = 140 → 28 × 500 = 140 × 100 = 14 000`.
 - **Divide by zeros:** the quotient is `p × 10ⁱ` and the divisor `q × 10ʲ`, with
   `p, q ∈ [2, 12] \ {10}`, `i + j ∈ [1, 4]` and the dividend at most 1 000 000. Because `i + j ≥ 1`,
@@ -941,7 +966,8 @@ equally likely:
 
 - The source number is never already rounded: at least one dropped digit is not 0. The answer is
   never 0.
-- The first dropped digit is 5 in 20% of the exercises (the rule's edge case). In another 15%,
+- The first dropped digit is 5 in at least 20% of the exercises (the rule's edge case). In at
+  least another 15%,
   rounding up carries over a 9 (`3970 → 4000` on hundreds, `2,96 → 3,0` on 1 decimal).
 - The answer is the full number (`2 000 000`, not `2 miljoen`). Any equal value is correct, so
   `3` counts for `3,0`; the expected answer is shown with the asked number of decimals (`3,0`).
@@ -951,8 +977,9 @@ equally likely:
 
 ### 5.18 Powers and roots (`powersRoots`)
 
-Part of the set Getalbegrip. Extends `squares` (§5.7): squares and square roots of the whole
-numbers 2 to 25 stay there and do not occur here.
+Part of the set Getalbegrip. Extends `squares` (§5.7), which stays in Getallen & delers. The
+scaled roots below can overlap with it (`√400 = 20`); that is fine, the topics are in different
+sets.
 
 There are four forms, each picked with equal probability:
 
@@ -1169,8 +1196,8 @@ The keypad is custom. The system keyboard is never opened.
   digits. `2^2×3×7` is shown as `2² × 3 × 7`.
 - **Expression input** (only the rewrite step of §5.11 uses it): integers, `+ − × :` and
   parentheses. The rewrites never need a decimal comma, a power or a negative number, so these
-  keys are left out, and `−` is always the operator. It and the scientific keypad are the only
-  keypads with 4 columns; all other keypads keep 3. Five rows, the same height as the other
+  keys are left out, and `−` is always the operator. It, the scientific keypad and the kladblok
+  keypad (§3.6) are the only keypads with 4 columns; all other keypads keep 3. Five rows, the same height as the other
   keypads:
 
   ```
@@ -1219,7 +1246,8 @@ The keypad is custom. The system keyboard is never opened.
   fraction slots show the same placeholder.
 - Keys act on press (`pointerdown`), not on release, and show a pressed state on every
   platform (incl. iOS Safari). Keyboard activation still works, and one press never counts
-  twice.
+  twice. Exceptions: **OK** and the **Ja**/**Nee** buttons act on release (`click`), so the
+  release does not land on the next screen.
 - **Fraction input** (introduced with Verhoudingen v1 for `12½%`): a decimal (`12,5`), a
   fraction (`25/2`) or a mixed number (`12 1/2`). Fractions are entered with a template:
   - **breuk** on empty input opens an empty stacked template, with the cursor in the numerator.
@@ -1241,7 +1269,8 @@ The keypad is custom. The system keyboard is never opened.
 - **Judging a fraction answer** (added with Breuken & kommagetallen). A fraction step has one of
   two rules:
   - **any equal value** (§5.12, §5.20 fraction → percentage): `12,5`, `25/2` and `12 1/2` are all
-    correct.
+    correct. The expected answer is a whole or mixed number (`12 1/2`), unless the topic sets
+    its own (§5.20 shows the percentage as a decimal).
   - **simplest form** (fraction answers of §5.20 and §5.21): correct when the value is equal
     **and** the input is in simplest form. Simplest forms are a whole number (`4`), a fraction
     `a/b` in lowest terms with `b ≥ 2` (`3/4`, also improper: `17/12`), and a mixed number
@@ -1299,8 +1328,9 @@ expression differs from the original, and exactly one of the following matches:
   - In both forms everything else in the AST is identical.
 
 If more than one property is needed (e.g. both reordering and regrouping), the step is rejected
-with the reason "Dit zijn meerdere stappen". Steps that violate a property, such as reordering a
-subtraction, are rejected with the reason "Deze eigenschap geldt niet voor − en :".
+with the reason "Dit zijn meerdere stappen: …". Steps that violate a property, such as
+reordering a subtraction, are rejected with the reason "Deze eigenschap geldt niet voor − en :.".
+The full texts are in §5.11.
 
 How the checker decides, in this order:
 

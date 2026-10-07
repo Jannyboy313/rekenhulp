@@ -27,7 +27,7 @@ export const MEASUREMENT_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
-/** v1 topics only; v2 adds fractionConversion and fractionArithmetic (spec §4.1, §12). */
+/** v1 topics only; v2 adds percentChange and scale (spec §4.1, §12). */
 export const PROPORTIONS_SET: PracticeSet = {
   id: 'verhoudingen',
   name: 'Verhoudingen',
