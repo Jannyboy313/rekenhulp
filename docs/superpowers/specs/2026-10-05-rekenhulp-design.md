@@ -263,14 +263,23 @@ in the place of OK.
 A set is pure configuration (`lib/sets.ts`). Every set except **Tafels** mixes in 15% table
 exercises.
 
-| Set                   | Topics (weight 1 unless stated)                                                  | Tables | Version |
-|-----------------------|----------------------------------------------------------------------------------|--------|---------|
-| **Tafels**            | `tables`                                                                         | 100%   | v1      |
-| **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares`                | 15%    | v1      |
-| **Bewerkingen**       | `orderOfOperations`, `properties` (weight 0.5), `smartCalculation`               | 15%    | v1      |
-| **Meten**             | `volume`, `area`, `length`, `mass`, `time`, `numberUnits`                        | 15%    | v1      |
-| **Verhoudingen**      | `percentages`, `ratios` (v1); `fractionConversion`, `fractionArithmetic` (v2)    | 15%    | v1 + v2 |
-| **Toepassingen**      | `speed`, `scale`, `average`, `geometry`                                          | 15%    | v3      |
+| Set                         | Topics (weight 1 unless stated)                                                   | Tables | Version |
+|-----------------------------|-----------------------------------------------------------------------------------|--------|---------|
+| **Tafels**                  | `tables`                                                                          | 100%   | v1      |
+| **Getallen & delers**       | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares`                 | 15%    | v1      |
+| **Bewerkingen**             | `orderOfOperations`, `properties` (weight 0.5), `smartCalculation`                | 15%    | v1      |
+| **Meten**                   | `volume`, `area`, `length`, `mass`, `time`, `numberUnits` (v1); `speed` (v2)      | 15%    | v1 + v2 |
+| **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale` (v2)                       | 15%    | v1 + v2 |
+| **Getalbegrip**             | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` | 15% | v2   |
+| **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic`                   | 15%    | v2      |
+| **Meetkunde**               | `perimeterArea`, `solids`, `pythagoras`, `angles`                                 | 15%    | v2      |
+| **Verbanden & statistiek**  | `statistics`, `sequences`, `formulas`, `equations`, `probability`                 | 15%    | v2      |
+| **Talstelsels**             | `numberSystems`, `romanNumerals`                                                  | 15%    | v2      |
+| **Heuristieken**            | `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`      | 15%    | v2      |
+
+The v2 sets follow the PABO tests: the RWT (year 1) and the LKT (kennisbasistoets, year 3).
+v2 covers mental arithmetic and basic knowledge only; see §12 for the order, the scope and what
+moves to v3.
 
 `properties` has weight 0.5 because it is a two-step exercise and takes about 2–3× as long as
 the others.
@@ -1134,20 +1143,114 @@ These are assumptions made while writing the spec. Each one is easy to change.
     returns unchanged at a random later place (not directly next when avoidable) until it is
     answered correctly. The count keeps the original total and shows **Herhaling** for a
     repeat; score, average and mistakes cover first attempts only (§3.3–§3.5).
+18. ~~v2 scope~~ — confirmed 2026-10-07: v2 targets the RWT and the LKT, with mental
+    arithmetic and basic knowledge only. Heuristieken is in v2. Multiple choice and calculator
+    problems move to v3, and anything that needs pictures is out of scope (§12).
+    Assumed in the same revision (open for veto):
+    - the grouping into sets and their order (§4.1, §12.1)
+    - `speed` in *Meten* and `scale` in *Verhoudingen*
+    - fractions as a separate set instead of part of *Verhoudingen*
+    - estimating moves to v3 as multiple choice
 
 ## 12. Roadmap (not in v1)
 
-- **v2 — Fractions** (in set *Verhoudingen*)
-  - The answer kind `fraction` (number keypad plus breuk, exact comparison via `rational.ts`)
-    already exists since Verhoudingen v1 (§6). v2 adds per-exercise judging of the simplified
-    and the unsimplified form.
-  - `fractionConversion`: fraction ↔ decimal ↔ percentage, e.g. `3/8 = ?`, `0,125 = ?%`,
-    `40% = ?/?`.
-  - `fractionArithmetic`: `2/3 + 1/4`, `3/4 × 2/5`, `vereenvoudig 18/24`.
-- **v3 — Applications** (new set *Toepassingen*)
-  - `speed`: distance, time and speed; km/u ↔ m/s
-  - `scale`: map scale ↔ real distance
-  - `average`: mean, median and mode of a short list
-  - `geometry`: compute the perimeter, area or volume of rectangles and boxes, including unit
-    conversion
-- **Optional later:** an "Alles gemengd" set, and topic toggles on the setup screen.
+### 12.1 v2 — PABO mental arithmetic and basic knowledge
+
+v2 covers the PABO tests: the RWT (landelijke reken- en wiskundetoets, year 1, replaced the
+Wiscat in 2024) and the LKT (landelijke kennistoets, year 3). Both test these domains: whole
+numbers; ratios, percentages, fractions and decimals; measurement and geometry; relations and
+statistics. The LKT adds number systems, figurate numbers and problem solving with heuristics.
+v2 only covers what can be practised as mental arithmetic or basic knowledge with a typed
+answer. Prompts describe figures in words; there are no pictures.
+
+The sets are built in this order, one implementation plan each. The topic details are decided
+in each set's own spec iteration.
+
+1. **Getalbegrip** (new set)
+   - `mentalOperations`: the four operations on larger numbers without a calculator, including
+     division with a remainder: `13 576 − 4 999`, `28 × 500`, `7 200 : 80`.
+   - `negativeNumbers`: computing with negative numbers, including temperature differences.
+   - `rounding`: rounding to tens, thousands, millions or a number of decimals.
+   - `powersRoots`: powers beyond squares (`2⁵`, `10⁻²`, `0,3²`) and roots (`∛27`); extends
+     `squares` (§5.7).
+   - `scientificNotation`: `4 500 000 = 4,5 × 10⁶` and back, including negative exponents;
+     extends `numberUnits` (§5.14).
+   - Infrastructure: a minus sign on the number keypad, and an input for `a × 10ⁿ`.
+2. **Breuken & kommagetallen** (new set; replaces the earlier plan to put fractions in
+   *Verhoudingen*)
+   - `fractionConversion`: fraction ↔ decimal ↔ percentage: `3/8 = ?`, `0,125 = ?%`,
+     `40% = ?/?`.
+   - `fractionArithmetic`: simplifying, making like denominators and the four operations,
+     including mixed numbers: `2/3 + 1/4`, `3/4 × 2/5`, `vereenvoudig 18/24`.
+   - `decimalArithmetic`: `0,3 × 0,4`, `2,5 : 0,05`, `4,7 + 0,35`.
+   - Infrastructure: the `fraction` answer kind exists since Verhoudingen v1 (§6). This set
+     adds judging of the simplified versus the unsimplified form, and mixed numbers as
+     expected answers.
+3. **Verhoudingen** (v2 part)
+   - `percentChange`: increase and decrease, VAT (21% and 9%), reasoning back to 100%, and
+     the percentage of a change.
+   - `scale`: map scale ↔ real distance, and finding the scale.
+   - Infrastructure: none; uses the `€` prefix and the unit suffix.
+4. **Meten** (v2 part)
+   - `speed`: distance, time and speed, and km/u ↔ m/s.
+   - Infrastructure: compound units in the conversion engine (§5.10).
+5. **Meetkunde** (new set)
+   - `perimeterArea`: perimeter and area of a square, rectangle, triangle, parallelogram,
+     trapezium and circle (`π ≈ 3,14`, with numbers that can be done mentally).
+   - `solids`: volume and surface area of a cube, a box and a cylinder.
+   - `pythagoras`: the missing side of a right-angled triangle, using Pythagorean triples and
+     their multiples.
+   - `angles`: angle sums in triangles and polygons, the angle of a regular polygon, and the
+     angle between the hands of a clock.
+6. **Verbanden & statistiek** (new set)
+   - `statistics`: mean, median, mode and range of a short list, and the missing value for a
+     given mean.
+   - `sequences`: arithmetic and geometric sequences, and figurate numbers (triangular and
+     square numbers): the next term or the n-th term.
+   - `formulas`: substituting into a formula, and the start value and slope of a linear
+     relation given as a table.
+   - `equations`: linear equations in one unknown with an integer solution: `3x + 5 = 20`.
+   - `probability`: simple probabilities as a fraction (dice, marbles).
+   - Depends on negative numbers (set 1) and fraction answers (set 2).
+7. **Talstelsels** (new set; LKT)
+   - `numberSystems`: binary, base 5 and hexadecimal ↔ decimal.
+   - `romanNumerals`: Roman numerals ↔ decimal.
+   - Infrastructure: a text answer kind with letter keys (`A`–`F`, `I V X L C D M`).
+8. **Heuristieken** (new set; LKT)
+   - Short generated puzzles with a number as the answer. The explanation names the
+     heuristic.
+   - `systematicCounting`: combinations and handshakes.
+   - `workingBackwards`: `Ik denk aan een getal…` and money left over.
+   - `guessAndCheck`: chickens and rabbits, and two numbers from their sum and difference.
+   - `simplifyProblem`: Gauss sums, counting numbers with a property, and figure patterns
+     described in words (`figuur n heeft 3n + 1 lucifers`).
+   - Infrastructure: long prompts must leave the keypad on screen (§3.3).
+   - This set comes last because it combines the skills of the other sets.
+
+Why this order: Getalbegrip is the largest domain in the RWT mental-arithmetic part and needs
+little new infrastructure. Its negative numbers are needed later. Fractions and decimals come
+next because percentages, scale, probability and statistics build on them. The remaining sets
+build on both. Talstelsels and Heuristieken are LKT-only and come last.
+
+### 12.2 v3 — multiple choice and calculator problems
+
+- A multiple-choice answer kind. It serves:
+  - mathematical language and concepts, such as the properties of quadrilaterals and
+    triangles, absolute versus relative, and mean versus median
+  - estimating (`welk antwoord ligt het dichtst bij`)
+  - comparing and ordering
+- Calculator problems: word problems at the level of the RWT calculator part and the LKT
+  part 2, with larger numbers. These replace the earlier plan for the set *Toepassingen*.
+
+### 12.3 Out of scope until further notice
+
+- Anything that needs pictures:
+  - reading graphs, tables and diagrams
+  - spatial geometry: views, nets and cube buildings
+  - symmetry and coordinates
+  - measuring angles
+- Didactics (part of the LKT).
+
+### 12.4 Optional later
+
+An "Alles gemengd" set, and topic toggles on the setup screen.

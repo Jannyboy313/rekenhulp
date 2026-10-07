@@ -35,8 +35,9 @@ set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and label
 
 ## Roadmap: practice sets
 
-All sets (spec §4.1). Every set except Tafels mixes in 15% tables. Build them in this order, one
-implementation plan per step:
+All sets (spec §4.1, roadmap §12). Every set except Tafels mixes in 15% tables. v2 targets the
+PABO tests RWT and LKT, with mental arithmetic and basic knowledge only. Build the sets in this
+order, one implementation plan per step:
 
 | # | Set | Topics (spec section) | New infrastructure needed | Version | Status |
 |---|---|---|---|---|---|
@@ -45,11 +46,23 @@ implementation plan per step:
 | 2 | **Verhoudingen** (v1 part) | `percentages` (§5.12), `ratios` (§5.13) | `Step.prefix` (`€`); `fraction` input (`/` key) brought forward from v2 for `12½%` | v1 | ✅ done |
 | 3 | **Getallen & delers** | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares` (§5.2–§5.7) | Per-kind input model (`lib/inputModels.ts`) with inline invalid-input errors; `boolean` (Ja/Nee) and `factorization` answer kinds; first `lib/expr` tokenizer and parser (`×`, `^`) | v1 | ✅ done |
 | 4 | **Bewerkingen** | `orderOfOperations` (§5.8), `smartCalculation` (§5.9), `properties` weight 0.5 (§5.11) | Full `lib/expr` engine (§7): parser, evaluate, formatter, evaluation steps, chains, rewrite checker; `expression` answer kind with a 4-column keypad; negative literals; two-step questions | v1 | ✅ done |
-| 5 | **Verhoudingen** (v2 part) | `fractionConversion`, `fractionArithmetic` (§12) | Judging simplified vs unsimplified fractions (the `fraction` input exists since set 2) | v2 | later |
-| 6 | **Toepassingen** | `speed`, `scale`, `average`, `geometry` (§12) | Context/word problems | v3 | later |
+| 5 | **Getalbegrip** | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` (§12.1) | Minus sign on the number keypad; input for `a × 10ⁿ` | v2 | next |
+| 6 | **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic` (§12.1) | Judging simplified vs unsimplified fractions; mixed numbers as expected answers (the `fraction` input exists since set 2) | v2 | later |
+| 7 | **Verhoudingen** (v2 part) | `percentChange`, `scale` (§12.1) | — | v2 | later |
+| 8 | **Meten** (v2 part) | `speed` (§12.1) | Compound units in the conversion engine | v2 | later |
+| 9 | **Meetkunde** | `perimeterArea`, `solids`, `pythagoras`, `angles` (§12.1) | Figures described in words, no pictures | v2 | later |
+| 10 | **Verbanden & statistiek** | `statistics`, `sequences`, `formulas`, `equations`, `probability` (§12.1) | Uses negative numbers (5) and fraction answers (6) | v2 | later |
+| 11 | **Talstelsels** (LKT) | `numberSystems`, `romanNumerals` (§12.1) | Text answer kind with letter keys (`A`–`F`, `I V X L C D M`) | v2 | later |
+| 12 | **Heuristieken** (LKT) | `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem` (§12.1) | Long word-puzzle prompts must keep the keypad on screen | v2 | later |
+| — | Multiple choice, calculator problems (§12.2) | concepts and language, estimating, word problems | Multiple-choice answer kind | v3 | later |
 
 Why this order: 1 and 2 add useful sets quickly with only small infrastructure additions. 3 introduces
-the answer-kind refactor and the first parser pieces, which 4 then extends.
+the answer-kind refactor and the first parser pieces, which 4 then extends. In v2, Getalbegrip
+comes first because it is the largest domain in the RWT mental-arithmetic part, needs little new
+infrastructure, and later sets need negative numbers. Fractions and decimals come next because
+percentages, scale, probability and statistics build on them. The LKT-only sets come last, and
+Heuristieken is the very last because it combines everything. Anything that needs pictures
+(graphs, spatial geometry, symmetry, coordinates) is out of scope until further notice (§12.3).
 
 Workflow per set (new session each time):
 1. Read this file, the spec and the beta plan, the reference for structure and level of detail.
