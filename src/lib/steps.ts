@@ -247,6 +247,9 @@ export interface ScientificInput {
   exponent: number | null;
 }
 
+/** Largest exponent magnitude accepted; matches the two exponent digits the keypad allows. */
+export const MAX_SCIENTIFIC_EXPONENT = 99;
+
 // An optional coefficient and ×, then 10, ^ and an integer exponent: '4,5×10^-3', '10^6'.
 const SCIENTIFIC = /^(?:([\d,]+)×)?10\^([-−]?\d+)$/;
 
@@ -260,13 +263,21 @@ export function parseScientific(input: string): ScientificInput | null {
     const plain = parseDutchNumber(input);
     return plain === null ? null : { coefficient: plain, exponent: null };
   }
-  const [, coefficientText, exponentText = ''] = match;
+  const coefficientText = match[1];
+  const exponentText = match[2] as string; // the group is not optional in SCIENTIFIC
   const coefficient =
     coefficientText === undefined ? rational(1n) : parseDutchNumber(coefficientText);
   if (coefficient === null) return null;
-  return { coefficient, exponent: Number(exponentText.replace('−', '-')) };
+  const negative = exponentText.startsWith('-') || exponentText.startsWith('−');
+  const digits = exponentText.replace(/^[-−]/, '').replace(/^0+(?=\d)/, '');
+  // Check the digit string first, so a huge exponent never becomes a Number or a bigint.
+  if (digits.length > String(MAX_SCIENTIFIC_EXPONENT).length) return null;
+  const magnitude = Number(digits);
+  if (magnitude > MAX_SCIENTIFIC_EXPONENT) return null;
+  return { coefficient, exponent: negative ? -magnitude : magnitude };
 }
 
+/** The value of c × 10ⁿ, or of the plain number when the exponent is null. */
 export function scientificValue({ coefficient, exponent }: ScientificInput): Rational {
   return exponent === null ? coefficient : multiply(coefficient, powerOfTen(exponent));
 }

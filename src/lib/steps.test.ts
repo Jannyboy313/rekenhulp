@@ -375,9 +375,19 @@ describe('parseScientific', () => {
     ['45×10^5', rational(45n), 5],
     [',5×10^2', rational(1n, 2n), 2],
     ['4500000', rational(4_500_000n), null],
+    ['10^99', rational(1n), 99],
+    ['10^-99', rational(1n), -99],
+    ['10^007', rational(1n), 7],
   ] as const)('reads %j', (input, coefficient, exponent) => {
     expect(parseScientific(input)).toEqual({ coefficient, exponent });
   });
+
+  it.each(['10^100', '10^999', '10^-100', '10^99999999', `10^${'9'.repeat(400)}`])(
+    'rejects the out-of-range exponent in %j without throwing',
+    (input) => {
+      expect(parseScientific(input)).toBeNull();
+    },
+  );
 
   it.each(['', '4,5×', '4,5×10', '4,5×10^', '4,5×10^-', '4,5×2^6', '4,5^6', '×10^6', '4,5,5×10^6'])(
     'rejects %j',
