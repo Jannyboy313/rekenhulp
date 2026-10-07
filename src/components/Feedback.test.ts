@@ -94,12 +94,43 @@ describe('Feedback', () => {
         prompt: '10 is ?% van 80',
         kind: 'fraction',
         input: '-12 1/2',
-        result: { correct: false, expected: '12,5 of 25/2' },
+        result: { correct: false, expected: '12 1/2' },
         onnext: vi.fn(),
       },
     });
     const answers = [...container.querySelectorAll('dd')].map((dd) => dd.textContent);
-    expect(answers).toEqual(['−12 en 1/2', '12,5 of 25/2']);
+    expect(answers).toEqual(['−12 en 1/2', '12 en 1/2']);
     expect(container.querySelectorAll('.fraction')).toHaveLength(2);
+  });
+
+  it.each([
+    ['3 × 4 = ?', 'large'],
+    ['Een kaartje kost € 7. Hoeveel kaartjes kun je kopen van € 60?', 'small'],
+  ])('sizes the prompt %j like the question view (%s)', (prompt, size) => {
+    render(Feedback, {
+      props: {
+        prompt,
+        kind: 'number',
+        input: '1',
+        result: { correct: false, expected: '2' },
+        onnext: vi.fn(),
+      },
+    });
+    expect(document.querySelector('.prompt')!.classList).toContain(size);
+  });
+
+  it('keeps Verder outside the scrollable details, so it stays on screen', () => {
+    render(Feedback, {
+      props: {
+        prompt: '3 × 4 = ?',
+        kind: 'number',
+        input: '1',
+        result: { correct: false, expected: '12' },
+        onnext: vi.fn(),
+      },
+    });
+    const verder = screen.getByRole('button', { name: 'Verder' });
+    expect(document.querySelector('.content')!.contains(verder)).toBe(false);
+    expect(document.querySelector('.content .prompt')).not.toBeNull();
   });
 });

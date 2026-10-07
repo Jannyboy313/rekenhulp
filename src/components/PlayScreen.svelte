@@ -134,8 +134,15 @@
 </main>
 
 <style>
+  /* The page never scrolls while playing (spec §2): the app is exactly one screen high, and
+     the question or the feedback shrinks its own content instead. */
+  :global(#app:has(> .play)) {
+    height: 100dvh;
+  }
+
   .play {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 1rem;

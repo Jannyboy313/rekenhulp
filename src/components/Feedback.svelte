@@ -4,6 +4,7 @@
 
 <script lang="ts">
   import { displayAnswer } from '../lib/inputModels';
+  import { promptSize } from '../lib/promptSize';
   import type { AnswerKind, CheckResult } from '../lib/types';
   import MathText from './MathText.svelte';
 
@@ -31,25 +32,27 @@
 </script>
 
 <div class="feedback" class:correct={result.correct} class:wrong={!result.correct}>
-  <p class="prompt"><MathText text={prompt} /></p>
-  <div class="details">
-    {#if result.correct}
-      <p class="verdict">Goed!</p>
-    {:else}
-      <p class="verdict">Fout</p>
-      <dl>
-        <dt>Jouw antwoord</dt>
-        <dd><MathText text={displayAnswer(kind, input)} /></dd>
-        <dt>Juist antwoord</dt>
-        <dd><MathText text={result.expected} /></dd>
-      </dl>
-      {#if result.tip}
-        <p class="tip"><strong>Tip:</strong> <MathText text={result.tip} /></p>
+  <div class="content">
+    <p class="prompt {promptSize(prompt)}"><MathText text={prompt} /></p>
+    <div class="details">
+      {#if result.correct}
+        <p class="verdict">Goed!</p>
+      {:else}
+        <p class="verdict">Fout</p>
+        <dl>
+          <dt>Jouw antwoord</dt>
+          <dd><MathText text={displayAnswer(kind, input)} /></dd>
+          <dt>Juist antwoord</dt>
+          <dd><MathText text={result.expected} /></dd>
+        </dl>
+        {#if result.tip}
+          <p class="tip"><strong>Tip:</strong> <MathText text={result.tip} /></p>
+        {/if}
+        {#if result.explanation}
+          <p class="explanation"><MathText text={result.explanation} /></p>
+        {/if}
       {/if}
-      {#if result.explanation}
-        <p class="explanation"><MathText text={result.explanation} /></p>
-      {/if}
-    {/if}
+    </div>
   </div>
   {#if !result.correct}
     <button type="button" class="primary next" bind:this={nextButton} onclick={onnext}
@@ -61,14 +64,26 @@
 <style>
   .feedback {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     gap: 1.5rem;
     padding: 1.5rem;
     border-radius: var(--radius);
     text-align: center;
     animation: appear 150ms ease-out;
+  }
+
+  /* The page never scrolls while playing (spec §2). When a long prompt, tip and explanation do
+     not fit, only this part scrolls; Verder stays below it, on screen. */
+  .content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: safe center;
+    gap: 1.5rem;
   }
 
   .correct {
@@ -82,9 +97,21 @@
   }
 
   .prompt {
-    font-size: 2rem;
     font-weight: 600;
     text-wrap: balance;
+  }
+
+  /* The size steps of the question view (spec §3.3), one step smaller to leave room. */
+  .prompt.large {
+    font-size: 2rem;
+  }
+
+  .prompt.medium {
+    font-size: 1.5rem;
+  }
+
+  .prompt.small {
+    font-size: 1.25rem;
   }
 
   .verdict {
@@ -123,6 +150,7 @@
   }
 
   .next {
+    flex-shrink: 0;
     min-height: 3.5rem;
   }
 

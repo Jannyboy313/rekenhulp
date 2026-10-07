@@ -85,10 +85,15 @@
     flex-direction: column;
     gap: 1rem;
     flex: 1;
+    min-height: 0;
     justify-content: flex-end;
   }
 
+  /* When the screen is too short, only the prompt gives way and scrolls; the kladblok and the
+     keypad keep their size (spec §2, §3.3). */
   .prompt {
+    min-height: 0;
+    overflow-y: auto;
     font-weight: 600;
     text-align: center;
     text-wrap: balance;
