@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createRng } from './random';
+import { fromInteger } from './rational';
 import {
   allocateQuotas,
   buildSession,
@@ -18,6 +19,7 @@ import {
   SESSION_SIZES,
   TABLES_SET,
 } from './sets';
+import { numberStep } from './steps';
 import { GENERATORS } from './topics';
 import type { Generator, Question } from './types';
 
@@ -141,6 +143,24 @@ describe('buildSession', () => {
     });
     expect(questions).toHaveLength(15);
     expect(generate).toHaveBeenCalledTimes(1 + 14 * MAX_UNIQUE_ATTEMPTS);
+  });
+
+  it('treats the same prompt under another key as a duplicate (10⁻³ = ? from two topics)', () => {
+    let count = 0;
+    // Every two questions share a prompt but never a key.
+    const generate = vi.fn<Generator>(() => {
+      const index = count++;
+      return {
+        key: `key:${index}`,
+        topic: 'tables',
+        steps: [numberStep({ prompt: `prompt ${Math.floor(index / 2)}`, answer: fromInteger(1) })],
+      };
+    });
+    const questions = buildSession(TABLES_SET, 15, createRng(1), {
+      ...GENERATORS,
+      tables: generate,
+    });
+    expect(new Set(questions.map((q) => q.steps[0]!.prompt)).size).toBe(15);
   });
 });
 

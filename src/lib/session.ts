@@ -92,17 +92,27 @@ export function buildSession(
     for (let i = 0; i < count; i++) plan.push(topic);
   }
 
-  const usedKeys = new Set<string>();
-  const questions = plan.map((topic) => generateUnique(generators[topic], rng, usedKeys));
+  const used = new Set<string>();
+  const questions = plan.map((topic) => generateUnique(generators[topic], rng, used));
   return shuffle(rng, questions);
 }
 
-function generateUnique(generate: Generator, rng: Rng, usedKeys: Set<string>): Question {
+/**
+ * A question is a duplicate when its key or its first prompt was used: two topics can ask the
+ * same thing under different keys (`10⁻³ = ?`, spec §4.2).
+ */
+function identities(question: Question): string[] {
+  const prompt = question.steps[0]?.prompt;
+  return prompt === undefined ? [question.key] : [question.key, `prompt:${prompt}`];
+}
+
+function generateUnique(generate: Generator, rng: Rng, used: Set<string>): Question {
+  const isUsed = (question: Question) => identities(question).some((id) => used.has(id));
   let question = generate(rng);
-  for (let attempt = 1; attempt < MAX_UNIQUE_ATTEMPTS && usedKeys.has(question.key); attempt++) {
+  for (let attempt = 1; attempt < MAX_UNIQUE_ATTEMPTS && isUsed(question); attempt++) {
     question = generate(rng);
   }
-  usedKeys.add(question.key);
+  for (const id of identities(question)) used.add(id);
   return question;
 }
 
