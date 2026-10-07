@@ -32,7 +32,8 @@ export type Topic =
   | 'mentalOperations'
   | 'negativeNumbers'
   | 'rounding'
-  | 'powersRoots';
+  | 'powersRoots'
+  | 'scientificNotation';
 
 export interface CheckResult {
   correct: boolean;

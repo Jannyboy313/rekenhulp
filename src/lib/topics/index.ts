@@ -17,6 +17,7 @@ import { generatePowersRoots } from './powersRoots';
 import { generateProperties } from './properties';
 import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
+import { generateScientificNotation } from './scientificNotation';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSquares } from './squares';
 import { generateTables } from './tables';
@@ -44,6 +45,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   negativeNumbers: generateNegativeNumbers,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
+  scientificNotation: generateScientificNotation,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -70,4 +72,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
+  scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
 };
