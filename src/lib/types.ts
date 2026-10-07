@@ -30,7 +30,8 @@ export type Topic =
   | 'smartCalculation'
   | 'properties'
   | 'mentalOperations'
-  | 'negativeNumbers';
+  | 'negativeNumbers'
+  | 'rounding';
 
 export interface CheckResult {
   correct: boolean;

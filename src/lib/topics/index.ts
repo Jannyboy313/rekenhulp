@@ -15,6 +15,7 @@ import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
 import { generateProperties } from './properties';
 import { generateRatios } from './ratios';
+import { generateRounding } from './rounding';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSquares } from './squares';
 import { generateTables } from './tables';
@@ -40,6 +41,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   properties: generateProperties,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
+  rounding: generateRounding,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -64,4 +66,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
+  rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
 };
