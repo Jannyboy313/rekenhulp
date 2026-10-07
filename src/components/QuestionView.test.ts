@@ -252,7 +252,7 @@ describe('QuestionView', () => {
     );
   });
 
-  it('types scientific notation with the existing keys and rejects an unfinished power', async () => {
+  it('types scientific notation with existing keys and rejects an unfinished power', async () => {
     const onanswer = vi.fn();
     const scientific = scientificStep({
       prompt: 'Schrijf in wetenschappelijke notatie: 0,0045',
