@@ -235,9 +235,10 @@ in the place of OK.
   - breuk: only after a digit of a number without a comma that is not an exponent or
     denominator (`3/4`, `−3/4`, `1+3/4`; never `0,5/2` or `3/4/5`)
   - `+`, `×`, `:`: only after a digit
-  - `−`: after a digit it is the operator; at the start of an item or after `=` it is the
-    minus sign of the next number (`−5`, `3−8=−5`); elsewhere ignored
-  - `=`: only after a digit, at most once per item
+  - `−`: after a digit it is the operator; at the start of an item, after `=` or after an
+    operator it is the minus sign of the next number (`−5`, `3−8=−5`, `19×−12`, `5−−3`);
+    elsewhere ignored, so never two minus signs in a row and no sign after `^` or the breuk key
+  - `=`: only after a digit, as often as needed (`3+4=7=7,0`)
   - spatie: only after a digit: never a leading space, never two in a row
   - `⌫` deletes the last character, a space included
   - a cell holds at most 40 characters; extra keys are ignored
@@ -1114,6 +1115,8 @@ These are assumptions made while writing the spec. Each one is easy to change.
     start of a number stays possible; cells are shown compact, without spaces around
     operators (§3.6). Revised 2026-10-06: `^` and the breuk key replace the parentheses on the
     kladblok keypad; exponents show in superscript, fractions inline as `3/4` (§3.6).
+    Revised 2026-10-07: less restrictive typing: `=` may occur more than once per item, and a
+    minus sign may also follow an operator (`19×−12`) (§3.6).
 16. ~~Bewerkingen~~ — confirmed 2026-10-06: the expression keypad has only `0–9`, `+ − × :`,
     `( )` and `⌫` in 4 columns, and only the rewrite step uses it; every other keypad keeps 3
     columns. Removing parentheses without changing the order of evaluation is not a step
