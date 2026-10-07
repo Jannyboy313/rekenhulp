@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_SESSION_SIZE,
   describeSetTopics,
+  FRACTIONS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBERS_SET,
@@ -22,6 +23,17 @@ describe('practice sets', () => {
       'getallen',
       'bewerkingen',
       'getalbegrip',
+      'breuken',
+    ]);
+  });
+
+  it('makes Breuken & kommagetallen three equally weighted topics with 15% tables', () => {
+    expect(FRACTIONS_SET.name).toBe('Breuken & kommagetallen');
+    expect(FRACTIONS_SET.tablesPercent).toBe(15);
+    expect(FRACTIONS_SET.topics).toEqual([
+      { topic: 'fractionConversion', weight: 1 },
+      { topic: 'fractionArithmetic', weight: 1 },
+      { topic: 'decimalArithmetic', weight: 1 },
     ]);
   });
 
@@ -148,6 +160,15 @@ describe('describeSetTopics', () => {
       'Afronden (tientallen t/m miljoenen, decimalen)',
       'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
       'Wetenschappelijke notatie (4,5 × 10⁶)',
+      '15% tafels',
+    ]);
+  });
+
+  it('describes the Breuken & kommagetallen set', () => {
+    expect(describeSetTopics(FRACTIONS_SET)).toEqual([
+      'Omzetten tussen breuk, kommagetal en procent',
+      'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
+      'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
       '15% tafels',
     ]);
   });

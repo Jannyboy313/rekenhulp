@@ -8,6 +8,7 @@ import {
   tablesCount,
 } from './session';
 import {
+  FRACTIONS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBERS_SET,
@@ -225,6 +226,23 @@ describe('buildSession for Getalbegrip', () => {
 
   it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
     const questions = buildSession(NUMBER_SENSE_SET, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
+describe('buildSession for Breuken & kommagetallen', () => {
+  it('mixes 2 tables with 5 + 4 + 4 exercises at n = 15 (spec §4.2)', () => {
+    const questions = buildSession(FRACTIONS_SET, 15, createRng(3));
+    const counts = new Map<string, number>();
+    for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    expect(counts.get('tables')).toBe(2);
+    const perTopic = FRACTIONS_SET.topics.map(({ topic }) => counts.get(topic) ?? 0);
+    expect(perTopic.sort((a, b) => a - b)).toEqual([4, 4, 5]);
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(FRACTIONS_SET, size, createRng(size));
     expect(questions).toHaveLength(size);
     expect(new Set(questions.map((q) => q.key)).size).toBe(size);
   });

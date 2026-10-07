@@ -81,6 +81,18 @@ export const NUMBER_SENSE_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+export const FRACTIONS_SET: PracticeSet = {
+  id: 'breuken',
+  name: 'Breuken & kommagetallen',
+  description: 'Omzetten, rekenen met breuken en met kommagetallen',
+  topics: [
+    { topic: 'fractionConversion', weight: 1 },
+    { topic: 'fractionArithmetic', weight: 1 },
+    { topic: 'decimalArithmetic', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
 export const PRACTICE_SETS: readonly PracticeSet[] = [
   TABLES_SET,
@@ -89,6 +101,7 @@ export const PRACTICE_SETS: readonly PracticeSet[] = [
   NUMBERS_SET,
   OPERATIONS_SET,
   NUMBER_SENSE_SET,
+  FRACTIONS_SET,
 ];
 
 export function describeSetTopics(set: PracticeSet): string[] {
