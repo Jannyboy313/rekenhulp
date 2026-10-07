@@ -59,9 +59,9 @@ function expectedOf(question: Question): string {
   return stepOf(question).check('').expected;
 }
 
-/** What the user types: a fraction step shows '12,5 of 25/2', the user types one of them. */
+/** What the user types: the expected answer as shown, e.g. '12 1/2'. */
 function typed(question: Question): string {
-  return expectedOf(question).split(' of ')[0]!;
+  return expectedOf(question);
 }
 
 function answerOf(question: Question): Rational {
@@ -310,8 +310,8 @@ describe('what percentage', () => {
 
   it('accepts 12½ as a fraction or a decimal', () => {
     const half = questions.find((q) => q.key.startsWith('percentages:what:12½:'))!;
-    expect(expectedOf(half)).toBe('12,5 of 25/2');
-    for (const input of ['25/2', '50/4', '12,5']) {
+    expect(expectedOf(half)).toBe('12 1/2');
+    for (const input of ['12 1/2', '25/2', '50/4', '12,5']) {
       expect(stepOf(half).check(input).correct).toBe(true);
     }
   });

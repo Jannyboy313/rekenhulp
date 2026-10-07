@@ -1,7 +1,6 @@
 import { parse, type Expr } from './expr/parser';
 import { checkRewrite, type Property, type RewriteReason } from './expr/rewriteCheck';
 import {
-  formatFraction,
   formatInput,
   formatInteger,
   formatMixedNumber,
@@ -52,16 +51,12 @@ export function numberStep(options: NumberStepOptions): Step {
   return exactStep('number', options, options.expected ?? formatRational(options.answer));
 }
 
-/** Any value equal to the answer is correct: '25/2', '50/4', '12 1/2' and '12,5' alike. */
+/**
+ * Any value equal to the answer is correct: '25/2', '50/4', '12 1/2' and '12,5' alike. The
+ * expected answer is a whole or mixed number: '25', '12 1/2' (spec §8).
+ */
 export function fractionStep(options: NumberStepOptions): Step {
-  return exactStep('fraction', options, options.expected ?? formatFractionAnswer(options.answer));
-}
-
-/** '25', or both notations: '12,5 of 25/2'. Only the fraction when the decimal never ends. */
-function formatFractionAnswer(answer: Rational): string {
-  if (isInteger(answer)) return formatRational(answer);
-  const fraction = formatFraction(answer);
-  return decimalPlaces(answer) === null ? fraction : `${formatRational(answer)} of ${fraction}`;
+  return exactStep('fraction', options, options.expected ?? formatMixedNumber(options.answer));
 }
 
 /** How a fraction answer is written (spec §6). */

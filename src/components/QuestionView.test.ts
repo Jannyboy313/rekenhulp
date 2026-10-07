@@ -146,7 +146,7 @@ describe('QuestionView', () => {
       await press('OK');
       expect(onanswer).toHaveBeenCalledWith(
         '25/2',
-        expect.objectContaining({ correct: true, expected: '12,5 of 25/2' }),
+        expect.objectContaining({ correct: true, expected: '12 1/2' }),
       );
     });
 

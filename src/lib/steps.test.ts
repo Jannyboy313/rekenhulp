@@ -123,10 +123,10 @@ describe('fractionStep', () => {
     expect(percent.check('1/0').correct).toBe(false);
   });
 
-  it('shows both notations as the expected answer', () => {
+  it('shows a mixed number as the expected answer (spec §8)', () => {
     expect(percent.check('12')).toEqual({
       correct: false,
-      expected: '12,5 of 25/2',
+      expected: '12 1/2',
       explanation: '12½% = 80 : 8 = 10',
     });
   });
