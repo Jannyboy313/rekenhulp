@@ -5,11 +5,14 @@ import {
   booleanStep,
   factorizationStep,
   fractionStep,
+  isNormalised,
   NO,
   numberStep,
   parseAnswer,
   parseFactorization,
+  parseScientific,
   rewriteStep,
+  scientificValue,
   YES,
 } from './steps';
 
@@ -361,5 +364,54 @@ describe('factorization tips', () => {
 
   it('stays cheap for a huge exponent', () => {
     expect(step.check('2^99999999').tip).toBe('Het product van je factoren is groter dan 84.');
+  });
+});
+
+describe('parseScientific', () => {
+  it.each([
+    ['4,5×10^6', rational(9n, 2n), 6],
+    ['10^6', rational(1n), 6],
+    ['4,5×10^-3', rational(9n, 2n), -3],
+    ['45×10^5', rational(45n), 5],
+    [',5×10^2', rational(1n, 2n), 2],
+    ['4500000', rational(4_500_000n), null],
+  ] as const)('reads %j', (input, coefficient, exponent) => {
+    expect(parseScientific(input)).toEqual({ coefficient, exponent });
+  });
+
+  it.each(['', '4,5×', '4,5×10', '4,5×10^', '4,5×10^-', '4,5×2^6', '4,5^6', '×10^6', '4,5,5×10^6'])(
+    'rejects %j',
+    (input) => {
+      expect(parseScientific(input)).toBeNull();
+    },
+  );
+});
+
+describe('scientificValue', () => {
+  it('multiplies the coefficient by the power of ten', () => {
+    expect(scientificValue({ coefficient: rational(9n, 2n), exponent: -3 })).toEqual(
+      rational(9n, 2000n),
+    );
+    expect(scientificValue({ coefficient: rational(1n), exponent: 6 })).toEqual(
+      rational(1_000_000n),
+    );
+  });
+
+  it('is the number itself for a plain number', () => {
+    expect(scientificValue({ coefficient: rational(7n), exponent: null })).toEqual(rational(7n));
+  });
+});
+
+describe('isNormalised', () => {
+  it.each([
+    [rational(9n, 2n), 6, true],
+    [rational(1n), 6, true],
+    [rational(999n, 100n), -3, true],
+    [rational(10n), 5, false],
+    [rational(45n), 5, false],
+    [rational(9n, 20n), 7, false],
+    [rational(9n, 2n), null, false],
+  ] as const)('judges %o × 10^%s as %s', (coefficient, exponent, expected) => {
+    expect(isNormalised({ coefficient, exponent })).toBe(expected);
   });
 });

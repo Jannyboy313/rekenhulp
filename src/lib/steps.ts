@@ -3,11 +3,15 @@ import { checkRewrite, type Property, type RewriteReason } from './expr/rewriteC
 import { formatFraction, formatInteger, formatPrimeFactors, formatRational } from './format';
 import { isPrime, primeFactors } from './primes';
 import {
+  compare,
   decimalPlaces,
   equals,
+  multiply,
   parseDutchNumber,
   parseFraction,
   parseMixedNumber,
+  powerOfTen,
+  rational,
   type Rational,
 } from './rational';
 import { powerOfTenTip, type Diagnose } from './tips';
@@ -235,4 +239,42 @@ export function rewriteStep({
       return { correct: false, expected: example, explanation };
     },
   };
+}
+
+/** A scientific answer (spec §5.19): c × 10ⁿ, or a plain number when `exponent` is null. */
+export interface ScientificInput {
+  coefficient: Rational;
+  exponent: number | null;
+}
+
+// An optional coefficient and ×, then 10, ^ and an integer exponent: '4,5×10^-3', '10^6'.
+const SCIENTIFIC = /^(?:([\d,]+)×)?10\^([-−]?\d+)$/;
+
+/**
+ * '4,5×10^6', '10^6' (c = 1) or a plain number such as '4500000'. Null for anything else, e.g.
+ * an unfinished power or another base than 10 (spec §6).
+ */
+export function parseScientific(input: string): ScientificInput | null {
+  const match = SCIENTIFIC.exec(input.trim());
+  if (match === null) {
+    const plain = parseDutchNumber(input);
+    return plain === null ? null : { coefficient: plain, exponent: null };
+  }
+  const [, coefficientText, exponentText = ''] = match;
+  const coefficient =
+    coefficientText === undefined ? rational(1n) : parseDutchNumber(coefficientText);
+  if (coefficient === null) return null;
+  return { coefficient, exponent: Number(exponentText.replace('−', '-')) };
+}
+
+export function scientificValue({ coefficient, exponent }: ScientificInput): Rational {
+  return exponent === null ? coefficient : multiply(coefficient, powerOfTen(exponent));
+}
+
+const ONE = rational(1n);
+const TEN = rational(10n);
+
+/** c × 10ⁿ with 1 ≤ c < 10; a plain number is never normalised. */
+export function isNormalised({ coefficient, exponent }: ScientificInput): boolean {
+  return exponent !== null && compare(coefficient, ONE) >= 0 && compare(coefficient, TEN) < 0;
 }
