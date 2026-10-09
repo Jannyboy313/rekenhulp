@@ -38,7 +38,7 @@ describe('Scratchpad', () => {
   });
 
   it('shows exponents in superscript and fractions stacked', () => {
-    render(Scratchpad, { props: { notes: ['2^3=8 -3/4'], active: 0, onselect: vi.fn() } });
+    render(Scratchpad, { props: { notes: ['2^3=8 -_3/4'], active: 0, onselect: vi.fn() } });
     const cell = screen.getByRole('button');
     expect(cell.textContent).toBe('2³=8 −3/4');
     expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 2³=8 −3/4');
@@ -48,23 +48,35 @@ describe('Scratchpad', () => {
     expect(fractions[0]?.querySelector('.denominator')?.textContent).toBe('4');
   });
 
-  it('does not read a fraction as a mixed number, because a space separates items', () => {
-    render(Scratchpad, { props: { notes: ['12 3/4'], active: 0, onselect: vi.fn() } });
+  it('shows a mixed number against its whole part and reads it with en', () => {
+    render(Scratchpad, { props: { notes: ['1_2/3'], active: 0, onselect: vi.fn() } });
     const cell = screen.getByRole('button');
-    expect(cell.textContent).toBe('12 3/4');
-    // Only the slash of the fraction: no hidden ' en '.
-    expect([...cell.querySelectorAll('.sr-only')].map((el) => el.textContent)).toEqual(['/']);
+    expect(cell.textContent).toBe('12/3');
+    expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 1 en 2/3');
+    expect(cell.querySelector('.numerator')?.textContent).toBe('2');
   });
 
-  it('shows a breuk without denominator stacked, with a placeholder', () => {
-    render(Scratchpad, { props: { notes: ['3/'], active: 0, onselect: vi.fn() } });
+  it('keeps a fraction after a space as its own item', () => {
+    render(Scratchpad, { props: { notes: ['12 _3/4'], active: 0, onselect: vi.fn() } });
     const cell = screen.getByRole('button');
-    expect(cell.querySelector('.numerator')?.textContent).toBe('3');
-    expect(cell.querySelector('.denominator')?.textContent).toBe('…');
+    expect(cell.textContent).toBe('12 3/4');
+    expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 12 3/4');
+  });
+
+  // The placeholder marks the slot the next digit goes into; the other empty slot is blank.
+  it.each([
+    ['_', '…', '\u{a0}'],
+    ['_3', '3', '\u{a0}'],
+    ['_3/', '3', '…'],
+  ])('shows the unfinished fraction %j stacked', (note, numerator, denominator) => {
+    render(Scratchpad, { props: { notes: [note], active: 0, onselect: vi.fn() } });
+    const cell = screen.getByRole('button');
+    expect(cell.querySelector('.numerator')?.textContent).toBe(numerator);
+    expect(cell.querySelector('.denominator')?.textContent).toBe(denominator);
   });
 
   it('keeps a trailing space after a fraction', () => {
-    render(Scratchpad, { props: { notes: ['3/4 '], active: 0, onselect: vi.fn() } });
+    render(Scratchpad, { props: { notes: ['_3/4 '], active: 0, onselect: vi.fn() } });
     expect(screen.getByRole('button').textContent).toBe('3/4 ');
   });
 

@@ -400,8 +400,8 @@ describe('QuestionView', () => {
       });
       await press('breuk', '1', /^Kladblok vak 1:/);
       expect(screen.getByRole('button', { name: 'spatie' })).toBeTruthy();
-      await press('3', 'breuk', '4');
-      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 3/4');
+      await press('1', 'breuk', '3', 'breuk', '4');
+      expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 1 en 3/4');
       await press('Naar antwoordveld');
       expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
       expect(answerText()).toBe('1/…%');

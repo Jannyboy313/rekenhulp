@@ -1,6 +1,6 @@
 <script lang="ts">
   import { splitNoteFractions } from '../lib/fractionText';
-  import { formatNote } from '../lib/format';
+  import { formatNote, formatNoteLabel } from '../lib/format';
   import Fraction from './Fraction.svelte';
   import { press } from './press';
 
@@ -13,6 +13,9 @@
   }
 
   let { notes, active, onselect }: Props = $props();
+
+  /** Keeps the height of an empty slot that is not the one the next digit goes into. */
+  const BLANK_SLOT = '\u{a0}';
 </script>
 
 <!-- The kladblok (spec §3.6): fixed cells for numbers and short sums typed on the keypad. -->
@@ -22,12 +25,13 @@
       type="button"
       class="cell"
       class:active={index === active}
-      aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNote(note)}`}
+      aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNoteLabel(note)}`}
       aria-pressed={index === active}
       use:press={() => onselect(index)}
       ><!-- One flex item for the text runs and fractions, so the end alignment clips them as one. --><span
-        >{#each splitNoteFractions(formatNote(note)) as segment, part (part)}{#if segment.type === 'text'}{segment.text}{:else}<Fraction
-              >{#snippet numerator()}{segment.num}{/snippet}{#snippet denominator()}{#if segment.den === ''}<span
+        >{#each splitNoteFractions(formatNote(note)) as segment, part (part)}{#if segment.type === 'text'}{segment.text}{:else}<!-- The placeholder marks the slot the next digit goes into. --><Fraction
+              >{#snippet numerator()}{#if segment.num === ''}<span class="placeholder">…</span
+                  >{:else}{segment.num}{/if}{/snippet}{#snippet denominator()}{#if segment.den === null}{BLANK_SLOT}{:else if segment.den === ''}<span
                     class="placeholder">…</span
                   >{:else}{segment.den}{/if}{/snippet}</Fraction
             >{/if}{/each}</span

@@ -30,22 +30,27 @@ export function splitFractions(text: string): TextSegment[] {
   return segments;
 }
 
-// The breuk key of the kladblok: 'a/b', or 'a/' while the denominator is not typed yet.
-const NOTE_FRACTION = /(\d+)\/(\d*)/g;
+/** A kladblok fraction; `den` is null while the cursor is still in the numerator. */
+type NoteSegment =
+  | { type: 'text'; text: string }
+  | { type: 'fraction'; num: string; den: string | null };
+
+// A kladblok fraction as stored (spec §3.6): '_3/4', or unfinished '_', '_3' and '_3/'.
+const NOTE_FRACTION = /_(\d*)(?:\/(\d*))?/g;
 
 /**
- * Like splitFractions, for a formatted kladblok note (spec §3.6). A space separates items there,
- * so a fraction is never mixed: `12 3/4` is the items `12` and `3/4`. A fraction without
- * denominator yet has an empty `den`.
+ * Like splitFractions, for a formatted kladblok note (spec §3.6). The whole part of a mixed
+ * number (`1_2/3`) is the end of the text run before the fraction; after a space, a fraction is
+ * its own item.
  */
-export function splitNoteFractions(text: string): TextSegment[] {
-  const segments: TextSegment[] = [];
+export function splitNoteFractions(text: string): NoteSegment[] {
+  const segments: NoteSegment[] = [];
   let last = 0;
   for (const match of text.matchAll(NOTE_FRACTION)) {
     const index = match.index ?? 0;
     if (index > last) segments.push({ type: 'text', text: text.slice(last, index) });
-    const [found, num = '', den = ''] = match;
-    segments.push({ type: 'fraction', num, den, mixed: false });
+    const [found, num = '', den = null] = match;
+    segments.push({ type: 'fraction', num, den });
     last = index + found.length;
   }
   if (last < text.length) segments.push({ type: 'text', text: text.slice(last) });

@@ -29,7 +29,9 @@ export const NOTE_COLUMNS = 4;
 
 /**
  * One key typed into a note: items (numbers or short sums like `12×7=84`) separated by single
- * spaces. Every key acts on the last item; the rules per key are in spec §3.6.
+ * spaces. Every key acts on the last item; the rules per key are in spec §3.6. A note stores a
+ * fraction as `_3/4`: the breuk key writes `_` to open it and `/` to move to the denominator, so
+ * `1_3/4` is a mixed number and backspace undoes one breuk press at a time.
  */
 function applyNote(note: string, key: KeypadKey): string {
   if (key === 'backspace') return note.slice(0, -1);
@@ -39,11 +41,14 @@ function applyNote(note: string, key: KeypadKey): string {
 
 /** The text a key appends to the last item of a note; empty when the key is ignored. */
 function noteKeyText(item: string, key: KeypadKey): string {
-  const afterDigit = /\d$/.test(item);
   const number = /[\d,]*$/.exec(item)?.[0] ?? '';
   const numberFull = number.length >= MAX_INPUT_LENGTH;
-  // An exponent or a denominator: integer digits only, and no ^ or breuk after it.
-  const numberIsPart = /[\^/]$/.test(item.slice(0, item.length - number.length));
+  const before = item.charAt(item.length - number.length - 1);
+  // An exponent, numerator or denominator: integer digits only, and no ^ or breuk after it.
+  const numberIsPart = before === '^' || before === '_' || before === '/';
+  const inNumerator = before === '_';
+  // A digit that may end a number: an open numerator still needs its denominator.
+  const afterDigit = /\d$/.test(item) && !inNumerator;
   switch (key) {
     case ' ':
     case '+':
@@ -59,7 +64,8 @@ function noteKeyText(item: string, key: KeypadKey): string {
     case '^':
       return afterDigit && !numberIsPart ? key : '';
     case '/':
-      return afterDigit && !numberIsPart && !number.includes(',') ? key : '';
+      if (inNumerator) return number === '' ? '' : '/';
+      return !numberIsPart && !number.includes(',') ? '_' : '';
     case ',':
       return !numberIsPart && !number.includes(',') && !numberFull ? key : '';
     default:

@@ -43,29 +43,42 @@ describe('scratchpad', () => {
     ['ignores a second space in a row', '5  6', '5 6'],
     ['ignores a space after an operator or =', '5+ 6= ', '5+6='],
     ['ignores a space after a comma', '5, ', '5,'],
-    ['ignores a space after ^ or /', '2^ 3 4/ 5', '2^3 4/5'],
+    ['ignores a space after ^ or in an unfinished fraction', '2^ 3 / 4 / 5', '2^3 _4/5'],
     ['starts an item with a minus sign', '-5 -6', '-5 -6'],
     ['makes - the operator after a number', '5-1-2', '5-1-2'],
     ['allows a minus sign after =', '3-8=-5', '3-8=-5'],
     ['allows a minus sign after an operator', '19×-1 1+-2 6:-3 5--3', '19×-1 1+-2 6:-3 5--3'],
     ['ignores a second minus sign in a row', '--4 5---3 1=--2', '-4 5--3 1=-2'],
-    ['ignores a minus after ^ or /', '2^-3 1/-4', '2^3 1/4'],
+    ['ignores a minus after ^ or in a fraction', '2^-3 /-1/-4', '2^3 _1/4'],
     ['ignores +, × and : without a number before them', '+×:5', '5'],
     ['ignores a second operator in a row', '5+×:6', '5+6'],
     ['writes a power with its result', '2^3=8 0,5^2', '2^3=8 0,5^2'],
     ['ignores ^ without a number before it', '^2 3+^', '2 3+'],
-    ['ignores ^ in an exponent or a denominator', '2^3^4 3/4^2', '2^34 3/42'],
-    ['writes fractions, also signed and in sums', '3/4 -3/4 1+3/4=7/4', '3/4 -3/4 1+3/4=7/4'],
-    ['ignores / without a number before it', '/2 3+/', '2 3+'],
-    ['ignores / after a number with a comma', '0,5/2', '0,52'],
-    ['ignores / in a denominator or an exponent', '3/4/5 2^3/4', '3/45 2^34'],
-    ['ignores a comma in an exponent or a denominator', '2^,3, 3/,4,', '2^3 3/4'],
+    ['ignores ^ in an exponent or a fraction', '2^3^4 /3^/4^2', '2^34 _3/42'],
+    // The breuk key opens a fraction ('_'), a second press moves to the denominator ('/').
+    [
+      'writes fractions, also signed and in sums',
+      '/3/4 -/3/4 1+/3/4=/7/4',
+      '_3/4 -_3/4 1+_3/4=_7/4',
+    ],
+    [
+      'writes a mixed number after a whole number',
+      '1/2/3 -1/2/3 /7/4=1/3/4',
+      '1_2/3 -1_2/3 _7/4=1_3/4',
+    ],
+    ['opens a fraction without a number before it', '/', '_'],
+    ['moves to the denominator only after a numerator digit', '//3', '_3'],
+    ['ignores operators, =, comma, ^ and spatie in the numerator', '/3+×:-=,^ 4', '_34'],
+    ['ignores the breuk key after a number with a comma', '0,5/2 5,/', '0,52 5,'],
+    ['ignores the breuk key in a denominator or an exponent', '/3/4/5 2^3/4', '_3/45 2^34'],
+    ['ignores a comma in an exponent or a fraction', '2^,3, /,3,/,4,', '2^3 _3/4'],
     ['ignores ^ and / after a comma', '5,^/', '5,'],
     ['allows = more than once per item', '3+4=7=7,0 2=2', '3+4=7=7,0 2=2'],
     ['ignores a second = in a row', '1==1', '1=1'],
     ['ignores = without a number before it', '=5 6+=', '5 6+'],
     ['allows one comma per number', '0,5+1,,5 ,5', '0,5+1,5 ,5'],
     ['deletes a space like any other character', '5 <6', '56'],
+    ['deletes a fraction step by step', '1/2/<<<5 /3/<4', '15 _34'],
     ['ignores parentheses, which are not on the kladblok keypad', '(5)', '5'],
   ])('%s', (_, keys, expected) => {
     expect(typeText(keys)).toBe(expected);
@@ -75,6 +88,10 @@ describe('scratchpad', () => {
     expect(typeText('-' + '1'.repeat(13))).toBe('-' + '1'.repeat(12));
     expect(typeText('1'.repeat(11) + ',,1')).toBe('1'.repeat(11) + ',');
     expect(typeText('1'.repeat(12) + '+1')).toBe('1'.repeat(12) + '+1');
+    // A whole part and the numerator are separate numbers.
+    expect(typeText('1'.repeat(12) + '/' + '1'.repeat(13))).toBe(
+      '1'.repeat(12) + '_' + '1'.repeat(12),
+    );
   });
 
   it('limits a cell to 40 characters', () => {

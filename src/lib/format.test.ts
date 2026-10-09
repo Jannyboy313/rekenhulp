@@ -11,6 +11,7 @@ import {
   formatMixedNumber,
   formatMoney,
   formatNote,
+  formatNoteLabel,
   formatPowerOfTen,
   formatPrimeFactors,
   formatRational,
@@ -240,9 +241,24 @@ describe('formatNote', () => {
     ['2^', '2^'],
     ['2^3=8 0,5^2', '2³=8 0,5²'],
     ['2^10-1', `2¹⁰${MINUS}1`],
-    ['-3/4+1', `${MINUS}3/4+1`],
+    ['-_3/4+1', `${MINUS}_3/4+1`],
   ])('shows %j as %j', (raw, expected) => {
     expect(formatNote(raw)).toBe(expected);
+  });
+});
+
+describe('formatNoteLabel', () => {
+  it.each([
+    ['', ''],
+    ['12×7=84 3,5 ', '12×7=84 3,5 '],
+    ['2^3=8 -_3/4', `2³=8 ${MINUS}3/4`],
+    ['1_2/3 -1_1/2', `1 en 2/3 ${MINUS}1 en 1/2`],
+    ['_7/4=1_3/4', '7/4=1 en 3/4'],
+    ['_', ''],
+    ['_3', '3'],
+    ['1_3/', '1 en 3/'],
+  ])('reads %j as %j', (raw, expected) => {
+    expect(formatNoteLabel(raw)).toBe(expected);
   });
 });
 

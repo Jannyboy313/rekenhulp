@@ -139,6 +139,11 @@ export function formatNote(raw: string): string {
   return formatInput(powers);
 }
 
+/** A kladblok note for screen readers: '1_2/3' as '1 en 2/3', '_3/4' as '3/4' (spec §3.6). */
+export function formatNoteLabel(raw: string): string {
+  return formatNote(raw).replace(/(\d)_/g, '$1 en ').replaceAll('_', '');
+}
+
 /** Expression keypad input '7×(13+87)' as '7 × (13 + 87)'; every '-' is the minus operator. */
 export function formatExpressionInput(raw: string): string {
   return raw.replace(/[-+×:]/g, (operator) => ` ${operator === '-' ? MINUS : operator} `);
