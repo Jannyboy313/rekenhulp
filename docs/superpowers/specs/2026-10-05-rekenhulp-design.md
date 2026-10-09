@@ -288,39 +288,52 @@ in the place of OK.
   `/` is the breuk key, drawn as a small stacked fraction as on the fraction keypad.
 
 - **Typing in a cell.** A cell is a list of items separated by single spaces; an item is a
-  number or a short sum such as `12×7=84`, `2^3=8` or `−3/4+1`. A number is digits with at
-  most one comma (at most 12 characters, as in the answer field); the sign is not counted. A
-  number directly after `^` is an exponent, after the breuk key a denominator. Per key, for
-  the last item:
+  number or a short sum such as `12×7=84`, `2^3=8`, `−¾+1` or `7/4=1¾`. A number is digits with
+  at most one comma (at most 12 characters, as in the answer field); the sign is not counted.
+  The breuk key works as in the answer field (§6): it opens an empty fraction with the cursor
+  in the numerator, and a second press moves the cursor to the denominator. Digits typed
+  before the breuk key are the whole part of a mixed number, so `1`, breuk, `2`, breuk, `3`
+  is `1⅔` and breuk, `3`, breuk, `4` is `¾`. A number directly after `^` is an exponent;
+  numerators and denominators are the fraction's slots. Per key, for the last item:
   - a digit: always, up to the 12 characters
-  - `,`: only when the current number has no comma yet and is not an exponent or denominator;
+  - `,`: only when the current number has no comma yet and is not an exponent or a slot;
     also at the start of a number (`,5`)
-  - `^`: only after a digit of a number that is not an exponent or denominator (`2^3`,
-    `0,5^2`; never `2^3^4` or `3/4^2`)
-  - breuk: only after a digit of a number without a comma that is not an exponent or
-    denominator (`3/4`, `−3/4`, `1+3/4`; never `0,5/2` or `3/4/5`)
-  - `+`, `×`, `:`: only after a digit
-  - `−`: after a digit it is the operator; at the start of an item, after `=` or after an
-    operator it is the minus sign of the next number (`−5`, `3−8=−5`, `19×−12`, `5−−3`);
-    elsewhere ignored, so never two minus signs in a row and no sign after `^` or the breuk key
-  - `=`: only after a digit, as often as needed (`3+4=7=7,0`)
-  - spatie: only after a digit: never a leading space, never two in a row
-  - `⌫` deletes the last character, a space included
-  - a cell holds at most 40 characters; extra keys are ignored
+  - `^`: only after a digit of a number that is not an exponent or a slot (`2^3`, `0,5^2`;
+    never `2^3^4` or `¾^2`)
+  - breuk, outside a fraction: opens one, at the start of an item, after `−`, `=` or an
+    operator, or after a digit of a number without a comma that is not an exponent or a slot
+    (`¾`, `−¾`, `1+¾`, `1⅔`; never `0,5` followed by a fraction, and never right after a
+    complete fraction)
+  - breuk, in the numerator: moves to the denominator, only after a numerator digit; in the
+    denominator it is ignored (no way back but `⌫`, never `¾/5`)
+  - `+`, `×`, `:`: only after a digit, and not in the numerator
+  - `−`: after a digit outside the numerator it is the operator; at the start of an item, after
+    `=` or after an operator it is the minus sign of the next number (`−5`, `3−8=−5`,
+    `19×−12`, `5−−3`); elsewhere ignored, so never two minus signs in a row and no sign after
+    `^` or in a slot
+  - `=`: only after a digit, not in the numerator, as often as needed (`3+4=7=7,0`)
+  - spatie: only after a digit, not in the numerator: never a leading space, never two in a
+    row
+  - `⌫` deletes the last thing typed, a space included: a digit, the step from numerator to
+    denominator (back to the numerator), or an empty fraction (gone)
+  - a cell holds at most 40 characters, the breuk key presses included; extra keys are ignored
 - A cell is never validated. It is shown as typed, compact: no spaces around operators, so a
   space always separates items. `-` is shown as `−` (`12×7=84`, `−5 0,25`, `3−8=−5`), an
-  exponent in superscript (`2^3` as `2³`; a `^` without exponent stays visible) and a breuk
-  as a stacked fraction in a smaller font (0.8 em, as everywhere), which fits a 48 px cell.
-  A breuk without denominator yet (`3/`) shows the stacked fraction with a `…` in the
-  denominator. A fraction never belongs to the number before it: `12 3/4` is the items `12`
-  and `3/4`, not a mixed number, because the space separates items. A trailing space stays
-  visible. There is no button to clear the scratchpad.
+  exponent in superscript (`2^3` as `2³`; a `^` without exponent stays visible) and a
+  fraction as a stacked fraction in a smaller font (0.8 em, as everywhere), which fits a 48 px
+  cell. A mixed number sits directly against its whole part (`1⅔`). An unfinished fraction
+  shows a `…` in the slot where the next digit goes, if that slot is still empty; the other
+  empty slot stays blank (an empty fraction is `…` over blank, a numerator `3` is `3` over
+  blank, and after the second breuk it is `3` over `…`). A fraction after a space is its own
+  item: `12 ¾` is the items `12` and `¾`. A trailing space stays visible. There is no button to
+  clear the scratchpad.
 - **Lifetime:** the notes belong to one question. They stay across the steps of a two-step
   question, including the feedback in between, and are empty again at the next question. The
   feedback screen and the results do not show the scratchpad. Nothing is stored.
 - **Accessibility:** cells are buttons labelled `Kladblok vak 1: 900` (or `leeg`), with
-  `aria-pressed` for the active cell. The spatie key shows `␣` and is labelled `spatie`; `=`
-  is labelled `is`.
+  `aria-pressed` for the active cell. A fraction in the label reads `3/4`, a mixed number
+  `1 en 2/3`, as elsewhere. The spatie key shows `␣` and is labelled `spatie`; `=` is labelled
+  `is`.
 - To make room, keypad keys are 3 rem (48 px) high instead of 3.5 rem.
 
 ## 4. Practice sets & session composition
