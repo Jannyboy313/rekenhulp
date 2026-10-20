@@ -27,14 +27,17 @@ export const MEASUREMENT_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
-/** v1 topics only; v2 adds percentChange and scale (spec §4.1, §12). */
+/** Five equally weighted topics: the v1 pair plus the v2 additions (spec §4.1). */
 export const PROPORTIONS_SET: PracticeSet = {
   id: 'verhoudingen',
   name: 'Verhoudingen',
-  description: 'Procenten en verhoudingen',
+  description: 'Procenten, verhoudingen en schaal',
   topics: [
     { topic: 'percentages', weight: 1 },
     { topic: 'ratios', weight: 1 },
+    { topic: 'percentChange', weight: 1 },
+    { topic: 'scale', weight: 1 },
+    { topic: 'ratioProblems', weight: 1 },
   ],
   tablesPercent: 15,
 };

@@ -73,12 +73,16 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Verhoudingen two equally weighted topics with 15% tables', () => {
+  it('makes Verhoudingen five equally weighted topics with 15% tables', () => {
     expect(PROPORTIONS_SET.name).toBe('Verhoudingen');
+    expect(PROPORTIONS_SET.description).toBe('Procenten, verhoudingen en schaal');
     expect(PROPORTIONS_SET.tablesPercent).toBe(15);
     expect(PROPORTIONS_SET.topics).toEqual([
       { topic: 'percentages', weight: 1 },
       { topic: 'ratios', weight: 1 },
+      { topic: 'percentChange', weight: 1 },
+      { topic: 'scale', weight: 1 },
+      { topic: 'ratioProblems', weight: 1 },
     ]);
   });
 
@@ -184,6 +188,9 @@ describe('describeSetTopics', () => {
     expect(describeSetTopics(PROPORTIONS_SET)).toEqual([
       'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
       'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
+      'Procentuele verandering (stijging en daling, btw, oude prijs)',
+      'Schaal (kaart en tekening, schaal bepalen)',
+      'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
       '15% tafels',
     ]);
   });
