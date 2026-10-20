@@ -1316,9 +1316,9 @@ There are three forms, each picked with equal probability:
   - cheese: `1,5 kg kaas kost € 12. Wat kost 400 g?` Amounts are multiples of 100 g in
     `[200 g, 3 kg]`, shown in `g` below 1 kg and in `kg` (at most 1 decimal) from 1 kg. The
     price per 100 g is a multiple of 10 cents in `[€ 0,60; € 2,50]`. Step: 100 g.
-  - petrol: `40 L benzine kost € 76. Wat kost 25 L?` Amounts are whole litres in `[5, 60]`.
-    The price per litre is a multiple of 10 cents in `[€ 1,60; € 2,20]`. Step: 5 L when both
-    amounts are multiples of 5, otherwise 1 L.
+  - petrol: `40 L benzine kost € 76. Wat kost 25 L?` Amounts are whole litres in `[5, 60]`;
+    in 50% of the exercises both are multiples of 5. The price per litre is a multiple of 10
+    cents in `[€ 1,60; € 2,20]`. Step: 5 L when both amounts are multiples of 5, otherwise 1 L.
   - wage: `Voor 4 uur werk krijg je € 60. Hoeveel voor 2,5 uur?` Amounts are whole or half hours
     in `[1, 10]`. The wage is a whole number of euros in `[10, 25]` per hour. Step: 1 uur.
   - Neither amount is a whole multiple of the other, and neither equals the step, so the step is
