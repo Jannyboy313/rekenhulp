@@ -1,16 +1,27 @@
-import { formatInteger } from '../format';
+import { formatEuro, formatFraction, formatInteger, formatMoney, formatRational } from '../format';
 import { gcd } from '../primes';
-import { pick, range, type Rng } from '../random';
-import { divide, equals, fromInteger, HUNDRED, multiply, type Rational } from '../rational';
+import { drawUntil, pick, randomInt, range, type Rng } from '../random';
+import {
+  compare,
+  divide,
+  equals,
+  fromInteger,
+  HUNDRED,
+  isInteger,
+  multiply,
+  ONE,
+  rational,
+  type Rational,
+} from '../rational';
 import { fractionStep, numberStep, simplestFractionStep } from '../steps';
-import type { Diagnose } from '../tips';
+import { moneyTip, type Diagnose } from '../tips';
 import type { Question } from '../types';
 import { formatPercentNumber } from './fractionConversion';
 
-// Ratio word problems (spec §5.25): part of the whole, mixing and, later, per unit.
+// Ratio word problems (spec §5.25): part of the whole, mixing and per unit.
 
-type RatioForm = 'part' | 'mix';
-const FORMS: readonly RatioForm[] = ['part', 'mix'];
+type RatioForm = 'part' | 'mix' | 'unit';
+const FORMS: readonly RatioForm[] = ['part', 'mix', 'unit'];
 
 /** Which term of a ratio a : b: 0 is a, 1 is b. */
 type Index = 0 | 1;
@@ -471,6 +482,233 @@ function mixFromPartTip(
   return (answer) => (equals(answer, total) ? tip : undefined);
 }
 
+export type UnitContextId = 'cheese' | 'petrol' | 'wage';
+const UNIT_CONTEXT_IDS: readonly UnitContextId[] = ['cheese', 'petrol', 'wage'];
+
+/**
+ * The amounts and prices of one per-unit context (spec §5.25). Amounts are counted in the counting
+ * unit of the context: 100 g for cheese, 1 L for petrol and 1 uur for the wage.
+ */
+interface UnitSettings {
+  /** The amounts are multiples of 1/amountParts counting units: half hours for the wage. */
+  amountParts: number;
+  /** The range of the amounts, in counting units. */
+  minAmount: number;
+  maxAmount: number;
+  /** The price per counting unit: multiples of priceStepCents in [minPriceCents, maxPriceCents]. */
+  minPriceCents: number;
+  maxPriceCents: number;
+  priceStepCents: number;
+}
+
+const UNIT_SETTINGS: Record<UnitContextId, UnitSettings> = {
+  cheese: {
+    amountParts: 1,
+    minAmount: 2,
+    maxAmount: 30,
+    minPriceCents: 60,
+    maxPriceCents: 250,
+    priceStepCents: 10,
+  },
+  petrol: {
+    amountParts: 1,
+    minAmount: 5,
+    maxAmount: 60,
+    minPriceCents: 160,
+    maxPriceCents: 220,
+    priceStepCents: 10,
+  },
+  wage: {
+    amountParts: 2,
+    minAmount: 1,
+    maxAmount: 10,
+    minPriceCents: 1000,
+    maxPriceCents: 2500,
+    priceStepCents: 100,
+  },
+};
+
+/** No price in a ratio table may be above € 200. */
+const MAX_UNIT_TABLE_PRICE = fromInteger(200);
+const FIVE = fromInteger(5);
+const THOUSAND = fromInteger(1000);
+
+/** Whether `value` is a whole multiple of `unit`. */
+function isWholeMultiple(value: Rational, unit: Rational): boolean {
+  return isInteger(divide(value, unit));
+}
+
+function isBetween(value: Rational, min: number, max: number): boolean {
+  return compare(value, fromInteger(min)) >= 0 && compare(value, fromInteger(max)) <= 0;
+}
+
+/** A positive multiple of 1/amountParts counting units, the grid the amounts are written on. */
+function isOnAmountGrid({ amountParts }: UnitSettings, amount: Rational): boolean {
+  return amount.num > 0n && isWholeMultiple(amount, rational(1n, BigInt(amountParts)));
+}
+
+/**
+ * An amount in counting units as the prompts write it: '1,5 kg', '400 g', '25 L', '2,5 uur'. Cheese
+ * is in g below 1 kg and in kg from 1 kg. The amount must be on the grid of the context.
+ */
+export function formatAmount(context: UnitContextId, amount: Rational): string {
+  if (!isOnAmountGrid(UNIT_SETTINGS[context], amount)) {
+    throw new RangeError(`${formatFraction(amount)} is not an amount for ${context}`);
+  }
+  switch (context) {
+    case 'cheese': {
+      const grams = multiply(amount, HUNDRED);
+      return compare(grams, THOUSAND) < 0
+        ? `${formatRational(grams)} g`
+        : `${formatRational(divide(grams, THOUSAND))} kg`;
+    }
+    case 'petrol':
+      return `${formatRational(amount)} L`;
+    case 'wage':
+      return `${formatRational(amount)} uur`;
+  }
+}
+
+/**
+ * The step of the ratio table: 100 g for cheese, 1 uur for the wage and for petrol 5 L when both
+ * amounts are multiples of 5, otherwise 1 L. Amounts are in counting units.
+ */
+export function stepAmount(context: UnitContextId, first: Rational, second: Rational): Rational {
+  const fiveLitres =
+    context === 'petrol' && isWholeMultiple(first, FIVE) && isWholeMultiple(second, FIVE);
+  return fiveLitres ? FIVE : ONE;
+}
+
+/** Why the exercise is not a supported one (spec §5.25), or null when it is. */
+function unitProblem(
+  context: UnitContextId,
+  first: Rational,
+  firstPrice: Rational,
+  second: Rational,
+): string | null {
+  const settings = UNIT_SETTINGS[context];
+  for (const amount of [first, second]) {
+    const supported =
+      isBetween(amount, settings.minAmount, settings.maxAmount) && isOnAmountGrid(settings, amount);
+    if (!supported) return `${formatFraction(amount)} is not a supported amount for ${context}`;
+  }
+  const unitPrice = divide(firstPrice, first);
+  const cents = multiply(unitPrice, HUNDRED);
+  const priceSupported =
+    isBetween(cents, settings.minPriceCents, settings.maxPriceCents) &&
+    isWholeMultiple(cents, fromInteger(settings.priceStepCents));
+  if (!priceSupported) {
+    return `${formatFraction(unitPrice)} is not a supported price per unit for ${context}`;
+  }
+  if (isWholeMultiple(first, second) || isWholeMultiple(second, first)) {
+    return `${formatFraction(first)} and ${formatFraction(second)} are multiples of each other`;
+  }
+  const step = stepAmount(context, first, second);
+  if (equals(first, step) || equals(second, step)) {
+    return `An amount of ${formatFraction(step)} is the step, which leaves nothing to calculate`;
+  }
+  const prices = [firstPrice, multiply(second, unitPrice)];
+  if (prices.some((price) => compare(price, MAX_UNIT_TABLE_PRICE) > 0)) {
+    return 'A price above € 200 is not supported';
+  }
+  return null;
+}
+
+/** '1,5 kg kaas kost € 12. Wat kost 400 g?' */
+function unitPrompt(
+  context: UnitContextId,
+  first: Rational,
+  firstPrice: Rational,
+  second: Rational,
+): string {
+  const [given, asked] = [formatAmount(context, first), formatAmount(context, second)];
+  const price = formatEuro(firstPrice);
+  switch (context) {
+    case 'cheese':
+      return `${given} kaas kost ${price}. Wat kost ${asked}?`;
+    case 'petrol':
+      return `${given} benzine kost ${price}. Wat kost ${asked}?`;
+    case 'wage':
+      return `Voor ${given} werk krijg je ${price}. Hoeveel voor ${asked}?`;
+  }
+}
+
+/**
+ * One exercise of the form: `1,5 kg kaas kost € 12. Wat kost 400 g?` Amounts are in the counting
+ * unit of the context, so cheese 1,5 kg is `first = 15` (15 × 100 g) and 400 g is `second = 4`.
+ * `firstPrice` is the price of the first amount; the price per counting unit follows from it and
+ * must be one of the context (spec §5.25), as must the amounts and the way they relate.
+ */
+export function unitQuestion(
+  context: UnitContextId,
+  first: Rational,
+  firstPrice: Rational,
+  second: Rational,
+): Question {
+  const problem = unitProblem(context, first, firstPrice, second);
+  if (problem !== null) throw new RangeError(problem);
+  const unitPrice = divide(firstPrice, first);
+  const answer = multiply(second, unitPrice);
+  const amounts = `${formatRational(first)}:${formatRational(second)}`;
+  return {
+    key: `ratioProblems:unit:${context}:${amounts}:${formatRational(unitPrice)}`,
+    topic: 'ratioProblems',
+    steps: [
+      numberStep({
+        prompt: unitPrompt(context, first, firstPrice, second),
+        answer,
+        prefix: '€',
+        expected: formatMoney(answer),
+        explanation: unitExplanation(context, first, firstPrice, second),
+        diagnose: inverseTip(context, first, firstPrice, second),
+      }),
+    ],
+  };
+}
+
+/**
+ * The ratio table with the step in between: '1,5 kg → € 12, 100 g → € 0,80, 400 g → € 3,20'.
+ * The exercise must be a supported one.
+ */
+export function unitExplanation(
+  context: UnitContextId,
+  first: Rational,
+  firstPrice: Rational,
+  second: Rational,
+): string {
+  const unitPrice = divide(firstPrice, first);
+  const step = stepAmount(context, first, second);
+  const row = (amount: Rational, price: Rational) =>
+    `${formatAmount(context, amount)} → ${formatEuro(price)}`;
+  return [
+    row(first, firstPrice),
+    row(step, multiply(step, unitPrice)),
+    row(second, multiply(second, unitPrice)),
+  ].join(', ');
+}
+
+/**
+ * The inverse scaling: the first price × first : second instead of × second : first (spec
+ * §3.4.1). Typed as a price, so also when rounded half up to cents. The exercise must be a
+ * supported one.
+ */
+export function inverseTip(
+  context: UnitContextId,
+  first: Rational,
+  firstPrice: Rational,
+  second: Rational,
+): Diagnose {
+  const mistaken = divide(multiply(firstPrice, first), second);
+  const comparison = compare(second, first) < 0 ? 'minder' : 'meer';
+  const verb = context === 'wage' ? 'je krijgt' : 'het kost';
+  const [given, asked] = [formatAmount(context, first), formatAmount(context, second)];
+  return moneyTip(
+    mistaken,
+    `Je hebt omgekeerd gerekend: ${asked} is ${comparison} dan ${given}, ` +
+      `dus ${verb} ${comparison} dan ${formatEuro(firstPrice)}.`,
+  );
+}
+
 /** `In een klas is jongens : meisjes = 2 : 3. Welk deel van de klas is jongen?` */
 function generatePart(rng: Rng): Question {
   const context = pick(rng, GROUP_CONTEXTS);
@@ -491,11 +729,43 @@ function generateMix(rng: Rng): Question {
     : mixFromPartQuestion(context, a, b, part, index);
 }
 
+/** An amount on the grid of the context, between its smallest and largest amount. */
+function drawUnitAmount(rng: Rng, { amountParts, minAmount, maxAmount }: UnitSettings): Rational {
+  const parts = randomInt(rng, minAmount * amountParts, maxAmount * amountParts);
+  return rational(BigInt(parts), BigInt(amountParts));
+}
+
+/** A price per counting unit on the grid of the context, between its smallest and largest. */
+function drawUnitPrice(
+  rng: Rng,
+  { minPriceCents, maxPriceCents, priceStepCents }: UnitSettings,
+): Rational {
+  const steps = randomInt(rng, minPriceCents / priceStepCents, maxPriceCents / priceStepCents);
+  return rational(BigInt(steps * priceStepCents), 100n);
+}
+
+/** `1,5 kg kaas kost € 12. Wat kost 400 g?` */
+function generateUnit(rng: Rng): Question {
+  const context = pick(rng, UNIT_CONTEXT_IDS);
+  const settings = UNIT_SETTINGS[context];
+  const { first, firstPrice, second } = drawUntil(() => {
+    const unitPrice = drawUnitPrice(rng, settings);
+    const first = drawUnitAmount(rng, settings);
+    const second = drawUnitAmount(rng, settings);
+    const firstPrice = multiply(first, unitPrice);
+    const supported = unitProblem(context, first, firstPrice, second) === null;
+    return supported ? { first, firstPrice, second } : null;
+  });
+  return unitQuestion(context, first, firstPrice, second);
+}
+
 export function generateRatioProblems(rng: Rng): Question {
   switch (pick(rng, FORMS)) {
     case 'part':
       return generatePart(rng);
     case 'mix':
       return generateMix(rng);
+    case 'unit':
+      return generateUnit(rng);
   }
 }
