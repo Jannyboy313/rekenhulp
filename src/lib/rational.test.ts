@@ -242,6 +242,11 @@ describe('roundHalfUpToCents', () => {
     expect(roundHalfUpToCents(rational(1n, 3n))).toEqual(rational(33n, 100n));
     expect(roundHalfUpToCents(rational(2n, 3n))).toEqual(rational(67n, 100n));
   });
+
+  it('rejects negative values, which bigint division would round toward zero', () => {
+    expect(() => roundHalfUpToCents(rational(-1n, 3n))).toThrow(RangeError);
+    expect(() => roundHalfUpToCents(rational(-5n, 1000n))).toThrow(RangeError);
+  });
 });
 
 describe('power', () => {

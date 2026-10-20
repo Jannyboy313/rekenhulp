@@ -139,7 +139,9 @@ export function negate(value: Rational): Rational {
 
 /** A non-negative value rounded half up to 2 decimals (whole cents). */
 export function roundHalfUpToCents(value: Rational): Rational {
-  // floor(value × 100 + 1/2) = floor((200 × num + den) / (2 × den)); bigint division floors here.
+  if (value.num < 0n) throw new RangeError('Only non-negative amounts are rounded to cents');
+  // floor(value × 100 + 1/2) = floor((200 × num + den) / (2 × den)); bigint division truncates
+  // toward zero, which equals the floor for the non-negative values allowed here.
   const cents = (200n * value.num + value.den) / (2n * value.den);
   return rational(cents, 100n);
 }

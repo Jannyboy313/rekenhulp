@@ -258,6 +258,7 @@ function newPercent(p: Percentage, increase: boolean): Rational {
 
 /** The base b = gcd(100, p) of the explanation, with 12½ for p = 12½ (on doubled integers). */
 function explanationBase(p: Percentage): Rational {
+  if (p.value.den > 2n) throw new RangeError('Only whole and half percentages are supported');
   const doubled = Number((p.value.num * 2n) / p.value.den);
   return rational(BigInt(gcd(200, doubled)), 2n);
 }
@@ -290,12 +291,13 @@ export function originalQuestion(
   const newPrice = newPriceOf(p, increase, oldPrice);
   if (newPrice === null) throw new RangeError(`${oldPrice} gives no whole number of cents`);
   const direction = increase ? 'increase' : 'discount';
+  const noun = increase ? 'verhoging' : 'korting';
   return {
     key: `percentChange:original:${direction}:${formatPercentage(p.value)}:${oldPrice}`,
     topic: 'percentChange',
     steps: [
       numberStep({
-        prompt: `Na ${percentLabel(p.value)} ${increase ? 'verhoging' : 'korting'} kost ${item} ${formatEuro(newPrice)}. Wat was de oude prijs?`,
+        prompt: `Na ${percentLabel(p.value)} ${noun} kost ${item} ${formatEuro(newPrice)}. Wat was de oude prijs?`,
         answer: fromInteger(oldPrice),
         prefix: '€',
         expected: formatMoney(fromInteger(oldPrice)),
