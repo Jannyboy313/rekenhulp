@@ -21,6 +21,7 @@ import { generatePowersRoots } from './powersRoots';
 import { generateProperties } from './properties';
 import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
+import { generateScale } from './scale';
 import { generateScientificNotation } from './scientificNotation';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSquares } from './squares';
@@ -37,6 +38,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   percentages: generatePercentages,
   ratios: generateRatios,
   percentChange: generatePercentChange,
+  scale: generateScale,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -68,6 +70,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',
+  scale: 'Schaal (kaart en tekening, schaal bepalen)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
