@@ -165,6 +165,21 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `percentages`, price change | the change itself | "Dat is de korting zelf; trek die nog af van de prijs." (verhoging: tel op) |
 | `percentages`, price change | change in the wrong direction | "Bij korting wordt de prijs lager: trek de korting af." (verhoging: hoger, tel op) |
 | `percentages`, back to 100% | p% of the given part | "Je hebt 20% van 14 berekend, maar 14 is zelf al 20%. Reken terug naar 100%." |
+| `percentChange`, percentage change | the change itself (`12`) | "Dat is de stijging zelf; reken uit hoeveel procent van 80 dat is." (daling) |
+| `percentChange`, percentage change | the new value as a percentage of the old (`115`, `85`) | "Dat is 92 als percentage van 80; de stijging is 115% − 100% = 15%." (daling: 100% − 85%) |
+| `percentChange`, percentage change | the change as a percentage of the new value | "Reken met de oude waarde: de stijging is een percentage van 80, niet van 92." |
+| `percentChange`, VAT added | the VAT itself | "Dat is de btw zelf; tel die nog op bij de prijs." |
+| `percentChange`, VAT removed | the price minus 21% of it, rounded to cents | "De btw is 21% van de prijs zonder btw. € 96,80 is 121%: reken terug naar 1%." |
+| `percentChange`, VAT removed | the VAT itself | "Dat is de btw; gevraagd is de prijs zonder btw." |
+| `percentChange`, original value | the new price plus (minus) p% of the new price, rounded to cents | "De korting is 25% van de oude prijs, niet van € 60. € 60 is 75% van de oude prijs." (verhoging: 115%) |
+| `percentChange`, original value | the new price changed once more the same way (`60 − 15`) | "Na korting is de prijs lager, dus de oude prijs is hoger dan € 60." (verhoging: lager) |
+| `scale` | 10ᵏ × the answer, k ≠ 0 | "Reken in dezelfde eenheid: 1 cm op de kaart is 25 000 cm = 250 m in het echt." (replaces the factor-of-ten tip) |
+| `ratioProblems`, part of the whole | the ratio of the two groups (`2/3`, or `66 2/3` for a percentage) | "2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5." |
+| `ratioProblems`, part of the whole | the part of the other group | "Dat is het deel meisjes; gevraagd is het deel jongens." |
+| `ratioProblems`, mixing from the total | the total divided by one term | "Deel eerst door het totaal aantal delen: 1 + 6 = 7." |
+| `ratioProblems`, mixing from the total | the other ingredient | "Dat is de hoeveelheid water; gevraagd is de siroop." |
+| `ratioProblems`, mixing from one part | the total | "Dat is de hele hoeveelheid limonade; gevraagd is alleen het water." |
+| `ratioProblems`, per unit | inverse scaling (amount × q₁ : q₂, in the same unit) | "Je hebt omgekeerd gerekend: 400 g is minder dan 1,5 kg, dus het kost minder dan € 12." |
 | `ratios`, missing term | the additive answer (equal difference) | "Bij een verhouding vermenigvuldig of deel je beide getallen met hetzelfde getal; het verschil blijft niet gelijk." |
 | `ratios`, scaling | inverse scaling (amount × a : b) | "Je hebt omgekeerd geschaald: 6 is meer dan 4, dus het antwoord is meer dan 300." |
 | `ratios`, scaling | amount + (b − a) | "Je hebt het verschil in aantal opgeteld; bij een verhouding vermenigvuldig je." |
@@ -349,7 +364,7 @@ exercises.
 | **Getallen & delers**       | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares`                 | 15%    | v1      |
 | **Bewerkingen**             | `orderOfOperations`, `properties` (weight 0.5), `smartCalculation`                | 15%    | v1      |
 | **Meten**                   | `volume`, `area`, `length`, `mass`, `time`, `numberUnits` (v1); `speed` (v2)      | 15%    | v1 + v2 |
-| **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale` (v2)                       | 15%    | v1 + v2 |
+| **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale`, `ratioProblems` (v2)      | 15%    | v1 + v2 |
 | **Getalbegrip**             | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` | 15% | v2   |
 | **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic`                   | 15%    | v2      |
 | **Meetkunde**               | `perimeterArea`, `solids`, `pythagoras`, `angles`                                 | 15%    | v2      |
@@ -402,7 +417,8 @@ Examples with `n = 15`:
   orderOfOperations 5, properties 3 and smartCalculation 5.
 - **Getallen & delers:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is
   chosen at random.
-- **Verhoudingen (v1):** `r = 13` over 2 topics, so 7 + 6.
+- **Verhoudingen:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen
+  at random.
 - **Meten:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is chosen at
   random.
 - **Getalbegrip:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen at
@@ -1181,6 +1197,122 @@ There are three forms, each picked with equal probability:
     × 100)`; with a whole divisor, the table fact, then the comma: `36 : 4 = 9 → 0,36 : 4 = 0,09`.
 - The de-duplication key is the calculation, with the factors of a product in ascending order.
 
+### 5.23 Percentage change (`percentChange`)
+
+Part of the set Verhoudingen (v2). §5.12 already has a price after a discount or increase and
+plain back to 100%; this topic adds the forms around a change.
+
+There are three forms, each picked with equal probability:
+
+| Form              | Example                                                          | Answer |
+|-------------------|------------------------------------------------------------------|--------|
+| Percentage change | `Een prijs gaat van € 80 naar € 92. Hoeveel procent stijging?`   | 15     |
+| VAT               | `€ 80 zonder btw. Met 21% btw = ?`, `€ 96,80 met 21% btw. Zonder btw = ?` | 96,80, 80 |
+| Original value    | `Na 25% korting kost een jas € 60. Wat was de oude prijs?`       | 80     |
+
+- **Percentage change:** increase or decrease, each 50%. The percentage `p` comes from the list
+  of §5.12: an increase uses any `p`, a decrease only `p < 100`. The old value is a nice whole
+  (§5.12: an integer in `[10, 1000]` with at most 2 significant digits) and the new value is an
+  integer too. Three contexts, each equally likely:
+  - price: `Een prijs gaat van € 80 naar € 92. Hoeveel procent stijging?`
+  - inhabitants: `Een dorp gaat van 800 naar 920 inwoners. Hoeveel procent stijging?`
+  - visitors: `Een museum gaat van 400 naar 340 bezoekers per dag. Hoeveel procent daling?`
+  - The answer is `p` as a fraction step with any equal value correct and suffix `%`, as in
+    §5.12, so `12½` can be typed and the breuk key gives nothing away.
+  - Explanation: the change, then the part-of-a-whole strategy of §5.12 on the old value:
+    `92 − 80 = 12 → 10% = 8, 5% = 4 → 15% = 12`, `100 − 80 = 20 → 25% = 80 : 4 = 20`.
+- **VAT:** the rate is 21% or 9% and the direction is adding or removing, each 50%. The amounts
+  are money (`€` prefix, the expected answer with 2 decimals when not whole, §8).
+  - Adding: the price without VAT is a nice whole of at most 1000. Example:
+    `€ 85 zonder btw. Met 21% btw = ?` → `102,85`.
+  - Removing: the price without VAT is the answer. It has 1 significant digit
+    (`10, 20, …, 90, 100, 200, …, 900`), so 1% stays easy to see: `121% = 48,40 → 1% = 0,40`.
+  - Explanation, adding: `10% = 80 : 10 = 8, 20% = 16, 1% = 0,80 → 21% = 16,80 → 80 + 16,80 =
+    96,80`, and for 9%: `10% = 8, 1% = 0,80 → 9% = 8 − 0,80 = 7,20 → 80 + 7,20 = 87,20`.
+  - Explanation, removing: `121% = 96,80 → 1% = 96,80 : 121 = 0,80 → 100% = 80`.
+- **Original value:** a price after a discount (`p < 100`) or an increase (`p ≤ 50`), each 50%,
+  with the `p` of §5.12. The old price is a nice whole and is the answer; the new price is an
+  integer in 80% of the exercises, otherwise it has 1 or 2 decimals. Prompts:
+  `Na 25% korting kost een jas € 60. Wat was de oude prijs?` and
+  `Na 15% verhoging kost een abonnement € 46. Wat was de oude prijs?`
+  - Explanation via the base `b = gcd(100, p)` (`12½` for `p = 12½`): the new price is
+    `(100 ± p)%`, so `75% = 60 → 25% = 20 → 100% = 80`, `115% = 46 → 5% = 2 → 100% = 40`.
+- The de-duplication key is the form and its numbers.
+
+### 5.24 Scale (`scale`)
+
+Part of the set Verhoudingen (v2). A scale is always `1 : n` (a reduction).
+
+There are three forms, each picked with equal probability:
+
+| Form           | Example                                                  | Answer |
+|----------------|----------------------------------------------------------|--------|
+| Map → real     | `Schaal 1 : 25 000. 4 cm op de kaart is in het echt ? km` | 1      |
+| Real → map     | `Schaal 1 : 50 000. 3 km in het echt is op de kaart ? cm` | 6      |
+| Find the scale | `4 cm op de kaart is 2 km in het echt. Schaal 1 : ?`      | 50 000 |
+
+- `n ∈ {100, 200, 250, 500, 1000, 2000, 2500, 5000, 10 000, 20 000, 25 000, 50 000, 100 000,
+  200 000, 250 000, 500 000, 1 000 000}`. For `n ≤ 5000` (a floor plan or a building drawing) the
+  real distance is in `m`, for `n ≥ 10 000` (a map) in `km`. The drawing uses "op de tekening"
+  instead of "op de kaart" for `n ≤ 5000`.
+- The map distance is in `cm`, in `[0,5; 30]`, with at most 1 decimal and at most 2 significant
+  digits. The real distance is in `[0,1; 1000]` in its unit with at most 2 decimals.
+- The unit of the answer is the suffix; in the find-the-scale form the prefix is `1 :` and the
+  answer is `n`. The user never types a unit.
+- Explanation: what 1 cm is in reality, then the calculation:
+  - map → real: `1 cm = 25 000 cm = 250 m = 0,25 km → 4 × 0,25 = 1 km`
+  - real → map: `1 cm = 50 000 cm = 0,5 km → 3 : 0,5 = 6 cm`
+  - find the scale: `2 km = 200 000 cm → 200 000 : 4 = 50 000`
+- The de-duplication key is the form, `n` and the map distance.
+
+### 5.25 Ratio word problems (`ratioProblems`)
+
+Part of the set Verhoudingen (v2). Short stories around a ratio; §5.13 has the bare forms.
+
+There are three forms, each picked with equal probability:
+
+| Form              | Example                                                                         | Answer |
+|-------------------|---------------------------------------------------------------------------------|--------|
+| Part of the whole | `In een klas is jongens : meisjes = 2 : 3. Welk deel van de klas is jongen?`   | 2/5    |
+| Mixing            | `Siroop : water = 1 : 6. Hoeveel ml siroop zit er in 350 ml limonade?`          | 50     |
+| Per unit          | `1,5 kg kaas kost € 12. Wat kost 400 g?`                                        | 3,20   |
+
+- **Part of the whole:** a simplified ratio `a : b` with `a ≠ b`. The question asks for the
+  part of one of the two groups, as a fraction or as a percentage (each 50%).
+  - Fraction: `a + b ≤ 12`. The answer `a/(a + b)` is in lowest terms because `gcd(a, b) = 1`.
+    Fraction step, simplest form, decimal allowed (`2/5` and `0,4` are correct, `4/10` is
+    not).
+  - Percentage: `a + b ∈ {2, 3, 4, 5, 6, 8, 10}`, prompt `Hoeveel procent van de klas is
+    jongen?`. Fraction step with any equal value correct and suffix `%`, so `33 1/3` can be typed
+    (as in §5.20).
+  - Contexts, each equally likely: jongens : meisjes in een klas, rode : blauwe knikkers in een
+    zak, volwassenen : kinderen bij een voorstelling.
+  - Explanation: `2 + 3 = 5 delen → jongens = 2/5`, and for a percentage
+    `2 + 3 = 5 delen → 2/5 = 40%`.
+- **Mixing:** a simplified ratio `a : b` with `a ≠ b` and terms in `[1, 9]`. One part `u` is an
+  integer in `[2, 200]`; the amounts are `a × u`, `b × u` and the total `(a + b) × u ≤ 2000`.
+  Two variants, each 50%:
+  - from the total: `Siroop : water = 1 : 6. Hoeveel ml siroop zit er in 350 ml limonade?`,
+    asking for either ingredient (the total has at most 2 significant digits)
+  - from one part: `Siroop : water = 1 : 6. Je hebt 50 ml siroop. Hoeveel ml water moet
+    erbij?`
+  - Contexts, each equally likely: siroop : water (ml, limonade), cement : zand (kg, mortel),
+    wit : blauw (L, verf; whole litres, so `u ≤ 20`). The unit is the suffix.
+  - Explanation: `1 + 6 = 7 delen → 1 deel = 350 : 7 = 50 → siroop = 1 deel = 50`, and from one
+    part: `siroop = 1 deel = 50 → water = 6 delen = 300`.
+- **Per unit:** a ratio table that needs a step via a convenient unit (1 kg, 100 g, 1 L,
+  1 uur). Contexts, each equally likely:
+  - cheese: `1,5 kg kaas kost € 12. Wat kost 400 g?`, amounts in `kg` (with 1 decimal) or `g`
+    (multiples of 50), via 100 g or 1 kg; in 50% the two amounts use different units
+  - petrol: `40 L benzine kost € 76. Wat kost 25 L?`, via 1 L or 5 L
+  - wage: `Voor 6 uur werk krijg je € 81. Hoeveel voor 4 uur?`, via 1 uur, or half hours
+    (`2,5 uur`)
+  - The price per step unit is a whole number of cents with at most 2 significant digits.
+    Neither amount is a whole multiple of the other, so the step is needed. The answer is at
+    most `€ 200`, money formatting as in §8.
+  - Explanation: the ratio table, `1,5 kg → € 12, 100 g → € 0,80, 400 g → € 3,20`.
+- The de-duplication key is the form, the context and the numbers.
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -1464,7 +1596,18 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-None at the moment.
+Verhoudingen v2 (§5.23–§5.25):
+
+1. All five topics of the set have weight 1. Alternative: give `ratioProblems` weight 2,
+   because the user finds it hardest.
+2. Removing VAT only uses prices without VAT with 1 significant digit (`40`, `300`), so
+   `121% → 1%` stays mental arithmetic.
+3. Money tips compare the answer with the mistaken value rounded to cents (§5.23), because a
+   price is typed with 2 decimals. Elsewhere tips stay exact.
+4. Scale: `m` for `n ≤ 5000` (drawing), `km` for `n ≥ 10 000` (map). No enlargements, scale
+   models or area at scale.
+5. Part of the whole as a fraction accepts an equal decimal (`0,4` for `2/5`).
+6. The set description becomes "Procenten, verhoudingen en schaal".
 
 ## 12. Roadmap (not in v1)
 
@@ -1482,11 +1625,13 @@ in each set's own spec iteration.
 
 1. **Getalbegrip** — done, specified in §5.15–§5.19.
 2. **Breuken & kommagetallen** — done, specified in §5.20–§5.22.
-3. **Verhoudingen** (v2 part)
-   - `percentChange`: increase and decrease, VAT (21% and 9%), reasoning back to 100%, and
-     the percentage of a change.
+3. **Verhoudingen** (v2 part), specified in §5.23–§5.25
+   - `percentChange`: the percentage of a change, VAT (21% and 9%) both ways, and the original
+     price before a change.
    - `scale`: map scale ↔ real distance, and finding the scale.
-   - Infrastructure: none; uses the `€` prefix and the unit suffix.
+   - `ratioProblems`: word problems with a ratio: part of the whole, mixing, and per unit
+     (added because the user finds these hardest in the book).
+   - Infrastructure: none; uses the `€` prefix, the `1 :` prefix and the unit suffix.
 4. **Meten** (v2 part)
    - `speed`: distance, time and speed, and km/u ↔ m/s.
    - Infrastructure: compound units in the conversion engine (§5.10).
