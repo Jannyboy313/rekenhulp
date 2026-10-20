@@ -147,7 +147,9 @@ answers and the explanation, in the feedback and on the results screen. Rules:
   times the correct one (k ≠ 0): "Je antwoord is 100 keer te groot. Let op de komma en het
   aantal nullen." Questions whose answer is an exponent (`1 biljard = 10ⁿ`) skip this fallback.
 - A tip may only claim what is certain from the input: it names a mistake only when the answer
-  equals exactly what that mistake produces.
+  equals exactly what that mistake produces. The one exception is money (§5.23): when the
+  mistaken value has more than 2 decimals, the answer must equal it rounded half up to cents,
+  because a price is typed with 2 decimals.
 
 | Topic | Answer equals | Tip |
 |---|---|---|
@@ -378,6 +380,9 @@ moves to v3.
 
 `properties` has weight 0.5 because it is a two-step exercise and takes about 2–3× as long as
 the others.
+
+With v2, the description of Verhoudingen on its card (§3.1) becomes "Procenten, verhoudingen en
+schaal".
 
 The set overview (§3.1) shows the implemented sets in the build order of §12.1 (Tafels, Meten,
 Verhoudingen, Getallen & delers, Bewerkingen, Getalbegrip, Breuken & kommagetallen, …), not in
@@ -1596,18 +1601,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-Verhoudingen v2 (§5.23–§5.25):
-
-1. All five topics of the set have weight 1. Alternative: give `ratioProblems` weight 2,
-   because the user finds it hardest.
-2. Removing VAT only uses prices without VAT with 1 significant digit (`40`, `300`), so
-   `121% → 1%` stays mental arithmetic.
-3. Money tips compare the answer with the mistaken value rounded to cents (§5.23), because a
-   price is typed with 2 decimals. Elsewhere tips stay exact.
-4. Scale: `m` for `n ≤ 5000` (drawing), `km` for `n ≥ 10 000` (map). No enlargements, scale
-   models or area at scale.
-5. Part of the whole as a fraction accepts an equal decimal (`0,4` for `2/5`).
-6. The set description becomes "Procenten, verhoudingen en schaal".
+None at the moment.
 
 ## 12. Roadmap (not in v1)
 
