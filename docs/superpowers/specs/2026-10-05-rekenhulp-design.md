@@ -1218,8 +1218,9 @@ There are three forms, each picked with equal probability:
 
 - **Percentage change:** increase or decrease, each 50%. The percentage `p` comes from the list
   of §5.12: an increase uses any `p`, a decrease only `p < 100`. The old value is a nice whole
-  (§5.12: an integer in `[10, 1000]` with at most 2 significant digits) and the new value is an
-  integer too. Three contexts, each equally likely:
+  (§5.12: an integer in `[10, 1000]` with at most 2 significant digits; for inhabitants at least
+  100, so no village of 10) and the new value is an integer too. Three contexts, each equally
+  likely:
   - price: `Een prijs gaat van € 80 naar € 92. Hoeveel procent stijging?`
   - inhabitants: `Een dorp gaat van 800 naar 920 inwoners. Hoeveel procent stijging?`
   - visitors: `Een museum gaat van 400 naar 340 bezoekers per dag. Hoeveel procent daling?`
@@ -1234,7 +1235,8 @@ There are three forms, each picked with equal probability:
   - Removing: the price without VAT is the answer. It has 1 significant digit
     (`10, 20, …, 90, 100, 200, …, 900`), so 1% stays easy to see: `121% = 48,40 → 1% = 0,40`.
   - Explanation, adding: `10% = 80 : 10 = 8, 20% = 16, 1% = 0,80 → 21% = 16,80 → 80 + 16,80 =
-    96,80`, and for 9%: `10% = 8, 1% = 0,80 → 9% = 8 − 0,80 = 7,20 → 80 + 7,20 = 87,20`.
+    96,80`, and for 9%: `10% = 80 : 10 = 8, 1% = 0,80 → 9% = 8 − 0,80 = 7,20 → 80 + 7,20 =
+    87,20`.
   - Explanation, removing: `121% = 96,80 → 1% = 96,80 : 121 = 0,80 → 100% = 80`.
 - **Original value:** a price after a discount (`p < 100`) or an increase (`p ≤ 50`), each 50%,
   with the `p` of §5.12. The old price is a nice whole and is the answer; the new price is an
@@ -1289,7 +1291,7 @@ There are three forms, each picked with equal probability:
   - Fraction: `a + b ≤ 12`. The answer `a/(a + b)` is in lowest terms because `gcd(a, b) = 1`.
     Fraction step, simplest form, decimal allowed (`2/5` and `0,4` are correct, `4/10` is
     not).
-  - Percentage: `a + b ∈ {2, 3, 4, 5, 6, 8, 10}`, prompt `Hoeveel procent van de klas is
+  - Percentage: `a + b ∈ {3, 4, 5, 6, 8, 10}`, prompt `Hoeveel procent van de klas is
     jongen?`. Fraction step with any equal value correct and suffix `%`, so `33 1/3` can be typed
     (as in §5.20).
   - Contexts, each equally likely: jongens : meisjes in een klas, rode : blauwe knikkers in een
@@ -1302,7 +1304,7 @@ There are three forms, each picked with equal probability:
   - from the total: `Siroop : water = 1 : 6. Hoeveel ml siroop zit er in 350 ml limonade?`,
     asking for either ingredient (the total has at most 2 significant digits)
   - from one part: `Siroop : water = 1 : 6. Je hebt 50 ml siroop. Hoeveel ml water moet
-    erbij?`
+    erbij?` (the given amount has at most 2 significant digits: `50`, `140`, not `137`)
   - Contexts, each equally likely: siroop : water (ml, limonade), cement : zand (kg, mortel),
     witte verf : blauwe verf (L, lichtblauwe verf; `u ≤ 20`). Siroop and cement are the
     smaller part (`a < b`); the paint ratio goes either way. The unit is the suffix.
