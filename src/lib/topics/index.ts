@@ -19,6 +19,7 @@ import { generatePercentages } from './percentages';
 import { generatePercentChange } from './percentChange';
 import { generatePowersRoots } from './powersRoots';
 import { generateProperties } from './properties';
+import { generateRatioProblems } from './ratioProblems';
 import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
@@ -39,6 +40,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   ratios: generateRatios,
   percentChange: generatePercentChange,
   scale: generateScale,
+  ratioProblems: generateRatioProblems,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -71,6 +73,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',
   scale: 'Schaal (kaart en tekening, schaal bepalen)',
+  ratioProblems: 'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
