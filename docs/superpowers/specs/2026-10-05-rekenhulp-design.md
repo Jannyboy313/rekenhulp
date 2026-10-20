@@ -147,7 +147,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
   times the correct one (k ≠ 0): "Je antwoord is 100 keer te groot. Let op de komma en het
   aantal nullen." Questions whose answer is an exponent (`1 biljard = 10ⁿ`) skip this fallback.
 - A tip may only claim what is certain from the input: it names a mistake only when the answer
-  equals exactly what that mistake produces. The one exception is money (§5.23): when the
+  equals exactly what that mistake produces. The one exception is money (§5.23, §5.25): when the
   mistaken value has more than 2 decimals, the answer must equal it rounded half up to cents,
   because a price is typed with 2 decimals.
 
@@ -175,7 +175,8 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `percentChange`, VAT removed | the VAT itself | "Dat is de btw; gevraagd is de prijs zonder btw." |
 | `percentChange`, original value | the new price plus (minus) p% of the new price, rounded to cents | "De korting is 25% van de oude prijs, niet van € 60. € 60 is 75% van de oude prijs." (verhoging: 115%) |
 | `percentChange`, original value | the new price changed once more the same way (`60 − 15`) | "Na korting is de prijs lager, dus de oude prijs is hoger dan € 60." (verhoging: lager) |
-| `scale` | 10ᵏ × the answer, k ≠ 0 | "Reken in dezelfde eenheid: 1 cm op de kaart is 25 000 cm = 250 m in het echt." (replaces the factor-of-ten tip) |
+| `scale`, map ↔ real | 10ᵏ × the answer, k ≠ 0 | "Reken in dezelfde eenheid: 1 cm op de kaart is 25 000 cm = 250 m = 0,25 km in het echt." (the chain of the explanation; op de tekening; replaces the factor-of-ten tip) |
+| `scale`, find the scale | 10ᵏ × the answer, k ≠ 0 | "Reken eerst beide afstanden om naar cm: 2 km = 200 000 cm." (replaces the factor-of-ten tip) |
 | `ratioProblems`, part of the whole | the ratio of the two groups (`2/3`, or `66 2/3` for a percentage) | "2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5." |
 | `ratioProblems`, part of the whole | the part of the other group | "Dat is het deel meisjes; gevraagd is het deel jongens." |
 | `ratioProblems`, mixing from the total | the total divided by one term | "Deel eerst door het totaal aantal delen: 1 + 6 = 7." |
@@ -1266,7 +1267,8 @@ There are three forms, each picked with equal probability:
   answer is `n`. The user never types a unit.
 - Explanation: what 1 cm is in reality, then the calculation:
   - map → real: `1 cm = 25 000 cm = 250 m = 0,25 km → 4 × 0,25 = 1 km`
-  - real → map: `1 cm = 50 000 cm = 0,5 km → 3 : 0,5 = 6 cm`
+  - real → map: `1 cm = 50 000 cm = 500 m = 0,5 km → 3 : 0,5 = 6 cm`
+  - for `m` the chain stops at metres: `1 cm = 250 cm = 2,5 m → 3 × 2,5 = 7,5 m`
   - find the scale: `2 km = 200 000 cm → 200 000 : 4 = 50 000`
 - The de-duplication key is the form, `n` and the map distance.
 
@@ -1302,19 +1304,23 @@ There are three forms, each picked with equal probability:
   - from one part: `Siroop : water = 1 : 6. Je hebt 50 ml siroop. Hoeveel ml water moet
     erbij?`
   - Contexts, each equally likely: siroop : water (ml, limonade), cement : zand (kg, mortel),
-    wit : blauw (L, verf; whole litres, so `u ≤ 20`). The unit is the suffix.
+    witte verf : blauwe verf (L, lichtblauwe verf; `u ≤ 20`). Siroop and cement are the
+    smaller part (`a < b`); the paint ratio goes either way. The unit is the suffix.
   - Explanation: `1 + 6 = 7 delen → 1 deel = 350 : 7 = 50 → siroop = 1 deel = 50`, and from one
-    part: `siroop = 1 deel = 50 → water = 6 delen = 300`.
-- **Per unit:** a ratio table that needs a step via a convenient unit (1 kg, 100 g, 1 L,
-  1 uur). Contexts, each equally likely:
-  - cheese: `1,5 kg kaas kost € 12. Wat kost 400 g?`, amounts in `kg` (with 1 decimal) or `g`
-    (multiples of 50), via 100 g or 1 kg; in 50% the two amounts use different units
-  - petrol: `40 L benzine kost € 76. Wat kost 25 L?`, via 1 L or 5 L
-  - wage: `Voor 6 uur werk krijg je € 81. Hoeveel voor 4 uur?`, via 1 uur, or half hours
-    (`2,5 uur`)
-  - The price per step unit is a whole number of cents with at most 2 significant digits.
-    Neither amount is a whole multiple of the other, so the step is needed. The answer is at
-    most `€ 200`, money formatting as in §8.
+    part: `siroop = 1 deel = 50 → water = 6 delen = 300`, or with more parts given
+    `cement = 2 delen = 100 → 1 deel = 50 → zand = 5 delen = 250`.
+- **Per unit:** a ratio table that needs a step via a convenient unit. Contexts, each equally
+  likely:
+  - cheese: `1,5 kg kaas kost € 12. Wat kost 400 g?` Amounts are multiples of 100 g in
+    `[200 g, 3 kg]`, shown in `g` below 1 kg and in `kg` (at most 1 decimal) from 1 kg. The
+    price per 100 g is a multiple of 10 cents in `[€ 0,60; € 2,50]`. Step: 100 g.
+  - petrol: `40 L benzine kost € 76. Wat kost 25 L?` Amounts are whole litres in `[5, 60]`.
+    The price per litre is a multiple of 10 cents in `[€ 1,60; € 2,20]`. Step: 5 L when both
+    amounts are multiples of 5, otherwise 1 L.
+  - wage: `Voor 4 uur werk krijg je € 60. Hoeveel voor 2,5 uur?` Amounts are whole or half hours
+    in `[1, 10]`. The wage is a whole number of euros in `[10, 25]` per hour. Step: 1 uur.
+  - Neither amount is a whole multiple of the other, and neither equals the step, so the step is
+    needed. The answer is at most `€ 200`, money formatting as in §8.
   - Explanation: the ratio table, `1,5 kg → € 12, 100 g → € 0,80, 400 g → € 3,20`.
 - The de-duplication key is the form, the context and the numbers.
 
