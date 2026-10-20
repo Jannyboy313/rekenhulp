@@ -16,6 +16,7 @@ import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
+import { generatePercentChange } from './percentChange';
 import { generatePowersRoots } from './powersRoots';
 import { generateProperties } from './properties';
 import { generateRatios } from './ratios';
@@ -35,6 +36,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   numberUnits: generateNumberUnits,
   percentages: generatePercentages,
   ratios: generateRatios,
+  percentChange: generatePercentChange,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -65,6 +67,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
+  percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',

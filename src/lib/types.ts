@@ -15,6 +15,7 @@ export type Topic =
   | 'numberUnits'
   | 'percentages'
   | 'ratios'
+  | 'percentChange'
   | 'lcm'
   | 'gcd'
   | 'prime'
