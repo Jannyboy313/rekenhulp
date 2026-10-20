@@ -36,6 +36,14 @@ const CONTEXTS: readonly ChangeContext[] = ['price', 'inhabitants', 'visitors'];
 export type VatRate = 21 | 9;
 const VAT_RATES: readonly VatRate[] = [21, 9];
 
+/** A village has at least 100 inhabitants; a price or a museum may start at 10 (spec §5.23). */
+const MIN_INHABITANTS = 100;
+
+/** Whether `oldValue` can be the old value of this context. */
+function isOldValueOf(context: ChangeContext, oldValue: number): boolean {
+  return context !== 'inhabitants' || oldValue >= MIN_INHABITANTS;
+}
+
 /** 10, 20, …, 90, 100, 200, …, 900: one significant digit, so 1% stays easy to see. */
 const ONE_DIGIT_PRICES: readonly number[] = [10, 100].flatMap((unit) =>
   range(1, 9).map((digit) => digit * unit),
@@ -95,6 +103,9 @@ export function changeQuestion(
   newValue: number,
 ): Question {
   if (!(oldValue > 0 && newValue > 0)) throw new RangeError('Both values must be positive');
+  if (!isOldValueOf(context, oldValue)) {
+    throw new RangeError(`An old value of ${oldValue} inhabitants is below ${MIN_INHABITANTS}`);
+  }
   const p = percentageOfChange(oldValue, newValue);
   const noun = newValue > oldValue ? 'stijging' : 'daling';
   return {
@@ -150,9 +161,11 @@ export function percentageChangeExplanation(oldValue: number, newValue: number):
   return `${difference} = ${formatInteger(larger - smaller)} → ${strategy}`;
 }
 
-/** Old values for which p% is a whole number, so the new value is a whole number too. */
-function wholesWithWholePart(p: Percentage): number[] {
-  return NICE_WHOLES.filter((whole) => isInteger(percentOf(p.value, fromInteger(whole))));
+/** Old values of the context for which p% is a whole number, so the new value is one too. */
+function wholesWithWholePart(context: ChangeContext, p: Percentage): number[] {
+  return NICE_WHOLES.filter(
+    (whole) => isOldValueOf(context, whole) && isInteger(percentOf(p.value, fromInteger(whole))),
+  );
 }
 
 /** `Een prijs gaat van € 80 naar € 92. Hoeveel procent stijging?` */
@@ -160,7 +173,7 @@ function generateChange(rng: Rng): Question {
   const increase = rng() < 0.5;
   const context = pick(rng, CONTEXTS);
   const p = pick(rng, increase ? PERCENTAGES : DISCOUNT_PERCENTAGES);
-  const oldValue = pick(rng, wholesWithWholePart(p));
+  const oldValue = pick(rng, wholesWithWholePart(context, p));
   const change = Number(percentOf(p.value, fromInteger(oldValue)).num);
   return changeQuestion(context, oldValue, increase ? oldValue + change : oldValue - change);
 }

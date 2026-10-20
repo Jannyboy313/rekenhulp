@@ -89,6 +89,15 @@ describe('changeQuestion', () => {
     expect(() => changeQuestion('price', 80, 80)).toThrow(RangeError);
     expect(() => changeQuestion('price', 80, 0)).toThrow(RangeError);
   });
+
+  it('rejects a village of fewer than 100 inhabitants, but not a price or museum of 10', () => {
+    // 90 to 99 and 10 to 11 are +10%, a supported percentage, so only the village is the problem.
+    expect(() => changeQuestion('inhabitants', 90, 99)).toThrow(RangeError);
+    expect(() => changeQuestion('inhabitants', 10, 11)).toThrow(RangeError);
+    expect(() => changeQuestion('inhabitants', 100, 110)).not.toThrow();
+    expect(() => changeQuestion('price', 10, 11)).not.toThrow();
+    expect(() => changeQuestion('visitors', 90, 99)).not.toThrow();
+  });
 });
 
 describe('percentage change answers', () => {
@@ -234,6 +243,17 @@ describe('every supported change', () => {
       new Set(changes.filter((change) => change.increase === increase).map(({ p }) => p));
     expect(used(true).size).toBe(PERCENTAGES.length);
     expect(used(false).size).toBe(DISCOUNT_PERCENTAGES.length);
+  });
+
+  it('has an old value of at least 100 for every percentage, so a village can use each', () => {
+    for (const increase of [false, true]) {
+      for (const p of increase ? PERCENTAGES : DISCOUNT_PERCENTAGES) {
+        const found = changes.some(
+          (change) => change.p === p && change.increase === increase && change.oldValue >= 100,
+        );
+        expect(found, `${formatPercentage(p.value)}%, increase ${increase}`).toBe(true);
+      }
+    }
   });
 
   it('builds a question with an explanation and tips that name each mistake', () => {
@@ -766,6 +786,18 @@ describe('generatePercentChange', () => {
       const allowed = isIncrease(question) ? PERCENTAGES : DISCOUNT_PERCENTAGES;
       expect(allowed.some(({ value }) => equals(value, answer))).toBe(true);
     }
+  });
+
+  it('starts a village at 100 inhabitants, while a price or museum may start at 10', () => {
+    const ofContext = (context: string) =>
+      changes.filter((question) => numbersOf(question).context === context);
+    const villages = ofContext('inhabitants');
+    expect(villages.length).toBeGreaterThan(50);
+    for (const question of villages) {
+      expect(numbersOf(question).oldValue, question.key).toBeGreaterThanOrEqual(100);
+    }
+    const others = [...ofContext('price'), ...ofContext('visitors')];
+    expect(others.some((question) => numbersOf(question).oldValue < 100)).toBe(true);
   });
 
   it('words the direction to match the numbers', () => {
