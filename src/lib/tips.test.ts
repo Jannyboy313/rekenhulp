@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fromInteger, parseDutchNumber, type Rational } from './rational';
-import { firstTip, positiveInteger, powerOfTenShift, powerOfTenTip } from './tips';
+import { firstTip, moneyTip, positiveInteger, powerOfTenShift, powerOfTenTip } from './tips';
 
 const n = (text: string): Rational => parseDutchNumber(text)!;
 
@@ -55,6 +55,22 @@ describe('firstTip', () => {
     expect(tip(fromInteger(3))).toBe('drie');
     expect(tip(fromInteger(4))).toBe('altijd');
     expect(firstTip()(fromInteger(4))).toBeUndefined();
+  });
+});
+
+describe('moneyTip', () => {
+  it('accepts the mistaken value rounded half up to cents', () => {
+    const diagnose = moneyTip(n('87,975'), 'tip');
+    expect(diagnose(n('87,98'))).toBe('tip');
+    expect(diagnose(n('87,975'))).toBe('tip');
+    expect(diagnose(n('87,97'))).toBeUndefined();
+  });
+
+  it('accepts a mistaken value with at most 2 decimals only exactly', () => {
+    const diagnose = moneyTip(n('16,8'), 'tip');
+    expect(diagnose(n('16,8'))).toBe('tip');
+    expect(diagnose(n('16,80'))).toBe('tip');
+    expect(diagnose(n('16,81'))).toBeUndefined();
   });
 });
 

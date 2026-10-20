@@ -137,6 +137,13 @@ export function negate(value: Rational): Rational {
   return rational(-value.num, value.den);
 }
 
+/** A non-negative value rounded half up to 2 decimals (whole cents). */
+export function roundHalfUpToCents(value: Rational): Rational {
+  // floor(value × 100 + 1/2) = floor((200 × num + den) / (2 × den)); bigint division floors here.
+  const cents = (200n * value.num + value.den) / (2n * value.den);
+  return rational(cents, 100n);
+}
+
 /** value^exponent for an integer exponent ≥ 0. */
 export function power(value: Rational, exponent: number): Rational {
   if (!Number.isSafeInteger(exponent) || exponent < 0) {

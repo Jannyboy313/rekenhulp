@@ -44,7 +44,7 @@ function tipFor(wrong: Rational, tip: string): Diagnose {
 }
 
 /** 37,5, or a mixed number for thirds and sixths: 33 1/3. Without the % sign. */
-function formatPercentNumber(fraction: Rational): string {
+export function formatPercentNumber(fraction: Rational): string {
   const percent = multiply(fraction, HUNDRED);
   return decimalPlaces(percent) === null ? formatMixedNumber(percent) : formatRational(percent);
 }

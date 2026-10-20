@@ -85,7 +85,7 @@ export function formatPercentage(value: Rational): string {
   throw new RangeError('Only whole and half percentages are supported');
 }
 
-function percentLabel(percent: Rational): string {
+export function percentLabel(percent: Rational): string {
   return `${formatPercentage(percent)}%`;
 }
 
@@ -151,13 +151,13 @@ export function generatePercentages(rng: Rng): Question {
   }
 }
 
-function hasAtMostTwoDecimals(value: Rational): boolean {
+export function hasAtMostTwoDecimals(value: Rational): boolean {
   const decimals = decimalPlaces(value);
   return decimals !== null && decimals <= MAX_DECIMALS;
 }
 
 /** An integer-valued candidate with probability INTEGER_SHARE, otherwise a non-integer one. */
-function pickByIntegerShare<T>(
+export function pickByIntegerShare<T>(
   rng: Rng,
   candidates: readonly T[],
   valueOf: (candidate: T) => Rational,

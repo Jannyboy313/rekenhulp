@@ -1,5 +1,5 @@
 import { formatInteger } from './format';
-import { divide, type Rational } from './rational';
+import { divide, equals, roundHalfUpToCents, type Rational } from './rational';
 
 /**
  * Recognises a likely mistake in a wrong answer that parsed (spec §3.4.1). Returns the Dutch tip,
@@ -16,6 +16,15 @@ export function firstTip(...diagnoses: readonly Diagnose[]): Diagnose {
     }
     return undefined;
   };
+}
+
+/**
+ * The tip when the answer equals `mistaken` exactly, or `mistaken` rounded half up to cents
+ * (spec §3.4.1, money exception).
+ */
+export function moneyTip(mistaken: Rational, tip: string): Diagnose {
+  const rounded = roundHalfUpToCents(mistaken);
+  return (given) => (equals(given, mistaken) || equals(given, rounded) ? tip : undefined);
 }
 
 /** k ≥ 1 when value = 10^k, otherwise null. */
