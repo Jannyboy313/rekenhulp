@@ -512,6 +512,11 @@ interface UnitSettings {
   minPriceCents: number;
   maxPriceCents: number;
   priceStepCents: number;
+  /**
+   * In `ROUND_AMOUNT_SHARE` of the exercises both amounts are multiples of this many counting
+   * units, so the ratio table goes via that amount: 5 L for petrol.
+   */
+  roundAmount?: number;
 }
 
 const UNIT_SETTINGS: Record<UnitContextId, UnitSettings> = {
@@ -530,6 +535,7 @@ const UNIT_SETTINGS: Record<UnitContextId, UnitSettings> = {
     minPriceCents: 160,
     maxPriceCents: 220,
     priceStepCents: 10,
+    roundAmount: 5,
   },
   wage: {
     amountParts: 2,
@@ -543,6 +549,8 @@ const UNIT_SETTINGS: Record<UnitContextId, UnitSettings> = {
 
 /** No price in a ratio table may be above € 200. */
 const MAX_UNIT_TABLE_PRICE = fromInteger(200);
+/** The share of the exercises of a context with a `roundAmount` that uses it (spec §5.25). */
+const ROUND_AMOUNT_SHARE = 0.5;
 const FIVE = fromInteger(5);
 const THOUSAND = fromInteger(1000);
 
@@ -742,10 +750,31 @@ function generateMix(rng: Rng): Question {
     : mixFromPartQuestion(context, a, b, part, index);
 }
 
-/** An amount on the grid of the context, between its smallest and largest amount. */
-function drawUnitAmount(rng: Rng, { amountParts, minAmount, maxAmount }: UnitSettings): Rational {
-  const parts = randomInt(rng, minAmount * amountParts, maxAmount * amountParts);
-  return rational(BigInt(parts), BigInt(amountParts));
+/**
+ * The size, in granules of 1/amountParts counting units, both amounts of an exercise are a multiple
+ * of: the `roundAmount` of the context in `ROUND_AMOUNT_SHARE` of the exercises, otherwise 1 (any
+ * amount on the grid).
+ */
+function drawAmountMultiple(rng: Rng, { amountParts, roundAmount }: UnitSettings): number {
+  if (roundAmount === undefined) return 1;
+  return rng() < ROUND_AMOUNT_SHARE ? roundAmount * amountParts : 1;
+}
+
+/**
+ * An amount on the grid of the context, between its smallest and largest amount, that is a multiple
+ * of `multiple` granules of 1/amountParts counting units.
+ */
+function drawUnitAmount(
+  rng: Rng,
+  { amountParts, minAmount, maxAmount }: UnitSettings,
+  multiple: number,
+): Rational {
+  const parts = randomInt(
+    rng,
+    Math.ceil((minAmount * amountParts) / multiple),
+    Math.floor((maxAmount * amountParts) / multiple),
+  );
+  return rational(BigInt(parts * multiple), BigInt(amountParts));
 }
 
 /** A price per counting unit on the grid of the context, between its smallest and largest. */
@@ -761,10 +790,11 @@ function drawUnitPrice(
 function generateUnit(rng: Rng): Question {
   const context = pick(rng, UNIT_CONTEXT_IDS);
   const settings = UNIT_SETTINGS[context];
+  const multiple = drawAmountMultiple(rng, settings);
   const { first, firstPrice, second } = drawUntil(() => {
     const unitPrice = drawUnitPrice(rng, settings);
-    const first = drawUnitAmount(rng, settings);
-    const second = drawUnitAmount(rng, settings);
+    const first = drawUnitAmount(rng, settings, multiple);
+    const second = drawUnitAmount(rng, settings, multiple);
     const firstPrice = multiply(first, unitPrice);
     const supported = unitProblem(context, first, firstPrice, second) === null;
     return supported ? { first, firstPrice, second } : null;

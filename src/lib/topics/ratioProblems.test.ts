@@ -1620,6 +1620,42 @@ describe('generateRatioProblems', () => {
       }
     });
 
+    // Spec §5.25: in 50% of the petrol exercises both amounts are multiples of 5 and the table goes
+    // via 5 L. The other half is drawn freely and adds a few by chance, so the share is a bit over
+    // 50%: it must be well away from 0% (the free draw alone) and from 100%.
+    it('goes via 5 L in about half of the petrol exercises', () => {
+      const petrol = draws.filter(({ context }) => context === 'petrol');
+      expect(petrol.length).toBeGreaterThan(50);
+      const viaFiveLitres = petrol.filter(
+        ({ first, second }) => times(first, 1n) % 5 === 0 && times(second, 1n) % 5 === 0,
+      );
+      const share = viaFiveLitres.length / petrol.length;
+      expect(share).toBeGreaterThan(0.35);
+      expect(share).toBeLessThan(0.75);
+    });
+
+    it('has valid petrol exercises among the multiples of 5 for every amount but 5 L', () => {
+      const amounts = range(1, 12).map((count) => count * 5);
+      const candidates = amounts.flatMap((first) =>
+        amounts
+          .filter((second) => first % second !== 0 && second % first !== 0)
+          .filter((second) => first !== 5 && second !== 5)
+          .map((second) => [first, second] as const),
+      );
+      expect(candidates.length).toBeGreaterThan(50);
+      for (const amount of amounts.filter((value) => value !== 5)) {
+        expect(candidates.some(([first]) => first === amount), String(amount)).toBe(true);
+      }
+      for (const [first, second] of candidates) {
+        // The price per litre is € 1,60: 160 cents per litre for the first amount.
+        const firstPrice = rational(BigInt(first * 160), 100n);
+        expect(
+          () => unitQuestion('petrol', fromInteger(first), firstPrice, fromInteger(second)),
+          `${first} L and ${second} L`,
+        ).not.toThrow();
+      }
+    });
+
     it('keeps both prices in whole cents and at most € 200', () => {
       for (const { first, second, unitPrice, question } of draws) {
         const firstCents = times(multiply(first, unitPrice), 100n);
