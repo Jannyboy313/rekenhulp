@@ -113,23 +113,35 @@ describe('oneCentimetre', () => {
 });
 
 describe('mapDistancesFor', () => {
-  it('has candidates for every scale', () => {
-    for (const n of SCALES) expect(mapDistancesFor(n).length, String(n)).toBeGreaterThan(0);
-  });
-
-  it('keeps distances of at most 2 significant digits and 1 decimal in [0,5; 30]', () => {
-    for (const n of SCALES) {
-      for (const map of mapDistancesFor(n)) {
-        expect(compare(map, decimal('0,5')), `${n}: ${typed(map)}`).toBeGreaterThanOrEqual(0);
-        expect(compare(map, fromInteger(30)), `${n}: ${typed(map)}`).toBeLessThanOrEqual(0);
-        expect(decimalPlaces(map), `${n}: ${typed(map)}`).toBeLessThanOrEqual(1);
-        const digits = typed(map).replace(',', '').replace(/^0+/, '');
-        expect(digits.length, `${n}: ${typed(map)}`).toBeLessThanOrEqual(2);
+  it('has candidates for every form and scale', () => {
+    for (const form of FORMS) {
+      for (const n of SCALES) {
+        expect(mapDistancesFor(n, form).length, `${form} ${n}`).toBeGreaterThan(0);
       }
     }
   });
 
-  it('keeps a real distance in [0,1; 1000] with at most 2 decimals, and drops all others', () => {
+  it('keeps distances of at most 2 significant digits and 1 decimal in [0,5; 30]', () => {
+    for (const form of FORMS) {
+      for (const n of SCALES) {
+        for (const map of mapDistancesFor(n, form)) {
+          const label = `${form} ${n}: ${typed(map)}`;
+          expect(compare(map, decimal('0,5')), label).toBeGreaterThanOrEqual(0);
+          expect(compare(map, fromInteger(30)), label).toBeLessThanOrEqual(0);
+          expect(decimalPlaces(map), label).toBeLessThanOrEqual(1);
+          const digits = typed(map).replace(',', '').replace(/^0+/, '');
+          expect(digits.length, label).toBeLessThanOrEqual(2);
+        }
+      }
+    }
+  });
+
+  // The real distance has at most 2 decimals, and at most 1 where it has to be divided.
+  it.each<[ScaleForm, number]>([
+    ['mapToReal', 2],
+    ['realToMap', 1],
+    ['findScale', 2],
+  ])('keeps for %s a real distance in [0,1; 1000] with at most %i decimals', (form, most) => {
     const tenths = (from: number, count: number) =>
       Array.from({ length: count }, (_, i) => divide(fromInteger(from + i), fromInteger(10)));
     const all = [
@@ -144,15 +156,23 @@ describe('mapDistancesFor', () => {
         return (
           compare(real, decimal('0,1')) >= 0 &&
           compare(real, fromInteger(1000)) <= 0 &&
-          decimalPlaces(real)! <= 2
+          decimalPlaces(real)! <= most
         );
       });
-      expect(mapDistancesFor(n).map(typed), String(n)).toEqual(expected.map(typed));
+      expect(mapDistancesFor(n, form).map(typed), String(n)).toEqual(expected.map(typed));
     }
   });
 
+  it('drops real distances with 2 decimals only from real → map', () => {
+    // 9,9 cm on 1 : 250 is 24,75 m; 3 cm is 7,5 m.
+    expect(mapDistancesFor(250, 'mapToReal').map(typed)).toContain('9,9');
+    expect(mapDistancesFor(250, 'findScale').map(typed)).toContain('9,9');
+    expect(mapDistancesFor(250, 'realToMap').map(typed)).not.toContain('9,9');
+    expect(mapDistancesFor(250, 'realToMap').map(typed)).toContain('3');
+  });
+
   it('offers tenths from 0,5 to 9,9 and the integers 10 to 30 on a floor plan scale', () => {
-    const shown = mapDistancesFor(100).map(typed);
+    const shown = mapDistancesFor(100, 'mapToReal').map(typed);
     expect(shown[0]).toBe('0,5');
     expect(shown).toContain('0,9');
     expect(shown).toContain('1');
@@ -165,12 +185,13 @@ describe('mapDistancesFor', () => {
   });
 
   it('drops distances whose real distance is below 0,1 km or has 3 decimals', () => {
-    expect(mapDistancesFor(10_000).map(typed)).not.toContain('0,9'); // 0,09 km
-    expect(mapDistancesFor(10_000).map(typed)).toContain('1'); // 0,1 km
-    expect(mapDistancesFor(25_000).map(typed)).not.toContain('1,1'); // 0,275 km
-    expect(mapDistancesFor(25_000).map(typed)).toContain('1,2'); // 0,3 km
-    expect(mapDistancesFor(5000).map(typed)).toContain('20'); // 1000 m
-    expect(mapDistancesFor(5000).map(typed)).not.toContain('21'); // 1050 m
+    const shown = (n: number) => mapDistancesFor(n, 'mapToReal').map(typed);
+    expect(shown(10_000)).not.toContain('0,9'); // 0,09 km
+    expect(shown(10_000)).toContain('1'); // 0,1 km
+    expect(shown(25_000)).not.toContain('1,1'); // 0,275 km
+    expect(shown(25_000)).toContain('1,2'); // 0,3 km
+    expect(shown(5000)).toContain('20'); // 1000 m
+    expect(shown(5000)).not.toContain('21'); // 1050 m
   });
 });
 
@@ -233,6 +254,9 @@ describe('scaleQuestion', () => {
     expect(() => scaleQuestion('realToMap', 10_000, decimal('0,5'))).toThrow(RangeError);
     expect(() => scaleQuestion('realToMap', 25_000, decimal('1,1'))).toThrow(RangeError);
     expect(() => scaleQuestion('findScale', 5000, decimal('21'))).toThrow(RangeError);
+    // 9,9 cm on 1 : 250 is 24,75 m: fine to compute, too hard to divide.
+    expect(() => scaleQuestion('mapToReal', 250, decimal('9,9'))).not.toThrow();
+    expect(() => scaleQuestion('realToMap', 250, decimal('9,9'))).toThrow(RangeError);
   });
 });
 
@@ -331,7 +355,7 @@ describe('every supported scale question', () => {
     for (const form of FORMS) {
       for (const n of SCALES) {
         const perCm = centimetresPer(realUnit(n));
-        for (const map of mapDistancesFor(n)) {
+        for (const map of mapDistancesFor(n, form)) {
           const label = `${form} 1 : ${n} with ${typed(map)} cm`;
           // Independent of realDistance: n cm in reality per cm on the map.
           const real = divide(multiply(map, fromInteger(n)), perCm);
@@ -481,6 +505,14 @@ describe('generateScale', () => {
       expect(compare(real, decimal('0,1')), label).toBeGreaterThanOrEqual(0);
       expect(compare(real, fromInteger(1000)), label).toBeLessThanOrEqual(0);
       expect(decimalPlaces(real), label).toBeLessThanOrEqual(2);
+    }
+  });
+
+  it('divides only real distances with at most 1 decimal in real → map', () => {
+    const divided = parsed.filter(({ form }) => form === 'realToMap');
+    expect(divided.length).toBeGreaterThan(200);
+    for (const { n, real, unit } of divided) {
+      expect(decimalPlaces(real), `1 : ${n}, ${typed(real)} ${unit}`).toBeLessThanOrEqual(1);
     }
   });
 

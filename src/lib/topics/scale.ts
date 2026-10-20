@@ -58,30 +58,38 @@ const MAP_DISTANCES: readonly Rational[] = [
 
 const LEAST_REAL_DISTANCE = rational(1n, 10n);
 const MOST_REAL_DISTANCE = fromInteger(1000);
-const MAX_REAL_DECIMALS = 2;
 
-/** In [0,1; 1000] with at most 2 decimals. */
-function isNiceRealDistance(real: Rational): boolean {
+/** At most 2 decimals, and 1 where the real distance has to be divided (spec §5.24). */
+const MAX_REAL_DECIMALS: Readonly<Record<ScaleForm, number>> = {
+  mapToReal: 2,
+  realToMap: 1,
+  findScale: 2,
+};
+
+/** In [0,1; 1000] with at most the decimals of the form. */
+function isNiceRealDistance(form: ScaleForm, real: Rational): boolean {
   const decimals = decimalPlaces(real);
   return (
     decimals !== null &&
-    decimals <= MAX_REAL_DECIMALS &&
+    decimals <= MAX_REAL_DECIMALS[form] &&
     compare(real, LEAST_REAL_DISTANCE) >= 0 &&
     compare(real, MOST_REAL_DISTANCE) <= 0
   );
 }
 
-// Per scale: the map distances whose real distance is nice. Computed once.
-const MAP_DISTANCES_BY_SCALE: ReadonlyMap<number, readonly Rational[]> = new Map(
-  SCALES.map((n): [number, readonly Rational[]] => [
-    n,
-    MAP_DISTANCES.filter((mapCm) => isNiceRealDistance(realDistance(n, mapCm))),
-  ]),
+// Per form and scale: the map distances whose real distance is nice. Computed once.
+const MAP_DISTANCES_BY_SCALE: ReadonlyMap<string, readonly Rational[]> = new Map(
+  FORMS.flatMap((form) =>
+    SCALES.map((n): [string, readonly Rational[]] => [
+      `${form}:${n}`,
+      MAP_DISTANCES.filter((mapCm) => isNiceRealDistance(form, realDistance(n, mapCm))),
+    ]),
+  ),
 );
 
-/** The map distances in cm that give a supported real distance on the scale 1 : n. */
-export function mapDistancesFor(n: number): readonly Rational[] {
-  const distances = MAP_DISTANCES_BY_SCALE.get(n);
+/** The map distances in cm that give a supported real distance for the form on scale 1 : n. */
+export function mapDistancesFor(n: number, form: ScaleForm): readonly Rational[] {
+  const distances = MAP_DISTANCES_BY_SCALE.get(`${form}:${n}`);
   if (distances === undefined) throw new RangeError(`1 : ${n} is not a supported scale`);
   return distances;
 }
@@ -141,10 +149,10 @@ function wording(
 
 /**
  * One exercise of the form: `Schaal 1 : 25 000. 4 cm op de kaart is in het echt ? km`. `mapCm` must
- * be one of `mapDistancesFor(n)`.
+ * be one of `mapDistancesFor(n, form)`.
  */
 export function scaleQuestion(form: ScaleForm, n: number, mapCm: Rational): Question {
-  if (!mapDistancesFor(n).some((candidate) => equals(candidate, mapCm))) {
+  if (!mapDistancesFor(n, form).some((candidate) => equals(candidate, mapCm))) {
     throw new RangeError(`${formatRational(mapCm)} cm on 1 : ${n} is not a supported distance`);
   }
   return {
@@ -201,5 +209,5 @@ export function scaleTip(form: ScaleForm, n: number, mapCm: Rational): Diagnose 
 export function generateScale(rng: Rng): Question {
   const form = pick(rng, FORMS);
   const n = pick(rng, SCALES);
-  return scaleQuestion(form, n, pick(rng, mapDistancesFor(n)));
+  return scaleQuestion(form, n, pick(rng, mapDistancesFor(n, form)));
 }
