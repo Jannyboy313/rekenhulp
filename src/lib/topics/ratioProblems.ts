@@ -265,12 +265,23 @@ export const MIX_CONTEXTS: readonly MixContext[] = [
 const MAX_MIX_TERM = 9;
 const MIN_MIX_PART = 2;
 const MAX_MIX_AMOUNT = 2000;
-/** A total that is given must stay easy to divide: 350, not 357. */
-const MAX_TOTAL_DIGITS = 2;
+/** An amount that is given must stay easy to divide: 350, not 357; 140, not 137. */
+const MAX_GIVEN_DIGITS = 2;
 
 /** The digits of a whole number without its trailing zeros: 350 has 2. */
 function significantDigits(value: number): number {
   return String(value).replace(/0+$/, '').length;
+}
+
+/**
+ * The amount a mixing prompt gives: the 'total' (from the total) or the amount of ingredient 0 or 1
+ * (from one part).
+ */
+export type GivenAmount = 'total' | Index;
+
+/** How many parts the given amount is: all of them for the total, else the term of the ratio. */
+function givenParts(a: number, b: number, given: GivenAmount): number {
+  return given === 'total' ? a + b : termAt(a, b, given);
 }
 
 /** The ratios a : b of a mixing question: terms in [1, 9], the smaller part first if required. */
@@ -294,25 +305,27 @@ function isMixPart(
   a: number,
   b: number,
   part: number,
-  fromTotal: boolean,
+  given: GivenAmount,
 ): boolean {
   if (!Number.isInteger(part) || part < MIN_MIX_PART || part > context.maxPart) return false;
   const total = (a + b) * part;
-  return total <= MAX_MIX_AMOUNT && (!fromTotal || significantDigits(total) <= MAX_TOTAL_DIGITS);
+  const givenAmount = givenParts(a, b, given) * part;
+  return total <= MAX_MIX_AMOUNT && significantDigits(givenAmount) <= MAX_GIVEN_DIGITS;
 }
 
 /**
  * The sizes u of one part that fit the ratio a : b (one of `mixPairsFor`): the total
- * `(a + b) × u` is at most 2000, and from the total it has at most 2 significant digits.
+ * `(a + b) × u` is at most 2000, and the amount that is given (the total, or `a × u` or `b × u`)
+ * has at most 2 significant digits. A part of 2 always fits.
  */
 export function mixPartsFor(
   context: MixContext,
   a: number,
   b: number,
-  fromTotal: boolean,
+  given: GivenAmount,
 ): number[] {
   return range(MIN_MIX_PART, context.maxPart).filter((part) =>
-    isMixPart(context, a, b, part, fromTotal),
+    isMixPart(context, a, b, part, given),
   );
 }
 
@@ -321,12 +334,12 @@ function checkMix(
   a: number,
   b: number,
   part: number,
-  fromTotal: boolean,
+  given: GivenAmount,
 ): void {
   if (!isMixPair(context, a, b)) {
     throw new RangeError(`${a} : ${b} is not a supported ratio for ${context.id}`);
   }
-  if (!isMixPart(context, a, b, part, fromTotal)) {
+  if (!isMixPart(context, a, b, part, given)) {
     throw new RangeError(`A part of ${part} is not supported for ${a} : ${b} in ${context.id}`);
   }
 }
@@ -354,7 +367,7 @@ export function mixFromTotalQuestion(
   part: number,
   asked: Index,
 ): Question {
-  checkMix(context, a, b, part, true);
+  checkMix(context, a, b, part, 'total');
   const total = (a + b) * part;
   const ingredient = context.ingredients[asked];
   const prompt =
@@ -427,7 +440,7 @@ export function mixFromPartQuestion(
   part: number,
   given: Index,
 ): Question {
-  checkMix(context, a, b, part, false);
+  checkMix(context, a, b, part, given);
   const asked = otherIndex(given);
   const prompt =
     `${ratioLine(context, a, b)} Je hebt ${formatInteger(termAt(a, b, given) * part)} ` +
@@ -722,8 +735,8 @@ function generateMix(rng: Rng): Question {
   const context = pick(rng, MIX_CONTEXTS);
   const fromTotal = rng() < 0.5;
   const [a, b] = pick(rng, mixPairsFor(context));
-  const part = pick(rng, mixPartsFor(context, a, b, fromTotal));
   const index = pick(rng, INDEXES);
+  const part = pick(rng, mixPartsFor(context, a, b, fromTotal ? 'total' : index));
   return fromTotal
     ? mixFromTotalQuestion(context, a, b, part, index)
     : mixFromPartQuestion(context, a, b, part, index);

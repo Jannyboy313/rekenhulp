@@ -29,6 +29,7 @@ import {
   stepAmount,
   unitExplanation,
   unitQuestion,
+  type GivenAmount,
   type GroupContext,
   type MixContext,
   type UnitContextId,
@@ -36,6 +37,9 @@ import {
 
 type Index = 0 | 1;
 const INDEXES: readonly Index[] = [0, 1];
+
+/** The amount a mixing prompt gives: the total, or the amount of ingredient 0 or 1. */
+const GIVEN_AMOUNTS: readonly GivenAmount[] = ['total', 0, 1];
 
 function stepOf(question: Question): Step {
   return question.steps[0]!;
@@ -56,6 +60,11 @@ function mixContext(id: MixContext['id']): MixContext {
 /** The term of the ratio a : b at `index`. */
 function termAt(a: number, b: number, index: Index): number {
   return index === 0 ? a : b;
+}
+
+/** The digits of a number without trailing zeros: 350 has 2 significant digits. */
+function significantDigits(value: number): number {
+  return String(value).replace(/0+$/, '').length;
 }
 
 /** What the user types for a value: the digits and the comma, without grouping. */
@@ -525,18 +534,47 @@ describe('mixPartsFor', () => {
   const syrup = mixContext('syrup');
   const paint = mixContext('paint');
 
-  it('allows a part in [2, 200] with a total of at most 2000 from one part', () => {
-    expect(mixPartsFor(syrup, 1, 6, false)).toEqual(range(2, 200));
-    // 17 × 117 = 1989 and 17 × 118 = 2006.
-    expect(mixPartsFor(syrup, 8, 9, false)).toEqual(range(2, 117));
+  it('allows a part in [2, 200] whose given amount has at most 2 digits, from one part', () => {
+    // The given amount is 1 × part for the syrup: 50 and 140, not 137 or 101.
+    const syrupGiven = mixPartsFor(syrup, 1, 6, 0);
+    expect(syrupGiven).toEqual([...range(2, 99), ...range(10, 20).map((tens) => tens * 10)]);
+    expect(syrupGiven).toContain(50);
+    expect(syrupGiven).toContain(140);
+    expect(syrupGiven).not.toContain(137);
+    expect(syrupGiven).not.toContain(101);
+  });
+
+  it('takes the given amount from the ingredient that is given', () => {
+    // 6 × part for the water: 6 × 16 = 96 and 6 × 20 = 120, but 6 × 17 = 102 and 6 × 51 = 306.
+    const waterGiven = mixPartsFor(syrup, 1, 6, 1);
+    expect(waterGiven).toContain(2); // 12
+    expect(waterGiven).toContain(16); // 96
+    expect(waterGiven).toContain(20); // 120
+    expect(waterGiven).toContain(25); // 150
+    expect(waterGiven).toContain(200); // 1200
+    expect(waterGiven).not.toContain(17); // 102
+    expect(waterGiven).not.toContain(51); // 306, while 51 itself is fine for the syrup
+    expect(mixPartsFor(syrup, 1, 6, 0)).toContain(51);
+    expect(mixPartsFor(syrup, 1, 6, 0)).toContain(17);
+  });
+
+  it('keeps the total at most 2000, from one part too', () => {
+    // 17 × 117 = 1989 and 17 × 118 = 2006; 8 × 120 = 960 and 8 × 125 = 1000 are fine amounts.
+    const eightGiven = mixPartsFor(syrup, 8, 9, 0);
+    expect(Math.max(...eightGiven)).toBeLessThanOrEqual(117);
+    expect(eightGiven).toContain(115); // 920, total 1955
+    expect(eightGiven).not.toContain(120); // 960, total 2040
+    expect(eightGiven).not.toContain(125); // 1000, total 2125
   });
 
   it('allows a part up to 20 for paint', () => {
-    expect(mixPartsFor(paint, 3, 2, false)).toEqual(range(2, 20));
+    // 8 × part: 16 … 96 for 2 … 12, then 120 and 160; 9 × part: 18 … 99 for 2 … 11, then 180.
+    expect(mixPartsFor(paint, 8, 9, 0)).toEqual([...range(2, 12), 15, 20]);
+    expect(mixPartsFor(paint, 8, 9, 1)).toEqual([...range(2, 11), 20]);
   });
 
   it('keeps a total of at most 2 significant digits from the total', () => {
-    const fromTotal = mixPartsFor(syrup, 1, 6, true);
+    const fromTotal = mixPartsFor(syrup, 1, 6, 'total');
     expect(fromTotal).toContain(2); // 14
     expect(fromTotal).toContain(50); // 350
     expect(fromTotal).toContain(100); // 700
@@ -544,7 +582,41 @@ describe('mixPartsFor', () => {
     expect(fromTotal).not.toContain(51); // 357
     expect(fromTotal).not.toContain(101); // 707
     expect(fromTotal).not.toContain(150); // 1050
-    expect(mixPartsFor(paint, 8, 9, true)).toEqual([2, 3, 4, 5, 10, 20]);
+    expect(mixPartsFor(paint, 8, 9, 'total')).toEqual([2, 3, 4, 5, 10, 20]);
+  });
+
+  describe('for every context, ratio and given amount', () => {
+    const cases = MIX_CONTEXTS.flatMap((context) =>
+      mixPairsFor(context).flatMap(([a, b]) =>
+        GIVEN_AMOUNTS.map((given) => ({
+          context,
+          a,
+          b,
+          given,
+          label: `${context.id} ${a} : ${b}, given ${given}`,
+        })),
+      ),
+    );
+
+    it('is every part within the size, the total and the digits the spec allows', () => {
+      expect(cases.length).toBeGreaterThan(300);
+      for (const { context, a, b, given, label } of cases) {
+        // Independent of the module: the given amount is the total or one term, times the part.
+        const parts = given === 'total' ? a + b : termAt(a, b, given);
+        const expected = range(2, context.maxPart).filter(
+          (part) => (a + b) * part <= 2000 && significantDigits(parts * part) <= 2,
+        );
+        expect(mixPartsFor(context, a, b, given), label).toEqual(expected);
+      }
+    });
+
+    it('has at least one part, so a question can always be drawn', () => {
+      // A part of 2 always fits: the total is at most 2 × 17 = 34 and no given amount is larger,
+      // so each has at most 2 digits.
+      for (const { context, a, b, given, label } of cases) {
+        expect(mixPartsFor(context, a, b, given), label).toContain(2);
+      }
+    });
   });
 });
 
@@ -656,13 +728,31 @@ describe('mixFromPartQuestion', () => {
 
   it('has no limit on the digits of the total, only on the size', () => {
     const syrup = mixContext('syrup');
+    // The total 357 has 3 digits; 8 : 9 with 115 is 1955 and with 120 is 2040; 220 has 2 digits.
     expect(() => mixFromPartQuestion(syrup, 1, 6, 51, 0)).not.toThrow();
-    expect(() => mixFromPartQuestion(syrup, 8, 9, 117, 1)).not.toThrow();
-    expect(() => mixFromPartQuestion(syrup, 8, 9, 118, 1)).toThrow(RangeError);
+    expect(() => mixFromPartQuestion(syrup, 8, 9, 115, 0)).not.toThrow();
+    expect(() => mixFromPartQuestion(syrup, 8, 9, 120, 0)).toThrow(RangeError);
     expect(() => mixFromPartQuestion(syrup, 1, 6, 1, 0)).toThrow(RangeError);
-    expect(() => mixFromPartQuestion(syrup, 1, 6, 201, 0)).toThrow(RangeError);
+    expect(() => mixFromPartQuestion(syrup, 1, 6, 220, 0)).toThrow(RangeError);
     expect(() => mixFromPartQuestion(syrup, 6, 1, 10, 0)).toThrow(RangeError);
     expect(() => mixFromPartQuestion(mixContext('paint'), 3, 2, 21, 0)).toThrow(RangeError);
+  });
+
+  it('limits the given amount to 2 significant digits', () => {
+    const syrup = mixContext('syrup');
+    const paint = mixContext('paint');
+    // 50 and 140 are fine, 137 is not. The amount that is given counts: 17 is a fine amount of
+    // siroop, but 6 × 17 = 102 is no fine amount of water.
+    expect(() => mixFromPartQuestion(syrup, 1, 6, 50, 0)).not.toThrow();
+    expect(() => mixFromPartQuestion(syrup, 1, 6, 140, 0)).not.toThrow();
+    expect(() => mixFromPartQuestion(syrup, 1, 6, 137, 0)).toThrow(RangeError);
+    expect(() => mixFromPartQuestion(syrup, 1, 6, 17, 0)).not.toThrow();
+    expect(() => mixFromPartQuestion(syrup, 1, 6, 17, 1)).toThrow(RangeError);
+    expect(() => mixFromPartQuestion(syrup, 1, 6, 20, 1)).not.toThrow(); // 120
+    expect(() => mixFromPartQuestion(syrup, 8, 9, 110, 1)).not.toThrow(); // 990, total 1870
+    expect(() => mixFromPartQuestion(syrup, 8, 9, 117, 1)).toThrow(RangeError); // 1053
+    expect(() => mixFromPartQuestion(paint, 8, 9, 15, 0)).not.toThrow(); // 120
+    expect(() => mixFromPartQuestion(paint, 8, 9, 13, 0)).toThrow(RangeError); // 104
   });
 });
 
@@ -800,12 +890,14 @@ describe('every supported mixing question', () => {
   it('accepts its own answer, explains it and recognises the mistakes', () => {
     for (const context of MIX_CONTEXTS) {
       for (const [a, b] of mixPairsFor(context)) {
-        for (const fromTotal of [true, false]) {
-          for (const part of mixPartsFor(context, a, b, fromTotal)) {
-            // Independent of the module: the amounts of the two ingredients and their total.
-            const amounts = [a * part, b * part] as const;
-            const total = amounts[0] + amounts[1];
-            for (const index of INDEXES) {
+        for (const index of INDEXES) {
+          for (const fromTotal of [true, false]) {
+            // The amount that is given: the total, or the amount of ingredient `index`.
+            const parts = mixPartsFor(context, a, b, fromTotal ? 'total' : index);
+            for (const part of parts) {
+              // Independent of the module: the amounts of the two ingredients and their total.
+              const amounts = [a * part, b * part] as const;
+              const total = amounts[0] + amounts[1];
               const variant = fromTotal ? 'total' : 'given';
               const label = `${context.id} ${a} : ${b}, part ${part}, ${variant} ${index}`;
               const otherIndex = index === 0 ? 1 : 0;
@@ -1244,11 +1336,6 @@ describe('generateRatioProblems', () => {
     return match;
   }
 
-  /** The digits of a number without trailing zeros: 350 has 2 significant digits. */
-  function significantDigits(value: number): number {
-    return String(value).replace(/0+$/, '').length;
-  }
-
   function capitalised(text: string): string {
     return text.charAt(0).toUpperCase() + text.slice(1);
   }
@@ -1375,13 +1462,25 @@ describe('generateRatioProblems', () => {
       }
     });
 
-    it('keeps one part within its limit, the total within 2000 and 2 digits from the total', () => {
-      for (const { a, b, part, context, fromTotal, question } of draws) {
+    it('limits the part, the total to 2000 and the given amount to 2 digits', () => {
+      for (const { a, b, part, index, context, fromTotal, question } of draws) {
         const total = (a + b) * part;
         expect(part, question.key).toBeGreaterThanOrEqual(2);
         expect(part, question.key).toBeLessThanOrEqual(context.id === 'paint' ? 20 : 200);
         expect(total, question.key).toBeLessThanOrEqual(2000);
-        if (fromTotal) expect(significantDigits(total), question.key).toBeLessThanOrEqual(2);
+        // The amount that is given: the total, or the amount of ingredient `index` from one part.
+        const given = fromTotal ? total : termAt(a, b, index) * part;
+        expect(significantDigits(given), question.key).toBeLessThanOrEqual(2);
+      }
+    });
+
+    it('writes a given amount of at most 2 significant digits in the prompt', () => {
+      const fromPart = draws.filter(({ fromTotal }) => !fromTotal);
+      expect(fromPart.length).toBeGreaterThan(100);
+      for (const { fromTotal, question } of draws) {
+        const { prompt } = stepOf(question);
+        const written = fromTotal ? matchOf(FROM_TOTAL, prompt)[7] : matchOf(FROM_PART, prompt)[5];
+        expect(significantDigits(Number(written)), prompt).toBeLessThanOrEqual(2);
       }
     });
 
