@@ -46,6 +46,8 @@ function simplifiedPairs(max: number, accept: (a: number, b: number) => boolean)
   );
 }
 
+// Part of the whole
+
 /** The story of a part-of-the-whole question: two groups in a ratio (spec §5.25). */
 export interface GroupContext {
   id: 'class' | 'marbles' | 'audience';
@@ -208,6 +210,8 @@ function partTip(
   };
 }
 
+// Mixing
+
 /** A name with its article: 'siroop' and 'de siroop'. */
 export interface Ingredient {
   name: string;
@@ -290,14 +294,7 @@ export function mixPairsFor(context: MixContext): readonly Pair[] {
 }
 
 function isMixPair(context: MixContext, a: number, b: number): boolean {
-  const termsInRange = [a, b].every((term) => Number.isInteger(term) && term >= 1);
-  return (
-    termsInRange &&
-    Math.max(a, b) <= MAX_MIX_TERM &&
-    a !== b &&
-    gcd(a, b) === 1 &&
-    (!context.smallerFirst || a < b)
-  );
+  return mixPairsFor(context).some(([x, y]) => x === a && y === b);
 }
 
 function isMixPart(
@@ -495,6 +492,8 @@ function mixFromPartTip(
   return (answer) => (equals(answer, total) ? tip : undefined);
 }
 
+// Per unit
+
 export type UnitContextId = 'cheese' | 'petrol' | 'wage';
 const UNIT_CONTEXT_IDS: readonly UnitContextId[] = ['cheese', 'petrol', 'wage'];
 
@@ -551,7 +550,6 @@ const UNIT_SETTINGS: Record<UnitContextId, UnitSettings> = {
 const MAX_UNIT_TABLE_PRICE = fromInteger(200);
 /** The share of the exercises of a context with a `roundAmount` that uses it (spec §5.25). */
 const ROUND_AMOUNT_SHARE = 0.5;
-const FIVE = fromInteger(5);
 const THOUSAND = fromInteger(1000);
 
 /** Whether `value` is a whole multiple of `unit`. */
@@ -595,9 +593,10 @@ export function formatAmount(context: UnitContextId, amount: Rational): string {
  * amounts are multiples of 5, otherwise 1 L. Amounts are in counting units.
  */
 export function stepAmount(context: UnitContextId, first: Rational, second: Rational): Rational {
-  const fiveLitres =
-    context === 'petrol' && isWholeMultiple(first, FIVE) && isWholeMultiple(second, FIVE);
-  return fiveLitres ? FIVE : ONE;
+  const { roundAmount } = UNIT_SETTINGS[context];
+  if (roundAmount === undefined) return ONE;
+  const round = fromInteger(roundAmount);
+  return isWholeMultiple(first, round) && isWholeMultiple(second, round) ? round : ONE;
 }
 
 /** Why the exercise is not a supported one (spec §5.25), or null when it is. */
@@ -729,6 +728,8 @@ export function inverseTip(
       `dus ${verb} ${comparison} dan ${formatEuro(firstPrice)}.`,
   );
 }
+
+// Generators
 
 /** `In een klas is jongens : meisjes = 2 : 3. Welk deel van de klas is jongen?` */
 function generatePart(rng: Rng): Question {

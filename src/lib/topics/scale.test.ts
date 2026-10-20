@@ -122,7 +122,7 @@ describe('mapDistancesFor', () => {
       for (const map of mapDistancesFor(n)) {
         expect(compare(map, decimal('0,5')), `${n}: ${typed(map)}`).toBeGreaterThanOrEqual(0);
         expect(compare(map, fromInteger(30)), `${n}: ${typed(map)}`).toBeLessThanOrEqual(0);
-        expect(decimalPlaces(map)).toBeLessThanOrEqual(1);
+        expect(decimalPlaces(map), `${n}: ${typed(map)}`).toBeLessThanOrEqual(1);
         const digits = typed(map).replace(',', '').replace(/^0+/, '');
         expect(digits.length, `${n}: ${typed(map)}`).toBeLessThanOrEqual(2);
       }
@@ -466,7 +466,7 @@ describe('generateScale', () => {
     for (const { map, n } of parsed) {
       expect(compare(map, decimal('0,5')), `${n}: ${typed(map)}`).toBeGreaterThanOrEqual(0);
       expect(compare(map, fromInteger(30)), `${n}: ${typed(map)}`).toBeLessThanOrEqual(0);
-      expect(decimalPlaces(map)).toBeLessThanOrEqual(1);
+      expect(decimalPlaces(map), `${n}: ${typed(map)}`).toBeLessThanOrEqual(1);
       const digits = typed(map).replace(',', '').replace(/^0+/, '');
       expect(digits.length, `${n}: ${typed(map)}`).toBeLessThanOrEqual(2);
     }
