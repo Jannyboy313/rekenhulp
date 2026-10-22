@@ -41,7 +41,8 @@
     --correct: #4ade80;
     --correct-bg: #14532d;
     --wrong: #f87171;
-    --wrong-bg: #7f1d1d;
+    /* Dark enough for --wrong text (the stop button) to reach 4.5:1. */
+    --wrong-bg: #450a0a;
   }
 }
 

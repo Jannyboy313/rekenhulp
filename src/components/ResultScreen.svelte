@@ -131,8 +131,9 @@
     font-weight: 600;
   }
 
+  /* Not --muted: that is below 4.5:1 on --wrong-bg. */
   .explanation {
-    color: var(--muted);
+    color: var(--text);
   }
 
   .actions {

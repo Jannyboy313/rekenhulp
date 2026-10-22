@@ -132,9 +132,10 @@
     font-size: 1.25rem;
   }
 
+  /* Not --muted: that is below 4.5:1 on --wrong-bg. */
   dt {
     text-align: right;
-    color: var(--muted);
+    color: var(--text);
   }
 
   dd {
