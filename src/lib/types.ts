@@ -49,7 +49,7 @@ export interface CheckResult {
 export interface Step {
   kind: AnswerKind;
   prompt: string;
-  /** Fixed unit shown before the input: '€'. */
+  /** Fixed unit shown before the input: '€', or '1 :' for a scale. */
   prefix?: string;
   /** Fixed unit shown after the input, e.g. 'cm³' or '%'. */
   suffix?: string;

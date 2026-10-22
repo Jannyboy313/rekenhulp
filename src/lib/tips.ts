@@ -48,7 +48,7 @@ export function powerOfTenShift(given: Rational, answer: Rational): number | nul
   return k === null ? null : -k;
 }
 
-/** The fallback tip of number and fraction steps: a factor 10, 100, … off. */
+/** The fallback tip of number, fraction and scientific steps: a factor 10, 100, … off. */
 export function powerOfTenTip(given: Rational, answer: Rational): string | undefined {
   const shift = powerOfTenShift(given, answer);
   if (shift === null) return undefined;

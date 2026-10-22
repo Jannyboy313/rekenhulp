@@ -19,7 +19,7 @@ export function formatInteger(value: number | bigint): string {
   return (negative ? MINUS : '') + groupDigits((negative ? -big : big).toString());
 }
 
-/** Formats a terminating decimal in Dutch notation; throws for e.g. 1/3 (fractions come in v2). */
+/** Formats a terminating decimal in Dutch notation; throws for e.g. 1/3. */
 export function formatRational(value: Rational): string {
   const decimals = finiteDecimalPlaces(value);
   if (decimals > MAX_DECIMALS) throw new RangeError(`Too many decimals: ${decimals}`);

@@ -16,8 +16,8 @@ an overview at the end.
 - No persistence at all, including localStorage. Every app start uses defaults.
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty
-- Only the topics marked v1 in §4 are in scope for v1. v2 and v3 are on the roadmap (§12), and
-  the architecture must make adding them cheap.
+- The v1 topics and the completed v2 sets in §4 are implemented. The rest of v2 and v3 are on
+  the roadmap (§12), and the architecture must make adding them cheap.
 
 ## 2. Platform & stack
 
@@ -356,8 +356,8 @@ in the place of OK.
   feedback screen and the results do not show the scratchpad. Nothing is stored.
 - **Accessibility:** cells are buttons labelled `Kladblok vak 1: 900` (or `leeg`), with
   `aria-pressed` for the active cell. A fraction in the label reads `3/4`, a mixed number
-  `1 en 2/3`, as elsewhere. The spatie key shows `␣` and is labelled `spatie`; `=` is labelled
-  `is`.
+  `1 en 2/3`, as elsewhere (§8). The spatie key shows `␣` and is labelled `spatie`; `=` is
+  labelled `is`.
 - To make room, keypad keys are 3 rem (48 px) high instead of 3.5 rem.
 
 ## 4. Practice sets & session composition
@@ -431,7 +431,7 @@ Examples with `n = 15`:
   chosen at random.
 - **Verhoudingen:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen
   at random.
-- **Meten:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is chosen at
+- **Meten:** `r = 13` over 7 topics, so 2 + 2 + 2 + 2 + 2 + 2 + 1. The topic with 1 is chosen at
   random.
 - **Getalbegrip:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen at
   random.
@@ -1329,7 +1329,8 @@ There are three forms, each picked with equal probability:
   - wage: `Voor 4 uur werk krijg je € 60. Hoeveel voor 2,5 uur?` Amounts are whole or half hours
     in `[1, 10]`. The wage is a whole number of euros in `[10, 25]` per hour. Step: 1 uur.
   - Neither amount is a whole multiple of the other, and neither equals the step, so the step is
-    needed. The answer is at most `€ 200`, money formatting as in §8.
+    needed. Both prices, the given one and the answer, are at most `€ 200`, money formatting as
+    in §8.
   - Explanation: the ratio table, `1,5 kg → € 12, 100 g → € 0,80, 400 g → € 3,20`.
 - The de-duplication key is the form, the context and the numbers.
 
@@ -1454,8 +1455,9 @@ The keypad is custom. The system keyboard is never opened.
   gives "Ongeldige notatie" and does not count as the attempt. A plain number (`4500000`) is
   valid input; it is judged wrong with a tip when its value is right (§5.19). Parsing is a small
   dedicated parser next to `parseFactorization`, not `lib/expr`.
-- Units are shown next to the input field, and the user never types them. `€` is a fixed
-  prefix (`€ 45`); other units (`%`, `cm³`, …) are a fixed suffix.
+- Units are shown next to the input field, and the user never types them. `€` and `1 :` (the
+  find-the-scale form of §5.24) are fixed prefixes (`€ 45`, `1 : 25 000`); other units (`%`,
+  `cm³`, …) are a fixed suffix.
 - While the input is empty, the field shows `…` in the muted colour as a placeholder. Empty
   fraction slots show the same placeholder.
 - Keys act on press (`pointerdown`), not on release, and show a pressed state on every
@@ -1612,7 +1614,8 @@ Required test cases (accept ✔ / reject ✘):
     Strings keep the text form `a/b` (and the glyph `½` in `12½%`). Only the UI renders them
     stacked, with a hidden `/` so screen readers still read a fraction.
   - mixed numbers show the whole part at normal height next to the stacked fraction: `12½%`
-    is rendered as `12` with a stacked `1/2`
+    is rendered as `12` with a stacked `1/2`. Next to the hidden `/`, a hidden ` en ` between
+    the whole part and the fraction makes screen readers read `12 en 1/2`.
   - an expected answer with an improper value is a mixed number: `1 5/12` (§6)
   - a `?` can take the place of the numerator or the denominator (`3/4 = ?/12`); it is drawn
     stacked like a digit
@@ -1724,7 +1727,8 @@ in each set's own spec iteration.
    - `guessAndCheck`: chickens and rabbits, and two numbers from their sum and difference.
    - `simplifyProblem`: Gauss sums, counting numbers with a property, and figure patterns
      described in words (`figuur n heeft 3n + 1 lucifers`).
-   - Infrastructure: long prompts must leave the keypad on screen (§3.3).
+   - Infrastructure: none; check the longest prompts on a phone (the prompt sizes of §3.3 and
+     the scrolling prompt of §2).
    - This set comes last because it combines the skills of the other sets.
 
 Why this order: Getalbegrip is the largest domain in the RWT mental-arithmetic part and needs

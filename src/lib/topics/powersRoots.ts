@@ -21,7 +21,7 @@ import { numberStep } from '../steps';
 import { powerOfTenShift, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
-// Powers and roots (spec §5.18). Squares of whole numbers 2 to 25 stay in `squares` (§5.7).
+// Powers and roots (spec §5.18). Extends `squares` (§5.7); scaled roots may overlap with it.
 export const POWER_FORMS = ['wholePower', 'decimalPower', 'negativeExponent', 'root'] as const;
 export type PowerForm = (typeof POWER_FORMS)[number];
 

@@ -2,7 +2,7 @@ import { splitFractions } from './fractionText';
 
 type PromptSize = 'large' | 'medium' | 'small';
 
-// Estimates; adjust after the phone check (spec §3.3).
+// Checked on a phone on 2026-10-22 (spec §3.3).
 const LARGE_MAX = 18;
 const MEDIUM_MAX = 40;
 

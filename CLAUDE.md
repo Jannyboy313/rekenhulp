@@ -23,16 +23,18 @@ and Breuken & kommagetallen, plus stacked fractions, the kladblok (§3.6), repea
 Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
 says so:
 
-| #   | Set                                                                                                  | New infrastructure                          |
-| --- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| 9   | **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`                                     | figures described in words                  |
-| 10  | **Verbanden & statistiek**: `statistics`, `sequences`, `formulas`, `equations`, `probability`        | —                                           |
-| 11  | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                              | text answer kind with letter keys           |
-| 12  | **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem` | long prompts must keep the keypad on screen |
-| —   | v3: multiple choice, calculator problems (§12.2)                                                     | multiple-choice answer kind                 |
+| Set                                                                                                  | New infrastructure                   |
+| ---------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`                                     | figures described in words           |
+| **Verbanden & statistiek**: `statistics`, `sequences`, `formulas`, `equations`, `probability`        | —                                    |
+| **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                              | text answer kind with letter keys    |
+| **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem` | check the longest prompts on a phone |
+| v3: multiple choice, calculator problems (§12.2)                                                     | multiple-choice answer kind          |
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
-`lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`.
+`lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`. A new `AnswerKind`
+also needs a `KeypadStates` entry and an `INPUT_MODELS` entry in `lib/inputModels.ts`, and a
+reducer in `lib/keypadInput.ts`.
 
 ## Workflow
 
@@ -129,11 +131,13 @@ src/
     random.ts           seedable RNG; every generator takes an rng argument; drawUntil redraws
                         until all rules of an exercise hold
     steps.ts            step factories (number, fraction, simplest fraction, boolean,
-                        factorization, rewrite, scientific) and all answer parsing and checking
+                        factorization, rewrite, scientific), answer checking, and parsing of
+                        factorization and scientific input (number and fraction parsing is in
+                        rational.ts)
     keypadInput.ts      pure key → input reducers per answer kind
     keys.ts             key catalogue (label, aria label) and keyDefs; keypads list key names
-                        one grid row per line. A new key: widen KeypadKey, add it to KEYS,
-                        handle it in the reducers that should accept it
+                        one grid row per line. A new key: widen KeypadKey (in keypadInput.ts),
+                        add it to KEYS, handle it in the reducers that should accept it
     inputModels.ts      per answer kind: keys, columns, typing state, reducer, validate,
                         display, view
     scratchpad.ts       kladblok: cell count, keys, typing, when shown
@@ -146,7 +150,9 @@ src/
                         repeats (insertRepeat)
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
     wakeLock.ts         keeps the screen on while PlayScreen is mounted
-    tips.ts             Diagnose type, firstTip, factor-of-ten tip (fallback of number steps)
+    tips.ts             Diagnose type, firstTip, moneyTip (cents-rounding exception),
+                        powerOfTenShift, factor-of-ten tip (fallback of number, fraction and
+                        scientific steps)
     format.ts           Dutch number/expression formatting
     rational.ts         exact bigint fractions (expressions, unit conversions, input parsing)
     expr/               tokenizer, parser, evaluate, format, reduce (evaluation steps), chains,
@@ -154,9 +160,10 @@ src/
     topics/             one generator module per topic + index.ts (registry and labels)
 ```
 
-- A topic generator is a pure function `(rng) => Question`. `Question.check(input)` returns
-  `{ correct, expected, tip?, explanation? }`. Each generator passes a `diagnose` to its step for
-  tips; a tip fires only when the answer equals exactly what that mistake produces.
+- A topic generator is a pure function `(rng) => Question`. Each of its steps has a check:
+  `Step.check(input)` returns `{ correct, expected, tip?, explanation? }`. Each generator passes
+  a `diagnose` to its step for tips; a tip fires only when the answer equals exactly what that
+  mistake produces.
 - Keep `lib/` free of Svelte imports so it is unit-testable in plain Node.
 
 ## Domain rules (do not get these wrong)

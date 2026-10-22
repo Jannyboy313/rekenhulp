@@ -96,7 +96,7 @@ export function applyFractionKey(state: FractionInput, key: KeypadKey): Fraction
       if (template.slot === 'den') return selectFractionSlot(state, 'num');
       return template.den === '' ? { ...state, template: null } : state;
     default:
-      // Only digits go into a slot; the comma and the factorization keys are ignored.
+      // Only digits go into a slot; any other key is ignored.
       return /^\d$/.test(key) && active.length < MAX_SLOT_LENGTH
         ? withActiveSlot(state, template, active + key)
         : state;
