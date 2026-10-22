@@ -131,33 +131,38 @@ function isNiceTrip(trip: Trip): boolean {
   );
 }
 
-function tripsOf(context: SpeedContext): readonly Trip[] {
-  return CONTEXT_SPEEDS[context]
-    .flatMap((speed) =>
-      PROMPT_DURATIONS.map((duration) => ({
-        context,
-        speed,
-        duration,
-        distance: multiply(fromInteger(speed), hoursOf(duration)),
-      })),
-    )
-    .filter(isNiceTrip);
+/** The trips of each speed of a context: the speed is drawn first, then a trip (spec §5.26). */
+type TripsBySpeed = ReadonlyMap<number, readonly Trip[]>;
+
+function bySpeed(context: SpeedContext, tripsOf: (speed: number) => readonly Trip[]): TripsBySpeed {
+  return new Map(CONTEXT_SPEEDS[context].map((speed) => [speed, tripsOf(speed)]));
+}
+
+function promptTripsOf(context: SpeedContext): TripsBySpeed {
+  return bySpeed(context, (speed) =>
+    PROMPT_DURATIONS.map((duration) => ({
+      context,
+      speed,
+      duration,
+      distance: multiply(fromInteger(speed), hoursOf(duration)),
+    })).filter(isNiceTrip),
+  );
 }
 
 // Per context: the trips that suit both the speed and the distance form. Computed once.
-const TRIPS: Readonly<Record<SpeedContext, readonly Trip[]>> = {
-  wandelen: tripsOf('wandelen'),
-  fietsen: tripsOf('fietsen'),
-  auto: tripsOf('auto'),
-  trein: tripsOf('trein'),
+const TRIPS: Readonly<Record<SpeedContext, TripsBySpeed>> = {
+  wandelen: promptTripsOf('wandelen'),
+  fietsen: promptTripsOf('fietsen'),
+  auto: promptTripsOf('auto'),
+  trein: promptTripsOf('trein'),
 };
 
 /**
- * Trips with a prompt duration whose ratio table has at most 1 decimal everywhere, distance in
- * [0,5; MAX_DISTANCE]. The same candidates serve the speed and the distance form.
+ * Trips of a speed with a prompt duration whose ratio table has at most 1 decimal everywhere,
+ * distance in [0,5; MAX_DISTANCE]. The same candidates serve the speed and the distance form.
  */
-export function promptTrips(context: SpeedContext): readonly Trip[] {
-  return TRIPS[context];
+export function promptTrips(context: SpeedContext, speed: number): readonly Trip[] {
+  return TRIPS[context].get(speed) ?? [];
 }
 
 /** `Je fietst 6 km in 20 min. Hoe snel is dat?` (suffix km/u) or the distance form (suffix km). */
@@ -197,7 +202,7 @@ export function travelExplanation(form: TravelForm, trip: Trip): string {
 /**
  * The mistake with minutes (spec §3.4.1): the speed form divides the distance by the minutes
  * (`6 : 20 = 0,3`), the distance form multiplies the speed by the minutes (`80 × 45 = 3600`).
- * Hours have no such mistake. The tip replaces the factor-of-ten fallback.
+ * Hours have no such mistake. The tip is tried before the factor-of-ten fallback.
  */
 export function travelTip(form: TravelForm, trip: Trip): Diagnose {
   const { speed, duration, distance } = trip;
@@ -233,32 +238,18 @@ function timeAnswer(hours: Rational): Duration | null {
   );
 }
 
-/** The time of gcd(speed, distance) km: the step of the ratio table of the time form. */
-function timeStep({ speed, distance, duration }: Trip): Duration {
-  const km = fromInteger(gcd(speed, Number(distance.num)));
-  return inUnit(divide(km, fromInteger(speed)), duration.unit);
-}
-
-/** The step is a whole number of minutes, or of half hours. */
-function hasWholeStep(trip: Trip): boolean {
-  const { amount, unit } = timeStep(trip);
-  return isInteger(unit === 'min' ? amount : multiply(amount, fromInteger(2)));
-}
-
-function timeTripsOf(context: SpeedContext): readonly Trip[] {
-  return CONTEXT_SPEEDS[context]
-    .flatMap((speed) =>
-      range(1, MAX_DISTANCE[context]).flatMap((km): Trip[] => {
-        const distance = fromInteger(km);
-        const duration = timeAnswer(divide(distance, fromInteger(speed)));
-        return duration === null ? [] : [{ context, speed, duration, distance }];
-      }),
-    )
-    .filter(hasWholeStep);
+function timeTripsOf(context: SpeedContext): TripsBySpeed {
+  return bySpeed(context, (speed) =>
+    range(1, MAX_DISTANCE[context]).flatMap((km): Trip[] => {
+      const distance = fromInteger(km);
+      const duration = timeAnswer(divide(distance, fromInteger(speed)));
+      return duration === null ? [] : [{ context, speed, duration, distance }];
+    }),
+  );
 }
 
 // Per context: the trips of the time form. Computed once.
-const TIME_TRIPS: Readonly<Record<SpeedContext, readonly Trip[]>> = {
+const TIME_TRIPS: Readonly<Record<SpeedContext, TripsBySpeed>> = {
   wandelen: timeTripsOf('wandelen'),
   fietsen: timeTripsOf('fietsen'),
   auto: timeTripsOf('auto'),
@@ -266,11 +257,12 @@ const TIME_TRIPS: Readonly<Record<SpeedContext, readonly Trip[]>> = {
 };
 
 /**
- * A trip whose time is the answer: in whole minutes in [5, 59], or in hours from
- * {1,5; 2; 2,5; 3; 4}. The distance is a whole number of km in [1, MAX_DISTANCE].
+ * Trips of a speed whose time is the answer: in whole minutes in [5, 59], or in hours from
+ * {1,5; 2; 2,5; 3; 4}. The distance is a whole number of km in [1, MAX_DISTANCE]. The step of the
+ * ratio table is then a whole number of minutes, or of half hours.
  */
-export function timeTrips(context: SpeedContext): readonly Trip[] {
-  return TIME_TRIPS[context];
+export function timeTrips(context: SpeedContext, speed: number): readonly Trip[] {
+  return TIME_TRIPS[context].get(speed) ?? [];
 }
 
 /** `Je wandelt 5 km/u. Hoe lang doe je over 2 km?`, suffix the unit of trip.duration. */
@@ -303,7 +295,9 @@ export function timeExplanation(trip: Trip): string {
   const step = fromInteger(gcd(speed, Number(distance.num)));
   const rows = [
     { km: first, time: inUnit(ONE, duration.unit) },
-    ...(equals(step, first) || equals(step, distance) ? [] : [{ km: step, time: timeStep(trip) }]),
+    ...(equals(step, first) || equals(step, distance)
+      ? []
+      : [{ km: step, time: inUnit(divide(step, first), duration.unit) }]),
     { km: distance, time: duration },
   ];
   return rows
@@ -373,14 +367,18 @@ export function speedConversionQuestion(
 export type SpeedForm = TravelForm | 'time' | 'conversion';
 const FORMS: readonly SpeedForm[] = ['speed', 'distance', 'time', 'conversion'];
 
-/** The four forms equally likely, the context for the first three, the direction 50/50. */
+/**
+ * The four forms equally likely; for the first three the context, then a speed of it, then a trip
+ * with that speed, each equally likely. The direction of the conversion is 50/50.
+ */
 export function generateSpeed(rng: Rng): Question {
   const form = pick(rng, FORMS);
   if (form === 'conversion') {
     return speedConversionQuestion(pick(rng, [true, false]), pick(rng, METRES_PER_SECOND));
   }
   const context = pick(rng, CONTEXTS);
+  const speed = pick(rng, CONTEXT_SPEEDS[context]);
   return form === 'time'
-    ? timeQuestion(pick(rng, timeTrips(context)))
-    : travelQuestion(form, pick(rng, promptTrips(context)));
+    ? timeQuestion(pick(rng, timeTrips(context, speed)))
+    : travelQuestion(form, pick(rng, promptTrips(context, speed)));
 }

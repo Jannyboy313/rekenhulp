@@ -89,7 +89,21 @@ function askConversion(toMetresPerSecond: boolean, metresPerSecond: number, inpu
   return stepOf(speedConversionQuestion(toMetresPerSecond, metresPerSecond)).check(input);
 }
 
-const FORMS: readonly TravelForm[] = ['speed', 'distance'];
+/** The candidates of every speed of a context. */
+function allPromptTrips(context: SpeedContext): Trip[] {
+  return CONTEXT_SPEEDS[context].flatMap((speed) => promptTrips(context, speed));
+}
+
+function allTimeTrips(context: SpeedContext): Trip[] {
+  return CONTEXT_SPEEDS[context].flatMap((speed) => timeTrips(context, speed));
+}
+
+/** The speed in km/u of a speed in m/s, exactly: × 3,6. */
+function kmhOf(metresPerSecond: number): Rational {
+  return multiply(fromInteger(metresPerSecond), rational(18n, 5n));
+}
+
+const TRAVEL_FORMS: readonly TravelForm[] = ['speed', 'distance'];
 const SPEED_FORMS: readonly SpeedForm[] = ['speed', 'distance', 'time', 'conversion'];
 
 const TIP_PER_HOUR = 'km/u is per uur: reken eerst uit hoeveel km je in 60 min aflegt.';
@@ -158,15 +172,23 @@ describe('promptTrips', () => {
     ['trein', 150, '4 uur', null], // 600 km > 500
     ['fietsen', 15, '2,5 uur', '37,5'],
   ])('%s at %i km/u for %s: distance %s', (context, speed, time, distance) => {
-    const found = promptTrips(context).find(
-      (trip) => trip.speed === speed && timeText(trip.duration) === time,
-    );
+    const found = promptTrips(context, speed).find((trip) => timeText(trip.duration) === time);
     expect(found === undefined ? null : formatRational(found.distance)).toBe(distance);
+  });
+
+  it('has a candidate with that speed for every speed of every context', () => {
+    for (const context of CONTEXTS) {
+      for (const speed of CONTEXT_SPEEDS[context]) {
+        const trips = promptTrips(context, speed);
+        expect(trips.length, `${context} ${speed}`).toBeGreaterThan(0);
+        for (const trip of trips) expect(trip.speed, `${context} ${speed}`).toBe(speed);
+      }
+    }
   });
 
   it('has candidates with minutes and with hours for every context', () => {
     for (const context of CONTEXTS) {
-      const units = new Set(promptTrips(context).map((trip) => trip.duration.unit));
+      const units = new Set(allPromptTrips(context).map((trip) => trip.duration.unit));
       expect([...units].sort(), context).toEqual(['min', 'uur']);
     }
   });
@@ -174,7 +196,7 @@ describe('promptTrips', () => {
   it('keeps the context, speed and time of every trip, and the distance in [0,5; maximum]', () => {
     for (const context of CONTEXTS) {
       const farthest = fromInteger(MAX_DISTANCE[context]);
-      for (const trip of promptTrips(context)) {
+      for (const trip of allPromptTrips(context)) {
         const { speed, duration: time, distance } = trip;
         const label = `${context} ${speed} km/u, ${timeText(time)}`;
         expect(trip.context, label).toBe(context);
@@ -189,9 +211,9 @@ describe('promptTrips', () => {
 
   it('has at most 1 decimal in every row of the ratio table', () => {
     for (const context of CONTEXTS) {
-      for (const trip of promptTrips(context)) {
+      for (const trip of allPromptTrips(context)) {
         const label = `${context} ${trip.speed} km/u, ${timeText(trip.duration)}`;
-        for (const form of FORMS) {
+        for (const form of TRAVEL_FORMS) {
           for (const [, km] of travelExplanation(form, trip).matchAll(/→ (\S+) km/gu)) {
             expect(decimalPlaces(decimal(km!)), label).toBeLessThanOrEqual(1);
           }
@@ -318,22 +340,32 @@ describe('timeTrips', () => {
     ['auto', 60, 210, null], // 3,5 uur is not in the list
     ['wandelen', 6, 30, null], // 30 km > 20
   ])('%s at %i km/u over %i km: time %s', (context, speed, km, time) => {
-    const found = timeTrips(context).find(
-      (trip) => trip.speed === speed && compare(trip.distance, fromInteger(km)) === 0,
+    const found = timeTrips(context, speed).find(
+      (trip) => compare(trip.distance, fromInteger(km)) === 0,
     );
     expect(found === undefined ? null : timeText(found.duration)).toBe(time);
   });
 
+  it('has a candidate with that speed for every speed of every context', () => {
+    for (const context of CONTEXTS) {
+      for (const speed of CONTEXT_SPEEDS[context]) {
+        const trips = timeTrips(context, speed);
+        expect(trips.length, `${context} ${speed}`).toBeGreaterThan(0);
+        for (const trip of trips) expect(trip.speed, `${context} ${speed}`).toBe(speed);
+      }
+    }
+  });
+
   it('has candidates with minutes and with hours for every context', () => {
     for (const context of CONTEXTS) {
-      const units = new Set(timeTrips(context).map((trip) => trip.duration.unit));
+      const units = new Set(allTimeTrips(context).map((trip) => trip.duration.unit));
       expect([...units].sort(), context).toEqual(['min', 'uur']);
     }
   });
 
   it('has a whole distance in [1; maximum] and the time distance ÷ speed', () => {
     for (const context of CONTEXTS) {
-      for (const trip of timeTrips(context)) {
+      for (const trip of allTimeTrips(context)) {
         const { speed, duration: time, distance } = trip;
         const label = `${context} ${speed} km/u, ${formatRational(distance)} km`;
         expect(trip.context, label).toBe(context);
@@ -349,7 +381,7 @@ describe('timeTrips', () => {
   it('asks minutes as a whole number in [5, 59] and hours from the list', () => {
     const hours = PROMPT_DURATIONS.filter(({ unit }) => unit === 'uur').map(timeText);
     for (const context of CONTEXTS) {
-      for (const { duration: time, speed, distance } of timeTrips(context)) {
+      for (const { duration: time, speed, distance } of allTimeTrips(context)) {
         const label = `${context} ${speed} km/u, ${formatRational(distance)} km`;
         if (time.unit === 'min') {
           expect(time.amount.den, label).toBe(1n);
@@ -364,7 +396,7 @@ describe('timeTrips', () => {
 
   it('has whole minutes, or whole half hours, in every row of the ratio table', () => {
     for (const context of CONTEXTS) {
-      for (const trip of timeTrips(context)) {
+      for (const trip of allTimeTrips(context)) {
         const label = `${context} ${trip.speed} km/u, ${formatRational(trip.distance)} km`;
         for (const [, amount, unit] of timeExplanation(trip).matchAll(/→ (\S+) (min|uur)/gu)) {
           const value = decimal(amount!);
@@ -445,6 +477,7 @@ describe('timeTipFor', () => {
     ['trein', 120, 300, '2,5 uur', '150', 'Dat is in minuten; gevraagd zijn uren: 150 : 60 = 2,5.'],
     ['trein', 120, 300, '2,5 uur', '1,5', TIP_HUNDRED],
     ['trein', 120, 300, '2,5 uur', '2,3', '30 min is 0,5 uur, niet 0,3 uur.'],
+    ['wandelen', 5, 2, '24 min', '4', '0,4 uur is 24 min, niet 4 min.'],
     ['fietsen', 24, 10, '25 min', '0,4', undefined], // 25 min = 5/12 uur: must not throw
     ['wandelen', 5, 2, '24 min', '2,4', TIP_FACTOR_TEN_SMALL],
     ['wandelen', 5, 2, '24 min', '240', TIP_FACTOR_TEN],
@@ -457,7 +490,7 @@ describe('timeTipFor', () => {
 
   it('never throws for a typed answer, whatever the trip', () => {
     for (const context of CONTEXTS) {
-      for (const trip of timeTrips(context)) {
+      for (const trip of allTimeTrips(context)) {
         const minutes = multiply(hoursOf(trip.duration), fromInteger(60));
         const inputs = [decimal('0,4'), decimal('2,3'), fromInteger(150), minutes];
         for (const given of inputs) expect(() => timeTipFor(trip)(given)).not.toThrow();
@@ -653,8 +686,8 @@ describe('generateSpeed', () => {
     const toMetresPerSecond = direction === 'to-ms';
     const match = matchOf(toMetresPerSecond ? TO_MS_PROMPT : TO_KMH_PROMPT, prompt);
     const given = Number(match[1]);
-    expect(given, prompt).toBe(
-      toMetresPerSecond ? (Number(metresPerSecond) * 36) / 10 : Number(metresPerSecond),
+    expect(fromInteger(given), prompt).toEqual(
+      toMetresPerSecond ? kmhOf(Number(metresPerSecond)) : fromInteger(Number(metresPerSecond)),
     );
     return { toMetresPerSecond, metresPerSecond: Number(metresPerSecond), question };
   }
@@ -704,7 +737,7 @@ describe('generateSpeed', () => {
       expect(stepOf(question).kind).toBe('number');
       expect(question.steps, question.key).toHaveLength(1);
       expect(answerOf(question), question.key).toEqual(
-        fromInteger(toMetresPerSecond ? metresPerSecond : (metresPerSecond * 36) / 10),
+        toMetresPerSecond ? fromInteger(metresPerSecond) : kmhOf(metresPerSecond),
       );
     }
   });
@@ -728,6 +761,17 @@ describe('generateSpeed', () => {
     }
   });
 
+  it('uses every speed of a context about equally often', () => {
+    for (const context of CONTEXTS) {
+      const inContext = parsed.filter((one) => one.context === context);
+      const speeds = CONTEXT_SPEEDS[context];
+      for (const speed of speeds) {
+        const used = inContext.filter((one) => one.speed === speed).length;
+        expect(used, `${context} ${speed}`).toBeGreaterThan(inContext.length / speeds.length / 3);
+      }
+    }
+  });
+
   it('uses times in minutes and in hours in the speed and distance forms', () => {
     for (const unit of ['min', 'uur']) {
       const used = parsed.filter((one) => one.form !== 'time' && one.time.unit === unit).length;
@@ -747,7 +791,8 @@ describe('generateSpeed', () => {
     const hours = PROMPT_DURATIONS.filter(({ unit }) => unit === 'uur').map(timeText);
     const asked = parsed.filter(({ form }) => form === 'time');
     for (const unit of ['min', 'uur']) {
-      expect(asked.filter(({ time }) => time.unit === unit).length, unit).toBeGreaterThan(50);
+      const used = asked.filter(({ time }) => time.unit === unit).length;
+      expect(used, unit).toBeGreaterThanOrEqual(20);
     }
     for (const { time, question } of asked) {
       if (time.unit === 'uur') {
