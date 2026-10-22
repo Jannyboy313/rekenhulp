@@ -1,6 +1,6 @@
 import { formatFraction, formatRational } from '../format';
 import { gcd } from '../primes';
-import { pick, type Rng } from '../random';
+import { pick, range, type Rng } from '../random';
 import {
   compare,
   decimalPlaces,
@@ -14,8 +14,9 @@ import {
   type Rational,
 } from '../rational';
 import { numberStep } from '../steps';
-import type { Diagnose } from '../tips';
+import { firstTip, type Diagnose } from '../tips';
 import type { Question } from '../types';
+import { HOUR, MINUTE, timeTip } from './measurement';
 
 export type SpeedContext = 'wandelen' | 'fietsen' | 'auto' | 'trein';
 export const CONTEXTS: readonly SpeedContext[] = ['wandelen', 'fietsen', 'auto', 'trein'];
@@ -34,12 +35,33 @@ export const MAX_DISTANCE: Readonly<Record<SpeedContext, number>> = {
   trein: 500,
 };
 
-/** The start of a prompt and how the distance is asked, per context. */
-const WORDING: Readonly<Record<SpeedContext, { subject: string; howFar: string }>> = {
-  wandelen: { subject: 'Je wandelt', howFar: 'Hoeveel km loop je' },
-  fietsen: { subject: 'Je fietst', howFar: 'Hoeveel km fiets je' },
-  auto: { subject: 'Een auto rijdt', howFar: 'Hoeveel km rijdt de auto' },
-  trein: { subject: 'Een trein rijdt', howFar: 'Hoeveel km rijdt de trein' },
+/** The start of a prompt and how the distance and the time are asked, per context. */
+interface Wording {
+  subject: string;
+  howFar: string;
+  howLong: string;
+}
+const WORDING: Readonly<Record<SpeedContext, Wording>> = {
+  wandelen: {
+    subject: 'Je wandelt',
+    howFar: 'Hoeveel km loop je',
+    howLong: 'Hoe lang doe je over',
+  },
+  fietsen: {
+    subject: 'Je fietst',
+    howFar: 'Hoeveel km fiets je',
+    howLong: 'Hoe lang doe je over',
+  },
+  auto: {
+    subject: 'Een auto rijdt',
+    howFar: 'Hoeveel km rijdt de auto',
+    howLong: 'Hoe lang doet de auto over',
+  },
+  trein: {
+    subject: 'Een trein rijdt',
+    howFar: 'Hoeveel km rijdt de trein',
+    howLong: 'Hoe lang doet de trein over',
+  },
 };
 
 /** A time as shown: 45 min or 2,5 uur. */
@@ -78,7 +100,6 @@ export interface Trip {
 }
 
 export type TravelForm = 'speed' | 'distance';
-const TRAVEL_FORMS: readonly TravelForm[] = ['speed', 'distance'];
 
 /** The time between the given time and one hour: gcd(60, t) min, or 0,5 uur; null if not needed. */
 function tableStep({ amount, unit }: Duration): Duration | null {
@@ -196,8 +217,127 @@ export function travelTip(form: TravelForm, trip: Trip): Diagnose {
       : undefined;
 }
 
-/** `Je fietst 6 km in 20 min. Hoe snel is dat?` and the distance form (spec §5.26). */
+/** `hours` written in the unit of a time. */
+function inUnit(hours: Rational, unit: Duration['unit']): Duration {
+  return { amount: unit === 'min' ? multiply(hours, fromInteger(MINUTES_PER_HOUR)) : hours, unit };
+}
+
+/** The time of a trip as asked: whole minutes in [5, 59], or one of the hour values of the list. */
+function timeAnswer(hours: Rational): Duration | null {
+  const minutes = inUnit(hours, 'min');
+  if (isInteger(minutes.amount) && minutes.amount.num >= 5n && minutes.amount.num <= 59n) {
+    return minutes;
+  }
+  return (
+    PROMPT_DURATIONS.find(({ amount, unit }) => unit === 'uur' && equals(amount, hours)) ?? null
+  );
+}
+
+/** The time of gcd(speed, distance) km: the step of the ratio table of the time form. */
+function timeStep({ speed, distance, duration }: Trip): Duration {
+  const km = fromInteger(gcd(speed, Number(distance.num)));
+  return inUnit(divide(km, fromInteger(speed)), duration.unit);
+}
+
+/** The step is a whole number of minutes, or of half hours. */
+function hasWholeStep(trip: Trip): boolean {
+  const { amount, unit } = timeStep(trip);
+  return isInteger(unit === 'min' ? amount : multiply(amount, fromInteger(2)));
+}
+
+function timeTripsOf(context: SpeedContext): readonly Trip[] {
+  return CONTEXT_SPEEDS[context]
+    .flatMap((speed) =>
+      range(1, MAX_DISTANCE[context]).flatMap((km): Trip[] => {
+        const distance = fromInteger(km);
+        const duration = timeAnswer(divide(distance, fromInteger(speed)));
+        return duration === null ? [] : [{ context, speed, duration, distance }];
+      }),
+    )
+    .filter(hasWholeStep);
+}
+
+// Per context: the trips of the time form. Computed once.
+const TIME_TRIPS: Readonly<Record<SpeedContext, readonly Trip[]>> = {
+  wandelen: timeTripsOf('wandelen'),
+  fietsen: timeTripsOf('fietsen'),
+  auto: timeTripsOf('auto'),
+  trein: timeTripsOf('trein'),
+};
+
+/**
+ * A trip whose time is the answer: in whole minutes in [5, 59], or in hours from
+ * {1,5; 2; 2,5; 3; 4}. The distance is a whole number of km in [1, MAX_DISTANCE].
+ */
+export function timeTrips(context: SpeedContext): readonly Trip[] {
+  return TIME_TRIPS[context];
+}
+
+/** `Je wandelt 5 km/u. Hoe lang doe je over 2 km?`, suffix the unit of trip.duration. */
+export function timeQuestion(trip: Trip): Question {
+  const { context, speed, duration, distance } = trip;
+  const { subject, howLong } = WORDING[context];
+  const km = formatRational(distance);
+  return {
+    key: `speed:time:${context}:${speed}:${km}`,
+    topic: 'speed',
+    steps: [
+      numberStep({
+        prompt: `${subject} ${speed} km/u. ${howLong} ${km} km?`,
+        answer: duration.amount,
+        suffix: duration.unit,
+        explanation: timeExplanation(trip),
+        diagnose: timeTipFor(trip),
+      }),
+    ],
+  };
+}
+
+/**
+ * The ratio table (spec §5.26): the speed in one hour, the step gcd(speed, distance) km, and the
+ * distance. A step equal to the first or last row is left out.
+ */
+export function timeExplanation(trip: Trip): string {
+  const { speed, distance, duration } = trip;
+  const first = fromInteger(speed);
+  const step = fromInteger(gcd(speed, Number(distance.num)));
+  const rows = [
+    { km: first, time: inUnit(ONE, duration.unit) },
+    ...(equals(step, first) || equals(step, distance) ? [] : [{ km: step, time: timeStep(trip) }]),
+    { km: distance, time: duration },
+  ];
+  return rows
+    .map(({ km, time }) => `${formatRational(km)} km → ${formatDuration(time)}`)
+    .join(', ');
+}
+
+/**
+ * The unit mistake (the time in hours when minutes are asked, and the other way round) and the
+ * `time` mistakes of spec §3.4.1. The tip text is built after the equality check: 25 min is 5/12
+ * uur, which has no decimal notation.
+ */
+export function timeTipFor(trip: Trip): Diagnose {
+  const { amount, unit } = trip.duration;
+  const hours = hoursOf(trip.duration);
+  const otherUnit = unit === 'min' ? hours : multiply(amount, fromInteger(MINUTES_PER_HOUR));
+  const unitTip: Diagnose = (given) => {
+    if (!equals(given, otherUnit)) return undefined;
+    const shown = formatRational(given);
+    return unit === 'min'
+      ? `Dat is in uren; gevraagd zijn minuten: ${shown} × 60 = ${formatRational(amount)}.`
+      : `Dat is in minuten; gevraagd zijn uren: ${shown} : 60 = ${formatRational(amount)}.`;
+  };
+  return firstTip(unitTip, timeTip(HOUR, MINUTE, hours, unit === 'min'));
+}
+
+type Form = TravelForm | 'time';
+const FORMS: readonly Form[] = ['speed', 'distance', 'time'];
+
+/** The speed, distance and time forms, equally likely (spec §5.26). */
 export function generateSpeed(rng: Rng): Question {
-  const form = pick(rng, TRAVEL_FORMS);
-  return travelQuestion(form, pick(rng, promptTrips(pick(rng, CONTEXTS))));
+  const form = pick(rng, FORMS);
+  const context = pick(rng, CONTEXTS);
+  return form === 'time'
+    ? timeQuestion(pick(rng, timeTrips(context)))
+    : travelQuestion(form, pick(rng, promptTrips(context)));
 }

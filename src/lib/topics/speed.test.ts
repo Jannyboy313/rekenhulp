@@ -20,6 +20,10 @@ import {
   MAX_DISTANCE,
   PROMPT_DURATIONS,
   promptTrips,
+  timeExplanation,
+  timeQuestion,
+  timeTipFor,
+  timeTrips,
   travelExplanation,
   travelQuestion,
   travelTip,
@@ -65,14 +69,28 @@ function tripOf(context: SpeedContext, speed: number, time: string): Trip {
   return { context, speed, duration: given, distance: multiply(fromInteger(speed), hours) };
 }
 
+/** A trip whose time is the answer, written as in the answer: '24 min', '2,5 uur'. */
+function timeTripOf(context: SpeedContext, speed: number, km: number, time: string): Trip {
+  return { context, speed, duration: duration(time), distance: fromInteger(km) };
+}
+
 function ask(form: TravelForm, trip: Trip, input: string) {
   return stepOf(travelQuestion(form, trip)).check(input);
 }
 
+function askTime(trip: Trip, input: string) {
+  return stepOf(timeQuestion(trip)).check(input);
+}
+
+type GeneratedForm = TravelForm | 'time';
 const FORMS: readonly TravelForm[] = ['speed', 'distance'];
+const GENERATED_FORMS: readonly GeneratedForm[] = ['speed', 'distance', 'time'];
 
 const TIP_PER_HOUR = 'km/u is per uur: reken eerst uit hoeveel km je in 60 min aflegt.';
 const TIP_FACTOR_TEN = 'Je antwoord is 10 keer te groot. Let op de komma en het aantal nullen.';
+const TIP_FACTOR_TEN_SMALL =
+  'Je antwoord is 10 keer te klein. Let op de komma en het aantal nullen.';
+const TIP_HUNDRED = '1 uur = 60 min, niet 100 min.';
 
 describe('contexts', () => {
   it('lists the four contexts with the speeds and distances of spec §5.26', () => {
@@ -281,6 +299,166 @@ describe('travelTip', () => {
   });
 });
 
+describe('timeTrips', () => {
+  it.each<[SpeedContext, number, number, string | null]>([
+    ['wandelen', 5, 2, '24 min'],
+    ['fietsen', 24, 10, '25 min'], // step 2 km → 5 min
+    ['wandelen', 6, 1, '10 min'],
+    ['trein', 120, 300, '2,5 uur'],
+    ['auto', 100, 400, '4 uur'],
+    ['fietsen', 16, 2, null], // 7,5 min
+    ['auto', 90, 100, null], // 66,67 min
+    ['auto', 60, 210, null], // 3,5 uur is not in the list
+    ['wandelen', 6, 30, null], // 30 km > 20
+  ])('%s at %i km/u over %i km: time %s', (context, speed, km, time) => {
+    const found = timeTrips(context).find(
+      (trip) => trip.speed === speed && compare(trip.distance, fromInteger(km)) === 0,
+    );
+    expect(found === undefined ? null : timeText(found.duration)).toBe(time);
+  });
+
+  it('has candidates with minutes and with hours for every context', () => {
+    for (const context of CONTEXTS) {
+      const units = new Set(timeTrips(context).map((trip) => trip.duration.unit));
+      expect([...units].sort(), context).toEqual(['min', 'uur']);
+    }
+  });
+
+  it('has a whole distance in [1; maximum] and the time distance ÷ speed', () => {
+    for (const context of CONTEXTS) {
+      for (const trip of timeTrips(context)) {
+        const { speed, duration: time, distance } = trip;
+        const label = `${context} ${speed} km/u, ${formatRational(distance)} km`;
+        expect(trip.context, label).toBe(context);
+        expect(CONTEXT_SPEEDS[context], label).toContain(speed);
+        expect(distance.den, label).toBe(1n);
+        expect(distance.num, label).toBeGreaterThanOrEqual(1n);
+        expect(distance.num, label).toBeLessThanOrEqual(BigInt(MAX_DISTANCE[context]));
+        expect(tripOf(context, speed, timeText(time)).distance, label).toEqual(distance);
+      }
+    }
+  });
+
+  it('asks minutes as a whole number in [5, 59] and hours from the list', () => {
+    const hours = PROMPT_DURATIONS.filter(({ unit }) => unit === 'uur').map(timeText);
+    for (const context of CONTEXTS) {
+      for (const { duration: time, speed, distance } of timeTrips(context)) {
+        const label = `${context} ${speed} km/u, ${formatRational(distance)} km`;
+        if (time.unit === 'min') {
+          expect(time.amount.den, label).toBe(1n);
+          expect(time.amount.num, label).toBeGreaterThanOrEqual(5n);
+          expect(time.amount.num, label).toBeLessThanOrEqual(59n);
+        } else {
+          expect(hours, label).toContain(timeText(time));
+        }
+      }
+    }
+  });
+
+  it('has whole minutes, or whole half hours, in every row of the ratio table', () => {
+    for (const context of CONTEXTS) {
+      for (const trip of timeTrips(context)) {
+        const label = `${context} ${trip.speed} km/u, ${formatRational(trip.distance)} km`;
+        for (const [, amount, unit] of timeExplanation(trip).matchAll(/→ (\S+) (min|uur)/gu)) {
+          const value = decimal(amount!);
+          const wholes = unit === 'min' ? value : multiply(value, fromInteger(2));
+          expect(wholes.den, label).toBe(1n);
+        }
+      }
+    }
+  });
+});
+
+describe('timeQuestion', () => {
+  it.each<[SpeedContext, number, number, string, string]>([
+    ['wandelen', 5, 2, '24 min', 'Je wandelt 5 km/u. Hoe lang doe je over 2 km?'],
+    ['fietsen', 18, 12, '40 min', 'Je fietst 18 km/u. Hoe lang doe je over 12 km?'],
+    ['auto', 80, 60, '45 min', 'Een auto rijdt 80 km/u. Hoe lang doet de auto over 60 km?'],
+    [
+      'trein',
+      120,
+      300,
+      '2,5 uur',
+      'Een trein rijdt 120 km/u. Hoe lang doet de trein over 300 km?',
+    ],
+  ])('words %s at %i km/u over %i km (%s)', (context, speed, km, time, prompt) => {
+    expect(stepOf(timeQuestion(timeTripOf(context, speed, km, time))).prompt).toBe(prompt);
+  });
+
+  it('is a single number step with a key of the context, speed and distance', () => {
+    const question = timeQuestion(timeTripOf('auto', 80, 60, '45 min'));
+    expect(question.topic).toBe('speed');
+    expect(question.key).toBe('speed:time:auto:80:60');
+    expect(question.steps).toHaveLength(1);
+    expect(stepOf(question).kind).toBe('number');
+  });
+
+  it.each<[SpeedContext, number, number, string, string, string]>([
+    ['wandelen', 5, 2, '24 min', '24', 'min'],
+    ['fietsen', 18, 12, '40 min', '40', 'min'],
+    ['fietsen', 18, 6, '20 min', '20', 'min'],
+    ['auto', 80, 60, '45 min', '45', 'min'],
+    ['trein', 120, 300, '2,5 uur', '2,5', 'uur'],
+    ['auto', 100, 400, '4 uur', '4', 'uur'],
+  ])('%s at %i km/u over %i km (%s): answer %s %s', (context, speed, km, time, answer, suffix) => {
+    const step = stepOf(timeQuestion(timeTripOf(context, speed, km, time)));
+    expect(step.check(answer).correct).toBe(true);
+    expect(step.check('').expected).toBe(answer);
+    expect(step.suffix).toBe(suffix);
+    expect(step.prefix).toBeUndefined();
+  });
+
+  it('shows the explanation for a correct and for a wrong answer', () => {
+    const explanation = '5 km → 60 min, 1 km → 12 min, 2 km → 24 min';
+    const trip = timeTripOf('wandelen', 5, 2, '24 min');
+    expect(askTime(trip, '24').explanation).toBe(explanation);
+    expect(askTime(trip, '7').explanation).toBe(explanation);
+  });
+});
+
+describe('timeExplanation', () => {
+  it.each<[SpeedContext, number, number, string, string]>([
+    ['wandelen', 5, 2, '24 min', '5 km → 60 min, 1 km → 12 min, 2 km → 24 min'],
+    ['fietsen', 18, 12, '40 min', '18 km → 60 min, 6 km → 20 min, 12 km → 40 min'],
+    ['fietsen', 18, 6, '20 min', '18 km → 60 min, 6 km → 20 min'],
+    ['auto', 80, 60, '45 min', '80 km → 60 min, 20 km → 15 min, 60 km → 45 min'],
+    ['trein', 120, 300, '2,5 uur', '120 km → 1 uur, 60 km → 0,5 uur, 300 km → 2,5 uur'],
+    ['auto', 100, 400, '4 uur', '100 km → 1 uur, 400 km → 4 uur'],
+    ['fietsen', 24, 10, '25 min', '24 km → 60 min, 2 km → 5 min, 10 km → 25 min'],
+  ])('explains %s at %i km/u over %i km (%s)', (context, speed, km, time, explanation) => {
+    expect(timeExplanation(timeTripOf(context, speed, km, time))).toBe(explanation);
+  });
+});
+
+describe('timeTipFor', () => {
+  it.each<[SpeedContext, number, number, string, string, string | undefined]>([
+    ['wandelen', 5, 2, '24 min', '0,4', 'Dat is in uren; gevraagd zijn minuten: 0,4 × 60 = 24.'],
+    ['fietsen', 20, 5, '15 min', '0,25', 'Dat is in uren; gevraagd zijn minuten: 0,25 × 60 = 15.'],
+    ['wandelen', 5, 2, '24 min', '40', TIP_HUNDRED],
+    ['trein', 120, 300, '2,5 uur', '150', 'Dat is in minuten; gevraagd zijn uren: 150 : 60 = 2,5.'],
+    ['trein', 120, 300, '2,5 uur', '1,5', TIP_HUNDRED],
+    ['trein', 120, 300, '2,5 uur', '2,3', '30 min is 0,5 uur, niet 0,3 uur.'],
+    ['fietsen', 24, 10, '25 min', '0,4', undefined], // 25 min = 5/12 uur: must not throw
+    ['wandelen', 5, 2, '24 min', '2,4', TIP_FACTOR_TEN_SMALL],
+    ['wandelen', 5, 2, '24 min', '240', TIP_FACTOR_TEN],
+    ['wandelen', 5, 2, '24 min', '24', undefined], // the correct answer
+    ['trein', 120, 300, '2,5 uur', '2,5', undefined], // the correct answer
+    ['wandelen', 5, 2, '24 min', '23', undefined],
+  ])('%s at %i km/u over %i km (%s): typing %s', (context, speed, km, time, input, tip) => {
+    expect(askTime(timeTripOf(context, speed, km, time), input).tip).toBe(tip);
+  });
+
+  it('never throws for a typed answer, whatever the trip', () => {
+    for (const context of CONTEXTS) {
+      for (const trip of timeTrips(context)) {
+        const minutes = multiply(hoursOf(trip.duration), fromInteger(60));
+        const inputs = [decimal('0,4'), decimal('2,3'), fromInteger(150), minutes];
+        for (const given of inputs) expect(() => timeTipFor(trip)(given)).not.toThrow();
+      }
+    }
+  });
+});
+
 describe('generateSpeed', () => {
   const COUNT = 1000;
   const rng = createRng(53);
@@ -296,6 +474,11 @@ describe('generateSpeed', () => {
     `^${SUBJECT} (\\S+) km/u\\. Hoeveel km ${HOW_FAR_PATTERN} in (\\S+) (min|uur)\\?$`,
     'u',
   );
+  const HOW_LONG_PATTERN = '(doe je|doet de auto|doet de trein)';
+  const TIME_PROMPT = new RegExp(
+    `^${SUBJECT} (\\S+) km/u\\. Hoe lang ${HOW_LONG_PATTERN} over (\\S+) km\\?$`,
+    'u',
+  );
   const CONTEXT_OF: Record<string, SpeedContext> = {
     'Je wandelt': 'wandelen',
     'Je fietst': 'fietsen',
@@ -308,9 +491,15 @@ describe('generateSpeed', () => {
     auto: 'rijdt de auto',
     trein: 'rijdt de trein',
   };
+  const HOW_LONG: Record<SpeedContext, string> = {
+    wandelen: 'doe je',
+    fietsen: 'doe je',
+    auto: 'doet de auto',
+    trein: 'doet de trein',
+  };
 
   interface Parsed {
-    form: TravelForm;
+    form: GeneratedForm;
     context: SpeedContext;
     speed: number;
     time: Duration;
@@ -344,6 +533,21 @@ describe('generateSpeed', () => {
         question,
       };
     }
+    if (form === 'time') {
+      const match = matchOf(TIME_PROMPT, prompt);
+      expect(CONTEXT_OF[match[1]!], prompt).toBe(context);
+      expect(HOW_LONG[context as SpeedContext], prompt).toBe(match[3]);
+      expect(decimal(match[2]!), prompt).toEqual(fromInteger(Number(speed)));
+      expect(decimal(match[4]!), prompt).toEqual(fromInteger(Number(time)));
+      return {
+        form,
+        context: context as SpeedContext,
+        speed: Number(speed),
+        time: { amount: answerOf(question), unit: stepOf(question).suffix as Duration['unit'] },
+        distance: decimal(match[4]!),
+        question,
+      };
+    }
     const match = matchOf(DISTANCE_PROMPT, prompt);
     const given = duration(`${match[4]} ${match[5]}`);
     expect(CONTEXT_OF[match[1]!], prompt).toBe(context);
@@ -366,21 +570,22 @@ describe('generateSpeed', () => {
   });
 
   it('creates single-step number questions that accept their own answer', () => {
-    for (const { form, question } of parsed) {
+    for (const { form, time, question } of parsed) {
       expect(question.steps, question.key).toHaveLength(1);
       expect(stepOf(question).kind).toBe('number');
-      expect(stepOf(question).suffix, question.key).toBe(form === 'speed' ? 'km/u' : 'km');
+      const suffix = form === 'time' ? time.unit : form === 'speed' ? 'km/u' : 'km';
+      expect(stepOf(question).suffix, question.key).toBe(suffix);
       const result = stepOf(question).check(typed(answerOf(question)));
       expect(result.correct, question.key).toBe(true);
       expect(result.explanation, question.key).toBeTruthy();
     }
   });
 
-  it('uses the speed and distance forms about equally often', () => {
-    for (const form of FORMS) {
+  it('uses the speed, distance and time forms about equally often', () => {
+    for (const form of GENERATED_FORMS) {
       const share = parsed.filter((question) => question.form === form).length / COUNT;
-      expect(share, form).toBeGreaterThan(0.4);
-      expect(share, form).toBeLessThan(0.6);
+      expect(share, form).toBeGreaterThan(0.25);
+      expect(share, form).toBeLessThan(0.42);
     }
   });
 
@@ -392,17 +597,35 @@ describe('generateSpeed', () => {
     }
   });
 
-  it('uses times in minutes and in hours', () => {
+  it('uses times in minutes and in hours in the speed and distance forms', () => {
     for (const unit of ['min', 'uur']) {
-      const used = parsed.filter(({ time }) => time.unit === unit).length;
+      const used = parsed.filter((one) => one.form !== 'time' && one.time.unit === unit).length;
       expect(used, unit).toBeGreaterThan(50);
     }
   });
 
-  it('draws the speed of the context and a time of the list', () => {
-    for (const { context, speed, time, question } of parsed) {
+  it('draws the speed of the context and, outside the time form, a time of the list', () => {
+    for (const { form, context, speed, time, question } of parsed) {
       expect(CONTEXT_SPEEDS[context], question.key).toContain(speed);
+      if (form === 'time') continue;
       expect(PROMPT_DURATIONS.map(timeText), question.key).toContain(timeText(time));
+    }
+  });
+
+  it('asks the time in the time form in minutes and in hours', () => {
+    const hours = PROMPT_DURATIONS.filter(({ unit }) => unit === 'uur').map(timeText);
+    const asked = parsed.filter(({ form }) => form === 'time');
+    for (const unit of ['min', 'uur']) {
+      expect(asked.filter(({ time }) => time.unit === unit).length, unit).toBeGreaterThan(50);
+    }
+    for (const { time, question } of asked) {
+      if (time.unit === 'uur') {
+        expect(hours, question.key).toContain(timeText(time));
+      } else {
+        expect(time.amount.den, question.key).toBe(1n);
+        expect(time.amount.num, question.key).toBeGreaterThanOrEqual(5n);
+        expect(time.amount.num, question.key).toBeLessThanOrEqual(59n);
+      }
     }
   });
 

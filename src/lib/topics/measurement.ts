@@ -259,8 +259,8 @@ export interface TimeUnit {
 }
 
 const SECOND: TimeUnit = { symbol: 's', seconds: 1 };
-const MINUTE: TimeUnit = { symbol: 'min', seconds: 60 };
-const HOUR: TimeUnit = { symbol: 'uur', seconds: 3600 };
+export const MINUTE: TimeUnit = { symbol: 'min', seconds: 60 };
+export const HOUR: TimeUnit = { symbol: 'uur', seconds: 3600 };
 const DAY: TimeUnit = { symbol: 'dag', seconds: 86_400 };
 
 /** [larger, smaller]. s ↔ dag (factor 86 400) is left out (spec §5.10). */
