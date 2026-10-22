@@ -10,7 +10,7 @@ import {
   rational,
   type Rational,
 } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   buildRounding,
   CARRY_SHARE,
@@ -21,6 +21,7 @@ import {
   roundHalfUp,
   roundingQuestion,
 } from './rounding';
+import { stepOf } from './testHelpers';
 
 const PER_PLACE = 1000;
 const PROMPT = /^Rond (.+) af op (.+)$/;
@@ -28,10 +29,6 @@ const PROMPT = /^Rond (.+) af op (.+)$/;
 function questionsOf(index: number): Question[] {
   const rng = createRng(400 + index);
   return Array.from({ length: PER_PLACE }, () => buildRounding(rng, PLACES[index]!));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 /** Text as typed on the keypad: no digit grouping. */

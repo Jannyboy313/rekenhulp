@@ -3,7 +3,7 @@ import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes'
 import { createRng, type Rng } from '../random';
 import { fromInteger, rational } from '../rational';
 import { NO, YES } from '../steps';
-import type { Generator, Question, Step } from '../types';
+import type { Generator, Question } from '../types';
 import {
   divisionLadder,
   FACTORIZATION_NUMBERS,
@@ -33,16 +33,13 @@ import {
   primeExplanation,
   PRIMES,
 } from './numberTheory';
+import { stepOf } from './testHelpers';
 
 const SAMPLES = 3000;
 
 function sample(generator: Generator, seed: number, count = SAMPLES): Question[] {
   const rng: Rng = createRng(seed);
   return Array.from({ length: count }, () => generator(rng));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function expectedOf(question: Question): string {

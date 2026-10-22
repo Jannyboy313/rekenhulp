@@ -20,6 +20,7 @@ import {
   type Term,
   wholeQuestion,
 } from './fractionArithmetic';
+import { stepOf } from './testHelpers';
 
 const PER_FORM = 1000;
 const SIMPLIFY = /^Vereenvoudig (\d+)\/(\d+)$/u;
@@ -41,10 +42,6 @@ function isProper(value: Rational): boolean {
 function questionsOf(form: ArithmeticForm): Question[] {
   const rng = createRng(900 + ARITHMETIC_FORMS.indexOf(form));
   return Array.from({ length: PER_FORM }, () => buildFractionArithmetic(rng, form));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function fraction(num: string, den: string): Rational {

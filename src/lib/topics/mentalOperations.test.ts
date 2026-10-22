@@ -4,7 +4,7 @@ import { parse } from '../expr/parser';
 import { GROUP_SEPARATOR } from '../format';
 import { createRng, randomInt } from '../random';
 import { parseDutchNumber } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   buildMentalOperation,
   DIVIDE_FACTORS,
@@ -25,16 +25,13 @@ import {
   REMAINDER_CONTEXTS,
   remainderQuestion,
 } from './mentalOperations';
+import { stepOf } from './testHelpers';
 
 const PER_FORM = 1000;
 
 function questionsOf(form: MentalForm): Question[] {
   const rng = createRng(200 + MENTAL_FORMS.indexOf(form));
   return Array.from({ length: PER_FORM }, () => buildMentalOperation(rng, form));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 /** Text as typed on the keypad: no digit grouping. */

@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest';
-import { formatRational, GROUP_SEPARATOR } from '../format';
+import { formatRational } from '../format';
 import { createRng } from '../random';
 import {
   compare,
@@ -7,11 +7,10 @@ import {
   divide,
   fromInteger,
   multiply,
-  parseDutchNumber,
   rational,
   type Rational,
 } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   CONTEXT_SPEEDS,
   CONTEXTS,
@@ -35,25 +34,7 @@ import {
   type TravelForm,
   type Trip,
 } from './speed';
-
-/** A value written in Dutch notation: '7,5'. */
-function decimal(text: string): Rational {
-  return parseDutchNumber(text)!;
-}
-
-/** What the user types for a value: the digits and the comma, without grouping. */
-function typed(value: Rational): string {
-  return formatRational(value).replaceAll(GROUP_SEPARATOR, '');
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
-}
-
-/** The correct answer of a question, read back from its expected answer. */
-function answerOf(question: Question): Rational {
-  return decimal(stepOf(question).check('').expected.replaceAll(GROUP_SEPARATOR, ''));
-}
+import { answerOf, decimal, stepOf, typed } from './testHelpers';
 
 /** A time written as in a prompt: '45 min', '2,5 uur'. */
 function duration(text: string): Duration {

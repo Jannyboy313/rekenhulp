@@ -3,7 +3,7 @@ import { evaluate } from '../expr/evaluate';
 import { parse } from '../expr/parser';
 import { createRng } from '../random';
 import { parseDutchNumber } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   addSubtractQuestion,
   buildNegativeNumbers,
@@ -31,16 +31,13 @@ import {
   PRODUCT_SIGN_TIP,
   SIGN_TIP,
 } from './negativeNumbers';
+import { stepOf } from './testHelpers';
 
 const PER_FORM = 1000;
 
 function questionsOf(form: NegativeForm): Question[] {
   const rng = createRng(300 + NEGATIVE_FORMS.indexOf(form));
   return Array.from({ length: PER_FORM }, () => buildNegativeNumbers(rng, form));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function sumOf(question: Question): string {

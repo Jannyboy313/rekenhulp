@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { formatInteger } from '../format';
 import { createRng } from '../random';
 import { NO, YES } from '../steps';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   checkRule,
   COMBINED_FACTORS,
@@ -18,6 +18,7 @@ import {
   type Divisor,
   type RuleDivisor,
 } from './divisibility';
+import { stepOf } from './testHelpers';
 
 const SAMPLES = 3000;
 const RULE_DIVISORS: readonly RuleDivisor[] = [2, 3, 4, 5, 7, 8, 9, 11, 13];
@@ -25,10 +26,6 @@ const RULE_DIVISORS: readonly RuleDivisor[] = [2, 3, 4, 5, 7, 8, 9, 11, 13];
 function sample(seed: number, count = SAMPLES): Question[] {
   const rng = createRng(seed);
   return Array.from({ length: count }, () => generateDivisibility(rng));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function parts(question: Question): { n: number; divisor: Divisor } {

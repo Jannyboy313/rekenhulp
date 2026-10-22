@@ -21,6 +21,7 @@ import {
   generateDecimalArithmetic,
   multiplyQuestion,
 } from './decimalArithmetic';
+import { stepOf } from './testHelpers';
 
 const PER_FORM = 1000;
 const HUNDRED = fromInteger(100);
@@ -32,10 +33,6 @@ const DIVIDE = /^([\d,]+) : ([\d,]+) = \?$/u;
 function questionsOf(form: DecimalForm): Question[] {
   const rng = createRng(700 + DECIMAL_FORMS.indexOf(form));
   return Array.from({ length: PER_FORM }, () => buildDecimalArithmetic(rng, form));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function value(text: string): Rational {

@@ -8,10 +8,9 @@ import {
   equals,
   fromInteger,
   multiply,
-  parseDutchNumber,
   type Rational,
 } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   generateScale,
   mapDistancesFor,
@@ -24,27 +23,9 @@ import {
   SCALES,
   type ScaleForm,
 } from './scale';
+import { answerOf, decimal, stepOf, typed } from './testHelpers';
 
 const FORMS: readonly ScaleForm[] = ['mapToReal', 'realToMap', 'findScale'];
-
-/** A value written in Dutch notation: '7,5'. */
-function decimal(text: string): Rational {
-  return parseDutchNumber(text)!;
-}
-
-/** What the user types for a value: the digits and the comma, without grouping. */
-function typed(value: Rational): string {
-  return formatRational(value).replaceAll(GROUP_SEPARATOR, '');
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
-}
-
-/** The correct answer of a question, read back from its expected answer. */
-function answerOf(question: Question): Rational {
-  return decimal(stepOf(question).check('').expected.replaceAll(GROUP_SEPARATOR, ''));
-}
 
 /** The result of typing `input` on the question of `form` on scale 1 : n with `map` cm. */
 function ask(form: ScaleForm, n: number, map: string, input: string) {

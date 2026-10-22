@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { NO_BREAK_SPACE } from '../format';
 import { createRng } from '../random';
 import { fromInteger } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import { NICE_WHOLES } from './percentages';
 import {
   divideExplanation,
@@ -21,16 +21,13 @@ import {
   scalingTip,
   type ScalingContext,
 } from './ratios';
+import { stepOf } from './testHelpers';
 
 const SAMPLES = 3000;
 
 function sample(seed: number, count = SAMPLES): Question[] {
   const rng = createRng(seed);
   return Array.from({ length: count }, () => generateRatios(rng));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function expectedOf(question: Question): string {

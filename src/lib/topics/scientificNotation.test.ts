@@ -14,6 +14,7 @@ import {
   toNotationQuestion,
   toNumberQuestion,
 } from './scientificNotation';
+import { stepOf } from './testHelpers';
 
 const PER_FORM = 1000;
 const TO_NOTATION = /^Schrijf in wetenschappelijke notatie: ([\d,\u{202f}]+)$/u;
@@ -23,10 +24,6 @@ const TO_NUMBER = /^(?:([\d,]+) × )?10([⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+) = \?$
 function questionsOf(form: NotationForm): Question[] {
   const rng = createRng(600 + NOTATION_FORMS.indexOf(form));
   return Array.from({ length: PER_FORM }, () => buildScientificNotation(rng, form));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 /** Text as typed on the keypad: no digit grouping. */

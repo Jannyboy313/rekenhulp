@@ -10,7 +10,7 @@ import {
   powerOfTen,
   rational,
 } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import { isNiceValue } from './measurement';
 import {
   generateNumberUnits,
@@ -19,16 +19,13 @@ import {
   NUMBER_LIMITS,
   NUMBER_UNITS,
 } from './numberUnits';
+import { stepOf } from './testHelpers';
 
 const SAMPLES = 3000;
 
 function sample(seed: number, count = SAMPLES): Question[] {
   const rng = createRng(seed);
   return Array.from({ length: count }, () => generateNumberUnits(rng));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function expectedOf(question: Question): string {

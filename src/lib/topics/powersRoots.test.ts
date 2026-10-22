@@ -12,7 +12,7 @@ import {
   powerOfTen,
   rational,
 } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   buildPowersRoots,
   cubeRootQuestion,
@@ -31,16 +31,13 @@ import {
   squareRootQuestion,
   wholePowerQuestion,
 } from './powersRoots';
+import { stepOf } from './testHelpers';
 
 const PER_FORM = 1000;
 
 function questionsOf(form: PowerForm): Question[] {
   const rng = createRng(500 + POWER_FORMS.indexOf(form));
   return Array.from({ length: PER_FORM }, () => buildPowersRoots(rng, form));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 /** Text as typed on the keypad: no digit grouping. */

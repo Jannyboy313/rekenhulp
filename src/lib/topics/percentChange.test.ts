@@ -16,7 +16,7 @@ import {
   type Rational,
 } from '../rational';
 import { parseAnswer } from '../steps';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   DISCOUNT_PERCENTAGES,
   formatPercentage,
@@ -41,10 +41,7 @@ import {
   type ChangeContext,
   type VatRate,
 } from './percentChange';
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
-}
+import { stepOf } from './testHelpers';
 
 /** The result of typing `input` on a price question from `oldValue` to `newValue`. */
 function check(oldValue: number, newValue: number, input: string) {

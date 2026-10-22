@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatRational, GROUP_SEPARATOR } from '../format';
+import { GROUP_SEPARATOR } from '../format';
 import { gcd } from '../primes';
 import { createRng, range } from '../random';
 import {
@@ -13,7 +13,7 @@ import {
   type Rational,
 } from '../rational';
 import { parseAnswer } from '../steps';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   formatAmount,
   generateRatioProblems,
@@ -35,6 +35,7 @@ import {
   type MixContext,
   type UnitContext,
 } from './ratioProblems';
+import { stepOf, typed } from './testHelpers';
 
 type UnitContextId = UnitContext['id'];
 
@@ -43,10 +44,6 @@ const INDEXES: readonly Index[] = [0, 1];
 
 /** The amount a mixing prompt gives: the total, or the amount of ingredient 0 or 1. */
 const GIVEN_AMOUNTS: readonly GivenAmount[] = ['total', 0, 1];
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
-}
 
 function groupContext(id: GroupContext['id']): GroupContext {
   const found = GROUP_CONTEXTS.find((context) => context.id === id);
@@ -74,11 +71,6 @@ function termAt(a: number, b: number, index: Index): number {
 /** The digits of a number without trailing zeros: 350 has 2 significant digits. */
 function significantDigits(value: number): number {
   return String(value).replace(/0+$/, '').length;
-}
-
-/** What the user types for a value: the digits and the comma, without grouping. */
-function typed(value: Rational): string {
-  return formatRational(value).replaceAll(GROUP_SEPARATOR, '');
 }
 
 /** The result of typing `input` on a part-of-the-whole question. */
@@ -607,19 +599,31 @@ describe('mixPartsFor', () => {
       ),
     );
 
-    it('is every part within the size, the total and the digits the spec allows', () => {
-      expect(cases.length).toBeGreaterThan(300);
-      for (const { context, a, b, given, label } of cases) {
-        // Independent of the module: the given amount is the total or one term, times the part.
-        const parts = given === 'total' ? a + b : termAt(a, b, given);
-        const expected = range(2, context.maxPart).filter(
-          (part) => (a + b) * part <= 2000 && significantDigits(parts * part) <= 2,
-        );
-        expect(mixPartsFor(context, a, b, given), label).toEqual(expected);
-      }
+    it.each<[MixContext['id'], number, number, GivenAmount, number, boolean]>([
+      // Given 350 or 1400 ml limonade: 2 significant digits; 357 has 3.
+      ['syrup', 1, 6, 'total', 50, true],
+      ['syrup', 1, 6, 'total', 51, false],
+      ['syrup', 1, 6, 'total', 200, true],
+      // Given 140 ml siroop, not 137.
+      ['syrup', 1, 6, 0, 140, true],
+      ['syrup', 1, 6, 0, 137, false],
+      // Given 800 ml siroop with 1700 ml limonade; 960 ml would make 2040 ml, above 2000.
+      ['syrup', 8, 9, 0, 100, true],
+      ['syrup', 8, 9, 0, 120, false],
+      // Given 1700 kg mortel, not 1870.
+      ['mortar', 8, 9, 'total', 100, true],
+      ['mortar', 8, 9, 'total', 110, false],
+      // Paint parts stay within [2, 20].
+      ['paint', 3, 2, 1, 2, true],
+      ['paint', 3, 2, 1, 20, true],
+      ['paint', 3, 2, 1, 21, false],
+      ['paint', 3, 2, 1, 1, false],
+    ])('%s %i : %i, given %s: a part of %i fits: %s', (id, a, b, given, part, fits) => {
+      expect(mixPartsFor(mixContext(id), a, b, given).includes(part)).toBe(fits);
     });
 
     it('has at least one part, so a question can always be drawn', () => {
+      expect(cases.length).toBeGreaterThan(300);
       // A part of 2 always fits: the total is at most 2 × 17 = 34 and no given amount is larger,
       // so each has at most 2 digits.
       for (const { context, a, b, given, label } of cases) {

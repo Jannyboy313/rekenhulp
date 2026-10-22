@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
 import { fromInteger, rational } from '../rational';
 import { numberStep } from '../steps';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   generateSquares,
   MAX_BASE,
@@ -13,16 +13,13 @@ import {
   squareExplanation,
   squareTip,
 } from './squares';
+import { stepOf } from './testHelpers';
 
 const SAMPLES = 3000;
 
 function sample(seed: number, count = SAMPLES): Question[] {
   const rng = createRng(seed);
   return Array.from({ length: count }, () => generateSquares(rng));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function parts(question: Question): { form: string; n: number } {

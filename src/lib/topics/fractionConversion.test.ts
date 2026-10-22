@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { gcd } from '../primes';
 import { createRng } from '../random';
 import { rational } from '../rational';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   buildFractionConversion,
   CONVERSION_DIRECTIONS,
@@ -12,6 +12,7 @@ import {
   PERCENTAGE_DENOMINATORS,
   TERMINATING_DENOMINATORS,
 } from './fractionConversion';
+import { stepOf } from './testHelpers';
 
 const PER_DIRECTION = 600;
 
@@ -27,10 +28,6 @@ const PROMPTS: Record<ConversionDirection, RegExp> = {
 function questionsOf(direction: ConversionDirection): Question[] {
   const rng = createRng(800 + CONVERSION_DIRECTIONS.indexOf(direction));
   return Array.from({ length: PER_DIRECTION }, () => buildFractionConversion(rng, direction));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 /** p and q from the key 'fractionConversion:direction:p/q'. */

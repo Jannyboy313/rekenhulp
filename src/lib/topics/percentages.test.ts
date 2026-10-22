@@ -14,7 +14,7 @@ import {
   type Rational,
 } from '../rational';
 import { fractionStep, parseAnswer } from '../steps';
-import type { Question, Step } from '../types';
+import type { Question } from '../types';
 import {
   DISCOUNT_PERCENTAGES,
   formatPercentage,
@@ -32,6 +32,7 @@ import {
   wholeExplanation,
   type Percentage,
 } from './percentages';
+import { stepOf } from './testHelpers';
 
 function percentage(label: string): Percentage {
   const found = PERCENTAGES.find((p) => formatPercentage(p.value) === label);
@@ -48,10 +49,6 @@ const SAMPLES = 4000;
 function sample(seed: number, count = SAMPLES): Question[] {
   const rng = createRng(seed);
   return Array.from({ length: count }, () => generatePercentages(rng));
-}
-
-function stepOf(question: Question): Step {
-  return question.steps[0]!;
 }
 
 function expectedOf(question: Question): string {
