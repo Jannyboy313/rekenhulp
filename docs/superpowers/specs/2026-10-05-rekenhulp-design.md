@@ -286,7 +286,9 @@ in the place of OK.
 - **Short screens:** rows are dropped from the bottom so the keypad does not end up below the
   screen edge: 3 rows from 816 px viewport height, 2 rows (4 cells) from 760 px
   (`max-height: 815px`), and only the top row (2 cells) below that (`max-height: 759px`).
-  This is CSS only: a hidden cell cannot be tapped, so it never becomes active. The thresholds
+  A hidden cell cannot be tapped. When the viewport height changes while a cell is active (for
+  example in split screen) and that cell gets hidden, the answer field becomes active again, so
+  keys never go to a hidden cell; a cell that stays visible stays active. The thresholds
   come from a height estimate (56 px per row) and were checked on a phone (2026-10-22).
 - **When shown:** for every step that is not Ja/Nee, unless the question is a table exercise
   (topic `tables`, including the tables mixed into other sets). Tables are practised from
