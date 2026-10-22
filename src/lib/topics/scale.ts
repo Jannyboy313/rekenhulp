@@ -63,7 +63,7 @@ const MOST_REAL_DISTANCE = fromInteger(1000);
 const MAX_REAL_DECIMALS: Readonly<Record<ScaleForm, number>> = {
   mapToReal: 2,
   realToMap: 1,
-  findScale: 2,
+  findScale: 1,
 };
 
 /** In [0,1; 1000] with at most the decimals of the form. */

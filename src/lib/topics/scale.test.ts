@@ -121,7 +121,7 @@ describe('mapDistancesFor', () => {
   it.each<[ScaleForm, number]>([
     ['mapToReal', 2],
     ['realToMap', 1],
-    ['findScale', 2],
+    ['findScale', 1],
   ])('keeps for %s a real distance in [0,1; 1000] with at most %i decimals', (form, most) => {
     const tenths = (from: number, count: number) =>
       Array.from({ length: count }, (_, i) => divide(fromInteger(from + i), fromInteger(10)));
@@ -144,12 +144,13 @@ describe('mapDistancesFor', () => {
     }
   });
 
-  it('drops real distances with 2 decimals only from real → map', () => {
+  it('drops real distances with 2 decimals only from the forms that divide them', () => {
     // 9,9 cm on 1 : 250 is 24,75 m; 3 cm is 7,5 m.
     expect(mapDistancesFor(250, 'mapToReal').map(typed)).toContain('9,9');
-    expect(mapDistancesFor(250, 'findScale').map(typed)).toContain('9,9');
-    expect(mapDistancesFor(250, 'realToMap').map(typed)).not.toContain('9,9');
-    expect(mapDistancesFor(250, 'realToMap').map(typed)).toContain('3');
+    for (const form of ['realToMap', 'findScale'] as const) {
+      expect(mapDistancesFor(250, form).map(typed), form).not.toContain('9,9');
+      expect(mapDistancesFor(250, form).map(typed), form).toContain('3');
+    }
   });
 
   it('offers tenths from 0,5 to 9,9 and the integers 10 to 30 on a floor plan scale', () => {
@@ -192,7 +193,7 @@ describe('scaleQuestion', () => {
     ['realToMap', 100, '7,5', 'Schaal 1 : 100. 7,5 m in het echt is op de tekening ? cm'],
     ['findScale', 50_000, '4', '4 cm op de kaart is 2 km in het echt. Schaal 1 : ?'],
     ['findScale', 250, '3', '3 cm op de tekening is 7,5 m in het echt. Schaal 1 : ?'],
-    ['findScale', 250, '0,5', '0,5 cm op de tekening is 1,25 m in het echt. Schaal 1 : ?'],
+    ['findScale', 250, '0,6', '0,6 cm op de tekening is 1,5 m in het echt. Schaal 1 : ?'],
   ])('words the %s question on 1 : %i with %s cm', (form, n, map, prompt) => {
     expect(stepOf(scaleQuestion(form, n, decimal(map))).prompt).toBe(prompt);
   });
@@ -489,9 +490,9 @@ describe('generateScale', () => {
     }
   });
 
-  it('divides only real distances with at most 1 decimal in real → map', () => {
-    const divided = parsed.filter(({ form }) => form === 'realToMap');
-    expect(divided.length).toBeGreaterThan(200);
+  it('divides only real distances with at most 1 decimal in real → map and find the scale', () => {
+    const divided = parsed.filter(({ form }) => form !== 'mapToReal');
+    expect(divided.length).toBeGreaterThan(400);
     for (const { n, real, unit } of divided) {
       expect(decimalPlaces(real), `1 : ${n}, ${typed(real)} ${unit}`).toBeLessThanOrEqual(1);
     }
