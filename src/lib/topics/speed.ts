@@ -330,12 +330,55 @@ export function timeTipFor(trip: Trip): Diagnose {
   return firstTip(unitTip, timeTip(HOUR, MINUTE, hours, unit === 'min'));
 }
 
-type Form = TravelForm | 'time';
-const FORMS: readonly Form[] = ['speed', 'distance', 'time'];
+/** 5, 10, …, 40 (spec §5.26): in km/u that is 18, 36, …, 144. */
+export const METRES_PER_SECOND: readonly number[] = [5, 10, 15, 20, 25, 30, 35, 40];
 
-/** The speed, distance and time forms, equally likely (spec §5.26). */
+const KMH_PER_MS = rational(18n, 5n); // 3,6
+
+/**
+ * `72 km/u = ? m/s` (toMetresPerSecond) or `20 m/s = ? km/u`. The tip only exists for the first
+ * direction: m/s : 3,6 is never a finite decimal for the values of METRES_PER_SECOND.
+ */
+export function speedConversionQuestion(
+  toMetresPerSecond: boolean,
+  metresPerSecond: number,
+): Question {
+  const ms = fromInteger(metresPerSecond);
+  const kmh = multiply(ms, KMH_PER_MS);
+  const factor = formatRational(KMH_PER_MS);
+  const mistaken = multiply(kmh, KMH_PER_MS);
+  const calculation = toMetresPerSecond
+    ? `${formatRational(kmh)} : ${factor} = ${metresPerSecond}`
+    : `${metresPerSecond} × ${factor} = ${formatRational(kmh)}`;
+  return {
+    key: `speed:conversion:${toMetresPerSecond ? 'to-ms' : 'to-kmh'}:${metresPerSecond}`,
+    topic: 'speed',
+    steps: [
+      numberStep({
+        prompt: toMetresPerSecond
+          ? `${formatRational(kmh)} km/u = ? m/s`
+          : `${metresPerSecond} m/s = ? km/u`,
+        answer: toMetresPerSecond ? ms : kmh,
+        suffix: toMetresPerSecond ? 'm/s' : 'km/u',
+        explanation: `1 m/s = 3600 m/u = ${factor} km/u → ${calculation}`,
+        diagnose: (given) =>
+          toMetresPerSecond && equals(given, mistaken)
+            ? `Naar m/s wordt het getal kleiner: deel door ${factor}.`
+            : undefined,
+      }),
+    ],
+  };
+}
+
+export type SpeedForm = TravelForm | 'time' | 'conversion';
+const FORMS: readonly SpeedForm[] = ['speed', 'distance', 'time', 'conversion'];
+
+/** The four forms equally likely, the context for the first three, the direction 50/50. */
 export function generateSpeed(rng: Rng): Question {
   const form = pick(rng, FORMS);
+  if (form === 'conversion') {
+    return speedConversionQuestion(pick(rng, [true, false]), pick(rng, METRES_PER_SECOND));
+  }
   const context = pick(rng, CONTEXTS);
   return form === 'time'
     ? timeQuestion(pick(rng, timeTrips(context)))
