@@ -145,6 +145,8 @@ describe('scaling', () => {
       }
       expect(NICE_WHOLES).toContain(amount);
       expect(amount).toBeLessThanOrEqual(context.maxAmount);
+      expect(amount / a).toBeGreaterThanOrEqual(context.minPerUnit);
+      expect(amount / a).toBeLessThanOrEqual(context.maxPerUnit);
       expect((amount * gcd(a, b)) % a).toBe(0);
       const answer = (amount * b) / a;
       expect(answer).toBeLessThanOrEqual(MAX_SCALED_ANSWER);
@@ -155,6 +157,19 @@ describe('scaling', () => {
       expect(step.suffix).toBe(context.suffix);
       expect(step.check('').explanation).toBe(scalingExplanation(a, amount, b));
     }
+  });
+
+  it('keeps the amount per person or notebook realistic', () => {
+    const bounds = SCALING_CONTEXTS.map(({ id, minPerUnit, maxPerUnit }) => [
+      id,
+      minPerUnit,
+      maxPerUnit,
+    ]);
+    expect(bounds).toEqual([
+      ['pasta', 50, 150],
+      ['milk', 50, 250],
+      ['notebooks', 1, 5],
+    ]);
   });
 
   it('uses every context', () => {

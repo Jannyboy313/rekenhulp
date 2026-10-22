@@ -23,6 +23,9 @@ type Pair = readonly [number, number];
 export interface ScalingContext {
   id: string;
   maxAmount: number;
+  /** Bounds (inclusive) of the realistic amount per person or item: amount / a. */
+  minPerUnit: number;
+  maxPerUnit: number;
   prefix?: string;
   suffix?: string;
   prompt(a: number, amount: number, b: number): string;
@@ -32,6 +35,8 @@ export const SCALING_CONTEXTS: readonly ScalingContext[] = [
   {
     id: 'pasta',
     maxAmount: 1000,
+    minPerUnit: 50,
+    maxPerUnit: 150,
     suffix: 'g',
     prompt: (a, amount, b) =>
       `Voor ${a} personen: ${formatInteger(amount)} g pasta. Hoeveel g voor ${b} personen?`,
@@ -39,6 +44,8 @@ export const SCALING_CONTEXTS: readonly ScalingContext[] = [
   {
     id: 'milk',
     maxAmount: 1000,
+    minPerUnit: 50,
+    maxPerUnit: 250,
     suffix: 'ml',
     prompt: (a, amount, b) =>
       `Voor ${a} personen: ${formatInteger(amount)} ml melk. Hoeveel ml voor ${b} personen?`,
@@ -46,6 +53,8 @@ export const SCALING_CONTEXTS: readonly ScalingContext[] = [
   {
     id: 'notebooks',
     maxAmount: 100,
+    minPerUnit: 1,
+    maxPerUnit: 5,
     prefix: '€',
     prompt: (a, amount, b) =>
       `${a} schriften kosten ${formatEuro(fromInteger(amount))}. Hoeveel kosten ${b} schriften?`,
@@ -185,16 +194,23 @@ export function divideTip(total: number, a: number, b: number, largest: boolean)
 
 /** `Voor 4 personen: 300 g pasta. Hoeveel g voor 6 personen?` */
 function scaling(rng: Rng): Question {
-  const context = pick(rng, SCALING_CONTEXTS);
-  const a = randomInt(rng, MIN_COUNT, MAX_RATIO_TERM);
-  const b = randomIntExcept(rng, MIN_COUNT, MAX_RATIO_TERM, a);
-  const g = gcd(a, b);
-  // The amount for g units must be whole, so the amount is a multiple of a / g.
-  const scaled = (amount: number) => (amount / (a / g)) * (b / g);
-  const amounts = NICE_WHOLES.filter(
-    (amount) =>
-      amount <= context.maxAmount && amount % (a / g) === 0 && scaled(amount) <= MAX_SCALED_ANSWER,
-  );
+  const { context, a, b, amounts, scaled } = drawUntil(() => {
+    const context = pick(rng, SCALING_CONTEXTS);
+    const a = randomInt(rng, MIN_COUNT, MAX_RATIO_TERM);
+    const b = randomIntExcept(rng, MIN_COUNT, MAX_RATIO_TERM, a);
+    const g = gcd(a, b);
+    // The amount for g units must be whole, so the amount is a multiple of a / g.
+    const scaled = (amount: number) => (amount / (a / g)) * (b / g);
+    const amounts = NICE_WHOLES.filter(
+      (amount) =>
+        amount <= context.maxAmount &&
+        amount % (a / g) === 0 &&
+        scaled(amount) <= MAX_SCALED_ANSWER &&
+        amount >= context.minPerUnit * a &&
+        amount <= context.maxPerUnit * a,
+    );
+    return amounts.length > 0 ? { context, a, b, amounts, scaled } : null;
+  });
   const amount = pick(rng, amounts);
   return ratioQuestion(
     `scale:${context.id}:${a}:${amount}:${b}`,
