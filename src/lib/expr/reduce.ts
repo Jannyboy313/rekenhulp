@@ -3,7 +3,7 @@ import { formatExpr } from './format';
 import type { BinaryOperator, Expr } from './parser';
 
 /** After parentheses, the higher rank goes first (spec §8). */
-const RANK: Record<BinaryOperator, number> = { '+': 1, '−': 1, '×': 2, ':': 2 };
+export const RANK: Readonly<Record<BinaryOperator, number>> = { '+': 1, '−': 1, '×': 2, ':': 2 };
 const POWER_RANK = 3;
 
 /** An operation whose operands are numbers, ready to be computed. */

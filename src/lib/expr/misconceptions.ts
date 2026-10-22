@@ -1,6 +1,7 @@
-import { add, divide, multiply, power, subtract, type Rational } from '../rational';
-import { evaluate, MAX_EXPONENT } from './evaluate';
+import { fromInteger, multiply, power, type Rational } from '../rational';
+import { applyOperator, exponentValue } from './evaluate';
 import type { BinaryOperator, Expr } from './parser';
+import { RANK } from './reduce';
 
 /** Common order-of-operations mistakes (spec §3.4.1). */
 export type Misconception = 'powerAsProduct' | 'leftToRight' | 'multiplyBeforeDivide';
@@ -10,7 +11,7 @@ type Precedence = Readonly<Record<BinaryOperator, number>>;
 
 const PRECEDENCE: Readonly<Record<Misconception, Precedence>> = {
   // The usual order: only the power itself is wrong (base × exponent).
-  powerAsProduct: { '+': 1, '−': 1, '×': 2, ':': 2 },
+  powerAsProduct: RANK,
   leftToRight: { '+': 1, '−': 1, '×': 1, ':': 1 },
   multiplyBeforeDivide: { '+': 1, '−': 1, '×': 3, ':': 2 },
 };
@@ -30,11 +31,10 @@ export function evaluateMisconception(expr: Expr, misconception: Misconception):
       return evaluateMisconception(expr.inner, misconception);
     case 'power': {
       const base = evaluateMisconception(expr.base, misconception);
-      const exponent = evaluate(expr.exponent);
-      if (base === null || exponent === null || exponent.den !== 1n) return null;
-      if (exponent.num < 0n || exponent.num > BigInt(MAX_EXPONENT)) return null;
-      if (misconception === 'powerAsProduct') return multiply(base, exponent);
-      return power(base, Number(exponent.num));
+      const exponent = exponentValue(expr.exponent);
+      if (base === null || exponent === null) return null;
+      if (misconception === 'powerAsProduct') return multiply(base, fromInteger(exponent));
+      return power(base, exponent);
     }
     case 'binary': {
       const operands: Rational[] = [];
@@ -75,24 +75,11 @@ function applyChain(
         index++;
         continue;
       }
-      const result = apply(operator, values[index]!, values[index + 1]!);
+      const result = applyOperator(operator, values[index]!, values[index + 1]!);
       if (result === null) return null;
       values.splice(index, 2, result);
       pending.splice(index, 1);
     }
   }
   return values[0]!;
-}
-
-function apply(operator: BinaryOperator, left: Rational, right: Rational): Rational | null {
-  switch (operator) {
-    case '+':
-      return add(left, right);
-    case '−':
-      return subtract(left, right);
-    case '×':
-      return multiply(left, right);
-    case ':':
-      return right.num === 0n ? null : divide(left, right);
-  }
 }

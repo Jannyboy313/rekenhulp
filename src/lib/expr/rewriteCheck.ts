@@ -1,6 +1,6 @@
-import { add, equals, rational, subtract, type Rational } from '../rational';
+import { equals, ONE } from '../rational';
 import { sameChains, toChains, type ChainExpr, type ChainOperator } from './chains';
-import { evaluate } from './evaluate';
+import { applyOperator, evaluate } from './evaluate';
 import type { BinaryOperator, Expr } from './parser';
 
 export type Property = 'commutative' | 'associative' | 'distributive';
@@ -253,7 +253,7 @@ function twoFactors(expr: ChainExpr): [ChainExpr, ChainExpr] | null {
 function otherFactor(product: ChainExpr, factor: ChainExpr): ChainExpr | null {
   const factors = twoFactors(product);
   if (factors === null) {
-    return sameChains(product, factor) ? { type: 'number', value: rational(1n) } : null;
+    return sameChains(product, factor) ? { type: 'number', value: ONE } : null;
   }
   if (sameChains(factors[0], factor)) return factors[1];
   return sameChains(factors[1], factor) ? factors[0] : null;
@@ -282,18 +282,12 @@ function isExpansion(product: ChainExpr, expanded: ChainExpr, allowSplit: boolea
         sameChains(inner.second, t2)
       );
     }
-    return (
-      allowSplit &&
-      sum.type === 'number' &&
-      t1.type === 'number' &&
-      t2.type === 'number' &&
-      equals(combine(terms.operator, t1.value, t2.value), sum.value)
-    );
+    if (!allowSplit || sum.type !== 'number' || t1.type !== 'number' || t2.type !== 'number') {
+      return false;
+    }
+    const split = applyOperator(terms.operator, t1.value, t2.value);
+    return split !== null && equals(split, sum.value);
   });
-}
-
-function combine(operator: '+' | '−', a: Rational, b: Rational): Rational {
-  return operator === '+' ? add(a, b) : subtract(a, b);
 }
 
 function numbers(expr: ChainExpr): ChainExpr[] {
