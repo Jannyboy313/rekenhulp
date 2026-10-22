@@ -58,6 +58,15 @@ only the real choices, update and commit the spec, then implement directly with 
 - Focus falls back to `body` after a screen or question change, and when the kladblok's "Naar
   antwoordveld" overlay is activated by keyboard (keyboard/screen-reader users only).
 - Android splash uses the light `background_color` in dark mode (cosmetic).
+- Tips cross-review (stopped early in 98bbe24, never done): go through every `diagnose` with the
+  user, one proposal per tip. Known gaps: approximation tip only on simplest-fraction steps (not
+  fraction → %, ratioProblems percentage variant); fixed power tip in `orderOfOperations`; no tip
+  for scaled square roots or percentage → fraction; check tips capped only in `squares`; no hint
+  for exponent 0 in a factorization; no money rounding in the `ratios` notebooks tip; speed
+  decimals-as-minutes tip on an hour value never shown; no rounded m/s → km/u tip; percentage
+  variant of part-of-the-whole ends with "dus 2/3".
+- Move the `PlayScreen` session state (queue, repeats, records) into a pure reducer in
+  `lib/play.ts`; separate session with a light plan.
 
 ## Svelte pitfalls
 
