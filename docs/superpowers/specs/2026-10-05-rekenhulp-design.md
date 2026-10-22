@@ -314,8 +314,10 @@ in the place of OK.
 - **Typing in a cell.** A cell is a list of items separated by single spaces; an item is a
   number or a short sum such as `12×7=84`, `2^3=8`, `−¾+1` or `7/4=1¾`. A number is digits with
   at most one comma (at most 12 characters, as in the answer field); the sign is not counted.
-  The breuk key works as in the answer field (§6): it opens an empty fraction with the cursor
-  in the numerator, and a second press moves the cursor to the denominator. Digits typed
+  The breuk key opens an empty fraction with the cursor in the numerator, and a second press,
+  after a numerator digit, moves the cursor to the denominator. Unlike the answer field (§6),
+  where breuk in the denominator moves back to the numerator, breuk in the denominator does
+  nothing here; only `⌫` goes back (one breuk press at a time). Digits typed
   before the breuk key are the whole part of a mixed number, so `1`, breuk, `2`, breuk, `3`
   is `1⅔` and breuk, `3`, breuk, `4` is `¾`. A number directly after `^` is an exponent;
   numerators and denominators are the fraction's slots. Per key, for the last item:
