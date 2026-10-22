@@ -1,12 +1,12 @@
 import { formatInteger, formatRational, NO_BREAK_SPACE } from '../format';
 import { pick, range, type Rng } from '../random';
 import {
-  compare,
-  decimalPlaces,
   divide,
   equals,
   fromInteger,
+  hasAtMostDecimals,
   HUNDRED,
+  isBetween,
   multiply,
   ONE,
   rational,
@@ -35,14 +35,14 @@ export function realUnit(n: number): 'm' | 'km' {
 
 const CENTIMETRES_PER_UNIT = { m: 100, km: 100_000 } as const;
 
-/** The real distance of `mapCm` on the scale 1 : n, in `realUnit(n)`. */
-export function realDistance(n: number, mapCm: Rational): Rational {
-  return divide(multiply(mapCm, fromInteger(n)), fromInteger(CENTIMETRES_PER_UNIT[realUnit(n)]));
-}
-
 /** The real distance of `mapCm` in cm: 1 cm on the map is n cm in reality. */
 function realCentimetres(n: number, mapCm: Rational): Rational {
   return multiply(mapCm, fromInteger(n));
+}
+
+/** The real distance of `mapCm` on the scale 1 : n, in `realUnit(n)`. */
+export function realDistance(n: number, mapCm: Rational): Rational {
+  return divide(realCentimetres(n, mapCm), fromInteger(CENTIMETRES_PER_UNIT[realUnit(n)]));
 }
 
 /** 'tekening' for a drawing, 'kaart' for a map. */
@@ -68,12 +68,9 @@ const MAX_REAL_DECIMALS: Readonly<Record<ScaleForm, number>> = {
 
 /** In [0,1; 1000] with at most the decimals of the form. */
 function isNiceRealDistance(form: ScaleForm, real: Rational): boolean {
-  const decimals = decimalPlaces(real);
   return (
-    decimals !== null &&
-    decimals <= MAX_REAL_DECIMALS[form] &&
-    compare(real, LEAST_REAL_DISTANCE) >= 0 &&
-    compare(real, MOST_REAL_DISTANCE) <= 0
+    hasAtMostDecimals(real, MAX_REAL_DECIMALS[form]) &&
+    isBetween(real, LEAST_REAL_DISTANCE, MOST_REAL_DISTANCE)
   );
 }
 

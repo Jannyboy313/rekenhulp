@@ -3,10 +3,10 @@ import { pick, range, type Rng } from '../random';
 import {
   add,
   compare,
-  decimalPlaces,
   divide,
   equals,
   fromInteger,
+  hasAtMostDecimals,
   HUNDRED,
   isInteger,
   multiply,
@@ -16,7 +16,7 @@ import {
   type Rational,
 } from '../rational';
 import { fractionStep, numberStep } from '../steps';
-import type { Diagnose } from '../tips';
+import { exactTip, firstTip, type Diagnose } from '../tips';
 import type { Question, Step } from '../types';
 
 export interface Percentage {
@@ -67,7 +67,8 @@ export const INCREASE_PERCENTAGES: readonly Percentage[] = PERCENTAGES.filter(
 const MIN_WHOLE = 10;
 const MAX_WHOLE = 1000;
 
-function hasAtMostTwoSignificantDigits(value: number): boolean {
+/** A positive integer without its trailing zeros is below 100: 350 and 85, not 357. */
+export function hasAtMostTwoSignificantDigits(value: number): boolean {
   let digits = value;
   while (digits % 10 === 0) digits /= 10;
   return digits < 100;
@@ -151,11 +152,6 @@ export function generatePercentages(rng: Rng): Question {
   }
 }
 
-export function hasAtMostTwoDecimals(value: Rational): boolean {
-  const decimals = decimalPlaces(value);
-  return decimals !== null && decimals <= MAX_DECIMALS;
-}
-
 /** An integer-valued candidate with probability INTEGER_SHARE, otherwise a non-integer one. */
 export function pickByIntegerShare<T>(
   rng: Rng,
@@ -171,7 +167,7 @@ export function pickByIntegerShare<T>(
 /** Every nice whole whose p% has at most 2 decimals. */
 function partsOf(p: Percentage): { whole: Rational; part: Rational }[] {
   return WHOLES.map((whole) => ({ whole, part: percentOf(p.value, whole) })).filter(({ part }) =>
-    hasAtMostTwoDecimals(part),
+    hasAtMostDecimals(part, MAX_DECIMALS),
   );
 }
 
@@ -224,7 +220,7 @@ function whatPercentage(rng: Rng): Question {
   );
 }
 
-function changedPrice(p: Percentage, price: Rational, increase: boolean): Rational {
+export function changedPrice(p: Percentage, price: Rational, increase: boolean): Rational {
   const change = percentOf(p.value, price);
   return increase ? add(price, change) : subtract(price, change);
 }
@@ -234,55 +230,49 @@ export function partTip(p: Percentage, whole: Rational): Diagnose {
   // At 100% or more there is no "rest" to confuse with the answer.
   if (compare(p.value, HUNDRED) >= 0) return () => undefined;
   const rest = subtract(whole, percentOf(p.value, whole));
-  return (given) =>
-    equals(given, rest)
-      ? `Dat is wat er overblijft; gevraagd is ${percentLabel(p.value)} zelf.`
-      : undefined;
+  return exactTip(rest, `Dat is wat er overblijft; gevraagd is ${percentLabel(p.value)} zelf.`);
 }
 
 /** `30 is ?% van 120` answered with 0,25, with 120 : 30 = 4, or with 400. */
 export function whatPercentageTip(part: Rational, whole: Rational): Diagnose {
-  const ratio = divide(part, whole);
   const inverse = divide(whole, part);
-  return (given) => {
-    if (equals(given, ratio)) {
-      return 'Dat is deel : geheel, nog geen percentage; × 100 geeft het percentage.';
-    }
-    if (equals(given, inverse) || equals(given, multiply(inverse, HUNDRED))) {
-      return 'Je hebt het geheel door het deel gedeeld; reken deel : geheel.';
-    }
-    return undefined;
-  };
+  const inverseTip = 'Je hebt het geheel door het deel gedeeld; reken deel : geheel.';
+  return firstTip(
+    exactTip(
+      divide(part, whole),
+      'Dat is deel : geheel, nog geen percentage; × 100 geeft het percentage.',
+    ),
+    exactTip(inverse, inverseTip),
+    exactTip(multiply(inverse, HUNDRED), inverseTip),
+  );
 }
 
 /** The change itself, or the change in the wrong direction. */
 export function priceChangeTip(p: Percentage, price: Rational, increase: boolean): Diagnose {
-  const change = percentOf(p.value, price);
-  const wrongWay = changedPrice(p, price, !increase);
-  return (given) => {
-    if (equals(given, change)) {
-      return increase
+  return firstTip(
+    exactTip(
+      percentOf(p.value, price),
+      increase
         ? 'Dat is de verhoging zelf; tel die nog op bij de prijs.'
-        : 'Dat is de korting zelf; trek die nog af van de prijs.';
-    }
-    if (equals(given, wrongWay)) {
-      return increase
+        : 'Dat is de korting zelf; trek die nog af van de prijs.',
+    ),
+    exactTip(
+      changedPrice(p, price, !increase),
+      increase
         ? 'Bij een verhoging wordt de prijs hoger: tel de verhoging op.'
-        : 'Bij korting wordt de prijs lager: trek de korting af.';
-    }
-    return undefined;
-  };
+        : 'Bij korting wordt de prijs lager: trek de korting af.',
+    ),
+  );
 }
 
 /** `20% is 14. Hoeveel is 100%?` answered with 20% of 14. */
 export function backToWholeTip(p: Percentage, part: Rational): Diagnose {
-  const mistaken = percentOf(p.value, part);
   const label = percentLabel(p.value);
   const shown = formatRational(part);
-  return (given) =>
-    equals(given, mistaken)
-      ? `Je hebt ${label} van ${shown} berekend, maar ${shown} is zelf al ${label}. Reken terug naar 100%.`
-      : undefined;
+  return exactTip(
+    percentOf(p.value, part),
+    `Je hebt ${label} van ${shown} berekend, maar ${shown} is zelf al ${label}. Reken terug naar 100%.`,
+  );
 }
 
 /** '25% = 60 : 4 = 15 → 60 − 15 = 45', with money formatting. */
@@ -300,7 +290,7 @@ function priceChange(rng: Rng): Question {
   const candidates = WHOLES.map((price) => ({
     price,
     answer: changedPrice(p, price, increase),
-  })).filter(({ answer }) => hasAtMostTwoDecimals(answer));
+  })).filter(({ answer }) => hasAtMostDecimals(answer, MAX_DECIMALS));
   const { price, answer } = pickByIntegerShare(rng, candidates, (candidate) => candidate.answer);
   return percentagesQuestion(
     increase ? 'increase' : 'discount',

@@ -7,7 +7,9 @@ import {
   divide,
   equals,
   fromInteger,
+  hasAtMostDecimals,
   HUNDRED,
+  isBetween,
   isInteger,
   multiply,
   ONE,
@@ -107,12 +109,9 @@ export function isNiceValue(
   value: Rational,
   maxValueExponent: number = METRIC_LIMITS.maxValueExponent,
 ): boolean {
-  const decimals = decimalPlaces(value);
   return (
-    decimals !== null &&
-    decimals <= MAX_DECIMALS &&
-    compare(value, powerOfTen(-MAX_DECIMALS)) >= 0 &&
-    compare(value, powerOfTen(maxValueExponent)) <= 0
+    hasAtMostDecimals(value, MAX_DECIMALS) &&
+    isBetween(value, powerOfTen(-MAX_DECIMALS), powerOfTen(maxValueExponent))
   );
 }
 

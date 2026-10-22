@@ -2,11 +2,11 @@ import { formatFraction, formatRational } from '../format';
 import { gcd } from '../primes';
 import { pick, range, type Rng } from '../random';
 import {
-  compare,
-  decimalPlaces,
   divide,
   equals,
   fromInteger,
+  hasAtMostDecimals,
+  isBetween,
   isInteger,
   multiply,
   ONE,
@@ -14,7 +14,7 @@ import {
   type Rational,
 } from '../rational';
 import { numberStep } from '../steps';
-import { firstTip, type Diagnose } from '../tips';
+import { exactTip, firstTip, type Diagnose } from '../tips';
 import type { Question } from '../types';
 import { HOUR, MINUTE, timeTip } from './measurement';
 
@@ -122,12 +122,8 @@ function ratioRows({ speed, duration }: Trip): { time: Duration; distance: Ratio
 /** At most 1 decimal everywhere in the ratio table, and the distance in [0,5; maximum]. */
 function isNiceTrip(trip: Trip): boolean {
   return (
-    compare(trip.distance, rational(1n, 2n)) >= 0 &&
-    compare(trip.distance, fromInteger(MAX_DISTANCE[trip.context])) <= 0 &&
-    ratioRows(trip).every(({ distance }) => {
-      const decimals = decimalPlaces(distance);
-      return decimals !== null && decimals <= 1;
-    })
+    isBetween(trip.distance, rational(1n, 2n), fromInteger(MAX_DISTANCE[trip.context])) &&
+    ratioRows(trip).every(({ distance }) => hasAtMostDecimals(distance, 1))
   );
 }
 
@@ -209,17 +205,15 @@ export function travelTip(form: TravelForm, trip: Trip): Diagnose {
   if (duration.unit === 'uur') return () => undefined;
   const minutes = formatRational(duration.amount);
   if (form === 'speed') {
-    const mistaken = divide(distance, duration.amount);
-    return (given) =>
-      equals(given, mistaken)
-        ? 'km/u is per uur: reken eerst uit hoeveel km je in 60 min aflegt.'
-        : undefined;
+    return exactTip(
+      divide(distance, duration.amount),
+      'km/u is per uur: reken eerst uit hoeveel km je in 60 min aflegt.',
+    );
   }
-  const mistaken = multiply(fromInteger(speed), duration.amount);
-  return (given) =>
-    equals(given, mistaken)
-      ? `${minutes} min is ${formatFraction(hoursOf(duration))} uur, niet ${minutes} uur.`
-      : undefined;
+  return exactTip(
+    multiply(fromInteger(speed), duration.amount),
+    `${minutes} min is ${formatFraction(hoursOf(duration))} uur, niet ${minutes} uur.`,
+  );
 }
 
 /** `hours` written in the unit of a time. */
@@ -355,10 +349,9 @@ export function speedConversionQuestion(
         answer: toMetresPerSecond ? ms : kmh,
         suffix: toMetresPerSecond ? 'm/s' : 'km/u',
         explanation: `1 m/s = 3600 m/u = ${factor} km/u → ${calculation}`,
-        diagnose: (given) =>
-          toMetresPerSecond && equals(given, mistaken)
-            ? `Naar m/s wordt het getal kleiner: deel door ${factor}.`
-            : undefined,
+        diagnose: toMetresPerSecond
+          ? exactTip(mistaken, `Naar m/s wordt het getal kleiner: deel door ${factor}.`)
+          : undefined,
       }),
     ],
   };
@@ -374,7 +367,7 @@ const FORMS: readonly SpeedForm[] = ['speed', 'distance', 'time', 'conversion'];
 export function generateSpeed(rng: Rng): Question {
   const form = pick(rng, FORMS);
   if (form === 'conversion') {
-    return speedConversionQuestion(pick(rng, [true, false]), pick(rng, METRES_PER_SECOND));
+    return speedConversionQuestion(rng() < 0.5, pick(rng, METRES_PER_SECOND));
   }
   const context = pick(rng, CONTEXTS);
   const speed = pick(rng, CONTEXT_SPEEDS[context]);

@@ -65,6 +65,11 @@ export function compare(a: Rational, b: Rational): -1 | 0 | 1 {
   return difference < 0n ? -1 : difference > 0n ? 1 : 0;
 }
 
+/** min ≤ value ≤ max. */
+export function isBetween(value: Rational, min: Rational, max: Rational): boolean {
+  return compare(value, min) >= 0 && compare(value, max) <= 0;
+}
+
 export function powerOfTen(exponent: number): Rational {
   if (!Number.isSafeInteger(exponent)) throw new RangeError(`Not a safe integer: ${exponent}`);
   const power = 10n ** BigInt(Math.abs(exponent));
@@ -85,6 +90,12 @@ export function decimalPlaces(value: Rational): number | null {
     fives++;
   }
   return den === 1n ? Math.max(twos, fives) : null;
+}
+
+/** Whether the value terminates within `max` decimals. */
+export function hasAtMostDecimals(value: Rational, max: number): boolean {
+  const decimals = decimalPlaces(value);
+  return decimals !== null && decimals <= max;
 }
 
 /** decimalPlaces for a value that must terminate; throws for e.g. 1/3. */

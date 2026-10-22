@@ -1,8 +1,8 @@
 import { formatInteger as f } from '../format';
 import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
-import { equals, fromInteger } from '../rational';
+import { fromInteger } from '../rational';
 import { numberStep } from '../steps';
-import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
+import { exactTip, positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Smart calculation (spec §5.9).
@@ -53,7 +53,7 @@ function signed(offset: number): string {
 export function compensationTip(near: NearRound, compensation: number, answer: number): Diagnose {
   const tip = `${f(near.value)} = ${f(near.round)} ${signed(near.offset)}, dus compenseer met ${signed(compensation)}, niet met ${signed(-compensation)}.`;
   const mistaken = fromInteger(answer - 2 * compensation);
-  return (given) => (equals(given, mistaken) ? tip : undefined);
+  return exactTip(mistaken, tip);
 }
 
 /**

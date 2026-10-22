@@ -3,7 +3,6 @@ import { gcd } from '../primes';
 import { pick, randomIntWhere, type Rng } from '../random';
 import {
   decimalPlaces,
-  equals,
   finiteDecimalPlaces,
   HUNDRED,
   multiply,
@@ -12,7 +11,7 @@ import {
   type Rational,
 } from '../rational';
 import { fractionStep, numberStep, simplestFractionStep } from '../steps';
-import type { Diagnose } from '../tips';
+import { exactTip } from '../tips';
 import type { Question, Step } from '../types';
 
 // Fraction ↔ decimal ↔ percentage (spec §5.20).
@@ -36,11 +35,6 @@ const FROM_PERCENT_TIP = 'Procent betekent honderdste: deel door 100.';
 
 function usesPercentageDenominators(direction: ConversionDirection): boolean {
   return direction === 'fractionToPercentage' || direction === 'percentageToFraction';
-}
-
-/** The tip when the answer equals `wrong` exactly. */
-function tipFor(wrong: Rational, tip: string): Diagnose {
-  return (given) => (equals(given, wrong) ? tip : undefined);
 }
 
 /** 37,5, or a mixed number for thirds and sixths: 33 1/3. Without the % sign. */
@@ -103,7 +97,7 @@ function conversionStep(direction: ConversionDirection, fraction: Rational): Ste
         diagnose:
           sideBySide === null
             ? undefined
-            : tipFor(sideBySide, `${shownFraction} betekent ${p} : ${q}, niet ${p},${q}.`),
+            : exactTip(sideBySide, `${shownFraction} betekent ${p} : ${q}, niet ${p},${q}.`),
       });
     }
     case 'decimalToFraction':
@@ -121,7 +115,7 @@ function conversionStep(direction: ConversionDirection, fraction: Rational): Ste
         suffix: '%',
         expected: percentNumber,
         explanation: toPercentExplanation(fraction),
-        diagnose: tipFor(fraction, TO_PERCENT_TIP),
+        diagnose: exactTip(fraction, TO_PERCENT_TIP),
       });
     case 'percentageToFraction':
       return simplestFractionStep({
@@ -136,14 +130,14 @@ function conversionStep(direction: ConversionDirection, fraction: Rational): Ste
         answer: percent,
         suffix: '%',
         explanation: `${shownDecimal()} = ${shownDecimal()} × 100% = ${percentNumber}%`,
-        diagnose: tipFor(fraction, TO_PERCENT_TIP),
+        diagnose: exactTip(fraction, TO_PERCENT_TIP),
       });
     case 'percentageToDecimal':
       return numberStep({
         prompt: `Schrijf als kommagetal: ${percentNumber}%`,
         answer: fraction,
         explanation: `${percentNumber}% = ${percentNumber} : 100 = ${shownDecimal()}`,
-        diagnose: tipFor(percent, FROM_PERCENT_TIP),
+        diagnose: exactTip(percent, FROM_PERCENT_TIP),
       });
   }
 }

@@ -6,6 +6,7 @@ import {
   divide,
   equals,
   fromInteger,
+  hasAtMostDecimals,
   HUNDRED,
   isInteger,
   multiply,
@@ -17,9 +18,9 @@ import { fractionStep, numberStep } from '../steps';
 import { firstTip, moneyTip, type Diagnose } from '../tips';
 import type { Question } from '../types';
 import {
+  changedPrice,
   DISCOUNT_PERCENTAGES,
   formatPercentage,
-  hasAtMostTwoDecimals,
   INCREASE_PERCENTAGES,
   NICE_WHOLES,
   partExplanation,
@@ -271,7 +272,6 @@ function newPercent(p: Percentage, increase: boolean): Rational {
 
 /** The base b = gcd(100, p) of the explanation, with 12½ for p = 12½ (on doubled integers). */
 function explanationBase(p: Percentage): Rational {
-  if (p.value.den > 2n) throw new RangeError('Only whole and half percentages are supported');
   const doubled = Number((p.value.num * 2n) / p.value.den);
   return rational(BigInt(gcd(200, doubled)), 2n);
 }
@@ -279,9 +279,9 @@ function explanationBase(p: Percentage): Rational {
 /** The new price, or null when it or the base amount of the explanation is no whole cents. */
 function newPriceOf(p: Percentage, increase: boolean, oldPrice: number): Rational | null {
   const old = fromInteger(oldPrice);
-  const newPrice = percentOf(newPercent(p, increase), old);
+  const newPrice = changedPrice(p, old, increase);
   const baseAmount = percentOf(explanationBase(p), old);
-  return hasAtMostTwoDecimals(newPrice) && hasAtMostTwoDecimals(baseAmount) ? newPrice : null;
+  return hasAtMostDecimals(newPrice, 2) && hasAtMostDecimals(baseAmount, 2) ? newPrice : null;
 }
 
 /**

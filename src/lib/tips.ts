@@ -18,6 +18,11 @@ export function firstTip(...diagnoses: readonly Diagnose[]): Diagnose {
   };
 }
 
+/** The tip when the answer equals `mistaken` exactly. */
+export function exactTip(mistaken: Rational, tip: string): Diagnose {
+  return (given) => (equals(given, mistaken) ? tip : undefined);
+}
+
 /**
  * The tip when the answer equals `mistaken` exactly, or `mistaken` rounded half up to cents
  * (spec §3.4.1, money exception).

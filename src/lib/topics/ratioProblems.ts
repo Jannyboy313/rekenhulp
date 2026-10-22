@@ -7,6 +7,7 @@ import {
   equals,
   fromInteger,
   HUNDRED,
+  isBetween,
   isInteger,
   multiply,
   ONE,
@@ -14,9 +15,10 @@ import {
   type Rational,
 } from '../rational';
 import { fractionStep, numberStep, simplestFractionStep } from '../steps';
-import { moneyTip, type Diagnose } from '../tips';
+import { exactTip, firstTip, moneyTip, type Diagnose } from '../tips';
 import type { Question } from '../types';
 import { formatPercentNumber } from './fractionConversion';
+import { hasAtMostTwoSignificantDigits } from './percentages';
 
 // Ratio word problems (spec §5.25): part of the whole, mixing and per unit.
 
@@ -203,11 +205,7 @@ function partTip(
   const otherTip =
     `Dat is het deel ${context.groups[otherIndex(index)]}; ` +
     `gevraagd is het deel ${context.groups[index]}.`;
-  return (given) => {
-    if (equals(given, ratio)) return ratioTip;
-    if (equals(given, otherPart)) return otherTip;
-    return undefined;
-  };
+  return firstTip(exactTip(ratio, ratioTip), exactTip(otherPart, otherTip));
 }
 
 // Mixing
@@ -269,13 +267,6 @@ export const MIX_CONTEXTS: readonly MixContext[] = [
 const MAX_MIX_TERM = 9;
 const MIN_MIX_PART = 2;
 const MAX_MIX_AMOUNT = 2000;
-/** An amount that is given must stay easy to divide: 350, not 357; 140, not 137. */
-const MAX_GIVEN_DIGITS = 2;
-
-/** The digits of a whole number without its trailing zeros: 350 has 2. */
-function significantDigits(value: number): number {
-  return String(value).replace(/0+$/, '').length;
-}
 
 /**
  * The amount a mixing prompt gives: the 'total' (from the total) or the amount of ingredient 0 or 1
@@ -307,7 +298,8 @@ function isMixPart(
   if (!Number.isInteger(part) || part < MIN_MIX_PART || part > context.maxPart) return false;
   const total = (a + b) * part;
   const givenAmount = givenParts(a, b, given) * part;
-  return total <= MAX_MIX_AMOUNT && significantDigits(givenAmount) <= MAX_GIVEN_DIGITS;
+  // An amount that is given must stay easy to divide: 350, not 357; 140, not 137.
+  return total <= MAX_MIX_AMOUNT && hasAtMostTwoSignificantDigits(givenAmount);
 }
 
 /**
@@ -414,16 +406,14 @@ function mixFromTotalTip(
 ): Diagnose {
   const total = fromInteger((a + b) * part);
   const otherAmount = fromInteger(termAt(a, b, otherIndex(asked)) * part);
-  const dividedByTerm = [a, b].map((term) => divide(total, fromInteger(term)));
   const otherTip =
     `Dat is de hoeveelheid ${context.ingredients[otherIndex(asked)].name}; ` +
     `gevraagd is ${context.ingredients[asked].withArticle}.`;
   const divideTip = `Deel eerst door het totaal aantal delen: ${a} + ${b} = ${a + b}.`;
-  return (given) => {
-    if (equals(given, otherAmount)) return otherTip;
-    if (dividedByTerm.some((divided) => equals(given, divided))) return divideTip;
-    return undefined;
-  };
+  return firstTip(
+    exactTip(otherAmount, otherTip),
+    ...[a, b].map((term) => exactTip(divide(total, fromInteger(term)), divideTip)),
+  );
 }
 
 /**
@@ -485,11 +475,11 @@ function mixFromPartTip(
   part: number,
   given: Index,
 ): Diagnose {
-  const total = fromInteger((a + b) * part);
-  const tip =
+  return exactTip(
+    fromInteger((a + b) * part),
     `Dat is de hele hoeveelheid ${context.mixture}; ` +
-    `gevraagd is alleen ${context.ingredients[otherIndex(given)].withArticle}.`;
-  return (answer) => (equals(answer, total) ? tip : undefined);
+      `gevraagd is alleen ${context.ingredients[otherIndex(given)].withArticle}.`,
+  );
 }
 
 // Per unit
@@ -557,10 +547,6 @@ function isWholeMultiple(value: Rational, unit: Rational): boolean {
   return isInteger(divide(value, unit));
 }
 
-function isBetween(value: Rational, min: number, max: number): boolean {
-  return compare(value, fromInteger(min)) >= 0 && compare(value, fromInteger(max)) <= 0;
-}
-
 /** A positive multiple of 1/amountParts counting units, the grid the amounts are written on. */
 function isOnAmountGrid({ amountParts }: UnitSettings, amount: Rational): boolean {
   return amount.num > 0n && isWholeMultiple(amount, rational(1n, BigInt(amountParts)));
@@ -609,13 +595,14 @@ function unitProblem(
   const settings = UNIT_SETTINGS[context];
   for (const amount of [first, second]) {
     const supported =
-      isBetween(amount, settings.minAmount, settings.maxAmount) && isOnAmountGrid(settings, amount);
+      isBetween(amount, fromInteger(settings.minAmount), fromInteger(settings.maxAmount)) &&
+      isOnAmountGrid(settings, amount);
     if (!supported) return `${formatFraction(amount)} is not a supported amount for ${context}`;
   }
   const unitPrice = divide(firstPrice, first);
   const cents = multiply(unitPrice, HUNDRED);
   const priceSupported =
-    isBetween(cents, settings.minPriceCents, settings.maxPriceCents) &&
+    isBetween(cents, fromInteger(settings.minPriceCents), fromInteger(settings.maxPriceCents)) &&
     isWholeMultiple(cents, fromInteger(settings.priceStepCents));
   if (!priceSupported) {
     return `${formatFraction(unitPrice)} is not a supported price per unit for ${context}`;

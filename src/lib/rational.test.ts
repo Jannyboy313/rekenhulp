@@ -7,7 +7,9 @@ import {
   equals,
   finiteDecimalPlaces,
   fromInteger,
+  hasAtMostDecimals,
   HUNDRED,
+  isBetween,
   isInteger,
   multiply,
   negate,
@@ -49,6 +51,28 @@ describe('constants', () => {
   it('holds 1 and 100', () => {
     expect(ONE).toEqual(rational(1n));
     expect(HUNDRED).toEqual(rational(100n));
+  });
+});
+
+describe('isBetween', () => {
+  it('includes both bounds', () => {
+    const min = rational(1n, 2n);
+    const max = fromInteger(3);
+    expect(isBetween(min, min, max)).toBe(true);
+    expect(isBetween(max, min, max)).toBe(true);
+    expect(isBetween(rational(2n, 5n), min, max)).toBe(false);
+    expect(isBetween(rational(301n, 100n), min, max)).toBe(false);
+  });
+});
+
+describe('hasAtMostDecimals', () => {
+  it.each([
+    [rational(7n), 0, true],
+    [rational(5n, 4n), 2, true],
+    [rational(5n, 4n), 1, false],
+    [rational(1n, 3n), 5, false],
+  ])('%o with at most %i decimals: %s', (value, max, expected) => {
+    expect(hasAtMostDecimals(value, max)).toBe(expected);
   });
 });
 
