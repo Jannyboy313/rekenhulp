@@ -848,7 +848,10 @@ There are three forms, each picked with equal probability:
 - **Scaling:** counts `a ≠ b` in `[2, 12]`. There are three contexts: pasta (g) and milk (ml)
   for a number of people, and the price of notebooks (`€`, input prefix). The amount has at
   most 2 significant digits and is at most 1000 (at most `€ 100` for prices). The amount for
-  `gcd(a, b)` is an integer, and the answer is at most 2000.
+  `gcd(a, b)` is an integer, and the answer is at most 2000. The amount per person or notebook
+  (`amount / a`) is realistic: pasta 50–150 g, milk 50–250 ml, notebooks € 1–5 (bounds
+  inclusive), so `Voor 12 personen: 10 g pasta` and `2 schriften kosten € 90` do not occur. A
+  drawn context with counts `a` and `b` that leaves no amount is redrawn.
 - **Dividing in ratio:** a simplified ratio `a : b` with `a ≠ b`, terms in `[1, 12]`. The total
   is `(a + b) × k` with `k ≥ 2` and is at most 500. The exercise asks for the largest or the
   smallest part, each equally likely.
