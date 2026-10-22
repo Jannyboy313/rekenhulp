@@ -1272,7 +1272,8 @@ There are three forms, each picked with equal probability:
   instead of "op de kaart" for `n ≤ 5000`.
 - The map distance is in `cm`, in `[0,5; 30]`, with at most 1 decimal and at most 2 significant
   digits. The real distance is in `[0,1; 1000]` in its unit with at most 2 decimals; in the
-  real → map form, where it has to be divided, with at most 1 decimal (`7,5 m`, not `24,75 m`).
+  real → map and find-the-scale forms, where it has to be divided, with at most 1 decimal
+  (`7,5 m`, not `24,75 m`).
 - The unit of the answer is the suffix; in the find-the-scale form the prefix is `1 :` and the
   answer is `n`. The user never types a unit.
 - Explanation: what 1 cm is in reality, then the calculation:
