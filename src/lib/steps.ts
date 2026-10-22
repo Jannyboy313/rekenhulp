@@ -18,7 +18,6 @@ import {
   ONE,
   parseDutchNumber,
   parseFraction,
-  parseMixedNumber,
   powerOfTen,
   rational,
   type Rational,
@@ -43,7 +42,7 @@ interface NumberStepOptions {
 /** Turns keypad input into a value. A fraction step also accepts 'a/b' and '12 1/2' (spec §6). */
 export function parseAnswer(kind: AnswerKind, input: string): Rational | null {
   return kind === 'fraction'
-    ? (parseFraction(input) ?? parseMixedNumber(input) ?? parseDutchNumber(input))
+    ? (parseFraction(input)?.value ?? parseDutchNumber(input))
     : parseDutchNumber(input);
 }
 
@@ -69,9 +68,6 @@ interface FractionAnswer {
   simplest: boolean;
 }
 
-// The typed terms of a fraction or a mixed number, after an optional sign.
-const FRACTION_TERMS = /^[-−]?(?:(\d+) )?(\d+)\/(\d+)$/;
-
 /** a/b with b ≥ 2 and gcd(a, b) = 1: normalising leaves the typed denominator as it is. */
 function inLowestTerms(num: bigint, den: bigint): boolean {
   return den >= 2n && num > 0n && rational(num, den).den === den;
@@ -79,18 +75,16 @@ function inLowestTerms(num: bigint, den: bigint): boolean {
 
 /** The value of fraction input and the form it was written in (spec §6). */
 export function parseFractionAnswer(input: string): FractionAnswer | null {
-  const value = parseAnswer('fraction', input);
-  if (value === null) return null;
-  const terms = FRACTION_TERMS.exec(input.trim());
+  const terms = parseFraction(input);
   if (terms === null) {
+    const value = parseDutchNumber(input);
+    if (value === null) return null;
     const decimal = input.includes(',');
     return { value, form: decimal ? 'decimal' : 'whole', simplest: !decimal };
   }
-  const [, whole, numerator = '', denominator = ''] = terms;
-  const num = BigInt(numerator);
-  const den = BigInt(denominator);
-  if (whole === undefined) return { value, form: 'fraction', simplest: inLowestTerms(num, den) };
-  const simplest = BigInt(whole) >= 1n && num < den && inLowestTerms(num, den);
+  const { value, whole, num, den } = terms;
+  if (whole === null) return { value, form: 'fraction', simplest: inLowestTerms(num, den) };
+  const simplest = whole >= 1n && num < den && inLowestTerms(num, den);
   return { value, form: 'mixed', simplest };
 }
 
@@ -170,7 +164,7 @@ function approximationTip(
 }
 
 function exactStep(
-  kind: AnswerKind,
+  kind: 'number' | 'fraction',
   { prompt, answer, prefix, suffix, explanation, diagnose, noPowerOfTenTip }: NumberStepOptions,
   expected: string,
 ): Step {

@@ -101,35 +101,34 @@ export function subtract(a: Rational, b: Rational): Rational {
   return rational(a.num * b.den - b.num * a.den, a.den * b.den);
 }
 
-// Optional ASCII or typographic minus, then numerator/denominator.
-const FRACTION = /^([-−])?(\d+)\/(\d+)$/;
+/** A typed fraction or mixed number: its value and its terms as written, without the sign. */
+export interface FractionTerms {
+  value: Rational;
+  /** The whole part of a mixed number; null for a fraction. */
+  whole: bigint | null;
+  num: bigint;
+  den: bigint;
+}
 
-/** Parses a fraction such as "25/2" or "−3/4". Returns null for anything else, incl. "1/0". */
-export function parseFraction(input: string): Rational | null {
+// Optional ASCII or typographic minus, an optional whole part and one space, then
+// numerator/denominator.
+const FRACTION = /^([-−])?(?:(\d+) )?(\d+)\/(\d+)$/;
+
+/**
+ * Parses a fraction such as "25/2" or "−3/4", or a mixed number such as "12 1/2" or "−12 1/2"
+ * (= −25/2). The sign applies to the whole number. An improper part ("12 5/3") is fine. Returns
+ * null for anything else, incl. "1/0" and "1 1/0".
+ */
+export function parseFraction(input: string): FractionTerms | null {
   const match = FRACTION.exec(input.trim());
   if (!match) return null;
-  const [, sign, numerator = '', denominator = ''] = match;
+  const [, sign, wholeDigits, numerator = '', denominator = ''] = match;
   const den = BigInt(denominator);
   if (den === 0n) return null;
   const num = BigInt(numerator);
-  return rational(sign ? -num : num, den);
-}
-
-// Optional ASCII or typographic minus, the whole part, one space, then numerator/denominator.
-const MIXED_NUMBER = /^([-−])?(\d+) (\d+)\/(\d+)$/;
-
-/**
- * Parses a mixed number such as "12 1/2" or "−12 1/2" (= −25/2). The sign applies to the whole
- * number. An improper part ("12 5/3") is fine. Returns null for anything else, incl. "1 1/0".
- */
-export function parseMixedNumber(input: string): Rational | null {
-  const match = MIXED_NUMBER.exec(input.trim());
-  if (!match) return null;
-  const [, sign, whole = '', numerator = '', denominator = ''] = match;
-  const den = BigInt(denominator);
-  if (den === 0n) return null;
-  const value = add(rational(BigInt(whole)), rational(BigInt(numerator), den));
-  return sign ? rational(-value.num, value.den) : value;
+  const whole = wholeDigits === undefined ? null : BigInt(wholeDigits);
+  const value = add(rational(whole ?? 0n), rational(num, den));
+  return { value: sign ? negate(value) : value, whole, num, den };
 }
 
 /** −value. */

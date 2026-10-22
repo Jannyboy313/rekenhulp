@@ -14,7 +14,6 @@ import {
   ONE,
   parseDutchNumber,
   parseFraction,
-  parseMixedNumber,
   power,
   powerOfTen,
   rational,
@@ -187,20 +186,6 @@ describe('parseFraction', () => {
     ['−3/4', rational(-3n, 4n)],
     [' 7/1 ', rational(7n)],
     ['0/5', rational(0n)],
-  ])('parses %j', (input, expected) => {
-    expect(parseFraction(input)).toEqual(expected);
-  });
-
-  it.each(['', '25', '12,5', '25/', '/2', '1/0', '1,5/2', '1/2/3', '2/-3', '1 1/2'])(
-    'rejects %j',
-    (input) => {
-      expect(parseFraction(input)).toBeNull();
-    },
-  );
-});
-
-describe('parseMixedNumber', () => {
-  it.each([
     ['12 1/2', rational(25n, 2n)],
     ['-12 1/2', rational(-25n, 2n)],
     ['−1 2/3', rational(-5n, 3n)],
@@ -208,15 +193,25 @@ describe('parseMixedNumber', () => {
     ['0 1/2', rational(1n, 2n)],
     [' 2 0/7 ', rational(2n)],
   ])('parses %j', (input, expected) => {
-    expect(parseMixedNumber(input)).toEqual(expected);
+    expect(parseFraction(input)?.value).toEqual(expected);
   });
 
-  it.each(['', '12', '1/2', '12 1/0', '12 /2', '12 1/', '12  1/2', '12,5 1/2', '12 -1/2', ' 1/2'])(
-    'rejects %j',
-    (input) => {
-      expect(parseMixedNumber(input)).toBeNull();
-    },
-  );
+  it('keeps the terms as written', () => {
+    expect(parseFraction('−12 2/4')).toEqual({
+      value: rational(-25n, 2n),
+      whole: 12n,
+      num: 2n,
+      den: 4n,
+    });
+    expect(parseFraction('2/4')).toMatchObject({ whole: null, num: 2n, den: 4n });
+  });
+
+  it.each([
+    ...['', '25', '12,5', '25/', '/2', '1/0', '1,5/2', '1/2/3', '2/-3'],
+    ...['12 1/0', '12 /2', '12 1/', '12  1/2', '12,5 1/2', '12 -1/2'],
+  ])('rejects %j', (input) => {
+    expect(parseFraction(input)).toBeNull();
+  });
 });
 
 describe('negate', () => {
