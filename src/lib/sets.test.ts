@@ -54,9 +54,9 @@ describe('practice sets', () => {
     expect(OPERATIONS_SET.name).toBe('Bewerkingen');
     expect(OPERATIONS_SET.tablesPercent).toBe(15);
     expect(OPERATIONS_SET.topics).toEqual([
-      { topic: 'orderOfOperations', weight: 1 },
-      { topic: 'properties', weight: 0.5 },
-      { topic: 'smartCalculation', weight: 1 },
+      { topic: 'orderOfOperations', weight: 2 },
+      { topic: 'properties', weight: 1 },
+      { topic: 'smartCalculation', weight: 2 },
     ]);
   });
 

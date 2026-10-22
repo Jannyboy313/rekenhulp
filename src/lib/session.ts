@@ -28,17 +28,16 @@ export function allocateQuotas<K>(
   if (total > 0 && items.length === 0) {
     throw new RangeError('Cannot allocate exercises without topics');
   }
-  if (items.some((item) => !(item.weight > 0))) {
-    throw new RangeError('Topic weights must be positive');
+  if (items.some((item) => !Number.isInteger(item.weight) || item.weight <= 0)) {
+    throw new RangeError('Topic weights must be positive integers');
   }
 
+  // Integer weights keep the arithmetic exact: remainders share the denominator weightSum.
   const weightSum = items.reduce((sum, item) => sum + item.weight, 0);
   const shares = items.map((item) => {
-    const exact = (total * item.weight) / weightSum;
-    const count = Math.floor(exact);
-    // Rounded so float noise (0.2000000001 vs 0.2) does not decide ties.
-    const remainder = Math.round((exact - count) * 1e9);
-    return { key: item.key, count, remainder, tieBreak: rng() };
+    const scaled = total * item.weight;
+    const count = Math.floor(scaled / weightSum);
+    return { key: item.key, count, remainder: scaled % weightSum, tieBreak: rng() };
   });
 
   let leftover = total - shares.reduce((sum, share) => sum + share.count, 0);

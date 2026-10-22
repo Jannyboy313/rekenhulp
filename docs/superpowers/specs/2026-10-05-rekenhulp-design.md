@@ -371,7 +371,7 @@ exercises.
 |-----------------------------|-----------------------------------------------------------------------------------|--------|---------|
 | **Tafels**                  | `tables`                                                                          | 100%   | v1      |
 | **Getallen & delers**       | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares`                 | 15%    | v1      |
-| **Bewerkingen**             | `orderOfOperations`, `properties` (weight 0.5), `smartCalculation`                | 15%    | v1      |
+| **Bewerkingen**             | `orderOfOperations` (2), `properties` (1), `smartCalculation` (2)                 | 15%    | v1      |
 | **Meten**                   | `volume`, `area`, `length`, `mass`, `time`, `numberUnits` (v1); `speed` (v2)      | 15%    | v1 + v2 |
 | **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale`, `ratioProblems` (v2)      | 15%    | v1 + v2 |
 | **Getalbegrip**             | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` | 15% | v2   |
@@ -385,8 +385,9 @@ The v2 sets follow the PABO tests: the RWT (year 1) and the LKT (kennisbasistoet
 v2 covers mental arithmetic and basic knowledge only; see §12 for the order, the scope and what
 moves to v3.
 
-`properties` has weight 0.5 because it is a two-step exercise and takes about 2–3× as long as
-the others.
+`properties` has half the weight of the other Bewerkingen topics because it is a two-step
+exercise and takes about 2–3× as long as the others. Weights are positive integers, so the
+quota arithmetic (§4.2) stays exact.
 
 With v2, the description of Verhoudingen on its card (§3.1) becomes "Procenten, verhoudingen en
 schaal".
@@ -425,7 +426,7 @@ Table share for each count:
 
 Examples with `n = 15`:
 
-- **Bewerkingen:** `r = 13`, weights 1 / 0.5 / 1, so the shares are 5,2 / 2,6 / 5,2. That gives
+- **Bewerkingen:** `r = 13`, weights 2 / 1 / 2, so the shares are 5,2 / 2,6 / 5,2. That gives
   orderOfOperations 5, properties 3 and smartCalculation 5.
 - **Getallen & delers:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is
   chosen at random.

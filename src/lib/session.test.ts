@@ -43,9 +43,9 @@ describe('allocateQuotas', () => {
   it('distributes by weight with the largest remainder (spec §4.2 Bewerkingen example)', () => {
     const quotas = allocateQuotas(
       [
-        { key: 'orderOfOperations', weight: 1 },
-        { key: 'properties', weight: 0.5 },
-        { key: 'smartCalculation', weight: 1 },
+        { key: 'orderOfOperations', weight: 2 },
+        { key: 'properties', weight: 1 },
+        { key: 'smartCalculation', weight: 2 },
       ],
       13,
       createRng(1),
@@ -83,8 +83,8 @@ describe('allocateQuotas', () => {
   it('gives every topic at least one exercise when the total allows', () => {
     const quotas = allocateQuotas(
       [
-        { key: 'big', weight: 1 },
-        { key: 'tiny', weight: 0.01 },
+        { key: 'big', weight: 100 },
+        { key: 'tiny', weight: 1 },
       ],
       5,
       createRng(1),
@@ -98,7 +98,7 @@ describe('allocateQuotas', () => {
       const count = 1 + Math.floor(rng() * 6);
       const items = Array.from({ length: count }, (_, key) => ({
         key,
-        weight: [0.5, 1, 2][Math.floor(rng() * 3)]!,
+        weight: [1, 2, 4][Math.floor(rng() * 3)]!,
       }));
       const total = Math.floor(rng() * 101);
       const values = [...allocateQuotas(items, total, rng).values()];
@@ -117,6 +117,7 @@ describe('allocateQuotas', () => {
   it('rejects invalid input', () => {
     expect(() => allocateQuotas([], 3, createRng(1))).toThrow(RangeError);
     expect(() => allocateQuotas([{ key: 'a', weight: 0 }], 3, createRng(1))).toThrow(RangeError);
+    expect(() => allocateQuotas([{ key: 'a', weight: 0.5 }], 3, createRng(1))).toThrow(RangeError);
   });
 });
 
