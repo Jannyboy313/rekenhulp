@@ -802,7 +802,8 @@ There are four forms, each picked with equal probability:
 | Back to 100%        | `20% is 14. Hoeveel is 100%?`             | 70     |
 
 - `p ∈ {1, 2, 5, 10, 12½, 15, 20, 25, 30, 40, 50, 60, 75, 80, 90, 120, 150}`
-  - `12½` is written as a mixed number in prompts: `12` followed by a stacked `½` (§8).
+  - `12½` is written as the mixed number `12 1/2` in prompts and explanations: `12` followed by
+    a stacked `1/2` (§8).
   - Discount uses only `p < 100`; increase uses only `p ≤ 50`.
 - The whole (the 100% amount, or the price) is an integer in `[10, 1000]` with at most 2
   significant digits: `85`, `470` and `1000`, but not `487`.
@@ -1618,9 +1619,10 @@ Required test cases (accept ✔ / reject ✘):
     otherwise 2 decimals (`€ 45`, `€ 25,50`)
   - fractions are always shown stacked, as written by hand: numerator, a horizontal bar,
     denominator. This applies to prompts, the input field, the feedback and the results.
-    Strings keep the text form `a/b` (and the glyph `½` in `12½%`). Only the UI renders them
-    stacked, with a hidden `/` so screen readers still read a fraction.
-  - mixed numbers show the whole part at normal height next to the stacked fraction: `12½%`
+    Strings keep the text form `a/b`, also for mixed numbers (`12 1/2%`, never a glyph like
+    `½`). Only the UI renders them stacked, with a hidden `/` so screen readers still read a
+    fraction.
+  - mixed numbers show the whole part at normal height next to the stacked fraction: `12 1/2%`
     is rendered as `12` with a stacked `1/2`. Next to the hidden `/`, a hidden ` en ` between
     the whole part and the fraction makes screen readers read `12 en 1/2`.
   - an expected answer with an improper value is a mixed number: `1 5/12` (§6)
