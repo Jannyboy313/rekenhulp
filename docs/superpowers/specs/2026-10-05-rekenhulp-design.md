@@ -1683,7 +1683,7 @@ in each set's own spec iteration.
 
 1. **Getalbegrip** — done, specified in §5.15–§5.19.
 2. **Breuken & kommagetallen** — done, specified in §5.20–§5.22.
-3. **Verhoudingen** (v2 part), specified in §5.23–§5.25
+3. **Verhoudingen** (v2 part) — done, specified in §5.23–§5.25
    - `percentChange`: the percentage of a change, VAT (21% and 9%) both ways, and the original
      price before a change.
    - `scale`: map scale ↔ real distance, and finding the scale.
