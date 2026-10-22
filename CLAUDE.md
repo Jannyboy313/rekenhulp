@@ -15,7 +15,7 @@ not all of it:
 
 ## Status
 
-Done: the sets Tafels, Meten (v1), Verhoudingen (v1 + v2: `percentChange`, `scale`,
+Done: the sets Tafels, Meten (v1 + v2: `speed`), Verhoudingen (v1 + v2: `percentChange`, `scale`,
 `ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip
 and Breuken & kommagetallen, plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1) and the table choice for Tafels (§3.2).
@@ -25,7 +25,6 @@ says so:
 
 | #   | Set                                                                                                  | New infrastructure                          |
 | --- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| 8   | **Meten** v2: `speed`                                                                                | —                                           |
 | 9   | **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`                                     | figures described in words                  |
 | 10  | **Verbanden & statistiek**: `statistics`, `sequences`, `formulas`, `equations`, `probability`        | —                                           |
 | 11  | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                              | text answer kind with letter keys           |

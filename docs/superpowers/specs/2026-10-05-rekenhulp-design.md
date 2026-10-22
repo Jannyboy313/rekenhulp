@@ -1690,7 +1690,7 @@ in each set's own spec iteration.
    - `ratioProblems`: word problems with a ratio: part of the whole, mixing, and per unit
      (added because the user finds these hardest in the book).
    - Infrastructure: none; uses the `€` prefix, the `1 :` prefix and the unit suffix.
-4. **Meten** (v2 part), specified in §5.26
+4. **Meten** (v2 part) — done, specified in §5.26
    - `speed`: distance, time and speed, and km/u ↔ m/s.
    - Infrastructure: none; its own module, because the factor 3,6 does not fit the conversion
      engine (§5.10).
