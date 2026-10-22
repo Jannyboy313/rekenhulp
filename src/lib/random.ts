@@ -42,11 +42,10 @@ export function randomIntWhere(
   max: number,
   accept: (value: number) => boolean,
 ): number {
-  for (let attempt = 0; attempt < 1000; attempt++) {
+  return drawUntil(() => {
     const value = randomInt(rng, min, max);
-    if (accept(value)) return value;
-  }
-  throw new RangeError(`No accepted integer found in [${min}, ${max}]`);
+    return accept(value) ? value : null;
+  });
 }
 
 /**

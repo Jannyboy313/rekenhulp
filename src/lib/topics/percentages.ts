@@ -12,6 +12,7 @@ import {
   multiply,
   rational,
   subtract,
+  TEN,
   type Rational,
 } from '../rational';
 import { fractionStep, numberStep } from '../steps';
@@ -53,7 +54,6 @@ export const PERCENTAGES: readonly Percentage[] = [
 
 const FIFTY = fromInteger(50);
 const FIFTEEN = fromInteger(15);
-const TEN = fromInteger(10);
 const FIVE = fromInteger(5);
 
 /** "120% korting" makes no sense; increases stay at most 50% (spec §5.12). */

@@ -24,6 +24,7 @@ export function fromInteger(value: number): Rational {
 }
 
 export const ONE = rational(1n);
+export const TEN = rational(10n);
 export const HUNDRED = rational(100n);
 
 export function equals(a: Rational, b: Rational): boolean {

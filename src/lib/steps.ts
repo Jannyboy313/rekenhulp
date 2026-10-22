@@ -8,6 +8,7 @@ import {
   formatRational,
   formatScientific,
 } from './format';
+import { MAX_EXPONENT_DIGITS } from './keypadInput';
 import { isPrime, primeFactors } from './primes';
 import {
   compare,
@@ -20,6 +21,7 @@ import {
   parseFraction,
   powerOfTen,
   rational,
+  TEN,
   type Rational,
 } from './rational';
 import { powerOfTenTip, type Diagnose } from './tips';
@@ -204,7 +206,7 @@ export function booleanStep({ prompt, answer, explanation }: BooleanStepOptions)
   };
 }
 
-export interface Factor {
+interface Factor {
   base: bigint;
   exponent: bigint;
 }
@@ -354,9 +356,6 @@ export interface ScientificInput {
   exponent: number | null;
 }
 
-/** Largest exponent magnitude accepted; matches the two exponent digits the keypad allows. */
-const MAX_SCIENTIFIC_EXPONENT = 99;
-
 // An optional coefficient and ×, then 10, ^ and an integer exponent: '4,5×10^-3', '10^6'.
 const SCIENTIFIC = /^(?:([\d,]+)×)?10\^([-−]?\d+)$/;
 
@@ -377,9 +376,8 @@ export function parseScientific(input: string): ScientificInput | null {
   const negative = exponentText.startsWith('-') || exponentText.startsWith('−');
   const digits = exponentText.replace(/^[-−]/, '').replace(/^0+(?=\d)/, '');
   // Check the digit string first, so a huge exponent never becomes a Number or a bigint.
-  if (digits.length > String(MAX_SCIENTIFIC_EXPONENT).length) return null;
+  if (digits.length > MAX_EXPONENT_DIGITS) return null;
   const magnitude = Number(digits);
-  if (magnitude > MAX_SCIENTIFIC_EXPONENT) return null;
   return { coefficient, exponent: negative ? -magnitude : magnitude };
 }
 
@@ -387,8 +385,6 @@ export function parseScientific(input: string): ScientificInput | null {
 export function scientificValue({ coefficient, exponent }: ScientificInput): Rational {
   return exponent === null ? coefficient : multiply(coefficient, powerOfTen(exponent));
 }
-
-const TEN = rational(10n);
 
 /** c × 10ⁿ with 1 ≤ c < 10; a plain number is never normalised. */
 export function isNormalised({ coefficient, exponent }: ScientificInput): boolean {

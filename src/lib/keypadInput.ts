@@ -149,12 +149,12 @@ export function applyExpressionKey(value: string, key: KeypadKey): string {
 }
 
 /** Whether a sum ends in a number or ')', so an operator or ')' may follow. */
-export function endsWithOperand(text: string): boolean {
+function endsWithOperand(text: string): boolean {
   return /[\d)]$/.test(text);
 }
 
 /** How many '(' in a sum are not closed yet. */
-export function openParentheses(text: string): number {
+function openParentheses(text: string): number {
   let open = 0;
   for (const char of text) {
     if (char === '(') open++;
@@ -167,7 +167,7 @@ export function openParentheses(text: string): number {
 export const MAX_SCIENTIFIC_LENGTH = 16;
 
 /** §5.19 exponents stay within two digits (10⁻⁹ … 10¹¹ in the normalise prompts). */
-const MAX_EXPONENT_DIGITS = 2;
+export const MAX_EXPONENT_DIGITS = 2;
 
 /**
  * Scientific input (spec §6): '4,5×10^-3', '10^6' or a plain number. The comma only in the first

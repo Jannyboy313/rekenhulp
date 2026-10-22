@@ -6,14 +6,12 @@ import {
   applyExpressionKey,
   applyScientificKey,
   EMPTY_FRACTION_INPUT,
-  endsWithOperand,
   MAX_EXPRESSION_LENGTH,
   fractionInputToString,
   MAX_FACTORIZATION_LENGTH,
   MAX_INPUT_LENGTH,
   MAX_SCIENTIFIC_LENGTH,
   MAX_SLOT_LENGTH,
-  openParentheses,
   selectFractionSlot,
   type FractionInput,
   type KeypadKey,
@@ -222,6 +220,13 @@ describe('applyExpressionKey', () => {
     expect(typeExpression(['(', '2', ')', ')'])).toBe('(2)');
   });
 
+  it('closes only the parentheses that are still open', () => {
+    expect(applyExpressionKey('((3+4', ')')).toBe('((3+4)');
+    expect(applyExpressionKey('((3+4)', ')')).toBe('((3+4))');
+    expect(applyExpressionKey('(3+4)×(2', ')')).toBe('(3+4)×(2)');
+    expect(applyExpressionKey('(3+4)', ')')).toBe('(3+4)');
+  });
+
   it('allows no digit directly after )', () => {
     expect(typeExpression(['(', '2', ')', '3'])).toBe('(2)');
   });
@@ -242,28 +247,6 @@ describe('applyExpressionKey', () => {
     expect(full).toHaveLength(MAX_EXPRESSION_LENGTH);
     expect(applyExpressionKey(full, '3')).toBe(full);
     expect(applyExpressionKey(full, 'backspace')).toBe(full.slice(0, -1));
-  });
-});
-
-describe('endsWithOperand', () => {
-  it('is true after a digit or a closing parenthesis', () => {
-    expect(endsWithOperand('12')).toBe(true);
-    expect(endsWithOperand('(3+4)')).toBe(true);
-  });
-
-  it('is false when empty or after an operator, comma or opening parenthesis', () => {
-    for (const text of ['', '3+', '3×', '(', '2,', '3=']) {
-      expect(endsWithOperand(text)).toBe(false);
-    }
-  });
-});
-
-describe('openParentheses', () => {
-  it('counts the parentheses that are still open', () => {
-    expect(openParentheses('')).toBe(0);
-    expect(openParentheses('((3+4')).toBe(2);
-    expect(openParentheses('(3+4)×(2')).toBe(1);
-    expect(openParentheses('(3+4)')).toBe(0);
   });
 });
 

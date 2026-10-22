@@ -128,15 +128,12 @@ export function formatPrimeFactors(factors: readonly PrimePower[]): string {
 
 /** Factorization keypad input '2^2×3×7' as '2² × 3 × 7'. A '^' without exponent stays visible. */
 export function formatFactorizationInput(raw: string): string {
-  return raw
-    .replace(/\^(\d+)/g, (_match, digits: string) => superscriptDigits(digits))
-    .replaceAll('×', ' × ');
+  return caretPowers(raw).replaceAll('×', ' × ');
 }
 
 /** A kladblok note '2^3=8 -3/4' as '2³=8 −3/4', compact. A '^' without exponent stays visible. */
 export function formatNote(raw: string): string {
-  const powers = raw.replace(/\^(\d+)/g, (_match, digits: string) => superscriptDigits(digits));
-  return formatInput(powers);
+  return formatInput(caretPowers(raw));
 }
 
 /** A kladblok note for screen readers: '1_2/3' as '1 en 2/3', '_3/4' as '3/4' (spec §3.6). */
@@ -159,10 +156,14 @@ export function formatScientific(coefficient: Rational, exponent: number): strin
  * stays visible, and so does a minus sign without digits: '10^-' as '10^−'.
  */
 export function formatScientificInput(raw: string): string {
-  const powers = raw.replace(
+  return formatInput(caretPowers(raw)).replaceAll('×', ' × ');
+}
+
+/** Typed powers '^3' and '^-3' as '³' and '⁻³'; a '^' or '^-' without digits stays visible. */
+function caretPowers(raw: string): string {
+  return raw.replace(
     /\^(-?)(\d+)/g,
     (_match, sign: string, digits: string) =>
       (sign === '' ? '' : SUPERSCRIPT_MINUS) + superscriptDigits(digits),
   );
-  return formatInput(powers).replaceAll('×', ' × ');
 }
