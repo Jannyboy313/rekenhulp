@@ -1348,7 +1348,8 @@ There are four forms, each picked with equal probability:
 | Conversion | `72 km/u = ? m/s`, `15 m/s = ? km/u`            | 20, 54 | `m/s`, `km/u` |
 
 - **Contexts** (speed, distance and time), each equally likely, with their speeds and the
-  largest distance:
+  largest distance. Within a context the speed is picked with equal probability, then a time or
+  distance that fits it:
 
   | Context  | Speeds (km/u)                    | Distance   | Prompts |
   |----------|----------------------------------|------------|---------|
