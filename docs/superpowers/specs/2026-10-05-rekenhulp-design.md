@@ -164,7 +164,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `speed`, time asked in min | the time in hours (`0,4`) | "Dat is in uren; gevraagd zijn minuten: 0,4 × 60 = 24." |
 | `speed`, time asked in uur | the time in minutes (`150`) | "Dat is in minuten; gevraagd zijn uren: 150 : 60 = 2,5." |
 | `speed`, time | the `time` mistakes above (100 per 60, decimals as minutes, remainder as decimals) | as for `time` |
-| `speed`, conversion | × and : swapped (`72 × 3,6`) | "Naar m/s wordt het getal kleiner: deel door 3,6." (to km/u: "Naar km/u wordt het getal groter: vermenigvuldig met 3,6.") |
+| `speed`, conversion to m/s | km/u × 3,6 instead of : 3,6 (`72 × 3,6`) | "Naar m/s wordt het getal kleiner: deel door 3,6." (the reverse mistake, m/s : 3,6, is never a finite decimal for the m/s values of §5.26) |
 | `numberUnits`, name → power | English short scale (biljoen → 10⁹) | "Een biljoen is 10¹²; 10⁹ is een miljard (Engels: billion)." |
 | `numberUnits`, name → power | shift of the coefficient forgotten | "250 = 2,5 × 10²: tel 2 op bij 6." |
 | `percentages`, part of whole | the rest (100% − p%) | "Dat is wat er overblijft; gevraagd is 25% zelf." |
