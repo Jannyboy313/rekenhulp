@@ -9,6 +9,7 @@ import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
 import { CORRECT_FEEDBACK_MS } from './Feedback.svelte';
 import PlayScreen from './PlayScreen.svelte';
+import { stubMatchMedia } from './testMatchMedia';
 
 function question(prompt: string, answer: number): Question {
   return {
@@ -22,8 +23,14 @@ async function press(...names: string[]) {
   for (const name of names) await fireEvent.click(screen.getByRole('button', { name }));
 }
 
-beforeEach(() => vi.useFakeTimers());
-afterEach(() => vi.useRealTimers());
+beforeEach(() => {
+  vi.useFakeTimers();
+  stubMatchMedia();
+});
+afterEach(() => {
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
+});
 
 describe('PlayScreen', () => {
   const questions = [question('2 × 3 = ?', 6), question('4 × 5 = ?', 20)];

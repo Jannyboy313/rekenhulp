@@ -1,9 +1,17 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
+import { SHORT_SCREENS } from '../lib/scratchpad';
 import Scratchpad from './Scratchpad.svelte';
+import source from './Scratchpad.svelte?raw';
 
 describe('Scratchpad', () => {
+  it('hides the cells in CSS exactly as SHORT_SCREENS lists them', () => {
+    for (const { query, visibleCells } of SHORT_SCREENS) {
+      expect(source).toContain(`@media ${query} {\n    .cell:nth-child(n + ${visibleCells + 1})`);
+    }
+  });
+
   it('labels each cell with its number and content and marks the active one', () => {
     render(Scratchpad, {
       props: { notes: ['900', '', '-2,5', '', '12×7=84 3-8=-5', ''], active: 2, onselect: vi.fn() },

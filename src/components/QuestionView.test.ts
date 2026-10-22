@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fromInteger, rational } from '../lib/rational';
 import {
   booleanStep,
@@ -11,6 +11,7 @@ import {
 } from '../lib/steps';
 import type { Step } from '../lib/types';
 import QuestionView from './QuestionView.svelte';
+import { stubMatchMedia } from './testMatchMedia';
 
 const step = numberStep({ prompt: '3 × 4 = ?', answer: fromInteger(12) });
 
@@ -303,6 +304,43 @@ describe('QuestionView', () => {
         .getAllByRole('button', { name: /^Kladblok vak/ })
         .map((button) => button.getAttribute('aria-label') ?? '');
     }
+
+    let media: ReturnType<typeof stubMatchMedia>;
+    beforeEach(() => {
+      media = stubMatchMedia();
+    });
+    afterEach(() => vi.unstubAllGlobals());
+
+    it('activates the answer field when a shorter screen hides the active cell', async () => {
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      await press(/^Kladblok vak 5:/, '7');
+      media.change('(max-height: 815px)', true);
+      await press('8');
+      expect(cell(5).getAttribute('aria-label')).toBe('Kladblok vak 5: 7');
+      expect(cell(5).getAttribute('aria-pressed')).toBe('false');
+      expect(answerText()).toBe('8');
+    });
+
+    it('keeps the active cell while it stays visible', async () => {
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      await press(/^Kladblok vak 3:/, '1');
+      media.change('(max-height: 815px)', true);
+      await press('2');
+      expect(cell(3).getAttribute('aria-label')).toBe('Kladblok vak 3: 12');
+      media.change('(max-height: 759px)', true);
+      await press('3');
+      expect(cell(3).getAttribute('aria-label')).toBe('Kladblok vak 3: 12');
+      expect(answerText()).toBe('3');
+    });
+
+    it('stops listening to the screen height when it is removed', () => {
+      const { unmount } = render(QuestionView, {
+        props: { step, scratchpad: true, onanswer: vi.fn() },
+      });
+      expect(media.listenerCount()).toBe(2);
+      unmount();
+      expect(media.listenerCount()).toBe(0);
+    });
 
     it('is hidden unless the step shows it', () => {
       render(QuestionView, { props: { step, onanswer: vi.fn() } });

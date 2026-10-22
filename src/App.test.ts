@@ -2,6 +2,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
+import { stubMatchMedia } from './components/testMatchMedia';
 import { choosesTables, DEFAULT_SESSION_SIZE, describeSetTopics, PRACTICE_SETS } from './lib/sets';
 
 async function click(name: string | RegExp) {
@@ -17,10 +18,12 @@ describe('App', () => {
   // A real history.back() fires a popstate later, which could leak into the next test.
   beforeEach(() => {
     vi.spyOn(history, 'back').mockImplementation(() => {});
+    stubMatchMedia();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('system back on setup and results returns to the overview', async () => {

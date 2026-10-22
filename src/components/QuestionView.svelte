@@ -2,7 +2,12 @@
   import { INPUT_MODELS } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
   import { promptSize } from '../lib/promptSize';
-  import { applyNoteKey, EMPTY_NOTES, type ScratchpadInput } from '../lib/scratchpad';
+  import {
+    applyNoteKey,
+    EMPTY_NOTES,
+    SHORT_SCREENS,
+    type ScratchpadInput,
+  } from '../lib/scratchpad';
   import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
   import KeypadAnswer from './KeypadAnswer.svelte';
@@ -22,6 +27,20 @@
 
   // This view is keyed per step, so every step starts with the answer field active.
   let activeNote = $state<number | null>(null);
+
+  // A shorter screen (split screen) can hide the active cell; keys then go to the answer field.
+  $effect(() => {
+    if (!scratchpad) return;
+    const removers = SHORT_SCREENS.map(({ query, visibleCells }) => {
+      const list = matchMedia(query);
+      const onchange = () => {
+        if (list.matches && activeNote !== null && activeNote >= visibleCells) activeNote = null;
+      };
+      list.addEventListener('change', onchange);
+      return () => list.removeEventListener('change', onchange);
+    });
+    return () => removers.forEach((remove) => remove());
+  });
 
   const scratch: ScratchpadInput | undefined = $derived(
     scratchpad

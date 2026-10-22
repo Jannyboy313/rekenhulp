@@ -5,6 +5,15 @@ import type { AnswerKind, Topic } from './types';
 /** Kladblok cells in a grid of 2 columns and 3 rows, in reading order (spec §3.6). */
 export const NOTE_COUNT = 6;
 
+/**
+ * The media queries with which Scratchpad.svelte hides the cells after the first `visibleCells`
+ * on short screens (spec §3.6). CSS cannot import them; a test keeps both in sync.
+ */
+export const SHORT_SCREENS: readonly { query: string; visibleCells: number }[] = [
+  { query: '(max-height: 815px)', visibleCells: 4 },
+  { query: '(max-height: 759px)', visibleCells: 2 },
+];
+
 /** A cell holds a few short sums; it clips on the left, so this only bounds the string. */
 export const MAX_NOTE_LENGTH = 40;
 

@@ -82,8 +82,8 @@
   }
 
   /* Shorter screens drop rows from the bottom, so the keypad stays on screen. Each row costs
-     56 px; the thresholds were checked on a phone on 2026-10-22 (spec §3.6). Tapping is the only
-     way to switch cells, so a hidden cell never becomes active. */
+     56 px; the thresholds were checked on a phone on 2026-10-22 (spec §3.6). Keep them in sync
+     with SHORT_SCREENS: QuestionView uses it to leave a cell that gets hidden. */
   @media (max-height: 815px) {
     .cell:nth-child(n + 5) {
       display: none;
