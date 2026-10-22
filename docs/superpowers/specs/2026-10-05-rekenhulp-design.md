@@ -115,7 +115,7 @@ deliberate longer sessions.
 - The prompt's font size depends on its length as displayed (a stacked fraction counts as its
   widest line): up to 18 characters large (2.5rem), up to 40 medium (1.75rem), longer small
   (1.375rem). Short sums stay large; word problems and property prompts no longer push the
-  keypad down. The thresholds are estimates, to be adjusted after the phone check.
+  keypad down. The thresholds were checked on a phone (2026-10-22).
 
 ### 3.4 Feedback per exercise
 
@@ -281,7 +281,7 @@ in the place of OK.
   screen edge: 3 rows from 816 px viewport height, 2 rows (4 cells) from 760 px
   (`max-height: 815px`), and only the top row (2 cells) below that (`max-height: 759px`).
   This is CSS only: a hidden cell cannot be tapped, so it never becomes active. The thresholds
-  come from a height estimate (56 px per row) and are checked on a phone.
+  come from a height estimate (56 px per row) and were checked on a phone (2026-10-22).
 - **When shown:** for every step that is not Ja/Nee, unless the question is a table exercise
   (topic `tables`, including the tables mixed into other sets). Tables are practised from
   memory.

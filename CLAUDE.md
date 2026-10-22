@@ -54,16 +54,6 @@ only the real choices, update and commit the spec, then implement directly with 
 
 ## Open follow-ups
 
-- Manual phone checks of the no-scroll play screen (spec §2): with long prompts plus kladblok
-  (Bewerkingen properties, Getalbegrip remainder prompts) only the prompt may shrink and scroll;
-  feedback with several stacked fractions plus a tip scrolls inside `.content` with **Verder**
-  fixed below. Also check the scientific keypad growing a row when a kladblok cell is active,
-  and that the `?` slot in `3/4 = ?/12` reads well.
-- Phone check for Verhoudingen v2: the longest prompts with the kladblok (`Bij een voorstelling
-  is volwassenen : kinderen = 2 : 3. Hoeveel procent van het publiek is volwassen?`), and the
-  `1 :` prefix in the answer field of `scale`.
-- Kladblok short-screen thresholds (`Scratchpad.svelte`: 816 px for 3 rows, 760 px for 2) are
-  estimates; adjust after the phone check.
 - Focus falls back to `body` after a screen or question change, and when the kladblok's "Naar
   antwoordveld" overlay is activated by keyboard (keyboard/screen-reader users only).
 - Android splash uses the light `background_color` in dark mode (cosmetic).
