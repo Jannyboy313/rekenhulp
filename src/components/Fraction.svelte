@@ -4,13 +4,16 @@
   interface Props {
     numerator: Snippet;
     denominator: Snippet;
+    /** The fraction part of a mixed number: a hidden ' en ' goes before it. */
+    mixed?: boolean;
   }
 
-  let { numerator, denominator }: Props = $props();
+  let { numerator, denominator, mixed = false }: Props = $props();
 </script>
 
-<!-- A handwritten-style fraction (spec §8). The hidden slash keeps it readable as '25/2'. -->
-<span class="fraction"
+<!-- A handwritten-style fraction (spec §8). The hidden slash keeps it readable as '25/2', and the
+  hidden ' en ' makes screen readers read '12½' as '12 en 1/2', not as '121/2'. -->
+{#if mixed}<span class="sr-only">{' en '}</span>{/if}<span class="fraction"
   ><span class="numerator">{@render numerator()}</span><span class="sr-only">/</span><span
     class="denominator">{@render denominator()}</span
   ></span

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fromInteger } from './rational';
-import { isCorrect, summarize, type QuestionRecord } from './results';
+import { isCorrect, summarize, wrongSteps, type QuestionRecord } from './results';
 import { numberStep } from './steps';
 
 function record(stepResults: boolean[], durationMs: number, answeredSteps = stepResults.length) {
@@ -21,6 +21,27 @@ describe('isCorrect', () => {
     expect(isCorrect(record([true, true], 1000))).toBe(true);
     expect(isCorrect(record([true, false], 1000))).toBe(false);
     expect(isCorrect(record([true, true], 1000, 1))).toBe(false);
+  });
+});
+
+describe('wrongSteps', () => {
+  it('lists only the steps that were answered wrongly', () => {
+    const twoSteps = record([true, false], 1000);
+    expect(wrongSteps([twoSteps])).toEqual([
+      { prompt: 'p1', kind: 'number', attempt: twoSteps.attempts[1] },
+    ]);
+  });
+
+  it('lists every wrong step of every record, in order', () => {
+    const first = record([false], 1000);
+    const second = record([false, false], 2000);
+    const prompts = wrongSteps([first, record([true], 1500), second]).map(({ prompt }) => prompt);
+    expect(prompts).toEqual(['p0', 'p0', 'p1']);
+  });
+
+  it('is empty without mistakes', () => {
+    expect(wrongSteps([record([true, true], 1000)])).toEqual([]);
+    expect(wrongSteps([])).toEqual([]);
   });
 });
 

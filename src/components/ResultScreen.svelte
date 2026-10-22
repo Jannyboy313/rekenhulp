@@ -1,7 +1,7 @@
 <script lang="ts">
   import { formatDuration, formatSeconds } from '../lib/format';
   import { displayAnswer } from '../lib/inputModels';
-  import type { SessionSummary } from '../lib/results';
+  import { wrongSteps, type SessionSummary } from '../lib/results';
   import type { PracticeSet } from '../lib/types';
   import MathText from './MathText.svelte';
 
@@ -14,17 +14,7 @@
 
   let { set, summary, onrestart, onmenu }: Props = $props();
 
-  // Flatten to one entry per wrong step, so multi-step questions show only the failing step.
-  const wrongSteps = $derived(
-    summary.mistakes.flatMap((record) =>
-      record.attempts
-        .map((attempt, index) => {
-          const step = record.question.steps[index];
-          return { prompt: step?.prompt ?? '', kind: step?.kind ?? 'number', attempt };
-        })
-        .filter(({ attempt }) => !attempt.result.correct),
-    ),
-  );
+  const failedSteps = $derived(wrongSteps(summary.mistakes));
 </script>
 
 <main class="results">
@@ -45,10 +35,10 @@
       <dd>{formatSeconds(summary.averageMs)}</dd>
     </dl>
 
-    {#if wrongSteps.length > 0}
+    {#if failedSteps.length > 0}
       <h2>Fouten</h2>
       <ul class="mistakes">
-        {#each wrongSteps as { prompt, kind, attempt }, index (index)}
+        {#each failedSteps as { prompt, kind, attempt }, index (index)}
           <li>
             <p class="prompt"><MathText text={prompt} /></p>
             <p>

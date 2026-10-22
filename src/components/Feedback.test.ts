@@ -1,13 +1,13 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import Feedback from './Feedback.svelte';
+import Feedback, { CORRECT_FEEDBACK_MS } from './Feedback.svelte';
 
 beforeEach(() => vi.useFakeTimers());
 afterEach(() => vi.useRealTimers());
 
 describe('Feedback', () => {
-  it('auto-advances 600 ms after a correct answer', async () => {
+  it(`auto-advances ${CORRECT_FEEDBACK_MS} ms after a correct answer`, async () => {
     const onnext = vi.fn();
     render(Feedback, {
       props: {
@@ -19,7 +19,7 @@ describe('Feedback', () => {
       },
     });
     expect(screen.getByText('Goed!')).toBeTruthy();
-    await vi.advanceTimersByTimeAsync(599);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS - 1);
     expect(onnext).not.toHaveBeenCalled();
     await vi.advanceTimersByTimeAsync(1);
     expect(onnext).toHaveBeenCalledOnce();

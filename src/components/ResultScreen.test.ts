@@ -58,4 +58,24 @@ describe('ResultScreen', () => {
       'Tip: Je antwoord is 10 keer te groot. Let op de komma en het aantal nullen.',
     );
   });
+
+  it('says all is well without mistakes', () => {
+    const step = numberStep({ prompt: '7 × 8 = ?', answer: fromInteger(56) });
+    const question: Question = { key: 'tables:product:7x8', topic: 'tables', steps: [step] };
+    const record: QuestionRecord = {
+      question,
+      attempts: [{ input: '56', result: step.check('56') }],
+      durationMs: 3000,
+    };
+    render(ResultScreen, {
+      props: {
+        set: TABLES_SET,
+        summary: summarize([record], 3000),
+        onrestart: vi.fn(),
+        onmenu: vi.fn(),
+      },
+    });
+    expect(screen.getByText('Alles goed!')).toBeTruthy();
+    expect(screen.queryByText('Fouten')).toBeNull();
+  });
 });

@@ -95,8 +95,7 @@ button:disabled {
   cursor: default;
 }
 
-button:focus-visible,
-input:focus-visible + span {
+button:focus-visible {
   outline: 3px solid var(--primary);
   outline-offset: 2px;
 }

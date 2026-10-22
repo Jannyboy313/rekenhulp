@@ -7,6 +7,7 @@ import { TABLES_SET } from '../lib/sets';
 import { booleanStep, numberStep } from '../lib/steps';
 import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
+import { CORRECT_FEEDBACK_MS } from './Feedback.svelte';
 import PlayScreen from './PlayScreen.svelte';
 
 function question(prompt: string, answer: number): Question {
@@ -35,11 +36,11 @@ describe('PlayScreen', () => {
     expect(screen.getByText('1 / 2')).toBeTruthy();
     await vi.advanceTimersByTimeAsync(2000);
     await press('6', 'OK');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     expect(screen.getByText('2 / 2')).toBeTruthy();
     await press('2', '0', 'OK');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     expect(onfinish).toHaveBeenCalledOnce();
     const [records, totalMs] = onfinish.mock.calls[0]!;
@@ -76,7 +77,7 @@ describe('PlayScreen', () => {
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
     await press('6', 'OK');
     expect(screen.getByRole('status').textContent?.trim()).toBe('Goed!');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     await press('9', 'OK');
     expect(screen.getByRole('status').textContent?.trim()).toBe('Fout. Juist antwoord: 20');
   });
@@ -87,7 +88,7 @@ describe('PlayScreen', () => {
       props: { set: TABLES_SET, questions: [questions[0]!], onfinish },
     });
     await press('6', 'OK', 'Stop');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     expect(onfinish).toHaveBeenCalledOnce();
   });
 
@@ -95,7 +96,7 @@ describe('PlayScreen', () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
     await press('6', 'OK');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     await press('2', 'Stop');
     expect(onfinish).toHaveBeenCalledOnce();
     expect(onfinish.mock.calls[0]![0]).toHaveLength(1);
@@ -120,7 +121,7 @@ describe('PlayScreen', () => {
     // The wrong answer brings the question back; it finishes once answered correctly.
     expect(onfinish).not.toHaveBeenCalled();
     await press('Nee');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     expect(onfinish).toHaveBeenCalledOnce();
   });
 
@@ -146,12 +147,12 @@ describe('PlayScreen', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Kladblok vak 1: leeg' }));
     await press('9', 'Naar antwoordveld', '9', 'OK');
     expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     expect(screen.getByText('20% van 90 = ?')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Kladblok vak 1: 9' })).toBeTruthy();
     await press('1', '8', 'OK');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     expect(screen.getByText('50% van 8 = ?')).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Kladblok vak 1: leeg' })).toBeTruthy();
@@ -187,7 +188,7 @@ describe('PlayScreen', () => {
     await press('Verder');
     expect(screen.getByText('7 × 98 = ?')).toBeTruthy();
     await press('6', '8', '6', 'OK');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     // One wrong step is enough to bring the whole question back.
     expect(screen.getByText('Herhaling')).toBeTruthy();
@@ -207,7 +208,7 @@ describe('PlayScreen', () => {
     expect(screen.getByText('4 × 5 = ?')).toBeTruthy();
     expect(screen.getByText('2 / 2')).toBeTruthy();
     await press('2', '0', 'OK');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     expect(screen.getByText('2 × 3 = ?')).toBeTruthy();
     expect(screen.getByText('Herhaling')).toBeTruthy();
@@ -216,7 +217,7 @@ describe('PlayScreen', () => {
     expect(screen.getByText('2 × 3 = ?')).toBeTruthy();
     expect(screen.getByText('Herhaling')).toBeTruthy();
     await press('6', 'OK');
-    await vi.advanceTimersByTimeAsync(600);
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     expect(onfinish).toHaveBeenCalledOnce();
     const [records] = onfinish.mock.calls[0]!;

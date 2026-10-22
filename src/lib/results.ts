@@ -1,4 +1,4 @@
-import type { CheckResult, Question } from './types';
+import type { AnswerKind, CheckResult, Question } from './types';
 
 export interface StepAttempt {
   input: string;
@@ -20,6 +20,25 @@ export interface SessionSummary {
   totalMs: number;
   averageMs: number;
   mistakes: QuestionRecord[];
+}
+
+/** A step answered wrongly, as the result screen lists it. */
+export interface WrongStep {
+  prompt: string;
+  kind: AnswerKind;
+  attempt: StepAttempt;
+}
+
+/** One entry per wrong step, so a multi-step question shows only the step that failed. */
+export function wrongSteps(records: readonly QuestionRecord[]): WrongStep[] {
+  return records.flatMap((record) =>
+    record.attempts
+      .map((attempt, index): WrongStep => {
+        const step = record.question.steps[index];
+        return { prompt: step?.prompt ?? '', kind: step?.kind ?? 'number', attempt };
+      })
+      .filter(({ attempt }) => !attempt.result.correct),
+  );
 }
 
 export function isCorrect(record: QuestionRecord): boolean {

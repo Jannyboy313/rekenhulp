@@ -1,29 +1,18 @@
 <script lang="ts">
-  import {
-    choosesTables,
-    DEFAULT_SESSION_SIZE,
-    describeSetTopics,
-    SESSION_SIZES,
-  } from '../lib/sets';
+  import { choosesTables, describeSetTopics, SESSION_SIZES } from '../lib/sets';
   import { TABLE_FACTORS } from '../lib/topics/tables';
   import type { PracticeSet } from '../lib/types';
 
   interface Props {
     set: PracticeSet;
-    size?: number;
+    size: number;
     /** Chosen tables; used by the Tafels set only (spec §3.2). */
-    tables?: number[];
+    tables: number[];
     onstart: () => void;
     onback: () => void;
   }
 
-  let {
-    set,
-    size = $bindable(DEFAULT_SESSION_SIZE),
-    tables = $bindable([...TABLE_FACTORS]),
-    onstart,
-    onback,
-  }: Props = $props();
+  let { set, size = $bindable(), tables = $bindable(), onstart, onback }: Props = $props();
 
   const canStart = $derived(!choosesTables(set) || tables.length > 0);
 </script>
@@ -165,6 +154,12 @@
   input:checked + span {
     background: var(--primary);
     color: var(--primary-text);
+  }
+
+  /* The input is invisible, so its span shows the focus ring that buttons get (app.css). */
+  input:focus-visible + span {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
   }
 
   .start {

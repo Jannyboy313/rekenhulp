@@ -2,6 +2,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
+import { choosesTables, DEFAULT_SESSION_SIZE, describeSetTopics, PRACTICE_SETS } from './lib/sets';
 
 async function click(name: string | RegExp) {
   await fireEvent.click(screen.getByRole('button', { name }));
@@ -127,47 +128,15 @@ describe('App', () => {
     expect(screen.getByText('1 / 15')).toBeTruthy();
   });
 
-  it('offers Meten with its topics and the tables share', async () => {
+  it.each(PRACTICE_SETS)('offers $name with its topics and starts a session', async (set) => {
     render(App);
-    await click(/Meten/);
-    expect(screen.getByRole('heading', { name: 'Meten' })).toBeTruthy();
-    expect(screen.getByText('Grote getallen (duizend t/m quadriljoen)')).toBeTruthy();
-    expect(screen.getByText('15% tafels')).toBeTruthy();
+    await click(new RegExp(`^${set.name}`));
+    expect(screen.getByRole('heading', { name: set.name })).toBeTruthy();
+    // Tafels shows the table choice instead (see above).
+    if (!choosesTables(set)) {
+      for (const label of describeSetTopics(set)) expect(screen.getByText(label)).toBeTruthy();
+    }
     await click('Start');
-    expect(screen.getByText('1 / 15')).toBeTruthy();
-  });
-
-  it('offers Verhoudingen with its topics and the tables share', async () => {
-    render(App);
-    await click(/Verhoudingen/);
-    expect(screen.getByRole('heading', { name: 'Verhoudingen' })).toBeTruthy();
-    expect(
-      screen.getByText('Procenten (deel, percentage, korting/verhoging, terug naar 100%)'),
-    ).toBeTruthy();
-    expect(screen.getByText('Verhoudingen (ontbrekend getal, herschalen, verdelen)')).toBeTruthy();
-    expect(screen.getByText('15% tafels')).toBeTruthy();
-    await click('Start');
-    expect(screen.getByText('1 / 15')).toBeTruthy();
-  });
-
-  it('offers Getallen & delers with its topics and the tables share', async () => {
-    render(App);
-    await click(/Getallen/);
-    expect(screen.getByRole('heading', { name: 'Getallen & delers' })).toBeTruthy();
-    expect(screen.getByText('KGV (kleinste gemene veelvoud)')).toBeTruthy();
-    expect(screen.getByText('Kwadraten en wortels (2² t/m 25²)')).toBeTruthy();
-    expect(screen.getByText('15% tafels')).toBeTruthy();
-    await click('Start');
-    expect(screen.getByText('1 / 15')).toBeTruthy();
-  });
-
-  it('offers Bewerkingen with its topics and the tables share', async () => {
-    render(App);
-    await click(/Bewerkingen/);
-    expect(screen.getByRole('heading', { name: 'Bewerkingen' })).toBeTruthy();
-    expect(screen.getByText('Eigenschappen (commutatief, associatief, distributief)')).toBeTruthy();
-    expect(screen.getByText('15% tafels')).toBeTruthy();
-    await click('Start');
-    expect(screen.getByText('1 / 15')).toBeTruthy();
+    expect(screen.getByText(`1 / ${DEFAULT_SESSION_SIZE}`)).toBeTruthy();
   });
 });
