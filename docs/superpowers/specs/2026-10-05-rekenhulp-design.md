@@ -159,6 +159,12 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `time` (min↔s, uur↔min, uur↔s) | conversion with 100 per 60 | "1 uur = 60 min, niet 100 min." |
 | `time`, larger → smaller, factor 60 | decimals read as minutes: 2,5 uur → 170 or 125 | "0,5 uur is 30 min, niet 50 min." |
 | `time`, smaller → larger, factor 60 | remainder written as decimals: 150 min → 2,3 | "30 min is 0,5 uur, niet 0,3 uur." |
+| `speed`, speed, time in min | the distance divided by the minutes (`6 : 20 = 0,3`) | "km/u is per uur: reken eerst uit hoeveel km je in 60 min aflegt." |
+| `speed`, distance, time in min | speed × minutes (`80 × 45 = 3600`) | "45 min is 3/4 uur, niet 45 uur." (the minutes as a fraction of an hour in simplest form) |
+| `speed`, time asked in min | the time in hours (`0,4`) | "Dat is in uren; gevraagd zijn minuten: 0,4 × 60 = 24." |
+| `speed`, time asked in uur | the time in minutes (`150`) | "Dat is in minuten; gevraagd zijn uren: 150 : 60 = 2,5." |
+| `speed`, time | the `time` mistakes above (100 per 60, decimals as minutes, remainder as decimals) | as for `time` |
+| `speed`, conversion | × and : swapped (`72 × 3,6`) | "Naar m/s wordt het getal kleiner: deel door 3,6." (to km/u: "Naar km/u wordt het getal groter: vermenigvuldig met 3,6.") |
 | `numberUnits`, name → power | English short scale (biljoen → 10⁹) | "Een biljoen is 10¹²; 10⁹ is een miljard (Engels: billion)." |
 | `numberUnits`, name → power | shift of the coefficient forgotten | "250 = 2,5 × 10²: tel 2 op bij 6." |
 | `percentages`, part of whole | the rest (100% − p%) | "Dat is wat er overblijft; gevraagd is 25% zelf." |
@@ -1327,6 +1333,54 @@ There are three forms, each picked with equal probability:
   - Explanation: the ratio table, `1,5 kg → € 12, 100 g → € 0,80, 400 g → € 3,20`.
 - The de-duplication key is the form, the context and the numbers.
 
+### 5.26 Speed (`speed`)
+
+Part of the set Meten (v2). Its own module `topics/speed.ts`: km/u ↔ m/s has the factor 3,6,
+which fits neither the decimal scales nor the integer factors of the conversion engine (§5.10).
+
+There are four forms, each picked with equal probability:
+
+| Form       | Example                                         | Answer | Suffix |
+|------------|-------------------------------------------------|--------|--------|
+| Speed      | `Je fietst 6 km in 20 min. Hoe snel is dat?`    | 18     | `km/u` |
+| Distance   | `Een auto rijdt 80 km/u. Hoeveel km rijdt de auto in 45 min?` | 60 | `km` |
+| Time       | `Je wandelt 5 km/u. Hoe lang doe je over 2 km?` | 24     | `min`  |
+| Conversion | `72 km/u = ? m/s`, `15 m/s = ? km/u`            | 20, 54 | `m/s`, `km/u` |
+
+- **Contexts** (speed, distance and time), each equally likely, with their speeds and the
+  largest distance:
+
+  | Context  | Speeds (km/u)                    | Distance   | Prompts |
+  |----------|----------------------------------|------------|---------|
+  | wandelen | 4, 5, 6                          | ≤ 20 km    | `Je wandelt 3 km in 45 min. Hoe snel is dat?`, `Je wandelt 5 km/u. Hoeveel km loop je in 45 min?`, `Je wandelt 5 km/u. Hoe lang doe je over 2 km?` |
+  | fietsen  | 12, 15, 16, 18, 20, 24           | ≤ 80 km    | `Je fietst …`, `Je fietst 18 km/u. Hoeveel km fiets je in 40 min?`, `Je fietst 18 km/u. Hoe lang doe je over 12 km?` |
+  | auto     | 30, 50, 60, 80, 90, 100, 120     | ≤ 400 km   | `Een auto rijdt 60 km in 45 min. Hoe snel is dat?`, `Een auto rijdt 80 km/u. Hoeveel km rijdt de auto in 45 min?`, `Een auto rijdt 80 km/u. Hoe lang doet de auto over 60 km?` |
+  | trein    | 80, 100, 120, 150                | ≤ 500 km   | as auto, with `trein` |
+
+- **Times** in the prompt: in `min` from `{10, 12, 15, 20, 30, 40, 45}` or in `uur` from
+  `{1,5; 2; 2,5; 3; 4}`. Never mixed notation such as `1 uur 45 min` (§5.10).
+- **Distances** are at least 0,5 km and whole or with 1 decimal.
+- **Speed and distance:** the speed comes from the context, the time from the list above, the
+  distance is speed × time. Every value in the ratio table of the explanation has at most 1
+  decimal, so `5 km/u in 10 min` (0,83 km) does not occur.
+- **Time:** the speed comes from the context and the distance is a whole number of km. The time
+  is a whole number of minutes in `[5, 59]`, asked in `min`, or one of the hour values above,
+  asked in `uur`. The step value of the table is a whole number of minutes, or of half hours.
+- **Conversion:** the speed in m/s is a multiple of 5 in `[5, 40]`, so km/u is 18, 36, …, 144.
+  The direction is 50/50.
+- Explanation: a ratio table, with one step via the greatest common divisor where needed. A
+  step equal to the first or last row is left out.
+  - speed: `20 min → 6 km, 60 min → 18 km`, `45 min → 3 km, 15 min → 1 km, 60 min → 4 km`,
+    `2,5 uur → 50 km, 0,5 uur → 10 km, 1 uur → 20 km`, `2 uur → 40 km, 1 uur → 20 km`
+  - distance: `60 min → 80 km, 15 min → 20 km, 45 min → 60 km`,
+    `1 uur → 120 km, 0,5 uur → 60 km, 2,5 uur → 300 km`
+  - time: `5 km → 60 min, 1 km → 12 min, 2 km → 24 min`,
+    `120 km → 1 uur, 60 km → 0,5 uur, 300 km → 2,5 uur` (the step `gcd(speed, distance)` km)
+  - conversion: `1 m/s = 3600 m/u = 3,6 km/u → 20 × 3,6 = 72`, and `… → 72 : 3,6 = 20`
+- The de-duplication key is the form, the context and the numbers.
+- With `speed`, the description of Meten on its card (§3.1) becomes "Eenheden, grote getallen
+  en snelheid".
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -1635,9 +1689,10 @@ in each set's own spec iteration.
    - `ratioProblems`: word problems with a ratio: part of the whole, mixing, and per unit
      (added because the user finds these hardest in the book).
    - Infrastructure: none; uses the `€` prefix, the `1 :` prefix and the unit suffix.
-4. **Meten** (v2 part)
+4. **Meten** (v2 part), specified in §5.26
    - `speed`: distance, time and speed, and km/u ↔ m/s.
-   - Infrastructure: compound units in the conversion engine (§5.10).
+   - Infrastructure: none; its own module, because the factor 3,6 does not fit the conversion
+     engine (§5.10).
 5. **Meetkunde** (new set)
    - `perimeterArea`: perimeter and area of a square, rectangle, triangle, parallelogram,
      trapezium and circle (`π ≈ 3,14`, with numbers that can be done mentally).

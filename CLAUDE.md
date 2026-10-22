@@ -25,7 +25,7 @@ says so:
 
 | #   | Set                                                                                                  | New infrastructure                          |
 | --- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| 8   | **Meten** v2: `speed`                                                                                | compound units in the conversion engine     |
+| 8   | **Meten** v2: `speed`                                                                                | —                                           |
 | 9   | **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`                                     | figures described in words                  |
 | 10  | **Verbanden & statistiek**: `statistics`, `sequences`, `formulas`, `equations`, `probability`        | —                                           |
 | 11  | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                              | text answer kind with letter keys           |
