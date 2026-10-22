@@ -12,6 +12,7 @@ export type Topic =
   | 'length'
   | 'mass'
   | 'time'
+  | 'speed'
   | 'numberUnits'
   | 'percentages'
   | 'ratios'

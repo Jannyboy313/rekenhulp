@@ -25,6 +25,7 @@ import { generateRounding } from './rounding';
 import { generateScale } from './scale';
 import { generateScientificNotation } from './scientificNotation';
 import { generateSmartCalculation } from './smartCalculation';
+import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
 import { generateTables } from './tables';
 
@@ -35,6 +36,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   length: generateLength,
   mass: generateMass,
   time: generateTime,
+  speed: generateSpeed,
   numberUnits: generateNumberUnits,
   percentages: generatePercentages,
   ratios: generateRatios,
@@ -68,6 +70,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   length: 'Lengte (mm t/m km)',
   mass: 'Gewicht (mg t/m ton)',
   time: 'Tijd (s, min, uur, dag)',
+  speed: 'Snelheid (afstand, tijd, km/u en m/s)',
   numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
