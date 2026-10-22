@@ -1525,7 +1525,9 @@ The keypad is custom. The system keyboard is never opened.
 
 ### 7.1 Rewrite checker
 
-`checkRewrite(original, rewritten, property | 'any') → { valid, detected: Property[], reason }`
+`checkRewrite(original, rewritten, property) → { valid: true }`, or `{ valid: false, reason }`
+with `detected: Property` (the first detected property, in the order commutative, associative,
+distributive) when the reason is `otherProperty`
 
 A step is a single valid application of property P when the value is preserved, the rewritten
 expression differs from the original, and exactly one of the following matches:
@@ -1564,8 +1566,8 @@ How the checker decides, in this order:
    that contains every difference: descend while both nodes have the same type, operator and
    number of children and exactly one child differs. "Everything else in the AST is identical"
    holds by construction; the three property tests above are applied to the difference root.
-5. If the required property is among the detected ones (or `'any'` and at least one is
-   detected), the step is valid. If another property is detected: reason `otherProperty`.
+5. If the required property is among the detected ones, the step is valid. If another property
+   is detected: reason `otherProperty`.
 6. Otherwise, when the difference root of the original is a `−` or `:` and both roots contain
    the same numbers: reason `notForMinusOrDivide`. When only one number was written
    differently (`7 × 98` → `7 × (100 − 2)`, or `7 × 98` → `7 × 49 × 2` within a chain), or

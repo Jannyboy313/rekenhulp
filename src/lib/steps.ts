@@ -343,7 +343,7 @@ export function rewriteStep({
       if (result.valid) return { correct: true, expected: example };
       const explanation =
         result.reason === 'otherProperty'
-          ? otherProperty(result.detected[0])
+          ? otherProperty(result.detected)
           : REWRITE_MESSAGES[result.reason];
       return { correct: false, expected: example, explanation };
     },

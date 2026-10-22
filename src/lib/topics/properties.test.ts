@@ -154,8 +154,8 @@ describe('drawPropertyExercise', () => {
         const rewrite = parse(exercise.rewrites[property]!)!;
         expect(checkRewrite(original, rewrite, exercise.intended)).toEqual({
           valid: false,
-          detected: [property],
           reason: 'otherProperty',
+          detected: property,
         });
       }
     }

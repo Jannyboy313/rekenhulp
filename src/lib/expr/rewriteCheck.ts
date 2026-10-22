@@ -17,21 +17,20 @@ export type RewriteReason =
   | 'notForMinusOrDivide'
   | 'multipleSteps';
 
-/** `detected`: every property of which the step is a single valid application. */
+/** `detected`: the first property, in PROPERTIES order, that the step validly applies. */
 type RewriteResult =
-  | { valid: true; detected: Property[]; reason: null }
-  | { valid: false; detected: [Property, ...Property[]]; reason: 'otherProperty' }
-  | { valid: false; detected: Property[]; reason: Exclude<RewriteReason, 'otherProperty'> };
+  | { valid: true }
+  | { valid: false; reason: 'otherProperty'; detected: Property }
+  | { valid: false; reason: Exclude<RewriteReason, 'otherProperty'> };
 
 /** Whether `rewritten` is a single valid application of `property` to `original` (§7.1). */
 export function checkRewrite(
   originalInput: Expr,
   rewrittenInput: Expr,
-  property: Property | 'any',
+  property: Property,
 ): RewriteResult {
   const reject = (reason: Exclude<RewriteReason, 'otherProperty'>): RewriteResult => ({
     valid: false,
-    detected: [],
     reason,
   });
   const original = dropRedundantGroups(originalInput);
@@ -46,13 +45,9 @@ export function checkRewrite(
 
   const [from, to] = differenceRoot(toChains(original), toChains(rewritten));
   const detected = PROPERTIES.filter((candidate) => DETECTORS[candidate](from, to));
-  if (property === 'any' ? detected.length > 0 : detected.includes(property)) {
-    return { valid: true, detected, reason: null };
-  }
-  const [first, ...rest] = detected;
-  if (first !== undefined) {
-    return { valid: false, detected: [first, ...rest], reason: 'otherProperty' };
-  }
+  if (detected.includes(property)) return { valid: true };
+  const [first] = detected;
+  if (first !== undefined) return { valid: false, reason: 'otherProperty', detected: first };
   const reordered = from.type === 'binary' && isPermutation(numbers(from), numbers(to));
   if (reordered) return reject('notForMinusOrDivide');
   if (isOnlyRewrittenOrWorkedOut(from, to)) return reject('noProperty');

@@ -2,16 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { parse } from './parser';
 import { checkRewrite, PROPERTIES, type Property, type RewriteReason } from './rewriteCheck';
 
-function check(original: string, rewritten: string, property: Property | 'any') {
+function check(original: string, rewritten: string, property: Property) {
   return checkRewrite(parse(original)!, parse(rewritten)!, property);
 }
 
-type Case = [string, Property | 'any', string, RewriteReason | null];
+type Case = [string, Property, string, RewriteReason | null];
 
 function expectCase([original, property, rewritten, reason]: Case) {
   const result = check(original, rewritten, property);
-  expect(result.reason).toBe(reason);
-  expect(result.valid).toBe(reason === null);
+  expect(result.valid ? null : result.reason).toBe(reason);
 }
 
 describe('checkRewrite', () => {
@@ -55,7 +54,7 @@ describe('checkRewrite', () => {
     ['12 : 3 : 2', 'commutative', '12 : 2 : 3', 'notForMinusOrDivide'],
     ['2 × ((17 + 25) + 75)', 'associative', '2 × (17 + (25 + 75))', null],
     ['7 × 98 + 1', 'distributive', '7 × 100 − 7 × 2 + 1', null],
-    ['5 : 1', 'any', '5 : (1 − 1)', 'valueChanged'],
+    ['5 : 1', 'distributive', '5 : (1 − 1)', 'valueChanged'],
     ['6 × (40 + 3)', 'distributive', '(6 × 40) + (6 × 3)', null],
     ['7 × 13 + 7 × 87', 'commutative', '(7 × 87) + (7 × 13)', null],
     ['7 × 98', 'commutative', '(98 × 7)', null],
@@ -68,11 +67,11 @@ describe('checkRewrite', () => {
     ['7 × 13 + 7 × 87', 'distributive', '(13 + 87) × 7', null],
     ['7 × 13 + 7 × 87', 'distributive', '7 × (87 + 13)', 'multipleSteps'],
     ['7 × 13 + 7 × 87', 'distributive', '7 × 100', 'multipleSteps'],
-    ['38 + 57 + 62', 'any', '38 + 50 + 7 + 62', 'noProperty'],
+    ['38 + 57 + 62', 'associative', '38 + 50 + 7 + 62', 'noProperty'],
     ['(17 + 25) + 75', 'associative', '((17 + 25)) + 75', 'unchanged'],
     ['((17 + 25)) + 75', 'associative', '17 + (25 + 75)', null],
     ['7 × 98', 'distributive', '(686)', 'valueOnly'],
-    ['20 − 5 − 3', 'any', '20 − (5 − 3)', 'valueChanged'],
+    ['20 − 5 − 3', 'associative', '20 − (5 − 3)', 'valueChanged'],
     ['6 × (40 + 3)', 'distributive', '6 × 43', 'noProperty'],
     ['25 × 37 × 4', 'commutative', '25 × 148', 'noProperty'],
     ['(17 + 25) + 75', 'associative', '42 + 75', 'noProperty'],
@@ -83,24 +82,28 @@ describe('checkRewrite', () => {
   it('reports the property of a valid step with another property', () => {
     expect(check('7 × 98', '98 × 7', 'distributive')).toEqual({
       valid: false,
-      detected: ['commutative'],
       reason: 'otherProperty',
+      detected: 'commutative',
     });
     expect(check('38 + 57 + 62', '38 + (57 + 62)', 'commutative')).toEqual({
       valid: false,
-      detected: ['associative'],
       reason: 'otherProperty',
+      detected: 'associative',
+    });
+    expect(check('38 + 57 + 62', '62 + 57 + 38', 'associative')).toEqual({
+      valid: false,
+      reason: 'otherProperty',
+      detected: 'commutative',
+    });
+    expect(check('7 × 98', '7 × 90 + 7 × 8', 'commutative')).toEqual({
+      valid: false,
+      reason: 'otherProperty',
+      detected: 'distributive',
     });
   });
 
-  it('accepts any single property with any', () => {
-    expect(check('38 + 57 + 62', '62 + 57 + 38', 'any')).toEqual({
-      valid: true,
-      detected: ['commutative'],
-      reason: null,
-    });
-    expect(check('(17 + 25) + 75', '17 + (25 + 75)', 'any').detected).toEqual(['associative']);
-    expect(check('7 × 98', '7 × 90 + 7 × 8', 'any').detected).toEqual(['distributive']);
+  it('reports nothing more than validity for the asked property', () => {
+    expect(check('38 + 57 + 62', '62 + 57 + 38', 'commutative')).toEqual({ valid: true });
   });
 
   it('lists the properties in a fixed order', () => {
