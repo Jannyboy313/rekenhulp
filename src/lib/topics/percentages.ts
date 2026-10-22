@@ -79,10 +79,10 @@ export const NICE_WHOLES: readonly number[] = range(MIN_WHOLE, MAX_WHOLE).filter
   hasAtMostTwoSignificantDigits,
 );
 
-/** '15' or '12½'. Percentages are whole or half (spec §8). */
+/** '15' or '12 1/2'. Percentages are whole or half (spec §8). */
 export function formatPercentage(value: Rational): string {
   if (isInteger(value)) return formatRational(value);
-  if (value.den === 2n && value.num > 0n) return `${formatInteger((value.num - 1n) / 2n)}½`;
+  if (value.den === 2n && value.num > 0n) return `${formatInteger((value.num - 1n) / 2n)} 1/2`;
   throw new RangeError('Only whole and half percentages are supported');
 }
 
@@ -197,7 +197,7 @@ function partOfWhole(rng: Rng): Question {
 }
 
 /**
- * `30 is ?% van 120`. Always a fraction step, so `12½` can be typed as `25/2` and the breuk key
+ * `30 is ?% van 120`. Always a fraction step, so `12 1/2` can be typed as `25/2` and the breuk key
  * does not give the answer away.
  */
 function whatPercentage(rng: Rng): Question {

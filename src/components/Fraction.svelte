@@ -12,7 +12,7 @@
 </script>
 
 <!-- A handwritten-style fraction (spec §8). The hidden slash keeps it readable as '25/2', and the
-  hidden ' en ' makes screen readers read '12½' as '12 en 1/2', not as '121/2'. -->
+  hidden ' en ' makes screen readers read '12 1/2' as '12 en 1/2', not as '121/2'. -->
 {#if mixed}<span class="sr-only">{' en '}</span>{/if}<span class="fraction"
   ><span class="numerator">{@render numerator()}</span><span class="sr-only">/</span><span
     class="denominator">{@render denominator()}</span

@@ -19,8 +19,8 @@ describe('MathText', () => {
     expect(container.textContent).toBe('12,5 of 25/2');
   });
 
-  it('stacks the ½ of 12½% next to the whole part and reads it as a mixed number', () => {
-    const { container } = render(MathText, { props: { text: '12½% van 80 = ?' } });
+  it('stacks the 1/2 of 12 1/2% next to the whole part and reads it as a mixed number', () => {
+    const { container } = render(MathText, { props: { text: '12 1/2% van 80 = ?' } });
     expect(container.querySelector('.numerator')?.textContent).toBe('1');
     expect(container.querySelector('.denominator')?.textContent).toBe('2');
     expect(container.textContent).toBe('12 en 1/2% van 80 = ?');

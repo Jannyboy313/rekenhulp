@@ -107,7 +107,7 @@ describe('fractionStep', () => {
     prompt: '10 is ?% van 80',
     answer: rational(25n, 2n),
     suffix: '%',
-    explanation: '12½% = 80 : 8 = 10',
+    explanation: '12 1/2% = 80 : 8 = 10',
   });
 
   it('is a fraction step with its suffix', () => {
@@ -127,7 +127,7 @@ describe('fractionStep', () => {
     expect(percent.check('12')).toEqual({
       correct: false,
       expected: '12 1/2',
-      explanation: '12½% = 80 : 8 = 10',
+      explanation: '12 1/2% = 80 : 8 = 10',
     });
   });
 

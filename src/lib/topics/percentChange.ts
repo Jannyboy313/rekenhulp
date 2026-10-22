@@ -270,7 +270,9 @@ function newPercent(p: Percentage, increase: boolean): Rational {
   return increase ? add(HUNDRED, p.value) : subtract(HUNDRED, p.value);
 }
 
-/** The base b = gcd(100, p) of the explanation, with 12½ for p = 12½ (on doubled integers). */
+/**
+ * The base b = gcd(100, p) of the explanation, with 12 1/2 for p = 12 1/2 (on doubled integers).
+ */
 function explanationBase(p: Percentage): Rational {
   const doubled = Number((p.value.num * 2n) / p.value.den);
   return rational(BigInt(gcd(200, doubled)), 2n);

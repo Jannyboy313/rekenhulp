@@ -88,7 +88,7 @@ describe('PERCENTAGES', () => {
       '2',
       '5',
       '10',
-      '12½',
+      '12 1/2',
       '15',
       '20',
       '25',
@@ -117,7 +117,7 @@ describe('PERCENTAGES', () => {
       '2',
       '5',
       '10',
-      '12½',
+      '12 1/2',
       '15',
       '20',
       '25',
@@ -134,7 +134,7 @@ describe('PERCENTAGES', () => {
       '2',
       '5',
       '10',
-      '12½',
+      '12 1/2',
       '15',
       '20',
       '25',
@@ -146,9 +146,9 @@ describe('PERCENTAGES', () => {
 });
 
 describe('formatPercentage', () => {
-  it('writes whole percentages as integers and halves with ½', () => {
+  it('writes whole percentages as integers and halves as mixed numbers', () => {
     expect(formatPercentage(fromInteger(15))).toBe('15');
-    expect(formatPercentage(rational(25n, 2n))).toBe('12½');
+    expect(formatPercentage(rational(25n, 2n))).toBe('12 1/2');
   });
 
   it('rejects other fractions', () => {
@@ -182,7 +182,7 @@ describe('partExplanation', () => {
     ['30', 80, '10% = 80 : 10 = 8 → 30% = 3 × 8 = 24'],
     ['25', 80, '25% = 80 : 4 = 20'],
     ['75', 80, '25% = 80 : 4 = 20 → 75% = 3 × 20 = 60'],
-    ['12½', 80, '12½% = 80 : 8 = 10'],
+    ['12 1/2', 80, '12 1/2% = 80 : 8 = 10'],
     ['1', 500, '1% = 500 : 100 = 5'],
     ['2', 500, '1% = 500 : 100 = 5 → 2% = 2 × 5 = 10'],
     ['120', 80, '10% = 80 : 10 = 8 → 120% = 12 × 8 = 96'],
@@ -203,7 +203,7 @@ describe('wholeExplanation', () => {
     ['20', 70, '20% = 14 → 10% = 7 → 100% = 10 × 7 = 70'],
     ['25', 56, '25% = 14 → 100% = 4 × 14 = 56'],
     ['15', 30, '15% = 4,5 → 5% = 1,5 → 100% = 20 × 1,5 = 30'],
-    ['12½', 48, '12½% = 6 → 100% = 8 × 6 = 48'],
+    ['12 1/2', 48, '12 1/2% = 6 → 100% = 8 × 6 = 48'],
     ['1', 500, '1% = 5 → 100% = 100 × 5 = 500'],
     ['150', 80, '150% = 120 → 50% = 40 → 100% = 2 × 40 = 80'],
   ])('explains back to the whole from %s percent of %i', (label, whole, expected) => {
@@ -305,8 +305,8 @@ describe('what percentage', () => {
     }
   });
 
-  it('accepts 12½ as a fraction or a decimal', () => {
-    const half = questions.find((q) => q.key.startsWith('percentages:what:12½:'))!;
+  it('accepts 12 1/2 as a fraction or a decimal', () => {
+    const half = questions.find((q) => q.key.startsWith('percentages:what:12 1/2:'))!;
     expect(expectedOf(half)).toBe('12 1/2');
     for (const input of ['12 1/2', '25/2', '50/4', '12,5']) {
       expect(stepOf(half).check(input).correct).toBe(true);
@@ -361,7 +361,7 @@ describe('discount and increase', () => {
     ['25', 60, false, '25% = 60 : 4 = 15 → 60 − 15 = 45'],
     ['15', 40, true, '10% = 4, 5% = 2 → 15% = 6 → 40 + 6 = 46'],
     ['15', 30, false, '10% = 3, 5% = 1,50 → 15% = 4,50 → 30 − 4,50 = 25,50'],
-    ['12½', 20, true, '12½% = 20 : 8 = 2,50 → 20 + 2,50 = 22,50'],
+    ['12 1/2', 20, true, '12 1/2% = 20 : 8 = 2,50 → 20 + 2,50 = 22,50'],
   ])('explains %s percent on € %i (increase: %s)', (label, price, increase, expected) => {
     expect(priceChangeExplanation(percentage(label), fromInteger(price), increase)).toBe(expected);
   });

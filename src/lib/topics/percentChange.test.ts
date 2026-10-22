@@ -112,7 +112,7 @@ describe('percentage change answers', () => {
     expect(result.tip).toBeUndefined();
   });
 
-  it('shows 12½ as a mixed number', () => {
+  it('shows 12 1/2 as a mixed number', () => {
     expect(check(80, 90, '').expected).toBe('12 1/2');
     expect(check(80, 92, '').expected).toBe('15');
   });
@@ -128,7 +128,7 @@ describe('percentage change answers', () => {
       'Dat is 92 als percentage van 80; de stijging is 115% \u{2212} 100% = 15%.',
     );
     expect(check(80, 90, '112 1/2').tip).toBe(
-      'Dat is 90 als percentage van 80; de stijging is 112½% \u{2212} 100% = 12½%.',
+      'Dat is 90 als percentage van 80; de stijging is 112 1/2% \u{2212} 100% = 12 1/2%.',
     );
   });
 
@@ -213,7 +213,7 @@ describe('percentageChangeExplanation', () => {
     [80, 92, '92 \u{2212} 80 = 12 → 10% = 8, 5% = 4 → 15% = 12'],
     [400, 340, '400 \u{2212} 340 = 60 → 10% = 40, 5% = 20 → 15% = 60'],
     [80, 100, '100 \u{2212} 80 = 20 → 25% = 80 : 4 = 20'],
-    [80, 90, '90 \u{2212} 80 = 10 → 12½% = 80 : 8 = 10'],
+    [80, 90, '90 \u{2212} 80 = 10 → 12 1/2% = 80 : 8 = 10'],
     [80, 176, '176 \u{2212} 80 = 96 → 10% = 80 : 10 = 8 → 120% = 12 × 8 = 96'],
     [500, 495, '500 \u{2212} 495 = 5 → 1% = 500 : 100 = 5'],
     [1000, 2500, '2500 \u{2212} 1000 = 1500 → 50% = 1000 : 2 = 500 → 150% = 3 × 500 = 1500'],
@@ -491,7 +491,7 @@ describe('originalQuestion', () => {
       false,
       80,
       'een fiets',
-      'Na 12½% korting kost een fiets €\u{a0}70. Wat was de oude prijs?',
+      'Na 12 1/2% korting kost een fiets €\u{a0}70. Wat was de oude prijs?',
     ],
   ])('words %s%%, increase %s, old price %i, %s', (percent, increase, oldPrice, item, prompt) => {
     const question = originalQuestion(percentage(percent), increase, oldPrice, item);
@@ -515,7 +515,7 @@ describe('originalQuestion', () => {
       'percentChange:original:increase:15:40',
     );
     expect(originalQuestion(percentage(12.5), false, 80).key).toBe(
-      'percentChange:original:discount:12½:80',
+      'percentChange:original:discount:12 1/2:80',
     );
   });
 
@@ -527,7 +527,7 @@ describe('originalQuestion', () => {
   });
 
   it('rejects what the list does not allow or what is no whole number of cents', () => {
-    // 120% is no discount and 75% no increase, 12½% off 85 is 74,375, and 0 is no price.
+    // 120% is no discount and 75% no increase, 12 1/2% off 85 is 74,375, and 0 is no price.
     expect(() => originalQuestion(percentage(120), false, 80)).toThrow(RangeError);
     expect(() => originalQuestion(percentage(75), true, 80)).toThrow(RangeError);
     expect(() => originalQuestion(percentage(12.5), false, 85)).toThrow(RangeError);
@@ -579,10 +579,10 @@ describe('original price answers', () => {
     expect(checkOriginal(percentage(15), false, 90, '87,97').tip).toBeUndefined();
   });
 
-  it('writes 12½ in the tip', () => {
-    // 70 + 12½% of 70 = 78,75.
+  it('writes 12 1/2 in the tip', () => {
+    // 70 + 12 1/2% of 70 = 78,75.
     expect(checkOriginal(percentage(12.5), false, 80, '78,75').tip).toBe(
-      'De korting is 12½% van de oude prijs, niet van €\u{a0}70. €\u{a0}70 is 87½% van de oude prijs.',
+      'De korting is 12 1/2% van de oude prijs, niet van €\u{a0}70. €\u{a0}70 is 87 1/2% van de oude prijs.',
     );
   });
 
@@ -640,8 +640,8 @@ describe('originalExplanation', () => {
     [25, false, 80, '75% = 60 → 25% = 20 → 100% = 80'],
     [15, true, 40, '115% = 46 → 5% = 2 → 100% = 40'],
     [50, false, 60, '50% = 30 → 100% = 60'],
-    [12.5, false, 80, '87½% = 70 → 12½% = 10 → 100% = 80'],
-    [12.5, true, 80, '112½% = 90 → 12½% = 10 → 100% = 80'],
+    [12.5, false, 80, '87 1/2% = 70 → 12 1/2% = 10 → 100% = 80'],
+    [12.5, true, 80, '112 1/2% = 90 → 12 1/2% = 10 → 100% = 80'],
     [15, false, 90, '85% = 76,50 → 5% = 4,50 → 100% = 90'],
     [20, false, 60, '80% = 48 → 20% = 12 → 100% = 60'],
     [40, false, 50, '60% = 30 → 20% = 10 → 100% = 50'],
@@ -660,7 +660,7 @@ describe('every supported original price', () => {
         const factor = increase ? add(HUNDRED, p.value) : subtract(HUNDRED, p.value);
         const newPrice = percentOf(factor, fromInteger(oldPrice));
         const decimals = decimalPlaces(newPrice);
-        // Only 12½% can leave a new price that is no whole number of cents.
+        // Only 12 1/2% can leave a new price that is no whole number of cents.
         return decimals !== null && decimals <= 2 ? [{ p, increase, oldPrice, newPrice }] : [];
       }),
     ),
@@ -899,7 +899,7 @@ describe('generatePercentChange', () => {
 
   describe('original price', () => {
     const PROMPT =
-      /^Na (\d+½?)% (korting|verhoging) kost (een \w+) €\u{a0}(\d+(?:,\d\d)?)\. Wat was de oude prijs\?$/u;
+      /^Na (\d+(?: 1\/2)?)% (korting|verhoging) kost (een \w+) €\u{a0}(\d+(?:,\d\d)?)\. Wat was de oude prijs\?$/u;
     const DISCOUNT_ITEMS = ['een jas', 'een fiets', 'een tent'];
     const INCREASE_ITEMS = ['een abonnement', 'een kaartje', 'een les'];
 

@@ -8,9 +8,9 @@ describe('displayLength', () => {
     // A stacked fraction is as wide as its widest line.
     ['25/2', 2],
     ['3/4 + 1/8 = ?', 9],
-    // The space of a mixed number is dropped, ½ is one fraction.
+    // The space of a mixed number is dropped.
     ['−12 1/2', 4],
-    ['12½% van 80 = ?', 15],
+    ['12 1/2% van 80 = ?', 15],
   ])('%j is %i characters wide', (text, length) => {
     expect(displayLength(text)).toBe(length);
   });

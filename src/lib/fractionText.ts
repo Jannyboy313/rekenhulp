@@ -1,14 +1,14 @@
 type TextSegment =
   | { type: 'text'; text: string }
-  /** Mixed: the fraction belongs to the whole number before it, as in `12½` or `−12 1/2`. */
+  /** Mixed: the fraction belongs to the whole number before it, as in `−12 1/2`. */
   | { type: 'fraction'; num: string; den: string; mixed: boolean };
 
-// 'a/b', where the digits may be grouped with thin spaces, or the ½ glyph of 12½% (spec §8).
+// 'a/b', where the digits may be grouped with thin spaces (spec §8).
 // A '?' can take the place of either term: '3/4 = ?/12'.
-const FRACTION = /(\d[\d\u{202f}]*|\?)\/(\d[\d\u{202f}]*|\?)|½/gu;
+const FRACTION = /(\d[\d\u{202f}]*|\?)\/(\d[\d\u{202f}]*|\?)/gu;
 
-// The whole part of a mixed number, optionally followed by the one space of '12 1/2'.
-const WHOLE_PART_END = /\d( ?)$/u;
+// The whole part of a mixed number, followed by the one space of '12 1/2'.
+const WHOLE_PART_END = /\d $/u;
 
 /** Splits text into plain runs and fractions, so the UI can draw the fractions stacked. */
 export function splitFractions(text: string): TextSegment[] {
@@ -17,13 +17,12 @@ export function splitFractions(text: string): TextSegment[] {
   for (const match of text.matchAll(FRACTION)) {
     const index = match.index ?? 0;
     let before = text.slice(last, index);
-    const whole = WHOLE_PART_END.exec(before);
-    // Drop the space of '12 1/2', so it looks the same as '12½'.
-    if (whole?.[1]) before = before.slice(0, -1);
+    const mixed = WHOLE_PART_END.test(before);
+    // Drop the space of '12 1/2': the whole part stands right next to the stacked fraction.
+    if (mixed) before = before.slice(0, -1);
     if (before !== '') segments.push({ type: 'text', text: before });
-    // The ½ glyph has no capture groups.
-    const [found, num = '1', den = '2'] = match;
-    segments.push({ type: 'fraction', num, den, mixed: whole !== null });
+    const [found, num = '', den = ''] = match;
+    segments.push({ type: 'fraction', num, den, mixed });
     last = index + found.length;
   }
   if (last < text.length) segments.push({ type: 'text', text: text.slice(last) });
