@@ -1,4 +1,11 @@
-import { formatEuro, formatFraction, formatInteger, formatMoney, formatRational } from '../format';
+import {
+  capitalize,
+  formatEuro,
+  formatFraction,
+  formatInteger,
+  formatMoney,
+  formatRational,
+} from '../format';
 import { gcd } from '../primes';
 import { drawUntil, pick, randomInt, range, type Rng } from '../random';
 import {
@@ -19,6 +26,7 @@ import { exactTip, firstTip, moneyTip, type Diagnose } from '../tips';
 import type { Question } from '../types';
 import { formatPercentNumber } from './fractionConversion';
 import { hasAtMostTwoSignificantDigits } from './percentages';
+import { onePartExplanation, totalPartsTip } from './ratios';
 
 // Ratio word problems (spec §5.25): part of the whole, mixing and per unit.
 
@@ -39,11 +47,17 @@ function otherIndex(index: Index): Index {
   return index === 0 ? 1 : 0;
 }
 
-/** The simplified ratios a : b with a ≠ b and both terms in [1, max] that `accept` lets through. */
-function simplifiedPairs(max: number, accept: (a: number, b: number) => boolean): Pair[] {
+/** Whether a : b is simplified, with a ≠ b and both terms whole numbers in [1, max]. */
+function isSimplifiedPair(a: number, b: number, max: number): boolean {
+  const inRange = (term: number) => Number.isInteger(term) && term >= 1 && term <= max;
+  return inRange(a) && inRange(b) && a !== b && gcd(a, b) === 1;
+}
+
+/** The ratios a : b with both terms in [1, max] that `accept` lets through, in order. */
+function pairsWhere(max: number, accept: (a: number, b: number) => boolean): Pair[] {
   return range(1, max).flatMap((a) =>
     range(1, max)
-      .filter((b) => a !== b && gcd(a, b) === 1 && accept(a, b))
+      .filter((b) => accept(a, b))
       .map((b): Pair => [a, b]),
   );
 }
@@ -112,9 +126,16 @@ const MAX_FRACTION_SUM = 12;
 /** A percentage needs a sum with a friendly percentage: 33 1/3, 25, 20, 16 2/3, 12,5, 10. */
 const PERCENTAGE_SUMS: readonly number[] = [3, 4, 5, 6, 8, 10];
 
-const FRACTION_PAIRS = simplifiedPairs(MAX_FRACTION_SUM - 1, (a, b) => a + b <= MAX_FRACTION_SUM);
-const PERCENTAGE_PAIRS = simplifiedPairs(Math.max(...PERCENTAGE_SUMS) - 1, (a, b) =>
-  PERCENTAGE_SUMS.includes(a + b),
+/** Whether a : b fits a part-of-the-whole question as a fraction, or as a percentage. */
+function isPartPair(a: number, b: number, asPercentage: boolean): boolean {
+  const sumFits = asPercentage ? PERCENTAGE_SUMS.includes(a + b) : a + b <= MAX_FRACTION_SUM;
+  // A sum of at most 12 keeps both terms at most 11.
+  return sumFits && isSimplifiedPair(a, b, MAX_FRACTION_SUM - 1);
+}
+
+const FRACTION_PAIRS = pairsWhere(MAX_FRACTION_SUM - 1, (a, b) => isPartPair(a, b, false));
+const PERCENTAGE_PAIRS = pairsWhere(Math.max(...PERCENTAGE_SUMS) - 1, (a, b) =>
+  isPartPair(a, b, true),
 );
 
 /** The ratios a : b of a part-of-the-whole question as a fraction, or as a percentage. */
@@ -133,13 +154,13 @@ export function partQuestion(
   index: Index,
   asPercentage: boolean,
 ): Question {
-  if (!partPairsFor(asPercentage).some(([x, y]) => x === a && y === b)) {
+  if (!isPartPair(a, b, asPercentage)) {
     const form = asPercentage ? 'percentage' : 'fraction';
     throw new RangeError(`${a} : ${b} is not a supported ratio for a ${form}`);
   }
   const fraction = divide(fromInteger(termAt(a, b, index)), fromInteger(a + b));
   const prompt = `${context.intro(a, b)} ${context.question(index, asPercentage)}`;
-  const explanation = partExplanation(context, a, b, index, asPercentage);
+  const explanation = partShareExplanation(context, a, b, index, asPercentage);
   const diagnose = partTip(context, a, b, index, asPercentage);
   const step = asPercentage
     ? fractionStep({
@@ -166,7 +187,7 @@ export function partQuestion(
 }
 
 /** '2 + 3 = 5 delen → jongens = 2/5', and for a percentage '1 + 2 = 3 delen → 2/3 = 66 2/3%'. */
-function partExplanation(
+function partShareExplanation(
   context: GroupContext,
   a: number,
   b: number,
@@ -281,11 +302,11 @@ function givenParts(a: number, b: number, given: GivenAmount): number {
 
 /** The ratios a : b of a mixing question: terms in [1, 9], the smaller part first if required. */
 export function mixPairsFor(context: MixContext): readonly Pair[] {
-  return simplifiedPairs(MAX_MIX_TERM, (a, b) => !context.smallerFirst || a < b);
+  return pairsWhere(MAX_MIX_TERM, (a, b) => isMixPair(context, a, b));
 }
 
 function isMixPair(context: MixContext, a: number, b: number): boolean {
-  return mixPairsFor(context).some(([x, y]) => x === a && y === b);
+  return isSimplifiedPair(a, b, MAX_MIX_TERM) && (!context.smallerFirst || a < b);
 }
 
 function isMixPart(
@@ -336,8 +357,7 @@ function checkMix(
 /** 'Siroop : water = 1 : 6.' */
 function ratioLine(context: MixContext, a: number, b: number): string {
   const [first, second] = context.ingredients;
-  const name = first.name.charAt(0).toUpperCase() + first.name.slice(1);
-  return `${name} : ${second.name} = ${a} : ${b}.`;
+  return `${capitalize(first.name)} : ${second.name} = ${a} : ${b}.`;
 }
 
 /** '1 deel' or '6 delen'. */
@@ -385,12 +405,10 @@ function mixFromTotalExplanation(
   part: number,
   asked: Index,
 ): string {
-  const parts = a + b;
   const term = termAt(a, b, asked);
-  const oneStep = `1 deel = ${formatInteger(parts * part)} : ${parts} = ${formatInteger(part)}`;
   const name = context.ingredients[asked].name;
   const answer = `${name} = ${partsText(term)} = ${formatInteger(term * part)}`;
-  return `${a} + ${b} = ${parts} delen → ${oneStep} → ${answer}`;
+  return `${onePartExplanation((a + b) * part, a, b)} → ${answer}`;
 }
 
 /**
@@ -409,7 +427,7 @@ function mixFromTotalTip(
   const otherTip =
     `Dat is de hoeveelheid ${context.ingredients[otherIndex(asked)].name}; ` +
     `gevraagd is ${context.ingredients[asked].withArticle}.`;
-  const divideTip = `Deel eerst door het totaal aantal delen: ${a} + ${b} = ${a + b}.`;
+  const divideTip = totalPartsTip(a, b);
   return firstTip(
     exactTip(otherAmount, otherTip),
     ...[a, b].map((term) => exactTip(divide(total, fromInteger(term)), divideTip)),
@@ -484,14 +502,12 @@ function mixFromPartTip(
 
 // Per unit
 
-export type UnitContextId = 'cheese' | 'petrol' | 'wage';
-const UNIT_CONTEXT_IDS: readonly UnitContextId[] = ['cheese', 'petrol', 'wage'];
-
 /**
- * The amounts and prices of one per-unit context (spec §5.25). Amounts are counted in the counting
- * unit of the context: 100 g for cheese, 1 L for petrol and 1 uur for the wage.
+ * The story, amounts and prices of a per-unit question (spec §5.25). Amounts are counted in the
+ * counting unit of the context: 100 g for cheese, 1 L for petrol and 1 uur for the wage.
  */
-interface UnitSettings {
+export interface UnitContext {
+  id: 'cheese' | 'petrol' | 'wage';
   /** The amounts are multiples of 1/amountParts counting units: half hours for the wage. */
   amountParts: number;
   /** The range of the amounts, in counting units. */
@@ -506,18 +522,37 @@ interface UnitSettings {
    * units, so the ratio table goes via that amount: 5 L for petrol.
    */
   roundAmount?: number;
+  /** An amount on the grid as the prompts write it: '1,5 kg', '400 g', '25 L', '2,5 uur'. */
+  amountText(amount: Rational): string;
+  /** '1,5 kg kaas kost € 12. Wat kost 400 g?', from the written amounts and price. */
+  prompt(given: string, price: string, asked: string): string;
+  /** What the price does, for the inverse tip: 'het kost' or 'je krijgt'. */
+  verb: string;
 }
 
-const UNIT_SETTINGS: Record<UnitContextId, UnitSettings> = {
-  cheese: {
+const THOUSAND = fromInteger(1000);
+
+export const UNIT_CONTEXTS: readonly UnitContext[] = [
+  {
+    id: 'cheese',
     amountParts: 1,
     minAmount: 2,
     maxAmount: 30,
     minPriceCents: 60,
     maxPriceCents: 250,
     priceStepCents: 10,
+    // In g below 1 kg and in kg from 1 kg.
+    amountText: (amount) => {
+      const grams = multiply(amount, HUNDRED);
+      return compare(grams, THOUSAND) < 0
+        ? `${formatRational(grams)} g`
+        : `${formatRational(divide(grams, THOUSAND))} kg`;
+    },
+    prompt: (given, price, asked) => `${given} kaas kost ${price}. Wat kost ${asked}?`,
+    verb: 'het kost',
   },
-  petrol: {
+  {
+    id: 'petrol',
     amountParts: 1,
     minAmount: 5,
     maxAmount: 60,
@@ -525,22 +560,29 @@ const UNIT_SETTINGS: Record<UnitContextId, UnitSettings> = {
     maxPriceCents: 220,
     priceStepCents: 10,
     roundAmount: 5,
+    amountText: (amount) => `${formatRational(amount)} L`,
+    prompt: (given, price, asked) => `${given} benzine kost ${price}. Wat kost ${asked}?`,
+    verb: 'het kost',
   },
-  wage: {
+  {
+    id: 'wage',
     amountParts: 2,
     minAmount: 1,
     maxAmount: 10,
     minPriceCents: 1000,
     maxPriceCents: 2500,
     priceStepCents: 100,
+    amountText: (amount) => `${formatRational(amount)} uur`,
+    prompt: (given, price, asked) =>
+      `Voor ${given} werk krijg je ${price}. Hoeveel voor ${asked}?`,
+    verb: 'je krijgt',
   },
-};
+];
 
 /** No price in a ratio table may be above € 200. */
 const MAX_UNIT_TABLE_PRICE = fromInteger(200);
 /** The share of the exercises of a context with a `roundAmount` that uses it (spec §5.25). */
 const ROUND_AMOUNT_SHARE = 0.5;
-const THOUSAND = fromInteger(1000);
 
 /** Whether `value` is a whole multiple of `unit`. */
 function isWholeMultiple(value: Rational, unit: Rational): boolean {
@@ -548,38 +590,30 @@ function isWholeMultiple(value: Rational, unit: Rational): boolean {
 }
 
 /** A positive multiple of 1/amountParts counting units, the grid the amounts are written on. */
-function isOnAmountGrid({ amountParts }: UnitSettings, amount: Rational): boolean {
+function isOnAmountGrid({ amountParts }: UnitContext, amount: Rational): boolean {
   return amount.num > 0n && isWholeMultiple(amount, rational(1n, BigInt(amountParts)));
 }
 
 /**
- * An amount in counting units as the prompts write it: '1,5 kg', '400 g', '25 L', '2,5 uur'. Cheese
- * is in g below 1 kg and in kg from 1 kg. The amount must be on the grid of the context.
+ * An amount in counting units as the prompts write it: '1,5 kg', '400 g', '25 L', '2,5 uur'. The
+ * amount must be on the grid of the context.
  */
-export function formatAmount(context: UnitContextId, amount: Rational): string {
-  if (!isOnAmountGrid(UNIT_SETTINGS[context], amount)) {
-    throw new RangeError(`${formatFraction(amount)} is not an amount for ${context}`);
+export function formatAmount(context: UnitContext, amount: Rational): string {
+  if (!isOnAmountGrid(context, amount)) {
+    throw new RangeError(`${formatFraction(amount)} is not an amount for ${context.id}`);
   }
-  switch (context) {
-    case 'cheese': {
-      const grams = multiply(amount, HUNDRED);
-      return compare(grams, THOUSAND) < 0
-        ? `${formatRational(grams)} g`
-        : `${formatRational(divide(grams, THOUSAND))} kg`;
-    }
-    case 'petrol':
-      return `${formatRational(amount)} L`;
-    case 'wage':
-      return `${formatRational(amount)} uur`;
-  }
+  return context.amountText(amount);
 }
 
 /**
  * The step of the ratio table: 100 g for cheese, 1 uur for the wage and for petrol 5 L when both
  * amounts are multiples of 5, otherwise 1 L. Amounts are in counting units.
  */
-export function stepAmount(context: UnitContextId, first: Rational, second: Rational): Rational {
-  const { roundAmount } = UNIT_SETTINGS[context];
+export function stepAmount(
+  { roundAmount }: UnitContext,
+  first: Rational,
+  second: Rational,
+): Rational {
   if (roundAmount === undefined) return ONE;
   const round = fromInteger(roundAmount);
   return isWholeMultiple(first, round) && isWholeMultiple(second, round) ? round : ONE;
@@ -587,25 +621,24 @@ export function stepAmount(context: UnitContextId, first: Rational, second: Rati
 
 /** Why the exercise is not a supported one (spec §5.25), or null when it is. */
 function unitProblem(
-  context: UnitContextId,
+  context: UnitContext,
   first: Rational,
   firstPrice: Rational,
   second: Rational,
 ): string | null {
-  const settings = UNIT_SETTINGS[context];
   for (const amount of [first, second]) {
     const supported =
-      isBetween(amount, fromInteger(settings.minAmount), fromInteger(settings.maxAmount)) &&
-      isOnAmountGrid(settings, amount);
-    if (!supported) return `${formatFraction(amount)} is not a supported amount for ${context}`;
+      isBetween(amount, fromInteger(context.minAmount), fromInteger(context.maxAmount)) &&
+      isOnAmountGrid(context, amount);
+    if (!supported) return `${formatFraction(amount)} is not a supported amount for ${context.id}`;
   }
   const unitPrice = divide(firstPrice, first);
   const cents = multiply(unitPrice, HUNDRED);
   const priceSupported =
-    isBetween(cents, fromInteger(settings.minPriceCents), fromInteger(settings.maxPriceCents)) &&
-    isWholeMultiple(cents, fromInteger(settings.priceStepCents));
+    isBetween(cents, fromInteger(context.minPriceCents), fromInteger(context.maxPriceCents)) &&
+    isWholeMultiple(cents, fromInteger(context.priceStepCents));
   if (!priceSupported) {
-    return `${formatFraction(unitPrice)} is not a supported price per unit for ${context}`;
+    return `${formatFraction(unitPrice)} is not a supported price per unit for ${context.id}`;
   }
   if (isWholeMultiple(first, second) || isWholeMultiple(second, first)) {
     return `${formatFraction(first)} and ${formatFraction(second)} are multiples of each other`;
@@ -621,25 +654,6 @@ function unitProblem(
   return null;
 }
 
-/** '1,5 kg kaas kost € 12. Wat kost 400 g?' */
-function unitPrompt(
-  context: UnitContextId,
-  first: Rational,
-  firstPrice: Rational,
-  second: Rational,
-): string {
-  const [given, asked] = [formatAmount(context, first), formatAmount(context, second)];
-  const price = formatEuro(firstPrice);
-  switch (context) {
-    case 'cheese':
-      return `${given} kaas kost ${price}. Wat kost ${asked}?`;
-    case 'petrol':
-      return `${given} benzine kost ${price}. Wat kost ${asked}?`;
-    case 'wage':
-      return `Voor ${given} werk krijg je ${price}. Hoeveel voor ${asked}?`;
-  }
-}
-
 /**
  * One exercise of the form: `1,5 kg kaas kost € 12. Wat kost 400 g?` Amounts are in the counting
  * unit of the context, so cheese 1,5 kg is `first = 15` (15 × 100 g) and 400 g is `second = 4`.
@@ -647,7 +661,7 @@ function unitPrompt(
  * must be one of the context (spec §5.25), as must the amounts and the way they relate.
  */
 export function unitQuestion(
-  context: UnitContextId,
+  context: UnitContext,
   first: Rational,
   firstPrice: Rational,
   second: Rational,
@@ -657,12 +671,13 @@ export function unitQuestion(
   const unitPrice = divide(firstPrice, first);
   const answer = multiply(second, unitPrice);
   const amounts = `${formatRational(first)}:${formatRational(second)}`;
+  const [given, asked] = [formatAmount(context, first), formatAmount(context, second)];
   return {
-    key: `ratioProblems:unit:${context}:${amounts}:${formatRational(unitPrice)}`,
+    key: `ratioProblems:unit:${context.id}:${amounts}:${formatRational(unitPrice)}`,
     topic: 'ratioProblems',
     steps: [
       numberStep({
-        prompt: unitPrompt(context, first, firstPrice, second),
+        prompt: context.prompt(given, formatEuro(firstPrice), asked),
         answer,
         prefix: '€',
         expected: formatMoney(answer),
@@ -678,7 +693,7 @@ export function unitQuestion(
  * The exercise must be a supported one.
  */
 export function unitExplanation(
-  context: UnitContextId,
+  context: UnitContext,
   first: Rational,
   firstPrice: Rational,
   second: Rational,
@@ -700,19 +715,18 @@ export function unitExplanation(
  * supported one.
  */
 export function inverseTip(
-  context: UnitContextId,
+  context: UnitContext,
   first: Rational,
   firstPrice: Rational,
   second: Rational,
 ): Diagnose {
   const mistaken = divide(multiply(firstPrice, first), second);
   const comparison = compare(second, first) < 0 ? 'minder' : 'meer';
-  const verb = context === 'wage' ? 'je krijgt' : 'het kost';
   const [given, asked] = [formatAmount(context, first), formatAmount(context, second)];
   return moneyTip(
     mistaken,
     `Je hebt omgekeerd gerekend: ${asked} is ${comparison} dan ${given}, ` +
-      `dus ${verb} ${comparison} dan ${formatEuro(firstPrice)}.`,
+      `dus ${context.verb} ${comparison} dan ${formatEuro(firstPrice)}.`,
   );
 }
 
@@ -743,7 +757,7 @@ function generateMix(rng: Rng): Question {
  * of: the `roundAmount` of the context in `ROUND_AMOUNT_SHARE` of the exercises, otherwise 1 (any
  * amount on the grid).
  */
-function drawAmountMultiple(rng: Rng, { amountParts, roundAmount }: UnitSettings): number {
+function drawAmountMultiple(rng: Rng, { amountParts, roundAmount }: UnitContext): number {
   if (roundAmount === undefined) return 1;
   return rng() < ROUND_AMOUNT_SHARE ? roundAmount * amountParts : 1;
 }
@@ -754,7 +768,7 @@ function drawAmountMultiple(rng: Rng, { amountParts, roundAmount }: UnitSettings
  */
 function drawUnitAmount(
   rng: Rng,
-  { amountParts, minAmount, maxAmount }: UnitSettings,
+  { amountParts, minAmount, maxAmount }: UnitContext,
   multiple: number,
 ): Rational {
   const parts = randomInt(
@@ -768,7 +782,7 @@ function drawUnitAmount(
 /** A price per counting unit on the grid of the context, between its smallest and largest. */
 function drawUnitPrice(
   rng: Rng,
-  { minPriceCents, maxPriceCents, priceStepCents }: UnitSettings,
+  { minPriceCents, maxPriceCents, priceStepCents }: UnitContext,
 ): Rational {
   const steps = randomInt(rng, minPriceCents / priceStepCents, maxPriceCents / priceStepCents);
   return rational(BigInt(steps * priceStepCents), 100n);
@@ -776,13 +790,12 @@ function drawUnitPrice(
 
 /** `1,5 kg kaas kost € 12. Wat kost 400 g?` */
 function generateUnit(rng: Rng): Question {
-  const context = pick(rng, UNIT_CONTEXT_IDS);
-  const settings = UNIT_SETTINGS[context];
-  const multiple = drawAmountMultiple(rng, settings);
+  const context = pick(rng, UNIT_CONTEXTS);
+  const multiple = drawAmountMultiple(rng, context);
   const { first, firstPrice, second } = drawUntil(() => {
-    const unitPrice = drawUnitPrice(rng, settings);
-    const first = drawUnitAmount(rng, settings, multiple);
-    const second = drawUnitAmount(rng, settings, multiple);
+    const unitPrice = drawUnitPrice(rng, context);
+    const first = drawUnitAmount(rng, context, multiple);
+    const second = drawUnitAmount(rng, context, multiple);
     const firstPrice = multiply(first, unitPrice);
     const supported = unitProblem(context, first, firstPrice, second) === null;
     return supported ? { first, firstPrice, second } : null;

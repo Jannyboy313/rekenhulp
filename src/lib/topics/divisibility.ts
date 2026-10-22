@@ -1,4 +1,4 @@
-import { formatInteger, MINUS } from '../format';
+import { capitalize, formatInteger, MINUS } from '../format';
 import { pick, randomInt, type Rng } from '../random';
 import { booleanStep } from '../steps';
 import type { Question } from '../types';
@@ -143,10 +143,6 @@ function chunks(n: number, divisor: number): string {
 
 function verdict(divisible: boolean): string {
   return divisible ? 'deelbaar' : 'niet deelbaar';
-}
-
-function capitalize(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 /**

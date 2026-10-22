@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  capitalize,
   formatDuration,
   formatEuro,
   formatExpressionInput,
@@ -24,6 +25,13 @@ import {
   toSuperscript,
 } from './format';
 import { rational } from './rational';
+
+describe('capitalize', () => {
+  it('writes the first letter in upper case', () => {
+    expect(capitalize('witte verf')).toBe('Witte verf');
+    expect(capitalize('')).toBe('');
+  });
+});
 
 describe('formatInteger', () => {
   it.each([

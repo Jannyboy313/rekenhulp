@@ -229,7 +229,7 @@ describe('travelQuestion', () => {
     ['speed', 'fietsen', 18, '20 min', 'Je fietst 6 km in 20 min. Hoe snel is dat?'],
     ['speed', 'auto', 80, '45 min', 'Een auto rijdt 60 km in 45 min. Hoe snel is dat?'],
     ['speed', 'trein', 120, '2,5 uur', 'Een trein rijdt 300 km in 2,5 uur. Hoe snel is dat?'],
-    ['distance', 'wandelen', 5, '45 min', 'Je wandelt 5 km/u. Hoeveel km loop je in 45 min?'],
+    ['distance', 'wandelen', 4, '45 min', 'Je wandelt 4 km/u. Hoeveel km loop je in 45 min?'],
     ['distance', 'fietsen', 18, '40 min', 'Je fietst 18 km/u. Hoeveel km fiets je in 40 min?'],
     [
       'distance',
@@ -258,6 +258,14 @@ describe('travelQuestion', () => {
     expect(travelQuestion('speed', tripOf('trein', 120, '2,5 uur')).key).toBe(
       'speed:speed:trein:120:2,5uur',
     );
+  });
+
+  it('rejects a trip that is not one of promptTrips', () => {
+    // 5 km/u for 45 min is 3,75 km: two decimals.
+    expect(() => travelQuestion('distance', tripOf('wandelen', 5, '45 min'))).toThrow(RangeError);
+    expect(() => travelQuestion('speed', tripOf('wandelen', 7, '30 min'))).toThrow(RangeError);
+    const wrongDistance = { ...tripOf('auto', 80, '45 min'), distance: fromInteger(61) };
+    expect(() => travelQuestion('speed', wrongDistance)).toThrow(RangeError);
   });
 
   it.each<[TravelForm, SpeedContext, number, string, string, string]>([
@@ -430,6 +438,14 @@ describe('timeQuestion', () => {
     expect(question.key).toBe('speed:time:auto:80:60');
     expect(question.steps).toHaveLength(1);
     expect(stepOf(question).kind).toBe('number');
+  });
+
+  it('rejects a trip that is not one of timeTrips', () => {
+    // 2 km at 4 km/u takes 30 min, not 0,5 uur; 3 km at 4 km/u takes 45 min, not 40.
+    expect(() => timeQuestion(timeTripOf('wandelen', 4, 2, '0,5 uur'))).toThrow(RangeError);
+    expect(() => timeQuestion(timeTripOf('wandelen', 4, 3, '40 min'))).toThrow(RangeError);
+    // 1 km at 80 km/u takes 45 s: below 5 min.
+    expect(() => timeQuestion(timeTripOf('auto', 80, 1, '1 min'))).toThrow(RangeError);
   });
 
   it.each<[SpeedContext, number, number, string, string, string]>([

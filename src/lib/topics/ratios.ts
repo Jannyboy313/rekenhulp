@@ -178,9 +178,7 @@ export function divideTip(total: number, a: number, b: number, largest: boolean)
     if (asked > 1 && value === unit) {
       return `Dat is 1 deel; het ${askedName} deel is ${asked} delen.`;
     }
-    if (value * a === total || value * b === total) {
-      return `Deel eerst door het totaal aantal delen: ${a} + ${b} = ${a + b}.`;
-    }
+    if (value * a === total || value * b === total) return totalPartsTip(a, b);
     return undefined;
   };
 }
@@ -241,8 +239,18 @@ function divideInRatio(rng: Rng): Question {
 
 /** '2 + 3 = 5 delen → 1 deel = 60 : 5 = 12 → 3 delen = 36' */
 export function divideExplanation(total: number, a: number, b: number, asked: number): string {
-  const parts = a + b;
-  const unit = total / parts;
-  const first = `${a} + ${b} = ${parts} delen → 1 deel = ${formatInteger(total)} : ${parts} = ${formatInteger(unit)}`;
+  const first = onePartExplanation(total, a, b);
+  const unit = total / (a + b);
   return asked === 1 ? first : `${first} → ${asked} delen = ${formatInteger(asked * unit)}`;
+}
+
+/** '2 + 3 = 5 delen → 1 deel = 60 : 5 = 12': the total divided into a + b parts. */
+export function onePartExplanation(total: number, a: number, b: number): string {
+  const parts = a + b;
+  return `${a} + ${b} = ${parts} delen → 1 deel = ${formatInteger(total)} : ${parts} = ${formatInteger(total / parts)}`;
+}
+
+/** The total divided by one term of the ratio a : b instead of by the number of parts. */
+export function totalPartsTip(a: number, b: number): string {
+  return `Deel eerst door het totaal aantal delen: ${a} + ${b} = ${a + b}.`;
 }

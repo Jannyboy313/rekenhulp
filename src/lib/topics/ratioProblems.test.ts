@@ -27,13 +27,16 @@ import {
   partPairsFor,
   partQuestion,
   stepAmount,
+  UNIT_CONTEXTS,
   unitExplanation,
   unitQuestion,
   type GivenAmount,
   type GroupContext,
   type MixContext,
-  type UnitContextId,
+  type UnitContext,
 } from './ratioProblems';
+
+type UnitContextId = UnitContext['id'];
 
 type Index = 0 | 1;
 const INDEXES: readonly Index[] = [0, 1];
@@ -54,6 +57,12 @@ function groupContext(id: GroupContext['id']): GroupContext {
 function mixContext(id: MixContext['id']): MixContext {
   const found = MIX_CONTEXTS.find((context) => context.id === id);
   if (found === undefined) throw new Error(`No mix context ${id}`);
+  return found;
+}
+
+function unitContext(id: UnitContextId): UnitContext {
+  const found = UNIT_CONTEXTS.find((context) => context.id === id);
+  if (found === undefined) throw new Error(`No unit context ${id}`);
   return found;
 }
 
@@ -120,7 +129,7 @@ const EURO = '€\u{a0}';
 
 /** A per-unit question; amounts in counting units (cheese in 100 g, petrol in L, wage in uur). */
 function unit(context: UnitContextId, first: string, firstPrice: string, second: string): Question {
-  return unitQuestion(context, dutch(first), dutch(firstPrice), dutch(second));
+  return unitQuestion(unitContext(context), dutch(first), dutch(firstPrice), dutch(second));
 }
 
 /** The result of typing `input` on a per-unit question. */
@@ -965,22 +974,24 @@ describe('formatAmount', () => {
     ['wage', '4', '4 uur'],
     ['wage', '10', '10 uur'],
   ])('writes %s %s (counting units) as %s', (context, amount, text) => {
-    expect(formatAmount(context, dutch(amount))).toBe(text);
+    expect(formatAmount(unitContext(context), dutch(amount))).toBe(text);
   });
 
   it('rejects an amount that is not a positive multiple of the grid of its context', () => {
+    const format = (context: UnitContextId, amount: Rational) => () =>
+      formatAmount(unitContext(context), amount);
     // Cheese and petrol count in whole units (100 g, 1 L), the wage in half hours.
-    expect(() => formatAmount('cheese', dutch('0,5'))).toThrow(RangeError);
-    expect(() => formatAmount('cheese', dutch('12,5'))).toThrow(RangeError);
-    expect(() => formatAmount('cheese', dutch('0'))).toThrow(RangeError);
-    expect(() => formatAmount('cheese', dutch('-1'))).toThrow(RangeError);
-    expect(() => formatAmount('petrol', dutch('2,5'))).toThrow(RangeError);
-    expect(() => formatAmount('petrol', dutch('0'))).toThrow(RangeError);
-    expect(() => formatAmount('wage', dutch('0,25'))).toThrow(RangeError);
-    expect(() => formatAmount('wage', rational(1n, 3n))).toThrow(RangeError);
-    expect(() => formatAmount('wage', dutch('0'))).toThrow(RangeError);
-    expect(() => formatAmount('wage', dutch('-2'))).toThrow(RangeError);
-    expect(() => formatAmount('wage', dutch('0,5'))).not.toThrow();
+    expect(format('cheese', dutch('0,5'))).toThrow(RangeError);
+    expect(format('cheese', dutch('12,5'))).toThrow(RangeError);
+    expect(format('cheese', dutch('0'))).toThrow(RangeError);
+    expect(format('cheese', dutch('-1'))).toThrow(RangeError);
+    expect(format('petrol', dutch('2,5'))).toThrow(RangeError);
+    expect(format('petrol', dutch('0'))).toThrow(RangeError);
+    expect(format('wage', dutch('0,25'))).toThrow(RangeError);
+    expect(format('wage', rational(1n, 3n))).toThrow(RangeError);
+    expect(format('wage', dutch('0'))).toThrow(RangeError);
+    expect(format('wage', dutch('-2'))).toThrow(RangeError);
+    expect(format('wage', dutch('0,5'))).not.toThrow();
   });
 });
 
@@ -996,7 +1007,8 @@ describe('stepAmount', () => {
     ['wage', '4', '2,5', '1'],
     ['wage', '10', '5', '1'],
   ])('%s %s and %s: step %s', (context, first, second, step) => {
-    expect(equals(stepAmount(context, dutch(first), dutch(second)), dutch(step))).toBe(true);
+    const actual = stepAmount(unitContext(context), dutch(first), dutch(second));
+    expect(equals(actual, dutch(step))).toBe(true);
   });
 });
 
@@ -1173,10 +1185,11 @@ describe('per-unit answers', () => {
 
   it('gives the explanation and the tip directly', () => {
     const [first, price, second] = [dutch('4'), dutch('60'), dutch('2,5')];
-    expect(unitExplanation('wage', first, price, second)).toBe(
+    const wage = unitContext('wage');
+    expect(unitExplanation(wage, first, price, second)).toBe(
       `4 uur → ${EURO}60, 1 uur → ${EURO}15, 2,5 uur → ${EURO}37,50`,
     );
-    const diagnose = inverseTip('wage', first, price, second);
+    const diagnose = inverseTip(wage, first, price, second);
     expect(diagnose(dutch('96'))).toBe(INVERSE_WAGE_4_25);
     expect(diagnose(dutch('95'))).toBeUndefined();
     expect(diagnose(dutch('37,50'))).toBeUndefined();
@@ -1264,7 +1277,7 @@ describe('every supported per-unit question', () => {
   function questionOf({ context, f, s, parts, firstCents }: Case): Question {
     const first = rational(BigInt(f), BigInt(parts));
     const second = rational(BigInt(s), BigInt(parts));
-    return unitQuestion(context, first, rational(BigInt(firstCents), 100n), second);
+    return unitQuestion(unitContext(context), first, rational(BigInt(firstCents), 100n), second);
   }
 
   const cases = allCases();
@@ -1650,7 +1663,8 @@ describe('generateRatioProblems', () => {
         // The price per litre is € 1,60: 160 cents per litre for the first amount.
         const firstPrice = rational(BigInt(first * 160), 100n);
         expect(
-          () => unitQuestion('petrol', fromInteger(first), firstPrice, fromInteger(second)),
+          () =>
+            unitQuestion(unitContext('petrol'), fromInteger(first), firstPrice, fromInteger(second)),
           `${first} L and ${second} L`,
         ).not.toThrow();
       }

@@ -88,7 +88,7 @@ export function hoursOf({ amount, unit }: Duration): Rational {
   return unit === 'min' ? divide(amount, fromInteger(MINUTES_PER_HOUR)) : amount;
 }
 
-function formatDuration({ amount, unit }: Duration): string {
+function durationText({ amount, unit }: Duration): string {
   return `${formatRational(amount)} ${unit}`;
 }
 
@@ -146,26 +146,40 @@ function promptTripsOf(context: SpeedContext): TripsBySpeed {
 }
 
 // Per context: the trips that suit both the speed and the distance form. Computed once.
-const TRIPS: Readonly<Record<SpeedContext, TripsBySpeed>> = {
-  wandelen: promptTripsOf('wandelen'),
-  fietsen: promptTripsOf('fietsen'),
-  auto: promptTripsOf('auto'),
-  trein: promptTripsOf('trein'),
-};
+const TRIPS = new Map(CONTEXTS.map((context) => [context, promptTripsOf(context)]));
 
 /**
  * Trips of a speed with a prompt duration whose ratio table has at most 1 decimal everywhere,
  * distance in [0,5; MAX_DISTANCE]. The same candidates serve the speed and the distance form.
  */
 export function promptTrips(context: SpeedContext, speed: number): readonly Trip[] {
-  return TRIPS[context].get(speed) ?? [];
+  return TRIPS.get(context)?.get(speed) ?? [];
 }
 
-/** `Je fietst 6 km in 20 min. Hoe snel is dat?` (suffix km/u) or the distance form (suffix km). */
+/** Throws unless `trip` is one of `candidates`: the same time and distance. */
+function checkTrip(trip: Trip, candidates: readonly Trip[]): void {
+  const { context, speed, duration, distance } = trip;
+  const known = candidates.some(
+    (candidate) =>
+      candidate.duration.unit === duration.unit &&
+      equals(candidate.duration.amount, duration.amount) &&
+      equals(candidate.distance, distance),
+  );
+  if (!known) {
+    const shown = `${formatRational(distance)} km in ${durationText(duration)}`;
+    throw new RangeError(`${shown} at ${speed} km/u is not a supported trip for ${context}`);
+  }
+}
+
+/**
+ * `Je fietst 6 km in 20 min. Hoe snel is dat?` (suffix km/u) or the distance form (suffix km). The
+ * trip must be one of `promptTrips`.
+ */
 export function travelQuestion(form: TravelForm, trip: Trip): Question {
   const { context, speed, duration, distance } = trip;
+  checkTrip(trip, promptTrips(context, speed));
   const { subject, howFar } = WORDING[context];
-  const time = formatDuration(duration);
+  const time = durationText(duration);
   return {
     key: `speed:${form}:${context}:${speed}:${formatRational(duration.amount)}${duration.unit}`,
     topic: 'speed',
@@ -191,7 +205,7 @@ export function travelQuestion(form: TravelForm, trip: Trip): Question {
 export function travelExplanation(form: TravelForm, trip: Trip): string {
   const rows = ratioRows(trip);
   return (form === 'speed' ? rows : rows.reverse())
-    .map(({ time, distance }) => `${formatDuration(time)} → ${formatRational(distance)} km`)
+    .map(({ time, distance }) => `${durationText(time)} → ${formatRational(distance)} km`)
     .join(', ');
 }
 
@@ -243,12 +257,7 @@ function timeTripsOf(context: SpeedContext): TripsBySpeed {
 }
 
 // Per context: the trips of the time form. Computed once.
-const TIME_TRIPS: Readonly<Record<SpeedContext, TripsBySpeed>> = {
-  wandelen: timeTripsOf('wandelen'),
-  fietsen: timeTripsOf('fietsen'),
-  auto: timeTripsOf('auto'),
-  trein: timeTripsOf('trein'),
-};
+const TIME_TRIPS = new Map(CONTEXTS.map((context) => [context, timeTripsOf(context)]));
 
 /**
  * Trips of a speed whose time is the answer: in whole minutes in [5, 59], or in hours from
@@ -256,12 +265,16 @@ const TIME_TRIPS: Readonly<Record<SpeedContext, TripsBySpeed>> = {
  * ratio table is then a whole number of minutes, or of half hours.
  */
 export function timeTrips(context: SpeedContext, speed: number): readonly Trip[] {
-  return TIME_TRIPS[context].get(speed) ?? [];
+  return TIME_TRIPS.get(context)?.get(speed) ?? [];
 }
 
-/** `Je wandelt 5 km/u. Hoe lang doe je over 2 km?`, suffix the unit of trip.duration. */
+/**
+ * `Je wandelt 5 km/u. Hoe lang doe je over 2 km?`, suffix the unit of trip.duration. The trip must
+ * be one of `timeTrips`.
+ */
 export function timeQuestion(trip: Trip): Question {
   const { context, speed, duration, distance } = trip;
+  checkTrip(trip, timeTrips(context, speed));
   const { subject, howLong } = WORDING[context];
   const km = formatRational(distance);
   return {
@@ -295,7 +308,7 @@ export function timeExplanation(trip: Trip): string {
     { km: distance, time: duration },
   ];
   return rows
-    .map(({ km, time }) => `${formatRational(km)} km → ${formatDuration(time)}`)
+    .map(({ km, time }) => `${formatRational(km)} km → ${durationText(time)}`)
     .join(', ');
 }
 
