@@ -86,8 +86,9 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Meten six equally weighted topics with 15% tables', () => {
+  it('makes Meten seven equally weighted topics with 15% tables', () => {
     expect(MEASUREMENT_SET.name).toBe('Meten');
+    expect(MEASUREMENT_SET.description).toBe('Eenheden, grote getallen en snelheid');
     expect(MEASUREMENT_SET.tablesPercent).toBe(15);
     expect(MEASUREMENT_SET.topics).toEqual([
       { topic: 'volume', weight: 1 },
@@ -96,6 +97,7 @@ describe('practice sets', () => {
       { topic: 'mass', weight: 1 },
       { topic: 'time', weight: 1 },
       { topic: 'numberUnits', weight: 1 },
+      { topic: 'speed', weight: 1 },
     ]);
   });
 
@@ -139,6 +141,7 @@ describe('describeSetTopics', () => {
       'Gewicht (mg t/m ton)',
       'Tijd (s, min, uur, dag)',
       'Grote getallen (duizend t/m quadriljoen)',
+      'Snelheid (afstand, tijd, km/u en m/s)',
       '15% tafels',
     ]);
   });
