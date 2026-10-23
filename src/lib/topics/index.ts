@@ -17,6 +17,7 @@ import { generateFactorization, generateGcd, generateLcm, generatePrime } from '
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
 import { generatePercentChange } from './percentChange';
+import { generatePerimeterArea } from './perimeterArea';
 import { generatePowersRoots } from './powersRoots';
 import { generateProperties } from './properties';
 import { generateRatioProblems } from './ratioProblems';
@@ -60,6 +61,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   decimalArithmetic: generateDecimalArithmetic,
   fractionConversion: generateFractionConversion,
   fractionArithmetic: generateFractionArithmetic,
+  perimeterArea: generatePerimeterArea,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -94,4 +96,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
+  perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
 };

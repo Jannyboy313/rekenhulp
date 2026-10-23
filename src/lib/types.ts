@@ -35,7 +35,8 @@ export type Topic =
   | 'scientificNotation'
   | 'decimalArithmetic'
   | 'fractionConversion'
-  | 'fractionArithmetic';
+  | 'fractionArithmetic'
+  | 'perimeterArea';
 
 export interface CheckResult {
   correct: boolean;
