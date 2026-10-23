@@ -37,7 +37,8 @@ export type Topic =
   | 'fractionConversion'
   | 'fractionArithmetic'
   | 'perimeterArea'
-  | 'solids';
+  | 'solids'
+  | 'pythagoras';
 
 export interface CheckResult {
   correct: boolean;

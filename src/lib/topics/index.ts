@@ -20,6 +20,7 @@ import { generatePercentChange } from './percentChange';
 import { generatePerimeterArea } from './perimeterArea';
 import { generatePowersRoots } from './powersRoots';
 import { generateProperties } from './properties';
+import { generatePythagoras } from './pythagoras';
 import { generateRatioProblems } from './ratioProblems';
 import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
@@ -64,6 +65,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
+  pythagoras: generatePythagoras,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -100,4 +102,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
+  pythagoras: 'Pythagoras (schuine zijde en rechthoekszijde)',
 };
