@@ -16,6 +16,8 @@ an overview at the end.
 - No persistence at all, including localStorage. Every app start uses defaults.
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty
+- No problems that need a calculator. The app is for short mental-arithmetic sessions on the go
+  (§12.3).
 - The v1 topics and the completed v2 sets in §4 are implemented. The rest of v2 and v3 are on
   the roadmap (§12), and the architecture must make adding them cheap.
 
@@ -380,8 +382,8 @@ exercises.
 | **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale`, `ratioProblems` (v2)      | 15%    | v1 + v2 |
 | **Getalbegrip**             | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` | 15% | v2   |
 | **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic`                   | 15%    | v2      |
-| **Meetkunde**               | `perimeterArea`, `solids`, `pythagoras`, `angles`                                 | 15%    | v2      |
-| **Verbanden & statistiek**  | `statistics`, `sequences`, `formulas`, `equations`, `probability`                 | 15%    | v2      |
+| **Meetkunde**               | `perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties`  | 15%    | v2      |
+| **Verbanden & statistiek**  | `statistics`, `percentagePoints`, `sequences`, `formulas`, `equations`, `probability` | 15% | v2      |
 | **Talstelsels**             | `numberSystems`, `romanNumerals`                                                  | 15%    | v2      |
 | **Heuristieken**            | `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`      | 15%    | v2      |
 
@@ -1718,9 +1720,15 @@ in each set's own spec iteration.
      their multiples.
    - `angles`: angle sums in triangles and polygons, the angle of a regular polygon, and the
      angle between the hands of a clock.
+   - `symmetry`: the number of lines of symmetry and the order of rotational symmetry of a
+     figure named in words (regular polygons, quadrilaterals, triangles).
+   - `shapeProperties`: yes/no statements about quadrilaterals and triangles
+     (`Is elk vierkant een ruit?`), with the boolean answer kind of `prime`.
 6. **Verbanden & statistiek** (new set)
    - `statistics`: mean, median, mode and range of a short list, and the missing value for a
      given mean.
+   - `percentagePoints`: the change between two percentages in percentage points versus in
+     percent (`van 20% naar 25%`: 5 procentpunt, 25% hoger).
    - `sequences`: arithmetic and geometric sequences, and figurate numbers (triangular and
      square numbers): the next term or the n-th term.
    - `formulas`: substituting into a formula, and the start value and slope of a linear
@@ -1749,22 +1757,23 @@ little new infrastructure. Its negative numbers are needed later. Fractions and 
 next because percentages, scale, probability and statistics build on them. The remaining sets
 build on both. Talstelsels and Heuristieken are LKT-only and come last.
 
-### 12.2 v3 — multiple choice and calculator problems
+### 12.2 v3 — multiple choice
 
 - A multiple-choice answer kind. It serves:
-  - mathematical language and concepts, such as the properties of quadrilaterals and
-    triangles, absolute versus relative, and mean versus median
+  - mathematical language and concepts, such as absolute versus relative, and mean versus
+    median
   - estimating (`welk antwoord ligt het dichtst bij`)
   - comparing and ordering
-- Calculator problems: word problems at the level of the RWT calculator part and the LKT
-  part 2, with larger numbers. These replace the earlier plan for the set *Toepassingen*.
 
 ### 12.3 Out of scope until further notice
 
+- Problems that need a calculator, such as the RWT calculator part and the LKT part 2. The app
+  is for mental arithmetic and ways of thinking, practised on the go. This drops the earlier
+  plans for calculator problems and the set *Toepassingen*.
 - Anything that needs pictures:
   - reading graphs, tables and diagrams
   - spatial geometry: views, nets and cube buildings
-  - symmetry and coordinates
+  - symmetry of pictured figures (letters, patterns) and coordinates
   - measuring angles
 - Didactics (part of the LKT).
 

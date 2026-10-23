@@ -23,13 +23,15 @@ and Breuken & kommagetallen, plus stacked fractions, the kladblok (§3.6), repea
 Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
 says so:
 
-| Set                                                                                                  | New infrastructure                   |
-| ---------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`                                     | figures described in words           |
-| **Verbanden & statistiek**: `statistics`, `sequences`, `formulas`, `equations`, `probability`        | —                                    |
-| **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                              | text answer kind with letter keys    |
-| **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem` | check the longest prompts on a phone |
-| v3: multiple choice, calculator problems (§12.2)                                                     | multiple-choice answer kind          |
+| Set                                                                                                         | New infrastructure                   |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties`             | figures described in words           |
+| **Verbanden & statistiek**: `statistics`, `percentagePoints`, `sequences`, `formulas`, `equations`, `probability` | —                              |
+| **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                                     | text answer kind with letter keys    |
+| **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`        | check the longest prompts on a phone |
+| v3: multiple choice (§12.2)                                                                                 | multiple-choice answer kind          |
+
+Mental arithmetic only: problems that need a calculator are out of scope (spec §12.3).
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`. A new `AnswerKind`
