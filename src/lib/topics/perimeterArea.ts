@@ -213,10 +213,12 @@ function measureQuestion(
  */
 export function figureQuestion(shape: PlaneShape, measure: Measure): Question {
   const { start, measures } = figureMeasures(shape);
-  const { figure, lengths, circleGiven } = shape;
+  const { figure, lengths } = shape;
   const hint = figure === 'cirkel' ? ` Neem π = ${PI_TEXT}.` : '';
+  // A circle without `circleGiven` is shown by its radius (see figureMeasures).
+  const circleGiven = figure === 'cirkel' ? [shape.circleGiven ?? 'straal'] : [];
   return measureQuestion(
-    [figure, ...(circleGiven === undefined ? [] : [circleGiven]), ...lengths].join(':'),
+    [figure, ...circleGiven, ...lengths].join(':'),
     `${start} Hoe groot is de ${measure}?${hint}`,
     'cm',
     measures,
@@ -253,6 +255,10 @@ export function mixedRectangleQuestion(
   );
 }
 
+function notWhole(formula: string): RangeError {
+  return new RangeError(`${formula} is not a whole number of cm`);
+}
+
 /** The prompt of a missing side, its answer, and how it is worked out. */
 function missingSide(variant: MissingSide, first: number, second: number) {
   switch (variant) {
@@ -274,12 +280,16 @@ function missingSide(variant: MissingSide, first: number, second: number) {
         answer: rational(BigInt(first), 4n),
         formula: `${first} : 4`,
       };
-    case 'squareFromArea':
+    case 'squareFromArea': {
+      // Exact integer check: a root that squares back to the area is a whole number.
+      const root = Math.round(Math.sqrt(first));
+      if (root * root !== first) throw notWhole(`√${first}`);
       return {
         prompt: `Een vierkant heeft een oppervlakte van ${first} cm². Hoe lang is een zijde?`,
-        answer: fromInteger(Math.sqrt(first)),
+        answer: fromInteger(root),
         formula: `√${first}`,
       };
+    }
   }
 }
 
@@ -291,9 +301,7 @@ function missingSide(variant: MissingSide, first: number, second: number) {
 export function missingSideQuestion(variant: MissingSide, given: readonly number[]): Question {
   const [first, second] = given as readonly [number, number];
   const { prompt, answer, formula } = missingSide(variant, first, second);
-  if (!isInteger(answer) || answer.num <= 0n) {
-    throw new RangeError(`${formula} is not a whole number of cm`);
-  }
+  if (!isInteger(answer) || answer.num <= 0n) throw notWhole(formula);
   return {
     key: `perimeterArea:missing:${variant}:${given.join(':')}`,
     topic: 'perimeterArea',

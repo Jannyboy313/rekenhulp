@@ -230,6 +230,16 @@ describe('figureQuestion', () => {
     expect(figureQuestion(shape('vierkant', 7), 'omtrek').topic).toBe('perimeterArea');
   });
 
+  it('shows a circle without circleGiven by its radius, in the prompt and in the key', () => {
+    for (const measure of ['oppervlakte', 'omtrek'] as const) {
+      const implicit = figureQuestion({ figure: 'cirkel', lengths: [5] }, measure);
+      const explicit = figureQuestion(circle('straal', 5), measure);
+      expect(implicit.key).toBe(explicit.key);
+      expect(stepOf(implicit).prompt).toBe(stepOf(explicit).prompt);
+      expect(stepOf(implicit).prompt).toContain('een straal van 5 cm');
+    }
+  });
+
   it('has no perimeter for a triangle or a trapezium', () => {
     for (const plane of [
       shape('driehoek', 8, 5),
@@ -420,6 +430,15 @@ describe('missingSideQuestion', () => {
     expect(() => missingSideQuestion('rectangleFromPerimeter', [35, 5])).toThrow(RangeError);
     expect(() => missingSideQuestion('squareFromPerimeter', [37])).toThrow(RangeError);
     expect(() => missingSideQuestion('squareFromArea', [150])).toThrow(RangeError);
+  });
+
+  it('says clearly that the side of a non-square area is not a whole number', () => {
+    expect(() => missingSideQuestion('squareFromArea', [145])).toThrow(
+      new RangeError('√145 is not a whole number of cm'),
+    );
+    expect(() => missingSideQuestion('squareFromPerimeter', [37])).toThrow(
+      new RangeError('37 : 4 is not a whole number of cm'),
+    );
   });
 
   it('has no topic tips, only the factor-of-ten fallback', () => {
