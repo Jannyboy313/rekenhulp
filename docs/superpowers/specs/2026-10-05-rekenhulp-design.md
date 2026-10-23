@@ -1411,7 +1411,8 @@ There are four forms, each picked with equal probability:
 The set Meetkunde (v2). Figures are described in words; there are no pictures. Its card (§3.1)
 reads "Omtrek, oppervlakte, inhoud, hoeken en vormen". Circles and cylinders use `π = 3,14`,
 said in the prompt (`Neem π = 3,14.`). Answers with a unit show it as the suffix (§6): `cm`,
-`cm²`, `cm³`, `m`, `m²`, `L` or `°`.
+`cm²`, `cm³`, `m`, `m²`, `L` or `°`. The longest prompts (about 110 characters: the `symmetry`
+rotation and the `pythagoras` walk) use the small size of §3.3; check them on a phone.
 
 ### 5.27 Perimeter and area (`perimeterArea`)
 
@@ -1903,20 +1904,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-Meetkunde (§5.27–§5.32), decided by me and open for review:
-
-1. **Form shares:** equal per topic, except `solids` (volume 50%, surface area 25%, litres 25%)
-   and `shapeProperties` (hierarchy 40%, properties 40%, triangles 20%).
-2. **Ranges:** chosen for mental work: the squares of §5.7 (up to 25²), widths up to 12, the
-   radius in `{1, 2, 3, 4, 5, 10}`, multiples of 10 cm for litres.
-3. **Mixed units:** only the rectangle contexts of §5.27 (m and cm) and the litres of §5.28
-   (cm → L).
-4. **Pythagoras:** no ladder context, because its realistic lengths do not fit the triples.
-5. **Tips:** 9 new rows in §3.4.1, only for the classic mistakes; symmetry and shapeProperties
-   get none. Cut any you do not want.
-6. **Topic weights:** all 1, also for the quick Ja/Nee topics.
-7. **Prompt length:** the longest prompts (about 110 characters, `symmetry` rotation and the
-   `pythagoras` walk) use the small size of §3.3; check them on a phone.
+None at the moment.
 
 ## 12. Roadmap (not in v1)
 
