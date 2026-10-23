@@ -220,9 +220,12 @@ function partTip(
   const ratio = scaled(divide(fromInteger(asked), fromInteger(other)));
   const otherPart = scaled(divide(fromInteger(other), fromInteger(whole)));
   const [first, second] = context.groups;
+  const percent = asPercentage
+    ? ` = ${formatPercentNumber(divide(fromInteger(asked), fromInteger(whole)))}%`
+    : '';
   const ratioTip =
     `${a} : ${b} is ${first} tegenover ${second}. ` +
-    `Het geheel is ${a} + ${b} = ${whole} delen, dus ${asked}/${whole}.`;
+    `Het geheel is ${a} + ${b} = ${whole} delen, dus ${asked}/${whole}${percent}.`;
   const otherTip =
     `Dat is het deel ${context.groups[otherIndex(index)]}; ` +
     `gevraagd is het deel ${context.groups[index]}.`;

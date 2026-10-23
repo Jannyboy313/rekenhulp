@@ -383,14 +383,14 @@ describe('part of the whole answers', () => {
     ['marbles', 2, 3, 0, false, '3/5', false, OTHER_ROOD],
     ['audience', 1, 2, 1, true, '66 2/3', true, undefined],
     ['audience', 1, 2, 1, true, '200/3', true, undefined],
-    ['audience', 1, 2, 1, true, '200', false, `${RATIO_AUDIENCE_1_2}2/3.`],
+    ['audience', 1, 2, 1, true, '200', false, `${RATIO_AUDIENCE_1_2}2/3 = 66 2/3%.`],
     ['audience', 1, 2, 1, true, '33 1/3', false, OTHER_KINDEREN],
     ['audience', 1, 2, 1, true, '100/3', false, OTHER_KINDEREN],
     ['audience', 1, 2, 1, true, '66,7', false, undefined],
     ['class', 3, 5, 0, true, '37,5', true, undefined],
     ['class', 3, 5, 0, true, '37 1/2', true, undefined],
     ['class', 3, 5, 0, true, '75/2', true, undefined],
-    ['class', 3, 5, 0, true, '60', false, `${RATIO_CLASS_3_5}3/8.`],
+    ['class', 3, 5, 0, true, '60', false, `${RATIO_CLASS_3_5}3/8 = 37,5%.`],
     ['class', 3, 5, 0, true, '62,5', false, OTHER_JONGENS],
     ['class', 3, 5, 0, true, '3,75', false, TIMES_TEN_TOO_SMALL],
   ])('%s %i : %i, group %i, percentage %s: typing %s', (id, a, b, index, pct, input, ok, tip) => {
@@ -451,10 +451,11 @@ describe('every supported part-of-the-whole question', () => {
             expect(correct.explanation, label).toBeTruthy();
 
             const ratio = step.check(`${asked * scale}/${other}`);
+            const percent = asPercentage ? ` = ${correct.expected}%` : '';
             expect(ratio.correct, label).toBe(false);
             expect(ratio.tip, label).toBe(
               `${a} : ${b} is ${context.groups[0]} tegenover ${context.groups[1]}. ` +
-                `Het geheel is ${a} + ${b} = ${a + b} delen, dus ${asked}/${a + b}.`,
+                `Het geheel is ${a} + ${b} = ${a + b} delen, dus ${asked}/${a + b}${percent}.`,
             );
 
             const otherPart = step.check(`${other * scale}/${a + b}`);
