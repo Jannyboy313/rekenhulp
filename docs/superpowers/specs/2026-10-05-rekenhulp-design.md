@@ -183,7 +183,7 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `percentChange`, original value | the new price changed once more the same way (`60 − 15`) | "Na korting is de prijs lager, dus de oude prijs is hoger dan € 60." (verhoging: lager) |
 | `scale`, map ↔ real | 10ᵏ × the answer, k ≠ 0 | "Reken in dezelfde eenheid: 1 cm op de kaart is 25 000 cm = 250 m = 0,25 km in het echt." (the chain of the explanation; op de tekening; replaces the factor-of-ten tip) |
 | `scale`, find the scale | 10ᵏ × the answer, k ≠ 0 | "Reken eerst beide afstanden om naar cm: 2 km = 200 000 cm." (replaces the factor-of-ten tip) |
-| `ratioProblems`, part of the whole | the ratio of the two groups (`2/3`, or `66 2/3` for a percentage) | "2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5." |
+| `ratioProblems`, part of the whole | the ratio of the two groups (`2/3`, or `66 2/3` for a percentage) | "2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5." (percentage: "… dus 2/5 = 40%.") |
 | `ratioProblems`, part of the whole | the part of the other group | "Dat is het deel meisjes; gevraagd is het deel jongens." |
 | `ratioProblems`, mixing from the total | the total divided by one term | "Deel eerst door het totaal aantal delen: 1 + 6 = 7." |
 | `ratioProblems`, mixing from the total | the other ingredient | "Dat is de hoeveelheid water; gevraagd is de siroop." |
