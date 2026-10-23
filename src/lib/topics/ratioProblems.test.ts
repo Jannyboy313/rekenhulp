@@ -1662,14 +1662,22 @@ describe('generateRatioProblems', () => {
       );
       expect(candidates.length).toBeGreaterThan(50);
       for (const amount of amounts.filter((value) => value !== 5)) {
-        expect(candidates.some(([first]) => first === amount), String(amount)).toBe(true);
+        expect(
+          candidates.some(([first]) => first === amount),
+          String(amount),
+        ).toBe(true);
       }
       for (const [first, second] of candidates) {
         // The price per litre is € 1,60: 160 cents per litre for the first amount.
         const firstPrice = rational(BigInt(first * 160), 100n);
         expect(
           () =>
-            unitQuestion(unitContext('petrol'), fromInteger(first), firstPrice, fromInteger(second)),
+            unitQuestion(
+              unitContext('petrol'),
+              fromInteger(first),
+              firstPrice,
+              fromInteger(second),
+            ),
           `${first} L and ${second} L`,
         ).not.toThrow();
       }

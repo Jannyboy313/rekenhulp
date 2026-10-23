@@ -307,8 +307,20 @@ describe('generateSymmetry', () => {
 
   it('answers Ja and Nee 50% each for the point symmetry', () => {
     const point = of('point');
-    near(share(point.filter(({ figure }) => figure.pointSymmetric), point), 0.5);
-    near(share(point.filter(({ figure }) => !figure.pointSymmetric), point), 0.5);
+    near(
+      share(
+        point.filter(({ figure }) => figure.pointSymmetric),
+        point,
+      ),
+      0.5,
+    );
+    near(
+      share(
+        point.filter(({ figure }) => !figure.pointSymmetric),
+        point,
+      ),
+      0.5,
+    );
   });
 
   it('has a key of the form and the figure, 36 different in all', () => {

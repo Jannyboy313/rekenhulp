@@ -50,7 +50,8 @@ const TIP_HEIGHT = 'Reken met de hoogte, niet met de schuine zijde: 8 × 4.';
 const TIP_RADIUS = 'De straal is de helft van de diameter: 10 : 2 = 5.';
 const TIP_DIAMETER = 'De omtrek is π × diameter, en de diameter is 2 × 5 = 10.';
 const TIP_FACTOR_TEN = 'Je antwoord is 10 keer te groot. Let op de komma en het aantal nullen.';
-const TIP_FACTOR_HUNDRED = 'Je antwoord is 100 keer te groot. Let op de komma en het aantal nullen.';
+const TIP_FACTOR_HUNDRED =
+  'Je antwoord is 100 keer te groot. Let op de komma en het aantal nullen.';
 
 describe('PI', () => {
   it('is 3,14', () => {
@@ -219,7 +220,9 @@ describe('figureQuestion', () => {
   it('has a key of the form, the figure and the numbers', () => {
     const keyOf = (plane: PlaneShape, measure: Measure) => figureQuestion(plane, measure).key;
     expect(keyOf(shape('vierkant', 7), 'oppervlakte')).toBe('perimeterArea:area:vierkant:7');
-    expect(keyOf(shape('rechthoek', 12, 5), 'omtrek')).toBe('perimeterArea:perimeter:rechthoek:12:5');
+    expect(keyOf(shape('rechthoek', 12, 5), 'omtrek')).toBe(
+      'perimeterArea:perimeter:rechthoek:12:5',
+    );
     expect(keyOf(shape('parallellogram', 8, 5, 4), 'oppervlakte')).toBe(
       'perimeterArea:area:parallellogram:8:5:4',
     );
@@ -251,26 +254,74 @@ describe('figureQuestion', () => {
   });
 
   it.each<[string, PlaneShape, Measure, string, string | undefined]>([
-    ['rechthoek 12 × 5, oppervlakte', shape('rechthoek', 12, 5), 'oppervlakte', '34', TIP_PERIMETER],
+    [
+      'rechthoek 12 × 5, oppervlakte',
+      shape('rechthoek', 12, 5),
+      'oppervlakte',
+      '34',
+      TIP_PERIMETER,
+    ],
     ['rechthoek 12 × 5, omtrek', shape('rechthoek', 12, 5), 'omtrek', '60', TIP_AREA],
-    ['vierkant 4, oppervlakte: equal to the perimeter', shape('vierkant', 4), 'oppervlakte', '16', undefined],
+    [
+      'vierkant 4, oppervlakte: equal to the perimeter',
+      shape('vierkant', 4),
+      'oppervlakte',
+      '16',
+      undefined,
+    ],
     ['vierkant 4, omtrek: equal to the area', shape('vierkant', 4), 'omtrek', '16', undefined],
     ['vierkant 7, oppervlakte', shape('vierkant', 7), 'oppervlakte', '28', TIP_PERIMETER],
     ['driehoek 8, 5', shape('driehoek', 8, 5), 'oppervlakte', '40', TIP_HALF],
-    ['rechthoekigeDriehoek 6, 9', shape('rechthoekigeDriehoek', 6, 9), 'oppervlakte', '54', TIP_HALF],
+    [
+      'rechthoekigeDriehoek 6, 9',
+      shape('rechthoekigeDriehoek', 6, 9),
+      'oppervlakte',
+      '54',
+      TIP_HALF,
+    ],
     ['driehoek 8, 5, a wrong answer', shape('driehoek', 8, 5), 'oppervlakte', '39', undefined],
-    ['parallellogram 8, 5, 4, oppervlakte', shape('parallellogram', 8, 5, 4), 'oppervlakte', '40', TIP_HEIGHT],
-    ['parallellogram 8, 5, 4, oppervlakte', shape('parallellogram', 8, 5, 4), 'oppervlakte', '26', TIP_PERIMETER],
+    [
+      'parallellogram 8, 5, 4, oppervlakte',
+      shape('parallellogram', 8, 5, 4),
+      'oppervlakte',
+      '40',
+      TIP_HEIGHT,
+    ],
+    [
+      'parallellogram 8, 5, 4, oppervlakte',
+      shape('parallellogram', 8, 5, 4),
+      'oppervlakte',
+      '26',
+      TIP_PERIMETER,
+    ],
     ['parallellogram 8, 5, 4, omtrek', shape('parallellogram', 8, 5, 4), 'omtrek', '32', TIP_AREA],
     ['trapezium 6, 10, 4', shape('trapezium', 6, 10, 4), 'oppervlakte', '64', undefined],
     ['cirkel diameter 10, oppervlakte', circle('diameter', 10), 'oppervlakte', '314', TIP_RADIUS],
-    ['cirkel diameter 10, oppervlakte', circle('diameter', 10), 'oppervlakte', '31,4', TIP_PERIMETER],
+    [
+      'cirkel diameter 10, oppervlakte',
+      circle('diameter', 10),
+      'oppervlakte',
+      '31,4',
+      TIP_PERIMETER,
+    ],
     ['cirkel diameter 10, omtrek', circle('diameter', 10), 'omtrek', '78,5', TIP_AREA],
-    ['cirkel diameter 10, omtrek: no radius mistake', circle('diameter', 10), 'omtrek', '15,7', undefined],
+    [
+      'cirkel diameter 10, omtrek: no radius mistake',
+      circle('diameter', 10),
+      'omtrek',
+      '15,7',
+      undefined,
+    ],
     ['cirkel straal 5, omtrek', circle('straal', 5), 'omtrek', '15,7', TIP_DIAMETER],
     ['cirkel straal 5, omtrek', circle('straal', 5), 'omtrek', '78,5', TIP_AREA],
     ['cirkel straal 5, oppervlakte', circle('straal', 5), 'oppervlakte', '785', TIP_FACTOR_TEN],
-    ['cirkel straal 5, oppervlakte: no diameter mistake', circle('straal', 5), 'oppervlakte', '314', undefined],
+    [
+      'cirkel straal 5, oppervlakte: no diameter mistake',
+      circle('straal', 5),
+      'oppervlakte',
+      '314',
+      undefined,
+    ],
     ['cirkel straal 5, oppervlakte', circle('straal', 5), 'oppervlakte', '78,5', undefined],
   ])('%s, typing %s', (_label, plane, measure, input, tip) => {
     expect(askFigure(plane, measure, input).tip).toBe(tip);
@@ -348,19 +399,22 @@ describe('mixedRectangleQuestion', () => {
       'm',
       '30 cm = 0,3 m → 2 × (3 + 0,3) = 6,6',
     ],
-  ])('%s %s m × %i cm, %s', (context, lengthM, widthCm, measure, prompt, answer, suffix, explanation) => {
-    const question = mixedRectangleQuestion(context, decimal(lengthM), widthCm, measure);
-    const step = stepOf(question);
-    expect(question.topic).toBe('perimeterArea');
-    expect(step.kind).toBe('number');
-    expect(step.prompt).toBe(prompt);
-    expect(step.suffix).toBe(suffix);
-    expect(step.prefix).toBeUndefined();
-    expect(step.check(answer).correct).toBe(true);
-    expect(step.check('').expected).toBe(answer);
-    expect(step.check(answer).explanation).toBe(explanation);
-    expect(step.check('1').explanation).toBe(explanation);
-  });
+  ])(
+    '%s %s m × %i cm, %s',
+    (context, lengthM, widthCm, measure, prompt, answer, suffix, explanation) => {
+      const question = mixedRectangleQuestion(context, decimal(lengthM), widthCm, measure);
+      const step = stepOf(question);
+      expect(question.topic).toBe('perimeterArea');
+      expect(step.kind).toBe('number');
+      expect(step.prompt).toBe(prompt);
+      expect(step.suffix).toBe(suffix);
+      expect(step.prefix).toBeUndefined();
+      expect(step.check(answer).correct).toBe(true);
+      expect(step.check('').expected).toBe(answer);
+      expect(step.check(answer).explanation).toBe(explanation);
+      expect(step.check('1').explanation).toBe(explanation);
+    },
+  );
 
   it('has a key of the form, the context and the numbers', () => {
     const key = (measure: Measure) =>
@@ -652,7 +706,10 @@ describe('generatePerimeterArea', () => {
       expect(Math.abs(used / mixed.length - 1 / 3), context).toBeLessThan(0.1);
     }
     for (const measure of ['oppervlakte', 'omtrek']) {
-      expect(mixed.some((one) => one.measure === measure), measure).toBe(true);
+      expect(
+        mixed.some((one) => one.measure === measure),
+        measure,
+      ).toBe(true);
     }
   });
 
@@ -677,7 +734,10 @@ describe('generatePerimeterArea', () => {
   });
 
   it('gives each figure its numbers in the ranges of spec §5.27', () => {
-    for (const { shape: { figure, lengths, circleGiven }, question } of figures) {
+    for (const {
+      shape: { figure, lengths, circleGiven },
+      question,
+    } of figures) {
       const label = question.key;
       const [a = 0, b = 0, c = 0] = lengths;
       switch (figure) {

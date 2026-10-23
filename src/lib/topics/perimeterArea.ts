@@ -27,10 +27,7 @@ export type PlaneFigure =
 export type Measure = 'oppervlakte' | 'omtrek';
 export type RectangleContext = 'tafelblad' | 'vloerkleed' | 'raam';
 export type MissingSide =
-  | 'rectangleFromArea'
-  | 'rectangleFromPerimeter'
-  | 'squareFromPerimeter'
-  | 'squareFromArea';
+  'rectangleFromArea' | 'rectangleFromPerimeter' | 'squareFromPerimeter' | 'squareFromArea';
 
 /**
  * The given lengths of a figure in cm, in the order of its prompt: vierkant [zijde], rechthoek

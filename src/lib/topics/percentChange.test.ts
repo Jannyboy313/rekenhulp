@@ -408,18 +408,8 @@ describe('vatAddedTip and vatRemovedTip', () => {
 describe('vatExplanation', () => {
   it.each<[VatRate, boolean, number, string]>([
     [21, true, 80, '10% = 80 : 10 = 8, 20% = 16, 1% = 0,80 → 21% = 16,80 → 80 + 16,80 = 96,80'],
-    [
-      9,
-      true,
-      80,
-      '10% = 80 : 10 = 8, 1% = 0,80 → 9% = 8 \u{2212} 0,80 = 7,20 → 80 + 7,20 = 87,20',
-    ],
-    [
-      21,
-      true,
-      85,
-      '10% = 85 : 10 = 8,50, 20% = 17, 1% = 0,85 → 21% = 17,85 → 85 + 17,85 = 102,85',
-    ],
+    [9, true, 80, '10% = 80 : 10 = 8, 1% = 0,80 → 9% = 8 \u{2212} 0,80 = 7,20 → 80 + 7,20 = 87,20'],
+    [21, true, 85, '10% = 85 : 10 = 8,50, 20% = 17, 1% = 0,85 → 21% = 17,85 → 85 + 17,85 = 102,85'],
     [21, false, 80, '121% = 96,80 → 1% = 96,80 : 121 = 0,80 → 100% = 80'],
     [9, false, 300, '109% = 327 → 1% = 327 : 109 = 3 → 100% = 300'],
   ])('explains %i%% VAT, adding %s, without VAT %i', (rate, adding, price, expected) => {
@@ -952,7 +942,10 @@ describe('generatePercentChange', () => {
         expect(increase ? INCREASE_ITEMS : DISCOUNT_ITEMS).toContain(item);
       }
       for (const item of [...DISCOUNT_ITEMS, ...INCREASE_ITEMS]) {
-        expect(parsed.some((original) => original.item === item), item).toBe(true);
+        expect(
+          parsed.some((original) => original.item === item),
+          item,
+        ).toBe(true);
       }
     });
 

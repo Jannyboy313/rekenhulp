@@ -307,9 +307,7 @@ export function timeExplanation(trip: Trip): string {
       : [{ km: step, time: inUnit(divide(step, first), duration.unit) }]),
     { km: distance, time: duration },
   ];
-  return rows
-    .map(({ km, time }) => `${formatRational(km)} km → ${durationText(time)}`)
-    .join(', ');
+  return rows.map(({ km, time }) => `${formatRational(km)} km → ${durationText(time)}`).join(', ');
 }
 
 /**

@@ -576,8 +576,7 @@ export const UNIT_CONTEXTS: readonly UnitContext[] = [
     maxPriceCents: 2500,
     priceStepCents: 100,
     amountText: (amount) => `${formatRational(amount)} uur`,
-    prompt: (given, price, asked) =>
-      `Voor ${given} werk krijg je ${price}. Hoeveel voor ${asked}?`,
+    prompt: (given, price, asked) => `Voor ${given} werk krijg je ${price}. Hoeveel voor ${asked}?`,
     verb: 'je krijgt',
   },
 ];

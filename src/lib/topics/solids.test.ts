@@ -223,11 +223,14 @@ describe('tips', () => {
     ['kubus 6, oppervlakte', '216', () => surfaceQuestion('kubus', [6])],
     ['balk 20, 5, 4, inhoud', '400', () => volumeQuestion('balk', [20, 5, 4])],
     ['balk 20, 5, 4, oppervlakte', '400', () => surfaceQuestion('balk', [20, 5, 4])],
-  ])('%s, typing %s: volume and surface area are equal, so correct without a tip', (_label, input, make) => {
-    const result = stepOf(make()).check(input);
-    expect(result.correct).toBe(true);
-    expect(result.tip).toBeUndefined();
-  });
+  ])(
+    '%s, typing %s: volume and surface area are equal, so correct without a tip',
+    (_label, input, make) => {
+      const result = stepOf(make()).check(input);
+      expect(result.correct).toBe(true);
+      expect(result.tip).toBeUndefined();
+    },
+  );
 
   it('quotes the diameter in the tip for a cylinder with another diameter', () => {
     const result = stepOf(volumeQuestion('cilinder', [4, 3], 'diameter')).check('150,72');
@@ -246,8 +249,7 @@ describe('generateSolids', () => {
   const CONTAINERS: readonly Container[] = ['aquarium', 'koelbox', 'opbergbox'];
   const PROMPTS = {
     kubus: /^Een kubus heeft ribben van (\d+) cm\. Hoe groot is de (inhoud|oppervlakte)\?$/u,
-    balk:
-      /^Een balk is (\d+) cm lang, (\d+) cm breed en (\d+) cm hoog\. Hoe groot is de (inhoud|oppervlakte)\?$/u,
+    balk: /^Een balk is (\d+) cm lang, (\d+) cm breed en (\d+) cm hoog\. Hoe groot is de (inhoud|oppervlakte)\?$/u,
     cilinder:
       /^Een cilinder heeft een (straal|diameter) van (\d+) cm en een hoogte van (\d+) cm\. Hoe groot is de inhoud\? Neem π = 3,14\.$/u,
     litres:

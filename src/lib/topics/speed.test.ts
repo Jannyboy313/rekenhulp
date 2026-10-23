@@ -402,13 +402,7 @@ describe('timeQuestion', () => {
     ['wandelen', 5, 2, '24 min', 'Je wandelt 5 km/u. Hoe lang doe je over 2 km?'],
     ['fietsen', 18, 12, '40 min', 'Je fietst 18 km/u. Hoe lang doe je over 12 km?'],
     ['auto', 80, 60, '45 min', 'Een auto rijdt 80 km/u. Hoe lang doet de auto over 60 km?'],
-    [
-      'trein',
-      120,
-      300,
-      '2,5 uur',
-      'Een trein rijdt 120 km/u. Hoe lang doet de trein over 300 km?',
-    ],
+    ['trein', 120, 300, '2,5 uur', 'Een trein rijdt 120 km/u. Hoe lang doet de trein over 300 km?'],
   ])('words %s at %i km/u over %i km (%s)', (context, speed, km, time, prompt) => {
     expect(stepOf(timeQuestion(timeTripOf(context, speed, km, time))).prompt).toBe(prompt);
   });

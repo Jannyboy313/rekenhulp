@@ -31,8 +31,7 @@ export function splitFractions(text: string): TextSegment[] {
 
 /** A kladblok fraction; `den` is null while the cursor is still in the numerator. */
 type NoteSegment =
-  | { type: 'text'; text: string }
-  | { type: 'fraction'; num: string; den: string | null };
+  { type: 'text'; text: string } | { type: 'fraction'; num: string; den: string | null };
 
 // A kladblok fraction as stored (spec §3.6): '_3/4', or unfinished '_', '_3' and '_3/'.
 const NOTE_FRACTION = /_(\d*)(?:\/(\d*))?/g;
