@@ -40,7 +40,8 @@ export type Topic =
   | 'solids'
   | 'pythagoras'
   | 'angles'
-  | 'symmetry';
+  | 'symmetry'
+  | 'shapeProperties';
 
 export interface CheckResult {
   correct: boolean;

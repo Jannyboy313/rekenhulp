@@ -27,6 +27,7 @@ import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
 import { generateScientificNotation } from './scientificNotation';
+import { generateShapeProperties } from './shapeProperties';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
@@ -70,6 +71,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   pythagoras: generatePythagoras,
   angles: generateAngles,
   symmetry: generateSymmetry,
+  shapeProperties: generateShapeProperties,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -109,4 +111,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   pythagoras: 'Pythagoras (schuine zijde en rechthoekszijde)',
   angles: 'Hoeken (driehoek, veelhoek, klok)',
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
+  shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
 };
