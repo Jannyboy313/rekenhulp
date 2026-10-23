@@ -260,8 +260,17 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `decimalArithmetic`, add / subtract | the numbers added (subtracted) as if aligned on the right (`4,7 + 0,35` → `0,82`) | "Zet de komma's onder elkaar: 4,70 + 0,35." |
 | `decimalArithmetic`, multiply | 10ᵏ × the answer, k > 0 (too few decimals) | "De uitkomst heeft evenveel decimalen als beide getallen samen: 1 + 1 = 2." |
 | `decimalArithmetic`, divide by a decimal | 10ᵏ × the answer, k ≠ 0 | "Maak eerst van de deler een heel getal: 2,5 : 0,05 = 250 : 5." |
+| `perimeterArea`, `solids` | the other quantity of the same figure: the perimeter for the area, the volume for the surface area, and the other way round | "Dat is de omtrek; gevraagd is de oppervlakte." (oppervlakte, inhoud) |
+| `perimeterArea`, triangle area | base × height, not halved | "Een driehoek is de helft van een rechthoek: deel nog door 2." |
+| `perimeterArea`, parallelogram area | base × slanted side | "Reken met de hoogte, niet met de schuine zijde: 8 × 4." |
+| `perimeterArea`, `solids`, circle area or cylinder volume, diameter given | the formula with the diameter as the radius | "De straal is de helft van de diameter: 10 : 2 = 5." |
+| `perimeterArea`, circle perimeter, radius given | `3,14 × r` | "De omtrek is π × diameter, en de diameter is 2 × 5 = 10." |
+| `pythagoras` | the sum of the legs (hypotenuse asked) or the difference (leg asked) | "Tel de kwadraten op: 6² + 8² = 100, en neem daarvan de wortel." (leg: "Trek de kwadraten af: 13² − 5² = 144, …") |
+| `angles`, angle sum | `n × 180` | "Een zeshoek kun je verdelen in 6 − 2 = 4 driehoeken: 4 × 180°." |
+| `angles`, regular polygon | the exterior angle `360 : n` | "Dat is de buitenhoek; één hoek binnenin is 180° − 45° = 135°." |
+| `angles`, clock at half past | the angle with the hour hand on either whole hour | "Om half 4 staat de kleine wijzer halverwege de 3 en de 4." |
 
-Ja/Nee steps (prime, divisibility) and property rewrites get no tips: their explanation (§5.4,
+Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewrites get no tips: their explanation (§5.4,
 §5.6) or rewrite message (§5.11) already names the mistake.
 
 ### 3.5 Results
@@ -444,6 +453,8 @@ Examples with `n = 15`:
   random.
 - **Breuken & kommagetallen:** `r = 13` over 3 topics, so 5 + 4 + 4. The topic with 5 is chosen
   at random.
+- **Meetkunde:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is chosen at
+  random.
 
 ## 5. Topics
 
@@ -1395,6 +1406,215 @@ There are four forms, each picked with equal probability:
 - With `speed`, the description of Meten on its card (§3.1) becomes "Eenheden, grote getallen
   en snelheid".
 
+### Meetkunde (§5.27–§5.32)
+
+The set Meetkunde (v2). Figures are described in words; there are no pictures. Its card (§3.1)
+reads "Omtrek, oppervlakte, inhoud, hoeken en vormen". Circles and cylinders use `π = 3,14`,
+said in the prompt (`Neem π = 3,14.`). Answers with a unit show it as the suffix (§6): `cm`,
+`cm²`, `cm³`, `m`, `m²`, `L` or `°`.
+
+### 5.27 Perimeter and area (`perimeterArea`)
+
+There are three forms, each picked with equal probability:
+
+| Form         | Example                                                                                       | Answer | Suffix |
+|--------------|-----------------------------------------------------------------------------------------------|--------|--------|
+| Area         | `Een driehoek heeft een basis van 8 cm en een hoogte van 5 cm. Hoe groot is de oppervlakte?`  | 20     | `cm²`  |
+| Perimeter    | `Een rechthoek is 12 cm lang en 5 cm breed. Hoe groot is de omtrek?`                          | 34     | `cm`   |
+| Missing side | `Een rechthoek heeft een oppervlakte van 48 cm² en is 6 cm breed. Hoe lang is de rechthoek?`  | 8      | `cm`   |
+
+- **Figures**, in cm, each equally likely within the form:
+
+  | Figure         | Given                                                                                      | Area                 | Perimeter      |
+  |----------------|--------------------------------------------------------------------------------------------|----------------------|----------------|
+  | vierkant       | side `z ∈ [2, 25]`                                                                         | `z × z`              | `4 × z`        |
+  | rechthoek      | length `l ∈ [3, 40]`, width `b ∈ [2, 12]`, `b < l`                                         | `l × b`              | `2 × (l + b)`  |
+  | driehoek       | base and height in `[2, 20]` with an even product; or (50%) the two legs of a right-angled triangle | `b × h : 2`  | —              |
+  | parallellogram | base in `[3, 20]`, height `h ∈ [2, 12]`, slanted sides in `[h + 1, 20]`, all three given   | `b × h`              | `2 × (b + s)`  |
+  | trapezium      | parallel sides `a ≠ b` in `[2, 20]` with `a + b` even, height in `[2, 12]`                 | `(a + b) : 2 × h`    | —              |
+  | cirkel         | radius `r ∈ {1, 2, 3, 4, 5, 10}`, given as the radius or (50%) as the diameter              | `3,14 × r × r`       | `3,14 × d`     |
+
+- Prompts: `Een rechthoekige driehoek heeft rechthoekszijden van 6 cm en 9 cm.`, `Een parallellogram
+  heeft een basis van 8 cm, schuine zijden van 5 cm en een hoogte van 4 cm.`, `Een trapezium heeft
+  evenwijdige zijden van 6 cm en 10 cm en een hoogte van 4 cm.`, `Een cirkel heeft een diameter
+  van 10 cm. Hoe groot is de omtrek? Neem π = 3,14.` The parallelogram always gives all three
+  lengths, so the area needs the height and the perimeter the sides.
+- **Mixed units:** 25% of the area and perimeter exercises are a rectangle in a context, with the
+  length in m and the width in cm, asked in m or m²: `Een tafelblad is 1,6 m lang en 80 cm breed.
+  Hoe groot is de oppervlakte in m²?` (1,28). The length is in `[1; 3]` m with at most 1 decimal,
+  the width a multiple of 10 cm in `[30, 90]`. Contexts, each equally likely: tafelblad,
+  vloerkleed, raam.
+- **Missing side**, four variants, each equally likely: a rectangle from its area and width
+  (`l = A : b`), a rectangle from its perimeter and one side (`P : 2 − b`), a square from its
+  perimeter (`P : 4`) and a square from its area (`√A`). The ranges are those of the figure table.
+- Answers have at most 2 decimals (circles and mixed units).
+- Explanation: the formula with the numbers, after a conversion step where needed:
+  `8 × 5 : 2 = 20`, `2 × (12 + 5) = 34`, `(6 + 10) : 2 × 4 = 32`, `3,14 × 5 × 5 = 78,5`,
+  `straal = 10 : 2 = 5 → 3,14 × 5 × 5 = 78,5`, `diameter = 2 × 5 = 10 → 3,14 × 10 = 31,4`,
+  `80 cm = 0,8 m → 1,6 × 0,8 = 1,28`, `48 : 6 = 8`, `34 : 2 − 5 = 12`, `36 : 4 = 9`,
+  `√144 = 12`.
+- The de-duplication key is the form, the figure and the numbers.
+
+### 5.28 Solids (`solids`)
+
+There are three forms:
+
+| Form                 | Example                                                                                       | Answer | Suffix |
+|----------------------|-----------------------------------------------------------------------------------------------|--------|--------|
+| Volume (50%)         | `Een balk is 8 cm lang, 5 cm breed en 3 cm hoog. Hoe groot is de inhoud?`                     | 120    | `cm³`  |
+| Surface area (25%)   | `Een kubus heeft ribben van 4 cm. Hoe groot is de oppervlakte?`                               | 96     | `cm²`  |
+| Litres (25%)         | `Een aquarium is 60 cm lang, 30 cm breed en 40 cm hoog. Hoeveel liter water past erin?`       | 72     | `L`    |
+
+- **Volume:** a cube, a box or a cylinder, each equally likely. **Surface area:** a cube or a box
+  (50%). The cylinder has no surface-area exercises: `2πr² + 2πrh` is too much mental work.
+- Cube: edge `z ∈ [2, 10]`, volume `z × z × z`, surface area `6 × z × z`.
+- Box: three different whole lengths, `l ∈ [3, 20]`, `b, h ∈ [2, 10]`, volume at most 2000.
+  Surface area `2 × (l × b + l × h + b × h)`.
+- Cylinder: radius `{1, 2, 5, 10}`, given as the radius or (50%) as the diameter, height a whole
+  number in `[1, 10]`: `Een cilinder heeft een straal van 5 cm en een hoogte van 4 cm. Hoe groot is
+  de inhoud? Neem π = 3,14.` Volume `3,14 × r × r × h`, at most 2 decimals.
+- **Litres:** a box-shaped container with every length a multiple of 10 cm, so the volume is a
+  whole number of litres. Contexts, each equally likely, with their ranges (length × width ×
+  height): aquarium `[40, 100] × [30, 50] × [30, 60]`, koelbox `[40, 60] × [30, 40] × [30, 40]`,
+  opbergbox `[40, 80] × [30, 50] × [20, 40]`. Prompts: `Hoeveel liter water past erin?`
+  (aquarium), `Hoeveel liter past erin?` (koelbox, opbergbox).
+- Explanation: `8 × 5 × 3 = 120`, `6 × 4 × 4 = 96`,
+  `2 × (8 × 5 + 8 × 3 + 5 × 3) = 2 × 79 = 158`, `3,14 × 5 × 5 × 4 = 314` (diameter given:
+  `straal = 10 : 2 = 5 → …`), and litres via dm:
+  `60 cm = 6 dm, 30 cm = 3 dm, 40 cm = 4 dm → 6 × 3 × 4 = 72 dm³ = 72 L`.
+- The de-duplication key is the form, the solid or context and the numbers.
+
+### 5.29 Pythagoras (`pythagoras`)
+
+- Triples: `(3, 4, 5)` and its multiples up to `(15, 20, 25)`, `(5, 12, 13)`, `(8, 15, 17)` and
+  `(7, 24, 25)`. The hypotenuse is at most 25, so every square is in the range of §5.7.
+- Two forms, each 50%: the hypotenuse, or a leg (either one, 50%).
+- 50% bare in cm, 50% a context in m, each context equally likely:
+
+  | Context     | Hypotenuse                                                                                   | Leg |
+  |-------------|----------------------------------------------------------------------------------------------|-----|
+  | bare        | `Een rechthoekige driehoek heeft rechthoekszijden van 6 cm en 8 cm. Hoe lang is de schuine zijde?` | `Een rechthoekige driehoek heeft een schuine zijde van 13 cm en een rechthoekszijde van 5 cm. Hoe lang is de andere rechthoekszijde?` |
+  | schoolplein | `Een schoolplein is 20 m lang en 15 m breed. Hoe lang is de diagonaal?`                     | `Een schoolplein is 20 m lang en de diagonaal is 25 m. Hoe breed is het schoolplein?` |
+  | wandelen    | `Je loopt 12 m naar het oosten en dan 5 m naar het noorden. Hoe ver ben je hemelsbreed van je beginpunt?` | `Je loopt 12 m naar het oosten en dan naar het noorden. Je bent nu hemelsbreed 13 m van je beginpunt. Hoeveel m liep je naar het noorden?` |
+
+  The schoolplein is longer than it is wide and has a diagonal of at least 13 m. A ladder against a wall is left out: its realistic
+  lengths do not fit the triples.
+- Explanation: `6² + 8² = 36 + 64 = 100 → √100 = 10`, `13² − 5² = 169 − 25 = 144 → √144 = 12`.
+- The de-duplication key is the form, the context and the sides.
+
+### 5.30 Angles (`angles`)
+
+There are four forms, each picked with equal probability. The suffix is `°`.
+
+- **Triangle**, two variants, each 50%:
+  - two angles given, multiples of 5, each at least 20, together at most 160: `Een driehoek heeft
+    hoeken van 50° en 70°. Hoe groot is de derde hoek?` Explanation `180 − 50 − 70 = 60`.
+  - isosceles: `Een gelijkbenige driehoek heeft een tophoek van 40°. Hoe groot is een
+    basishoek?` (top angle a multiple of 10 in `[20, 160]`), or `Een gelijkbenige driehoek heeft
+    basishoeken van 70°. Hoe groot is de tophoek?` (base angle a multiple of 5 in `[20, 85]`),
+    each 50%. Explanation `(180 − 40) : 2 = 70`, `180 − 2 × 70 = 40`.
+- **Angle sum** of a polygon, `n ∈ {4, 5, 6, 8, 10, 12}`, named (vierhoek, vijfhoek, zeshoek,
+  achthoek, tienhoek, twaalfhoek): `Hoeveel graden zijn de hoeken van een zeshoek samen?`
+  Explanation `(6 − 2) × 180 = 720`.
+- **Regular polygon**, `n ∈ {5, 6, 8, 9, 10, 12}`: `Hoe groot is één hoek van een regelmatige
+  achthoek?` Explanation `(8 − 2) × 180 : 8 = 135`.
+- **Clock**, the smaller angle between the hands, whole or half hours (50%):
+  `Hoe groot is de kleinste hoek tussen de wijzers om 4 uur?` (1 to 11 uur) and `… om half 4?`
+  (half 1 to half 12; Dutch: half 4 is 3:30, so the hour hand is halfway between 3 and 4).
+  Explanation: `elk uur op de klok is 360 : 12 = 30° → 4 × 30 = 120`, and for a half hour
+  `de grote wijzer staat op de 6, de kleine halverwege de 3 en de 4 → 2,5 × 30 = 75`. Past 6 the
+  explanation counts the other way round the clock (`om 9 uur: 3 × 30 = 90`).
+- The de-duplication key is the form and the numbers.
+
+### 5.31 Symmetry (`symmetry`)
+
+The figures, with their lines of symmetry, smallest rotation angle and point symmetry. The prompt
+uses the name in the first column; a qualifier excludes the special case, because the
+definitions are inclusive (§5.32).
+
+| Figure                                         | Lines | Rotation | Point symmetric |
+|------------------------------------------------|-------|----------|-----------------|
+| een vierkant                                   | 4     | 90°      | ja              |
+| een rechthoek die geen vierkant is             | 2     | 180°     | ja              |
+| een ruit die geen vierkant is                  | 2     | 180°     | ja              |
+| een parallellogram dat geen rechthoek of ruit is | 0   | 180°     | ja              |
+| een vlieger die geen ruit is                   | 1     | —        | nee             |
+| een gelijkbenig trapezium dat geen rechthoek is | 1    | —        | nee             |
+| een gelijkzijdige driehoek                     | 3     | 120°     | nee             |
+| een gelijkbenige driehoek die niet gelijkzijdig is | 1 | —        | nee             |
+| een regelmatige vijfhoek                       | 5     | 72°      | nee             |
+| een regelmatige zeshoek, achthoek, tienhoek, twaalfhoek | n | 360° : n | ja         |
+
+There are three forms, each picked with equal probability:
+
+- **Lines of symmetry:** `Hoeveel symmetrieassen heeft een ruit die geen vierkant is?` (0 is a
+  valid answer). Explanation per figure: `de 2 diagonalen` (ruit), `de 2 diagonalen en de 2
+  lijnen door de middens van de overstaande zijden` (vierkant), `de 2 lijnen door de middens van
+  de overstaande zijden; de diagonalen zijn geen symmetrieas` (rechthoek), `geen` (parallellogram),
+  `de diagonaal door de hoeken waar de gelijke zijden samenkomen` (vlieger), `de lijn door de
+  middens van de evenwijdige zijden` (trapezium), `van elke hoek naar het midden van de
+  overstaande zijde` (gelijkzijdige driehoek), `van de tophoek naar het midden van de basis`
+  (gelijkbenige driehoek), `een regelmatige n-hoek heeft n symmetrieassen` (regular polygons).
+- **Rotation:** only figures with a rotation angle: `Over hoeveel graden moet je een regelmatige
+  vijfhoek minstens draaien om hem weer precies op zichzelf te laten vallen?` Suffix `°`.
+  Explanation `360 : 5 = 72`, and for the figures of 180° `pas na een halve draai: 360 : 2 = 180`.
+- **Point symmetry:** Ja/Nee, 50% each: `Is een parallellogram dat geen rechthoek of ruit is
+  puntsymmetrisch?` Explanation: `Na een halve draai (180°) valt de figuur weer op zichzelf.`, or
+  `… valt de figuur niet op zichzelf.`
+- The de-duplication key is the form and the figure.
+
+### 5.32 Shape properties (`shapeProperties`)
+
+Ja/Nee statements, 50% each: the answer is drawn first, then a statement with that answer. Three
+kinds: quadrilateral hierarchy (40%), quadrilateral properties (40%) and triangles (20%).
+
+- **Definitions are inclusive** (as in the user's book): a trapezium has at least one pair of
+  parallel sides, so every parallelogram is a trapezium; a kite (vlieger) has a diagonal that is a
+  line of symmetry, so every rhombus is a kite. One table holds which properties each
+  quadrilateral **always** has; the hierarchy follows from it (X is a Y when X always has every
+  property of Y):
+
+  | Property (verb, rest)                         | vierkant | rechthoek | ruit | parallellogram | trapezium | vlieger |
+  |-----------------------------------------------|----------|-----------|------|----------------|-----------|---------|
+  | zijn, de vier zijden even lang                | ✓        |           | ✓    |                |           |         |
+  | zijn, de vier hoeken recht                    | ✓        | ✓         |      |                |           |         |
+  | zijn, de overstaande zijden evenwijdig        | ✓        | ✓         | ✓    | ✓              |           |         |
+  | zijn, minstens twee zijden evenwijdig         | ✓        | ✓         | ✓    | ✓              | ✓         |         |
+  | is, een diagonaal een symmetrieas             | ✓        |           | ✓    |                |           | ✓       |
+  | zijn, de diagonalen even lang                 | ✓        | ✓         |      |                |           |         |
+  | staan, de diagonalen loodrecht op elkaar      | ✓        |           | ✓    |                |           | ✓       |
+  | delen, de diagonalen elkaar middendoor        | ✓        | ✓         | ✓    | ✓              |           |         |
+
+  A property is a verb and a rest, so it fits a question (`Zijn bij elke ruit de vier zijden
+  even lang?`) and a fact (`Bij elke ruit zijn de vier zijden even lang.`). The first property a
+  shape has defines it.
+- **Hierarchy:** `Is elk vierkant een ruit?` for every ordered pair of different quadrilaterals
+  (30 statements, 11 ja). Articles: elk vierkant, elk parallellogram, elk trapezium; elke
+  rechthoek, elke ruit, elke vlieger. Explanation, ja: `Bij een ruit zijn de vier zijden even
+  lang; bij elk vierkant ook.` (the defining property of Y); nee: `Bij een vierkant zijn de vier
+  hoeken recht, bij een ruit niet altijd.` (the first property of Y that X lacks).
+- **Properties:** every shape with every property (48 statements): `Zijn bij elke ruit de vier
+  zijden even lang?`, `Is bij elke vlieger een diagonaal een symmetrieas?`, `Staan bij elk
+  parallellogram de diagonalen loodrecht op elkaar?`. Explanation: the fact, `Bij elke ruit staan
+  de diagonalen loodrecht op elkaar.`, or `Niet bij elk parallellogram staan de diagonalen
+  loodrecht op elkaar.`
+- **Triangles**, a fixed list:
+
+  | Statement                                                    | Answer | Explanation                                                        |
+  |--------------------------------------------------------------|--------|--------------------------------------------------------------------|
+  | `Bestaat er een driehoek met twee rechte hoeken?`            | nee    | `De hoeken zijn samen 180°: na 90° + 90° blijft 0° over.`          |
+  | `Bestaat er een driehoek met twee stompe hoeken?`            | nee    | `Twee stompe hoeken zijn samen al meer dan 180°.`                  |
+  | `Bestaat er een rechthoekige driehoek die gelijkbenig is?`   | ja     | `Bijvoorbeeld hoeken van 90°, 45° en 45°.`                         |
+  | `Bestaat er een stomphoekige driehoek die gelijkbenig is?`   | ja     | `Bijvoorbeeld hoeken van 120°, 30° en 30°.`                        |
+  | `Bestaat er een rechthoekige driehoek die gelijkzijdig is?`  | nee    | `Een gelijkzijdige driehoek heeft drie hoeken van 60°.`            |
+  | `Is elke gelijkzijdige driehoek gelijkbenig?`                | ja     | `Hij heeft zelfs drie gelijke zijden.`                             |
+  | `Is elke gelijkbenige driehoek gelijkzijdig?`                | nee    | `Bijvoorbeeld zijden van 5 cm, 5 cm en 3 cm.`                      |
+  | `Is elke gelijkzijdige driehoek scherphoekig?`               | ja     | `Alle hoeken zijn 60°.`                                            |
+  | `Bestaat er een driehoek met zijden van 2 cm, 3 cm en 6 cm?` | nee    | `2 + 3 is kleiner dan 6: de korte zijden halen elkaar niet.`       |
+  | `Bestaat er een driehoek met zijden van 3 cm, 4 cm en 6 cm?` | ja     | `3 + 4 is groter dan 6.`                                           |
+
+- The de-duplication key is the statement.
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -1683,7 +1903,20 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-None at the moment.
+Meetkunde (§5.27–§5.32), decided by me and open for review:
+
+1. **Form shares:** equal per topic, except `solids` (volume 50%, surface area 25%, litres 25%)
+   and `shapeProperties` (hierarchy 40%, properties 40%, triangles 20%).
+2. **Ranges:** chosen for mental work: the squares of §5.7 (up to 25²), widths up to 12, the
+   radius in `{1, 2, 3, 4, 5, 10}`, multiples of 10 cm for litres.
+3. **Mixed units:** only the rectangle contexts of §5.27 (m and cm) and the litres of §5.28
+   (cm → L).
+4. **Pythagoras:** no ladder context, because its realistic lengths do not fit the triples.
+5. **Tips:** 9 new rows in §3.4.1, only for the classic mistakes; symmetry and shapeProperties
+   get none. Cut any you do not want.
+6. **Topic weights:** all 1, also for the quick Ja/Nee topics.
+7. **Prompt length:** the longest prompts (about 110 characters, `symmetry` rotation and the
+   `pythagoras` walk) use the small size of §3.3; check them on a phone.
 
 ## 12. Roadmap (not in v1)
 
@@ -1712,7 +1945,7 @@ in each set's own spec iteration.
    - `speed`: distance, time and speed, and km/u ↔ m/s.
    - Infrastructure: none; its own module, because the factor 3,6 does not fit the conversion
      engine (§5.10).
-5. **Meetkunde** (new set)
+5. **Meetkunde** (new set) — specified in §5.27–§5.32
    - `perimeterArea`: perimeter and area of a square, rectangle, triangle, parallelogram,
      trapezium and circle (`π ≈ 3,14`, with numbers that can be done mentally).
    - `solids`: volume and surface area of a cube, a box and a cylinder.
