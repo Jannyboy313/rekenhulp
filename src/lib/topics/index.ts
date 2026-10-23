@@ -31,6 +31,7 @@ import { generateSmartCalculation } from './smartCalculation';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
+import { generateSymmetry } from './symmetry';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -68,6 +69,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   solids: generateSolids,
   pythagoras: generatePythagoras,
   angles: generateAngles,
+  symmetry: generateSymmetry,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -106,4 +108,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
   pythagoras: 'Pythagoras (schuine zijde en rechthoekszijde)',
   angles: 'Hoeken (driehoek, veelhoek, klok)',
+  symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
 };

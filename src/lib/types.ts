@@ -39,7 +39,8 @@ export type Topic =
   | 'perimeterArea'
   | 'solids'
   | 'pythagoras'
-  | 'angles';
+  | 'angles'
+  | 'symmetry';
 
 export interface CheckResult {
   correct: boolean;
