@@ -38,7 +38,8 @@ export type Topic =
   | 'fractionArithmetic'
   | 'perimeterArea'
   | 'solids'
-  | 'pythagoras';
+  | 'pythagoras'
+  | 'angles';
 
 export interface CheckResult {
   correct: boolean;

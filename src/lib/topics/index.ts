@@ -1,4 +1,5 @@
 import type { Generator, Topic } from '../types';
+import { generateAngles } from './angles';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
 import { generateFractionArithmetic } from './fractionArithmetic';
@@ -66,6 +67,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
   pythagoras: generatePythagoras,
+  angles: generateAngles,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -103,4 +105,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
   pythagoras: 'Pythagoras (schuine zijde en rechthoekszijde)',
+  angles: 'Hoeken (driehoek, veelhoek, klok)',
 };
