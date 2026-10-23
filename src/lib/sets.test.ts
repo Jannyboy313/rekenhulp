@@ -4,6 +4,7 @@ import {
   DEFAULT_SESSION_SIZE,
   describeSetTopics,
   FRACTIONS_SET,
+  GEOMETRY_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBERS_SET,
@@ -25,6 +26,21 @@ describe('practice sets', () => {
       'bewerkingen',
       'getalbegrip',
       'breuken',
+      'meetkunde',
+    ]);
+  });
+
+  it('makes Meetkunde six equally weighted topics with 15% tables', () => {
+    expect(GEOMETRY_SET.name).toBe('Meetkunde');
+    expect(GEOMETRY_SET.description).toBe('Omtrek, oppervlakte, inhoud, hoeken en vormen');
+    expect(GEOMETRY_SET.tablesPercent).toBe(15);
+    expect(GEOMETRY_SET.topics).toEqual([
+      { topic: 'perimeterArea', weight: 1 },
+      { topic: 'solids', weight: 1 },
+      { topic: 'pythagoras', weight: 1 },
+      { topic: 'angles', weight: 1 },
+      { topic: 'symmetry', weight: 1 },
+      { topic: 'shapeProperties', weight: 1 },
     ]);
   });
 
@@ -183,6 +199,18 @@ describe('describeSetTopics', () => {
       'Omzetten tussen breuk, kommagetal en procent',
       'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
       'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
+      '15% tafels',
+    ]);
+  });
+
+  it('describes the Meetkunde set', () => {
+    expect(describeSetTopics(GEOMETRY_SET)).toEqual([
+      'Omtrek en oppervlakte (vierkant t/m cirkel)',
+      'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
+      'Pythagoras (schuine zijde en rechthoekszijde)',
+      'Hoeken (driehoek, veelhoek, klok)',
+      'Symmetrie (assen, draaien, puntsymmetrie)',
+      'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
       '15% tafels',
     ]);
   });

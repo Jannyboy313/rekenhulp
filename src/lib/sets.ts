@@ -97,6 +97,21 @@ export const FRACTIONS_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+export const GEOMETRY_SET: PracticeSet = {
+  id: 'meetkunde',
+  name: 'Meetkunde',
+  description: 'Omtrek, oppervlakte, inhoud, hoeken en vormen',
+  topics: [
+    { topic: 'perimeterArea', weight: 1 },
+    { topic: 'solids', weight: 1 },
+    { topic: 'pythagoras', weight: 1 },
+    { topic: 'angles', weight: 1 },
+    { topic: 'symmetry', weight: 1 },
+    { topic: 'shapeProperties', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
 export const PRACTICE_SETS: readonly PracticeSet[] = [
   TABLES_SET,
@@ -106,6 +121,7 @@ export const PRACTICE_SETS: readonly PracticeSet[] = [
   OPERATIONS_SET,
   NUMBER_SENSE_SET,
   FRACTIONS_SET,
+  GEOMETRY_SET,
 ];
 
 /** Only the Tafels set lets the user choose which tables to practise (spec §3.2). */
