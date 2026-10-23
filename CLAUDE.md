@@ -16,8 +16,9 @@ not all of it:
 ## Status
 
 Done: the sets Tafels, Meten (v1 + v2: `speed`), Verhoudingen (v1 + v2: `percentChange`, `scale`,
-`ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip
-and Breuken & kommagetallen, plus stacked fractions, the kladblok (§3.6), repeat until correct
+`ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip,
+Breuken & kommagetallen and Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
+`symmetry`, `shapeProperties`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1) and the table choice for Tafels (§3.2).
 
 Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
@@ -25,7 +26,6 @@ says so:
 
 | Set                                                                                                               | New infrastructure                   |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **Meetkunde**: `perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties`                   | figures described in words           |
 | **Verbanden & statistiek**: `statistics`, `percentagePoints`, `sequences`, `formulas`, `equations`, `probability` | —                                    |
 | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                                           | text answer kind with letter keys    |
 | **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`              | check the longest prompts on a phone |

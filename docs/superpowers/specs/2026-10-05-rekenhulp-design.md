@@ -1411,7 +1411,7 @@ There are four forms, each picked with equal probability:
 The set Meetkunde (v2). Figures are described in words; there are no pictures. Its card (§3.1)
 reads "Omtrek, oppervlakte, inhoud, hoeken en vormen". Circles and cylinders use `π = 3,14`,
 said in the prompt (`Neem π = 3,14.`). Answers with a unit show it as the suffix (§6): `cm`,
-`cm²`, `cm³`, `m`, `m²`, `L` or `°`. The longest prompts (about 110 characters: the `symmetry`
+`cm²`, `cm³`, `m`, `m²`, `L` or `°`. The longest prompts (up to about 140 characters: the `symmetry`
 rotation and the `pythagoras` walk) use the small size of §3.3; check them on a phone.
 
 ### 5.27 Perimeter and area (`perimeterArea`)
@@ -1933,7 +1933,7 @@ in each set's own spec iteration.
    - `speed`: distance, time and speed, and km/u ↔ m/s.
    - Infrastructure: none; its own module, because the factor 3,6 does not fit the conversion
      engine (§5.10).
-5. **Meetkunde** (new set) — specified in §5.27–§5.32
+5. **Meetkunde** (new set) — done, specified in §5.27–§5.32
    - `perimeterArea`: perimeter and area of a square, rectangle, triangle, parallelogram,
      trapezium and circle (`π ≈ 3,14`, with numbers that can be done mentally).
    - `solids`: volume and surface area of a cube, a box and a cylinder.

@@ -4,8 +4,8 @@ Offline PWA for practising mental arithmetic on a phone, without a calculator. N
 no tracking, no network traffic after the first load.
 
 Practice sets: **Tafels**, **Meten**, **Verhoudingen**, **Getallen & delers**,
-**Bewerkingen**, **Getalbegrip** and **Breuken & kommagetallen**. The design and roadmap are in
-`docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
+**Bewerkingen**, **Getalbegrip**, **Breuken & kommagetallen** and **Meetkunde**. The design and
+roadmap are in `docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
 
 ## Development
 
