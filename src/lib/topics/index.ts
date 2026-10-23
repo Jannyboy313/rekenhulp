@@ -26,6 +26,7 @@ import { generateRounding } from './rounding';
 import { generateScale } from './scale';
 import { generateScientificNotation } from './scientificNotation';
 import { generateSmartCalculation } from './smartCalculation';
+import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
 import { generateTables } from './tables';
@@ -62,6 +63,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   fractionConversion: generateFractionConversion,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
+  solids: generateSolids,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -97,4 +99,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
+  solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
 };

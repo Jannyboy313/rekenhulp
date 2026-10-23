@@ -36,7 +36,8 @@ export type Topic =
   | 'decimalArithmetic'
   | 'fractionConversion'
   | 'fractionArithmetic'
-  | 'perimeterArea';
+  | 'perimeterArea'
+  | 'solids';
 
 export interface CheckResult {
   correct: boolean;
