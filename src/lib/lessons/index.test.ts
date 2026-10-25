@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   FRACTIONS_SET,
+  GEOMETRY_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBERS_SET,
@@ -76,6 +77,17 @@ describe('lessonFor', () => {
       'multiplyDivide',
       'partOf',
       'decimals',
+    ]);
+    expect(lessonFor(GEOMETRY_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'perimeterArea',
+      'circle',
+      'solids',
+      'pythagoras',
+      'angles',
+      'clock',
+      'symmetry',
+      'quadrilaterals',
+      'triangles',
     ]);
   });
 });

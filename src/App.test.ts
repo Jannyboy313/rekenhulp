@@ -9,6 +9,7 @@ import {
   DEFAULT_SESSION_SIZE,
   describeSetTopicRows,
   FRACTIONS_SET,
+  GEOMETRY_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBERS_SET,
@@ -209,6 +210,7 @@ describe('App', () => {
         expect.stringContaining(OPERATIONS_SET.name),
         expect.stringContaining(NUMBER_SENSE_SET.name),
         expect.stringContaining(FRACTIONS_SET.name),
+        expect.stringContaining(GEOMETRY_SET.name),
       ]);
     });
   });
