@@ -75,9 +75,9 @@ describe('PlayScreen', () => {
 
   it('shows the elapsed time', async () => {
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
-    expect(screen.getByText('00:00')).toBeTruthy();
+    expect(screen.getByText('0:00')).toBeTruthy();
     await vi.advanceTimersByTimeAsync(65_000);
-    expect(screen.getByText('01:05')).toBeTruthy();
+    expect(screen.getByText('1:05')).toBeTruthy();
   });
 
   it('announces the result in a live region', async () => {
@@ -94,7 +94,7 @@ describe('PlayScreen', () => {
     render(PlayScreen, {
       props: { set: TABLES_SET, questions: [questions[0]!], onfinish },
     });
-    await press('6', 'OK', 'Stop');
+    await press('6', 'OK', 'Stoppen');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     expect(onfinish).toHaveBeenCalledOnce();
   });
@@ -104,7 +104,7 @@ describe('PlayScreen', () => {
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
     await press('6', 'OK');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
-    await press('2', 'Stop');
+    await press('2', 'Stoppen');
     expect(onfinish).toHaveBeenCalledOnce();
     expect(onfinish.mock.calls[0]![0]).toHaveLength(1);
   });
@@ -200,7 +200,7 @@ describe('PlayScreen', () => {
 
     // One wrong step is enough to bring the whole question back.
     expect(screen.getByText('Herhaling')).toBeTruthy();
-    await press('Stop');
+    await press('Stoppen');
     expect(onfinish).toHaveBeenCalledOnce();
     const [records] = onfinish.mock.calls[0]!;
     expect(records[0]!.attempts.map((attempt) => attempt.result.correct)).toEqual([false, true]);
@@ -234,10 +234,54 @@ describe('PlayScreen', () => {
     expect(records[0]!.attempts[0]!.input).toBe('5');
   });
 
+  describe('session header', () => {
+    const fifteen = Array.from({ length: 15 }, (_, i) => question(`${i + 1} × 1 = ?`, i + 1));
+
+    function progress(): HTMLElement {
+      return screen.getByRole('progressbar');
+    }
+
+    it('shows the counter and an empty progress bar on the first question', () => {
+      render(PlayScreen, { props: { set: TABLES_SET, questions: fifteen, onfinish: vi.fn() } });
+      expect(screen.getByText('1 / 15')).toBeTruthy();
+      expect(progress().getAttribute('aria-valuenow')).toBe('0');
+      expect(progress().getAttribute('aria-valuemin')).toBe('0');
+      expect(progress().getAttribute('aria-valuemax')).toBe('15');
+    });
+
+    it('advances the counter and the bar after a correct answer', async () => {
+      render(PlayScreen, { props: { set: TABLES_SET, questions: fifteen, onfinish: vi.fn() } });
+      await press('1', 'OK');
+      await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
+      expect(screen.getByText('2 / 15')).toBeTruthy();
+      expect(progress().getAttribute('aria-valuenow')).toBe('1');
+    });
+
+    it('replaces the number with the Herhaling label and keeps the bar on a repeat', async () => {
+      render(PlayScreen, { props: { set: TABLES_SET, questions: [fifteen[0]!, fifteen[1]!], onfinish: vi.fn() } });
+      await press('9', 'OK', 'Verder');
+      await press('2', 'OK');
+      await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
+      expect(screen.getByText('Herhaling')).toBeTruthy();
+      expect(screen.queryByText(/^\d+ \/ 2$/)).toBeNull();
+      expect(progress().getAttribute('aria-valuenow')).toBe('2');
+    });
+
+    it('stops with one click on Stoppen, without a dialog', async () => {
+      const onfinish = vi.fn();
+      const confirm = vi.spyOn(window, 'confirm');
+      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+      await press('Stoppen');
+      expect(onfinish).toHaveBeenCalledOnce();
+      expect(confirm).not.toHaveBeenCalled();
+      expect(screen.queryByRole('button', { name: 'Stop' })).toBeNull();
+    });
+  });
+
   it('Stop drops repeats that are still waiting', async () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
-    await press('5', 'OK', 'Verder', 'Stop');
+    await press('5', 'OK', 'Verder', 'Stoppen');
     expect(onfinish).toHaveBeenCalledOnce();
     expect(onfinish.mock.calls[0]![0].map(isCorrect)).toEqual([false]);
   });

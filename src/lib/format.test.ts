@@ -87,11 +87,11 @@ describe('formatInput', () => {
 
 describe('formatDuration', () => {
   it.each([
-    [0, '00:00'],
-    [999, '00:00'],
-    [65_000, '01:05'],
+    [0, '0:00'],
+    [999, '0:00'],
+    [65_000, '1:05'],
     [600_999, '10:00'],
-    [-5, '00:00'],
+    [-5, '0:00'],
   ])('formats %d ms', (ms, expected) => {
     expect(formatDuration(ms)).toBe(expected);
   });

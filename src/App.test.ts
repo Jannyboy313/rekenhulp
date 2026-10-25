@@ -34,7 +34,7 @@ describe('App', () => {
 
     await click(/Tafels/);
     await click(/^Start/);
-    await click('Stop');
+    await click('Stoppen');
     await systemBack();
     expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
   });
@@ -59,7 +59,7 @@ describe('App', () => {
 
     await click(/Tafels/);
     await click(/^Start/);
-    await click('Stop');
+    await click('Stoppen');
     await click('Menu');
     expect(history.back).toHaveBeenCalledTimes(2);
     // The popstate of that history.back() must not count as a system back.
@@ -94,10 +94,10 @@ describe('App', () => {
       const prompt = document.querySelector('.prompt')!.textContent!;
       const numbers = [...prompt.matchAll(/\d+/g)].map((m) => Number(m[0]));
       expect(numbers.some((n) => n % 7 === 0)).toBe(true);
-      await click('Stop');
+      await click('Stoppen');
       await click('Opnieuw');
     }
-    await click('Stop');
+    await click('Stoppen');
     await click('Menu');
     await click(/Tafels/);
     const pressed = screen
@@ -113,7 +113,7 @@ describe('App', () => {
     await click(/^Start/);
     expect(screen.getByText('1 / 25')).toBeTruthy();
 
-    await click('Stop');
+    await click('Stoppen');
     expect(screen.getByText('Geen opgaven beantwoord.')).toBeTruthy();
     await click('Menu');
     await click(/Tafels/);
@@ -128,7 +128,7 @@ describe('App', () => {
 
     await click(/Tafels/);
     await click(/^Start/);
-    await click('Stop');
+    await click('Stoppen');
     await click('Opnieuw');
     expect(screen.getByText('1 / 15')).toBeTruthy();
   });

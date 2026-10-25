@@ -8,6 +8,7 @@
   import { keepScreenAwake } from '../lib/wakeLock';
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
+  import Icon from './Icon.svelte';
   import QuestionView from './QuestionView.svelte';
 
   interface Props {
@@ -33,6 +34,8 @@
   const sessionStart = Date.now();
   let now = $state(sessionStart);
   let questionIndex = $state(0);
+  // Questions answered for the first time: what the progress bar shows (a repeat adds nothing).
+  let firstAttempts = $state(0);
   let stepIndex = $state(0);
   let feedback = $state.raw<StepAttempt | null>(null);
   // The kladblok belongs to the question: it survives its steps and the feedback in between.
@@ -74,7 +77,10 @@
     attempts = [...attempts, attempt];
     if (attempts.length === question.steps.length) {
       const record = { question, attempts, durationMs: Date.now() - questionStart };
-      if (!entry.repeat) records = [...records, record];
+      if (!entry.repeat) {
+        records = [...records, record];
+        firstAttempts++;
+      }
       if (!isCorrect(record)) {
         queue = insertRepeat(queue, questionIndex, { question, repeat: true }, rng);
       }
@@ -108,12 +114,33 @@
 
 <main class="play">
   <header>
-    <span class="set-name">{set.name}</span>
-    <span class="progress">
-      {entry.repeat ? 'Herhaling' : `${originalNumber} / ${questions.length}`}
-    </span>
-    <span class="timer">{formatDuration(now - sessionStart)}</span>
-    <button type="button" class="stop" onclick={finish}>Stop</button>
+    <button type="button" class="close" aria-label="Stoppen" onclick={finish}>
+      <Icon name="close" size={24} stroke={2.2} />
+    </button>
+    <div class="info">
+      <div class="line">
+        <span class="set-name">{set.name}</span>
+        <span class="counter">
+          {#if entry.repeat}
+            <span class="repeat-label"><Icon name="repeat" size={12} stroke={2.4} />Herhaling</span>
+          {:else}
+            <span>{originalNumber} / {questions.length}</span>
+          {/if}
+          <span aria-hidden="true">·</span>
+          <span class="timer">{formatDuration(now - sessionStart)}</span>
+        </span>
+      </div>
+      <div
+        class="track"
+        role="progressbar"
+        aria-label="Voortgang"
+        aria-valuemin={0}
+        aria-valuemax={questions.length}
+        aria-valuenow={firstAttempts}
+      >
+        <div class="fill" style:width="{(firstAttempts / questions.length) * 100}%"></div>
+      </div>
+    </div>
   </header>
 
   <p class="sr-only" role="status" aria-live="polite">{announcement}</p>
@@ -134,27 +161,51 @@
 </main>
 
 <style>
-  /* The page never scrolls while playing (spec §2): the app is exactly one screen high, and
-     the question or the feedback shrinks its own content instead. */
-  :global(#app:has(> .play)) {
-    height: 100dvh;
-  }
-
+  /* The page never scrolls while playing (spec §2): #app is exactly one screen high, and the
+     question or the feedback shrinks its own content instead. */
   .play {
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     overflow: hidden;
   }
 
   header {
-    display: grid;
-    grid-template-columns: 1fr auto auto auto;
+    display: flex;
     align-items: center;
-    gap: 0.75rem;
-    color: var(--muted);
+    gap: 0;
+    padding: calc(12px + env(safe-area-inset-top)) 16px 8px 8px;
+  }
+
+  .close {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    min-height: 0;
+    padding: 0;
+    background: none;
+    color: var(--text-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    line-height: 20px;
   }
 
   .set-name {
@@ -162,11 +213,37 @@
     color: var(--text);
   }
 
-  /* Light red, so ending the session stands apart from the neutral buttons (spec §3.3). */
-  .stop {
-    padding: 0 1rem;
-    background: var(--wrong-bg);
-    color: var(--wrong);
-    font-weight: 600;
+  .counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+  }
+
+  .repeat-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 10px;
+    background: var(--yellow-tint);
+    color: var(--yellow-text);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    overflow: hidden;
+  }
+
+  .fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--primary);
+    transition: width 200ms ease-out;
   }
 </style>
