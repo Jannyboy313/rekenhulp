@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MEASUREMENT_SET, TABLES_SET } from '../sets';
+import { MEASUREMENT_SET, NUMBERS_SET, TABLES_SET } from '../sets';
 import { FIXTURE_LESSON } from './fixture';
 import { lessonFor } from './index';
 
@@ -14,5 +14,15 @@ describe('lessonFor', () => {
 
   it('reads the real registry by default', () => {
     expect(lessonFor(TABLES_SET)).toBeUndefined();
+    expect(lessonFor(NUMBERS_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'digitRules',
+      'combinedRules',
+      'chunking',
+      'primes',
+      'factorization',
+      'gcd',
+      'lcm',
+      'squares',
+    ]);
   });
 });

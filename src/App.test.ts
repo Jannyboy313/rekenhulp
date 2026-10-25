@@ -8,6 +8,7 @@ import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
   describeSetTopicRows,
+  NUMBERS_SET,
   PRACTICE_SETS,
 } from './lib/sets';
 
@@ -191,12 +192,14 @@ describe('App', () => {
       expect(lessonsTabSelected()).toBe(true);
     });
 
-    it('lists every set disabled with the real, empty registry', async () => {
+    it('enables only the sets with a lesson in the real registry', async () => {
       render(App);
       await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
       const rows = screen.getAllByRole<HTMLButtonElement>('button');
       expect(rows).toHaveLength(PRACTICE_SETS.length);
-      expect(rows.every((row) => row.disabled)).toBe(true);
+      expect(rows.filter((row) => !row.disabled).map((row) => row.textContent)).toEqual([
+        expect.stringContaining(NUMBERS_SET.name),
+      ]);
     });
   });
 });

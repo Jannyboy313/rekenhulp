@@ -92,7 +92,7 @@ type LessonBlock =
 interface LessonTopic { id: string; title: string; summary: string; blocks: LessonBlock[] }
 interface Lesson { setId: string; topics: LessonTopic[] }
 
-const LESSONS: readonly Lesson[];                          // empty until §7 adds content
+const LESSONS: readonly Lesson[];                          // one entry per set in §7
 function lessonFor(set: PracticeSet): Lesson | undefined;
 ```
 
@@ -114,7 +114,7 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
   allowed; a line without ` = `, with a mixed number or with an unparsable side fails.
 - Text uses no ASCII operators: no `*`, no `x` between numbers, no `/` with spaces around it
   (`km/u` and `3/4` are fine). A `worked` line has no literal `?` and no ASCII `-` as minus.
-- The framework itself is tested with a fixture lesson in the tests, since `LESSONS` is empty.
+- The framework itself is tested with a fixture lesson, independent of the real `LESSONS`.
 
 ## 7. Content per set
 
