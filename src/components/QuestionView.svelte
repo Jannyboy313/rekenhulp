@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { INPUT_MODELS } from '../lib/inputModels';
+  import { displayAnswer, INPUT_MODELS } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
   import { promptSize } from '../lib/promptSize';
   import {
@@ -60,38 +60,66 @@
 
   // Guards against a double tap submitting twice before the feedback replaces this view.
   let answered = false;
+  // The input of a correct answer: this view then turns into the correct state (spec §3.4) and
+  // PlayScreen moves on by itself. A wrong answer is shown by Feedback instead of this view.
+  let correctInput = $state<string | null>(null);
+  const locked = $derived(correctInput !== null);
 
   function answer(input: string) {
     if (answered) return;
     answered = true;
-    onanswer(input, step.check(input));
+    const result = step.check(input);
+    if (result.correct) correctInput = input;
+    onanswer(input, result);
   }
 </script>
 
 <div class="question">
   {#if scratchpad}
-    <Scratchpad {notes} active={activeNote} onselect={(index) => (activeNote = index)} />
+    <Scratchpad
+      {notes}
+      active={activeNote}
+      disabled={locked}
+      onselect={(index) => (activeNote = index)}
+    />
   {/if}
   <div class="prompt-area">
     {#if step.kind === 'boolean'}
       <p class="prompt yesno"><MathText text={step.prompt} /></p>
     {:else if hasSlot(step.prompt)}
       <p class="prompt sum {promptSize(step.prompt)}">
-        <MathText text={step.prompt} slot={{ tone: 'primary' }} />
+        <!-- The unknown shows the user's own input, as typed, never the expected answer. -->
+        <MathText
+          text={step.prompt}
+          slot={correctInput === null
+            ? { tone: 'primary' }
+            : { tone: 'good', fill: displayAnswer(step.kind, correctInput) }}
+        />
       </p>
     {:else}
       <p class="prompt text"><MathText text={step.prompt} /></p>
     {/if}
   </div>
   {#if step.kind === 'boolean'}
-    <!-- Ja/Nee has no keypad: a tap on a choice is the answer (spec §6). -->
+    <!-- Ja/Nee has no keypad: a tap on a choice is the answer (spec §6). The chosen button turns
+         green, the other is dimmed. -->
     <div class="choices">
       {#each [NO, YES] as choice (choice)}
-        <button type="button" class="choice" onclick={() => answer(choice)}>
+        <button
+          type="button"
+          class="choice"
+          class:good={correctInput === choice}
+          class:dim={locked && correctInput !== choice}
+          disabled={locked}
+          onclick={() => answer(choice)}
+        >
           <Icon name={choice === YES ? 'check' : 'cross'} size={32} stroke={2.6} />
           <span>{choice}</span>
         </button>
       {/each}
+      {#if locked}
+        <div class="advance"><div class="advance-fill"></div></div>
+      {/if}
     </div>
   {:else if step.kind === 'fraction'}
     <!-- A separate branch per typing state: a union of models cannot infer KeypadAnswer's S. -->
@@ -100,6 +128,7 @@
       prefix={step.prefix}
       suffix={step.suffix}
       {scratch}
+      {locked}
       onsubmit={answer}
     />
   {:else}
@@ -108,6 +137,7 @@
       prefix={step.prefix}
       suffix={step.suffix}
       {scratch}
+      {locked}
       onsubmit={answer}
     />
   {/if}
@@ -196,7 +226,44 @@
     font-weight: 700;
   }
 
-  .choice:active {
+  .choice:active:not(:disabled) {
     background: var(--key-alt);
+  }
+
+  /* Ja/Nee in the correct state: the chosen button is green, the other one is dimmed. */
+  .choice:disabled {
+    opacity: 1;
+  }
+
+  .choice.good {
+    background: var(--good-tint);
+    border-color: var(--good);
+    color: var(--good-text);
+    box-shadow: none;
+  }
+
+  .choice.dim {
+    opacity: 0.4;
+  }
+
+  /* The auto-advance timer under the buttons; full width without animation (reduced motion). */
+  .advance {
+    grid-column: 1 / -1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--good-track);
+    overflow: hidden;
+  }
+
+  .advance-fill {
+    height: 100%;
+    background: var(--good);
+    animation: advance 600ms linear forwards;
+  }
+
+  @keyframes advance {
+    from {
+      width: 0;
+    }
   }
 </style>

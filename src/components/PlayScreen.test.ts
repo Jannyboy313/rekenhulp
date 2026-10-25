@@ -1,13 +1,14 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { fromInteger } from '../lib/rational';
+import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
+import { fromInteger, rational } from '../lib/rational';
 import { isCorrect, type QuestionRecord } from '../lib/results';
 import { TABLES_SET } from '../lib/sets';
+import { SLOT } from '../lib/slot';
 import { booleanStep, numberStep } from '../lib/steps';
 import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
-import { CORRECT_FEEDBACK_MS } from './Feedback.svelte';
 import PlayScreen from './PlayScreen.svelte';
 import { stubMatchMedia } from './testMatchMedia';
 
@@ -82,11 +83,91 @@ describe('PlayScreen', () => {
 
   it('announces the result in a live region', async () => {
     render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    const announcement = () => document.querySelector('.sr-only[aria-live="polite"]')?.textContent;
     await press('6', 'OK');
-    expect(screen.getByRole('status').textContent?.trim()).toBe('Goed!');
+    expect(announcement()?.trim()).toBe('Goed!');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     await press('9', 'OK');
-    expect(screen.getByRole('status').textContent?.trim()).toBe('Fout. Juist antwoord: 20');
+    expect(announcement()?.trim()).toBe('Niet goed. Goed antwoord: 20');
+  });
+
+  describe('correct state', () => {
+    it('turns the field green with a check, dims the keypad and offers no Verder', async () => {
+      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+      await press('6', 'OK');
+      const field = screen.getByRole('status');
+      expect(field.getAttribute('aria-label')).toBe('Goed: jouw antwoord is 6');
+      expect(field.classList.contains('good')).toBe(true);
+      expect(field.querySelector('svg')).not.toBeNull();
+      for (const key of document.querySelectorAll<HTMLButtonElement>('.keypad button')) {
+        expect(key.disabled).toBe(true);
+      }
+      expect(screen.queryByRole('button', { name: 'Verder' })).toBeNull();
+      expect(document.querySelector('.verdict')).toBeNull();
+    });
+
+    it('fills the unknown of the sum with the typed input', async () => {
+      const sum = question(`7 × ${SLOT} = 56`, 8);
+      render(PlayScreen, { props: { set: TABLES_SET, questions: [sum], onfinish: vi.fn() } });
+      await press('8', 'OK');
+      const prompt = document.querySelector('.prompt')!;
+      expect(prompt.textContent).toBe('7 × 8 = 56');
+      expect(prompt.querySelector('.slot.good')?.textContent).toBe('8');
+    });
+
+    it('shows the typed input, not the normalised one, in the field and the sum', async () => {
+      const decimal = question(`0,2 + 0,3 = ${SLOT}`, 0);
+      decimal.steps = [numberStep({ prompt: `0,2 + 0,3 = ${SLOT}`, answer: rational(1n, 2n) })];
+      render(PlayScreen, { props: { set: TABLES_SET, questions: [decimal], onfinish: vi.fn() } });
+      await press('0', 'komma', '5', '0', 'OK');
+      expect(screen.getByRole('status').textContent).toBe('0,50');
+      expect(document.querySelector('.prompt')?.textContent).toBe('0,2 + 0,3 = 0,50');
+    });
+
+    it('leaves a word problem unchanged and shows the answer with its unit', async () => {
+      const area: Question = {
+        key: 'area',
+        topic: 'tables',
+        steps: [
+          numberStep({
+            prompt: 'Hoe groot is de oppervlakte van een rechthoek van 18 bij 7 cm?',
+            answer: fromInteger(126),
+            suffix: 'cm²',
+          }),
+        ],
+      };
+      render(PlayScreen, { props: { set: TABLES_SET, questions: [area], onfinish: vi.fn() } });
+      await press('1', '2', '6', 'OK');
+      expect(document.querySelector('.prompt')?.textContent).toBe(
+        'Hoe groot is de oppervlakte van een rechthoek van 18 bij 7 cm?',
+      );
+      expect(document.querySelector('.prompt .slot')).toBeNull();
+      const field = screen.getByRole('status');
+      expect(field.textContent).toBe('126cm²');
+      expect(field.getAttribute('aria-label')).toBe('Goed: jouw antwoord is 126 cm²');
+    });
+
+    it('does not advance after Stoppen', async () => {
+      const onfinish = vi.fn();
+      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+      await press('6', 'OK', 'Stoppen');
+      await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
+      expect(onfinish).toHaveBeenCalledOnce();
+      expect(screen.queryByText('2 / 2')).toBeNull();
+    });
+
+    it('keeps the kladblok visible but locked', async () => {
+      const percent: Question = {
+        key: 'percent',
+        topic: 'percentages',
+        steps: [numberStep({ prompt: `10% van 90 = ${SLOT}`, answer: fromInteger(9) })],
+      };
+      render(PlayScreen, { props: { set: TABLES_SET, questions: [percent], onfinish: vi.fn() } });
+      await press('9', 'OK');
+      const cells = screen.getAllByRole<HTMLButtonElement>('button', { name: /^Kladblok vak/ });
+      expect(cells.length).toBeGreaterThan(0);
+      for (const cell of cells) expect(cell.disabled).toBe(true);
+    });
   });
 
   it('calls onfinish at most once when Stop is pressed during the final auto-advance', async () => {
@@ -120,7 +201,7 @@ describe('PlayScreen', () => {
     };
     render(PlayScreen, { props: { set: TABLES_SET, questions: [prime], onfinish } });
     await press('Ja');
-    expect(screen.getByText('Fout')).toBeTruthy();
+    expect(screen.getByText('Niet goed')).toBeTruthy();
     expect(screen.getByText('Ja')).toBeTruthy();
     expect(screen.getByText('Nee')).toBeTruthy();
     expect(screen.getByText('91 = 7 × 13')).toBeTruthy();
@@ -153,7 +234,6 @@ describe('PlayScreen', () => {
 
     await fireEvent.click(screen.getByRole('button', { name: 'Kladblok vak 1: leeg' }));
     await press('9', 'Tik hier voor je antwoord', '9', 'OK');
-    expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
     expect(screen.getByText('20% van 90 = ?')).toBeTruthy();
@@ -185,7 +265,7 @@ describe('PlayScreen', () => {
     render(PlayScreen, { props: { set: TABLES_SET, questions: [property], onfinish } });
 
     await press('9', '8', 'keer', '7', 'OK');
-    expect(screen.getByText('Fout')).toBeTruthy();
+    expect(screen.getByText('Niet goed')).toBeTruthy();
     expect(screen.getByText('98 × 7')).toBeTruthy();
     expect(screen.getByText('7 × 100 − 7 × 2')).toBeTruthy();
     expect(

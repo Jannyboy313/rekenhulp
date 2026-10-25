@@ -10,10 +10,12 @@
     notes: readonly string[];
     /** The active cell; null while the answer field is active. */
     active: number | null;
+    /** The notes are final (correct state): the cells stay visible but cannot be tapped. */
+    disabled?: boolean;
     onselect: (index: number) => void;
   }
 
-  let { notes, active, onselect }: Props = $props();
+  let { notes, active, disabled = false, onselect }: Props = $props();
 
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
@@ -44,6 +46,7 @@
         class:empty={note === '' && index !== active}
         aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNoteLabel(note)}`}
         aria-pressed={index === active}
+        {disabled}
         use:press={() => onselect(index)}
         ><!-- One scrolling item for the text runs and fractions, so they are clipped as one. --><span
           class="content"
@@ -113,6 +116,11 @@
   .cell.active {
     border-color: var(--sky);
     background: var(--sky-tint);
+  }
+
+  /* Locked, not dimmed: the notes stay readable next to the correct answer. */
+  .cell:disabled {
+    opacity: 1;
   }
 
   .content {

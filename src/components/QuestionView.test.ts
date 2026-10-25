@@ -335,6 +335,18 @@ describe('QuestionView', () => {
     expect(onanswer).toHaveBeenCalledOnce();
   });
 
+  it('turns the chosen Ja/Nee button green after a correct answer and dims the other', async () => {
+    const prime = booleanStep({ prompt: 'Is 91 een priemgetal?', answer: false });
+    render(QuestionView, { props: { step: prime, onanswer: vi.fn() } });
+    await press('Nee');
+    const nee = screen.getByRole<HTMLButtonElement>('button', { name: 'Nee' });
+    const ja = screen.getByRole<HTMLButtonElement>('button', { name: 'Ja' });
+    expect(nee.classList.contains('good')).toBe(true);
+    expect(ja.classList.contains('dim')).toBe(true);
+    expect(ja.disabled && nee.disabled).toBe(true);
+    expect(document.querySelector('.advance')).not.toBeNull();
+  });
+
   describe('kladblok', () => {
     function cell(n: number): HTMLElement {
       return screen.getByRole('button', { name: new RegExp(`^Kladblok vak ${n}:`) });

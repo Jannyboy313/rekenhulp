@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
   import { formatDuration } from '../lib/format';
   import { createRng, randomSeed } from '../lib/random';
   import { isCorrect, type QuestionRecord, type StepAttempt } from '../lib/results';
@@ -45,6 +46,7 @@
   let questionStart = sessionStart;
   let attempts: StepAttempt[] = [];
   let records: QuestionRecord[] = [];
+  let advanceTimer: ReturnType<typeof setTimeout> | undefined;
 
   const entry = $derived(queue[questionIndex]!);
   const question = $derived(entry.question);
@@ -59,7 +61,7 @@
       ? ''
       : feedback.result.correct
         ? 'Goed!'
-        : `Fout. Juist antwoord: ${feedback.result.expected}`,
+        : `Niet goed. Goed antwoord: ${feedback.result.expected}`,
   );
 
   $effect(() => {
@@ -86,9 +88,13 @@
       }
     }
     feedback = attempt;
+    // A correct answer moves on by itself; a wrong one waits for Verder.
+    if (attempt.result.correct) advanceTimer = setTimeout(handleNext, CORRECT_FEEDBACK_MS);
   }
 
   function handleNext() {
+    clearTimeout(advanceTimer);
+    if (finished) return;
     feedback = null;
     if (stepIndex + 1 < question.steps.length) {
       stepIndex++;
@@ -108,8 +114,12 @@
   function finish() {
     if (finished) return;
     finished = true;
+    clearTimeout(advanceTimer);
     onfinish(records, Date.now() - sessionStart);
   }
+
+  // A pending auto-advance must not outlive this screen.
+  $effect(() => () => clearTimeout(advanceTimer));
 </script>
 
 <main class="play">
@@ -143,14 +153,18 @@
     </div>
   </header>
 
-  <p class="sr-only" role="status" aria-live="polite">{announcement}</p>
+  <!-- No role: the correct field and the wrong panel are the status regions (silent), this one
+       is the single announcement. -->
+  <p class="sr-only" aria-live="polite">{announcement}</p>
 
-  {#if feedback}
+  {#if feedback && !feedback.result.correct}
     <Feedback
       prompt={step.prompt}
       kind={step.kind}
       input={feedback.input}
       result={feedback.result}
+      prefix={step.prefix}
+      suffix={step.suffix}
       onnext={handleNext}
     />
   {:else}

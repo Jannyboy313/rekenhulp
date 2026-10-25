@@ -1,64 +1,72 @@
-<script module lang="ts">
-  export const CORRECT_FEEDBACK_MS = 600;
-</script>
-
 <script lang="ts">
   import { displayAnswer } from '../lib/inputModels';
   import { promptSize } from '../lib/promptSize';
+  import { hasSlot } from '../lib/slot';
   import type { AnswerKind, CheckResult } from '../lib/types';
+  import Icon from './Icon.svelte';
   import MathText from './MathText.svelte';
 
   interface Props {
     prompt: string;
     kind: AnswerKind;
     input: string;
+    /** A wrong answer: the correct one is shown by PlayScreen/QuestionView itself. */
     result: CheckResult;
+    prefix?: string;
+    suffix?: string;
     onnext: () => void;
   }
 
-  let { prompt, kind, input, result, onnext }: Props = $props();
+  let { prompt, kind, input, result, prefix, suffix, onnext }: Props = $props();
 
   let nextButton: HTMLButtonElement | undefined = $state();
 
   $effect(() => {
-    if (!result.correct) nextButton?.focus();
-  });
-
-  $effect(() => {
-    if (!result.correct) return;
-    const timer = setTimeout(onnext, CORRECT_FEEDBACK_MS);
-    return () => clearTimeout(timer);
+    nextButton?.focus();
   });
 </script>
 
-<div class="feedback" class:correct={result.correct} class:wrong={!result.correct}>
-  <div class="content">
-    <p class="prompt {promptSize(prompt)}"><MathText text={prompt} /></p>
-    <div class="details">
-      {#if result.correct}
-        <p class="verdict">Goed!</p>
-      {:else}
-        <p class="verdict">Fout</p>
-        <dl>
-          <dt>Jouw antwoord</dt>
-          <dd><MathText text={displayAnswer(kind, input)} /></dd>
-          <dt>Juist antwoord</dt>
-          <dd><MathText text={result.expected} /></dd>
-        </dl>
-        {#if result.tip}
-          <p class="tip"><strong>Tip:</strong> <MathText text={result.tip} /></p>
-        {/if}
-        {#if result.explanation}
-          <p class="explanation"><MathText text={result.explanation} /></p>
-        {/if}
-      {/if}
-    </div>
+<!-- A value with its unit; the percent sign sticks to the number (lib/units.ts). -->
+{#snippet value(text: string)}{#if prefix}{prefix}{' '}{/if}<MathText {text} />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
+
+{#snippet block(label: string, text: string, scrolls: boolean)}
+  <div class="block" class:scrolls>
+    <p class="block-label"><Icon name="bulb" size={16} stroke={2} />{label}</p>
+    <p class="block-body"><MathText {text} /></p>
   </div>
-  {#if !result.correct}
+{/snippet}
+
+<div class="feedback">
+  <div class="prompt-area">
+    {#if hasSlot(prompt)}
+      <p class="prompt sum {promptSize(prompt)}">
+        <MathText text={prompt} slot={{ tone: 'bad' }} />
+      </p>
+    {:else}
+      <p class="prompt text"><MathText text={prompt} /></p>
+    {/if}
+  </div>
+  <div class="panel" role="status" aria-live="off">
+    <div class="verdict">
+      <span class="badge"><Icon name="cross" size={22} stroke={2.6} /></span>
+      <p class="verdict-text">Niet goed</p>
+    </div>
+    <div class="tiles">
+      <div class="tile bad">
+        <p class="tile-label">Jouw antwoord</p>
+        <p class="tile-value">{@render value(displayAnswer(kind, input))}</p>
+      </div>
+      <div class="tile good">
+        <p class="tile-label">Goed antwoord</p>
+        <p class="tile-value">{@render value(result.expected)}</p>
+      </div>
+    </div>
+    {#if result.tip}{@render block('Tip', result.tip, false)}{/if}
+    {#if result.explanation}{@render block('Uitleg', result.explanation, true)}{/if}
     <button type="button" class="primary next" bind:this={nextButton} onclick={onnext}
       >Verder</button
     >
-  {/if}
+  </div>
 </div>
 
 <style>
@@ -67,92 +75,155 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
-    padding: 1.5rem;
-    border-radius: var(--radius);
-    text-align: center;
     animation: appear 150ms ease-out;
   }
 
-  /* The page never scrolls while playing (spec §2). When a long prompt, tip and explanation do
-     not fit, only this part scrolls; Verder stays below it, on screen. */
-  .content {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
+  /* The sum or question text stays visible above the panel; when the screen is short, only this
+     area shrinks (down to 96 px) and scrolls, before the Uitleg block does (spec §3.3, §3.4). */
+  .prompt-area {
+    flex: 1 1 96px;
+    min-height: 96px;
     display: flex;
-    flex-direction: column;
-    justify-content: safe center;
-    gap: 1.5rem;
-  }
-
-  .correct {
-    background: var(--correct-bg);
-    color: var(--correct);
-  }
-
-  .wrong {
-    background: var(--wrong-bg);
-    color: var(--text);
+    overflow-y: auto;
   }
 
   .prompt {
-    font-weight: 600;
+    margin: auto;
+    text-align: center;
     text-wrap: balance;
   }
 
-  /* The size steps of the question view (spec §3.3), one step smaller to leave room. */
-  .prompt.large {
-    font-size: 2rem;
+  .prompt.sum {
+    padding: 0 16px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
 
-  .prompt.medium {
-    font-size: 1.5rem;
+  /* The size steps of the question view (spec §3.3), one step larger: the sum stays the focus. */
+  .prompt.sum.large {
+    font-size: 44px;
   }
 
-  .prompt.small {
-    font-size: 1.25rem;
+  .prompt.sum.medium {
+    font-size: 32px;
   }
 
-  .verdict {
-    font-size: 1.75rem;
+  .prompt.sum.small {
+    font-size: 24px;
+  }
+
+  .prompt.text {
+    padding: 0 24px;
+    font-size: 22px;
+    line-height: 30px;
     font-weight: 700;
   }
 
-  .wrong .verdict {
-    color: var(--wrong);
+  .panel {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0 12px calc(24px + env(safe-area-inset-bottom));
+    padding: 20px;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    box-shadow: var(--shadow-panel);
   }
 
-  dl {
-    display: grid;
-    grid-template-columns: auto auto;
+  .verdict {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--bad-tint);
+    color: var(--bad);
+    display: flex;
+    align-items: center;
     justify-content: center;
-    gap: 0.5rem 1rem;
-    margin: 1rem 0 0;
-    font-size: 1.25rem;
   }
 
-  /* Not --muted: that is below 4.5:1 on --wrong-bg. */
-  dt {
-    text-align: right;
-    color: var(--text);
+  .verdict-text {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--bad-text);
   }
 
-  dd {
-    margin: 0;
-    text-align: left;
+  .tiles {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .tile {
+    min-width: 0;
+    padding: 10px 14px;
+    border-radius: 14px;
+  }
+
+  .tile.bad {
+    background: var(--bad-tint);
+    color: var(--bad-text);
+  }
+
+  .tile.good {
+    background: var(--good-tint);
+    color: var(--good-text);
+  }
+
+  .tile-label {
+    font-size: 12px;
     font-weight: 600;
   }
 
-  .tip,
-  .explanation {
-    margin-top: 1rem;
-    font-size: 1.25rem;
+  .tile-value {
+    font-size: 22px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .tile.good .tile-value {
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  .block {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: var(--bg);
+  }
+
+  /* Only the explanation can be long; the tip stays short. */
+  .block.scrolls {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  .block-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--sky-text);
+  }
+
+  .block-body {
+    font-size: 16px;
+    line-height: 24px;
+    white-space: pre-line;
   }
 
   .next {
-    flex-shrink: 0;
-    min-height: 3.5rem;
+    box-shadow: var(--shadow-glow);
   }
 
   @keyframes appear {

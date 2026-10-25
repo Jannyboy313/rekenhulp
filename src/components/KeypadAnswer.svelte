@@ -2,7 +2,9 @@
   import type { InputModel } from '../lib/inputModels';
   import type { FractionSlot, KeypadKey } from '../lib/keypadInput';
   import { NOTE_COLUMNS, NOTE_KEYS, type ScratchpadInput } from '../lib/scratchpad';
+  import { withUnits } from '../lib/units';
   import Fraction from './Fraction.svelte';
+  import Icon from './Icon.svelte';
   import Keypad from './Keypad.svelte';
   import { press } from './press';
 
@@ -12,11 +14,13 @@
     suffix?: string;
     /** Only when the kladblok is shown: while a cell is active, the keypad types there (§3.6). */
     scratch?: ScratchpadInput;
+    /** The answer was correct: the field turns green, the keypad is dimmed and the bar runs. */
+    locked?: boolean;
     /** Called with valid input only; invalid input shows an inline error instead (spec §6). */
     onsubmit: (input: string) => void;
   }
 
-  let { model, prefix, suffix, scratch, onsubmit }: Props = $props();
+  let { model, prefix, suffix, scratch, locked = false, onsubmit }: Props = $props();
 
   // QuestionView is keyed per step, so the model never changes during this component's life.
   // svelte-ignore state_referenced_locally
@@ -25,6 +29,10 @@
 
   const segments = $derived(model.view(value));
   const inNote = $derived(scratch?.active === true);
+  // What a screen reader says for the correct state: the user's own input, with its unit.
+  const goodLabel = $derived(
+    `Goed: jouw antwoord is ${withUnits(model.display(model.toInput(value)), prefix, suffix)}`,
+  );
 
   function handleKey(key: KeypadKey) {
     if (inNote) {
@@ -58,6 +66,7 @@
     class:active={name === active}
     aria-label={`${name === 'num' ? 'teller' : 'noemer'}: ${digits === '' ? 'leeg' : digits}`}
     aria-pressed={name === active}
+    disabled={locked}
     use:press={() => select(name)}
     >{#if digits === ''}<span class="placeholder">…</span>{:else}{digits}{/if}</button
   >{/snippet}
@@ -72,9 +81,11 @@
     <output
     class="answer"
     class:tall={model.select !== undefined}
-    aria-label="Jouw antwoord"
+    class:good={locked}
+    aria-label={locked ? goodLabel : 'Jouw antwoord'}
     aria-live="off"
-    >{#if prefix}<span class="prefix">{prefix}</span
+    >{#if locked}<span class="check"><Icon name="check" size={28} stroke={3} /></span
+      >{/if}{#if prefix}<span class="prefix">{prefix}</span
       >{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}<Fraction
           mixed={segment.mixed}
           >{#snippet numerator()}{@render slotButton(
@@ -92,13 +103,19 @@
     >
   </div>
 {/if}
-<p class="error" role="alert">{error ?? ''}</p>
+{#if locked}
+  <!-- The auto-advance timer: PlayScreen moves on when it has run (spec §3.4). -->
+  <div class="advance"><div class="advance-fill"></div></div>
+{:else}
+  <p class="error" role="alert">{error ?? ''}</p>
+{/if}
 <Keypad
   keys={inNote ? NOTE_KEYS : model.keys}
   columns={inNote ? NOTE_COLUMNS : model.columns}
   canSubmit={model.canSubmit(value)}
   tall={scratch === undefined}
   tray={inNote}
+  disabled={locked}
   onkey={handleKey}
   onsubmit={inNote ? undefined : submit}
 />
@@ -128,6 +145,46 @@
   /* Fits an open template with compact slots; kept low so the keypad still fits on small phones. */
   .answer.tall {
     height: 6rem;
+  }
+
+  /* The correct state: lighter than the wrong one, no shadow (spec §3.4). */
+  .answer.good {
+    background: var(--good-tint);
+    border-color: var(--good);
+    color: var(--good-text);
+    box-shadow: none;
+  }
+
+  .check {
+    display: flex;
+    margin-right: 10px;
+    color: var(--good);
+  }
+
+  .answer.good .suffix,
+  .answer.good .prefix {
+    color: var(--good-text);
+  }
+
+  /* Takes the place of the error line. Full width without animation (reduced motion). */
+  .advance {
+    height: 4px;
+    margin: 12px 16px 16px;
+    border-radius: 2px;
+    background: var(--good-track);
+    overflow: hidden;
+  }
+
+  .advance-fill {
+    height: 100%;
+    background: var(--good);
+    animation: advance 600ms linear forwards;
+  }
+
+  @keyframes advance {
+    from {
+      width: 0;
+    }
   }
 
   /* The outlined button that replaces the field while a kladblok cell is active. */
