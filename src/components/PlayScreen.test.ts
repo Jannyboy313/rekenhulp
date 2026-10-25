@@ -338,7 +338,9 @@ describe('PlayScreen', () => {
     });
 
     it('replaces the number with the Herhaling label and keeps the bar on a repeat', async () => {
-      render(PlayScreen, { props: { set: TABLES_SET, questions: [fifteen[0]!, fifteen[1]!], onfinish: vi.fn() } });
+      render(PlayScreen, {
+        props: { set: TABLES_SET, questions: [fifteen[0]!, fifteen[1]!], onfinish: vi.fn() },
+      });
       await press('9', 'OK', 'Verder');
       await press('2', 'OK');
       await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);

@@ -47,7 +47,8 @@ describe('MathText slot', () => {
     expect(container.textContent).toBe('7 × ? = 56');
     const slot = container.querySelector('.slot');
     expect(slot?.textContent).toBe('?');
-    for (const tone of ['primary', 'good', 'bad']) expect(slot?.classList.contains(tone)).toBe(false);
+    for (const tone of ['primary', 'good', 'bad'])
+      expect(slot?.classList.contains(tone)).toBe(false);
   });
 
   it.each(['primary', 'bad'] as const)('puts the ? in .slot.%s', (tone) => {
@@ -56,7 +57,9 @@ describe('MathText slot', () => {
   });
 
   it('fills the slot with a value', () => {
-    const { container } = render(MathText, { props: { text: sum, slot: { tone: 'good', fill: '8' } } });
+    const { container } = render(MathText, {
+      props: { text: sum, slot: { tone: 'good', fill: '8' } },
+    });
     expect(container.textContent).toBe('7 × 8 = 56');
     expect(container.querySelector('.slot.good')?.textContent).toBe('8');
   });

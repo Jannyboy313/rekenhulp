@@ -79,27 +79,27 @@
   <div class="field">
     <!-- Kinds with a fraction template get a taller field, so opening one does not shift the layout. -->
     <output
-    class="answer"
-    class:tall={model.select !== undefined}
-    class:good={locked}
-    aria-label={locked ? goodLabel : 'Jouw antwoord'}
-    aria-live="off"
-    >{#if locked}<span class="check"><Icon name="check" size={28} stroke={3} /></span
-      >{/if}{#if prefix}<span class="prefix">{prefix}</span
-      >{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}<Fraction
-          mixed={segment.mixed}
-          >{#snippet numerator()}{@render slotButton(
-              'num',
-              segment.num,
-              segment.active,
-            )}{/snippet}{#snippet denominator()}{@render slotButton(
-              'den',
-              segment.den,
-              segment.active,
-            )}{/snippet}</Fraction
-        >{/if}{:else}<span class="caret"></span>{/each}{#if suffix}<span class="suffix"
-        >{suffix}</span
-      >{/if}</output
+      class="answer"
+      class:tall={model.select !== undefined}
+      class:good={locked}
+      aria-label={locked ? goodLabel : 'Jouw antwoord'}
+      aria-live="off"
+      >{#if locked}<span class="check"><Icon name="check" size={28} stroke={3} /></span
+        >{/if}{#if prefix}<span class="prefix">{prefix}</span
+        >{/if}{#each segments as segment, index (index)}{#if segment.type === 'text'}{segment.text}{:else}<Fraction
+            mixed={segment.mixed}
+            >{#snippet numerator()}{@render slotButton(
+                'num',
+                segment.num,
+                segment.active,
+              )}{/snippet}{#snippet denominator()}{@render slotButton(
+                'den',
+                segment.den,
+                segment.active,
+              )}{/snippet}</Fraction
+          >{/if}{:else}<span class="caret"></span>{/each}{#if suffix}<span class="suffix"
+          >{suffix}</span
+        >{/if}</output
     >
   </div>
 {/if}

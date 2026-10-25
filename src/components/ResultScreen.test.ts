@@ -32,7 +32,10 @@ const product = numberStep({ prompt: '7 × 8 = ?', answer: fromInteger(56) });
 describe('ResultScreen', () => {
   it('shows the score, the percentage and a progressbar with the percentage', () => {
     const records = Array.from({ length: 15 }, (_, i) =>
-      recordOf(numberStep({ prompt: `${i} + 1 = ?`, answer: fromInteger(i + 1) }), i < 12 ? String(i + 1) : '99'),
+      recordOf(
+        numberStep({ prompt: `${i} + 1 = ?`, answer: fromInteger(i + 1) }),
+        i < 12 ? String(i + 1) : '99',
+      ),
     );
     renderResults(records);
     expect(document.querySelector('.score')?.textContent?.trim()).toBe('12 / 15');
@@ -92,7 +95,8 @@ describe('ResultScreen', () => {
     const prompt = document.querySelector('.error-card .prompt')!;
     expect(prompt.textContent).toBe('7 × ? = 56');
     const slot = prompt.querySelector('.slot')!;
-    for (const tone of ['primary', 'good', 'bad']) expect(slot.classList.contains(tone)).toBe(false);
+    for (const tone of ['primary', 'good', 'bad'])
+      expect(slot.classList.contains(tone)).toBe(false);
   });
 
   it('keeps a step that was wrong on the first attempt in the list', () => {

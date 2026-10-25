@@ -1,13 +1,6 @@
 <script lang="ts" module>
   export type IconName =
-    | 'chevron-left'
-    | 'chevron-right'
-    | 'close'
-    | 'check'
-    | 'cross'
-    | 'pen'
-    | 'repeat'
-    | 'bulb';
+    'chevron-left' | 'chevron-right' | 'close' | 'check' | 'cross' | 'pen' | 'repeat' | 'bulb';
 
   const PATHS: Record<IconName, string> = {
     'chevron-left': 'M15 5l-7 7 7 7',

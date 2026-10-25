@@ -19,7 +19,13 @@
 </script>
 
 <!-- A value with its unit; the percent sign sticks to the number (lib/units.ts). -->
-{#snippet value(text: string, prefix?: string, suffix?: string)}{#if prefix}{prefix}{' '}{/if}<MathText {text} />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
+{#snippet value(
+  text: string,
+  prefix?: string,
+  suffix?: string,
+)}{#if prefix}{prefix}{' '}{/if}<MathText
+    {text}
+  />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
 
 <main class="results">
   <div class="scroll">
@@ -68,13 +74,17 @@
               <p class="prompt"><MathText text={prompt} /></p>
               <div class="tiles">
                 <div class="tile bad">
-                  <p class="tile-label"><Icon name="cross" size={14} stroke={2.6} />Jouw antwoord</p>
+                  <p class="tile-label">
+                    <Icon name="cross" size={14} stroke={2.6} />Jouw antwoord
+                  </p>
                   <p class="tile-value">
                     {@render value(displayAnswer(kind, attempt.input), prefix, suffix)}
                   </p>
                 </div>
                 <div class="tile good">
-                  <p class="tile-label"><Icon name="check" size={14} stroke={2.6} />Goed antwoord</p>
+                  <p class="tile-label">
+                    <Icon name="check" size={14} stroke={2.6} />Goed antwoord
+                  </p>
                   <p class="tile-value">{@render value(attempt.result.expected, prefix, suffix)}</p>
                 </div>
               </div>

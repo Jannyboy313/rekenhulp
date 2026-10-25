@@ -29,7 +29,10 @@ describe('splitTopicLabel', () => {
       'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
       { name: 'Procenten', detail: 'deel, percentage, korting/verhoging, terug naar 100%' },
     ],
-    ['Omzetten tussen breuk, kommagetal en procent', { name: 'Omzetten tussen breuk, kommagetal en procent' }],
+    [
+      'Omzetten tussen breuk, kommagetal en procent',
+      { name: 'Omzetten tussen breuk, kommagetal en procent' },
+    ],
     ['KGV (kleinste gemene veelvoud)', { name: 'KGV', detail: 'kleinste gemene veelvoud' }],
     ['Tafels van 2 t/m 15 (zonder 10)', { name: 'Tafels van 2 t/m 15', detail: 'zonder 10' }],
   ])('splits %s', (label, expected) => {

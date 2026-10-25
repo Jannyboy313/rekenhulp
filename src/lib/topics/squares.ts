@@ -27,7 +27,9 @@ export function generateSquares(rng: Rng): Question {
     steps: [
       numberStep({
         prompt:
-          form === 'square' ? `${formatInteger(n)}² = ${SLOT}` : `√${formatInteger(square)} = ${SLOT}`,
+          form === 'square'
+            ? `${formatInteger(n)}² = ${SLOT}`
+            : `√${formatInteger(square)} = ${SLOT}`,
         answer: fromInteger(form === 'square' ? square : n),
         explanation: squareExplanation(n),
         diagnose: form === 'square' ? squareTip(n) : rootTip(n),

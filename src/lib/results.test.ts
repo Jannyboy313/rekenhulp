@@ -50,7 +50,10 @@ describe('wrongSteps', () => {
           numberStep({ prompt: 'r', answer: fromInteger(3) }),
         ],
       },
-      attempts: [1, 2, 3].map((n) => ({ input: String(n), result: { correct: false, expected: '0' } })),
+      attempts: [1, 2, 3].map((n) => ({
+        input: String(n),
+        result: { correct: false, expected: '0' },
+      })),
       durationMs: 1000,
     } satisfies QuestionRecord;
     const [area, money, bare] = wrongSteps([withUnit]);

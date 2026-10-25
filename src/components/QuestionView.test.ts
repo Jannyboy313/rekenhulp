@@ -97,7 +97,9 @@ describe('QuestionView', () => {
 
   it('shows 4 columns and no comma for an expression step', () => {
     render(QuestionView, { props: { step: rewrite, onanswer: vi.fn() } });
-    expect(document.querySelector<HTMLElement>('.keypad')!.style.getPropertyValue('--columns')).toBe('4');
+    expect(
+      document.querySelector<HTMLElement>('.keypad')!.style.getPropertyValue('--columns'),
+    ).toBe('4');
     expect(screen.queryByRole('button', { name: 'komma' })).toBeNull();
   });
 
@@ -484,9 +486,12 @@ describe('QuestionView', () => {
       });
       render(QuestionView, { props: { step: percent, scratchpad: true, onanswer: vi.fn() } });
       await press('breuk', '1', /^Kladblok vak 1:/);
-      await fireEvent.pointerDown(screen.getByRole('button', { name: 'Tik hier voor je antwoord' }), {
-        button: 0,
-      });
+      await fireEvent.pointerDown(
+        screen.getByRole('button', { name: 'Tik hier voor je antwoord' }),
+        {
+          button: 0,
+        },
+      );
       await fireEvent.click(screen.getByRole('button', { name: /^noemer/ }), { detail: 1 });
       expect(screen.queryByRole('button', { name: 'Tik hier voor je antwoord' })).toBeNull();
       expect(screen.getByRole('button', { name: /^teller/ }).getAttribute('aria-pressed')).toBe(

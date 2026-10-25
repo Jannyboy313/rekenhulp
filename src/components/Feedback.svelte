@@ -27,7 +27,9 @@
 </script>
 
 <!-- A value with its unit; the percent sign sticks to the number (lib/units.ts). -->
-{#snippet value(text: string)}{#if prefix}{prefix}{' '}{/if}<MathText {text} />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
+{#snippet value(text: string)}{#if prefix}{prefix}{' '}{/if}<MathText
+    {text}
+  />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
 
 {#snippet block(label: string, text: string, scrolls: boolean)}
   <div class="block" class:scrolls>

@@ -38,18 +38,18 @@
         r="2.5"
         class="fv"
       />
-      <circle cx="7" cy="14" r="2.5" class="fa" /><circle cx="14" cy="14" r="2.5" class="fa" /><circle
-        cx="21"
+      <circle cx="7" cy="14" r="2.5" class="fa" /><circle
+        cx="14"
         cy="14"
         r="2.5"
         class="fa"
-      />
-      <circle cx="7" cy="21" r="2.5" class="fb" /><circle cx="14" cy="21" r="2.5" class="fb" /><circle
-        cx="21"
+      /><circle cx="21" cy="14" r="2.5" class="fa" />
+      <circle cx="7" cy="21" r="2.5" class="fb" /><circle
+        cx="14"
         cy="21"
         r="2.5"
         class="fb"
-      />
+      /><circle cx="21" cy="21" r="2.5" class="fb" />
     {:else if id === 'meten'}
       <rect x="2" y="7" width="24" height="10" rx="2.5" class="fa" />
       <path d="M7 7v4M12 7v6M17 7v4M22 7v6" class="sd" stroke-width="2" />

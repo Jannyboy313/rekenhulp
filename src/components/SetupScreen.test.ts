@@ -9,7 +9,12 @@ import SetupScreen from './SetupScreen.svelte';
 /** The setup screen with App's defaults: the default size and every table chosen. */
 function renderSetup(
   set: PracticeSet,
-  { tables = [...TABLE_FACTORS], size = DEFAULT_SESSION_SIZE, onstart = vi.fn(), onback = vi.fn() } = {},
+  {
+    tables = [...TABLE_FACTORS],
+    size = DEFAULT_SESSION_SIZE,
+    onstart = vi.fn(),
+    onback = vi.fn(),
+  } = {},
 ) {
   render(SetupScreen, { props: { set, size, tables, onstart, onback } });
 }

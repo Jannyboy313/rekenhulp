@@ -3,7 +3,12 @@ import { fireEvent, render, screen } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import { stubMatchMedia } from './components/testMatchMedia';
-import { choosesTables, DEFAULT_SESSION_SIZE, describeSetTopicRows, PRACTICE_SETS } from './lib/sets';
+import {
+  choosesTables,
+  DEFAULT_SESSION_SIZE,
+  describeSetTopicRows,
+  PRACTICE_SETS,
+} from './lib/sets';
 
 async function click(name: string | RegExp) {
   await fireEvent.click(screen.getByRole('button', { name }));
