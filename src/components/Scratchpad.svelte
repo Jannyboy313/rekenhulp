@@ -2,6 +2,7 @@
   import { splitNoteFractions } from '../lib/fractionText';
   import { formatNote, formatNoteLabel } from '../lib/format';
   import Fraction from './Fraction.svelte';
+  import Icon from './Icon.svelte';
   import { press } from './press';
 
   interface Props {
@@ -16,69 +17,125 @@
 
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
+
+  /** A cell is clipped, not wrapped: after every change it shows the end, where the caret is. */
+  function showEnd(node: HTMLElement, _note: string) {
+    node.scrollLeft = node.scrollWidth;
+    return {
+      update() {
+        node.scrollLeft = node.scrollWidth;
+      },
+    };
+  }
 </script>
 
 <!-- The kladblok (spec §3.6): fixed cells for numbers and short sums typed on the keypad. -->
 <div class="scratchpad" role="group" aria-label="Kladblok">
-  {#each notes as note, index (index)}
-    <button
-      type="button"
-      class="cell"
-      class:active={index === active}
-      aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNoteLabel(note)}`}
-      aria-pressed={index === active}
-      use:press={() => onselect(index)}
-      ><!-- One flex item for the text runs and fractions, so the end alignment clips them as one. --><span
-        >{#each splitNoteFractions(formatNote(note)) as segment, part (part)}{#if segment.type === 'text'}{segment.text}{:else}<!-- The placeholder marks the slot the next digit goes into. --><Fraction
-              >{#snippet numerator()}{#if segment.num === ''}<span class="placeholder">…</span
-                  >{:else}{segment.num}{/if}{/snippet}{#snippet denominator()}{#if segment.den === null}{BLANK_SLOT}{:else if segment.den === ''}<span
-                    class="placeholder">…</span
-                  >{:else}{segment.den}{/if}{/snippet}</Fraction
-            >{/if}{/each}</span
-      ></button
-    >
-  {/each}
+  <p class="label" class:active={active !== null}>
+    <Icon name="pen" size={16} stroke={2} />
+    {#if active === null}Kladblok · tik om te noteren{:else}Kladblok{/if}
+  </p>
+  <div class="cells">
+    {#each notes as note, index (index)}
+      <button
+        type="button"
+        class="cell"
+        class:active={index === active}
+        class:empty={note === '' && index !== active}
+        aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNoteLabel(note)}`}
+        aria-pressed={index === active}
+        use:press={() => onselect(index)}
+        ><!-- One scrolling item for the text runs and fractions, so they are clipped as one. --><span
+          class="content"
+          use:showEnd={note}
+          >{#each splitNoteFractions(formatNote(note)) as segment, part (part)}{#if segment.type === 'text'}{segment.text}{:else}<!-- The placeholder marks the slot the next digit goes into. --><Fraction
+                >{#snippet numerator()}{#if segment.num === ''}<span class="placeholder">…</span
+                    >{:else}{segment.num}{/if}{/snippet}{#snippet denominator()}{#if segment.den === null}{BLANK_SLOT}{:else if segment.den === ''}<span
+                      class="placeholder">…</span
+                    >{:else}{segment.den}{/if}{/snippet}</Fraction
+              >{/if}{/each}{#if index === active}<span class="caret"></span>{/if}</span
+        ></button
+      >
+    {/each}
+  </div>
 </div>
 
 <style>
-  /* The auto margin keeps the kladblok under the header while the question sits at the bottom. */
   .scratchpad {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-bottom: auto;
+    padding: 0 16px;
   }
 
-  /* Fixed size: a long number is clipped, never wrapped (spec §3.6). Flex end alignment clips
-     on the left, so the digits just typed stay visible (text-align would clip on the right). */
-  .cell {
+  .label {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    height: 3rem;
-    padding: 0 0.5rem;
+    gap: 6px;
+    min-height: 24px;
+    margin-bottom: 4px;
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--muted);
+  }
+
+  .label.active {
+    color: var(--primary);
+    font-weight: 600;
+  }
+
+  .cells {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  /* Fixed size: a long number is clipped, never wrapped (spec §3.6). */
+  .cell {
+    height: 48px;
+    min-height: 0;
+    padding: 0 12px;
+    border-radius: 12px;
     overflow: hidden;
-    font-size: 1.25rem;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: left;
+    background: var(--surface);
+    border: 2px solid transparent;
+  }
+
+  /* An empty, inactive cell: the dashed outline stays visible (≥ 3:1 against the background). */
+  .cell.empty {
+    border: 1.5px dashed var(--scratch-border);
+  }
+
+  .cell:not(.empty):not(.active) {
+    border: 1.5px solid var(--border);
+  }
+
+  .cell.active {
+    border-color: var(--sky);
+    background: var(--sky-tint);
+  }
+
+  .content {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    overflow: hidden;
     /* pre, not nowrap: a just-typed trailing spatie must take room. Wider spaces keep the
        numbers apart. */
     white-space: pre;
     word-spacing: 0.25em;
-    background: var(--surface);
-    /* Muted, not --border: empty cells must stay visible (≥ 3:1 against the surface). */
-    border: 2px dashed var(--muted);
+  }
+
+  .caret {
+    flex: none;
+    width: 2px;
+    height: 22px;
+    margin-left: 1px;
+    background: var(--sky);
   }
 
   .placeholder {
     color: var(--muted);
-  }
-
-  .cell:active {
-    background: var(--key-active);
-  }
-
-  .cell.active {
-    border-style: solid;
-    border-color: var(--primary);
   }
 
   /* Shorter screens drop rows from the bottom, so the keypad stays on screen. Each row costs

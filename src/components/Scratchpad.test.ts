@@ -12,6 +12,27 @@ describe('Scratchpad', () => {
     }
   });
 
+  it('hints at tapping while no cell is active and drops the hint when one is', () => {
+    const { rerender } = render(Scratchpad, {
+      props: { notes: ['', '', '', '', '', ''], active: null, onselect: vi.fn() },
+    });
+    expect(screen.getByText('Kladblok · tik om te noteren')).toBeTruthy();
+    expect(document.querySelector('.label')?.classList.contains('active')).toBe(false);
+
+    rerender({ notes: ['', '', '', '', '', ''], active: 1, onselect: vi.fn() });
+    expect(screen.queryByText(/tik om te noteren/)).toBeNull();
+    expect(document.querySelector('.label')?.textContent?.trim()).toBe('Kladblok');
+    expect(document.querySelector('.label')?.classList.contains('active')).toBe(true);
+  });
+
+  it('shows a caret only in the active cell', () => {
+    render(Scratchpad, {
+      props: { notes: ['12', '', '', '', '', ''], active: 0, onselect: vi.fn() },
+    });
+    expect(document.querySelectorAll('.caret')).toHaveLength(1);
+    expect(screen.getAllByRole('button')[0]!.querySelector('.caret')).not.toBeNull();
+  });
+
   it('labels each cell with its number and content and marks the active one', () => {
     render(Scratchpad, {
       props: { notes: ['900', '', '-2,5', '', '12×7=84 3-8=-5', ''], active: 2, onselect: vi.fn() },

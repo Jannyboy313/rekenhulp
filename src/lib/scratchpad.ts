@@ -29,8 +29,8 @@ export const NOTE_KEYS: readonly KeyDef[] = keyDefs(
   '7', '8', '9', '+',
   '4', '5', '6', '-',
   '1', '2', '3', '×',
-  '^', '0', '/', ':',
-  'backspace', ',', '=', ' ',
+  ',', '0', '^', ':',
+  'backspace', ' ', '/', '=',
 );
 
 /** Four columns like the expression keypad; the keys fill all five rows. */

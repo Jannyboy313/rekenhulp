@@ -62,9 +62,14 @@
     >{#if digits === ''}<span class="placeholder">…</span>{:else}{digits}{/if}</button
   >{/snippet}
 
-<div class="field">
-  <!-- Kinds with a fraction template get a taller field, so opening one does not shift the layout. -->
-  <output
+{#if inNote}
+  <!-- The field gives way to one button that hands the keypad back (spec §3.6). On press, like
+       the keys, so the follow-up click cannot land on whatever replaces it. -->
+  <button type="button" class="to-answer" use:press={focusAnswer}>Tik hier voor je antwoord</button>
+{:else}
+  <div class="field">
+    <!-- Kinds with a fraction template get a taller field, so opening one does not shift the layout. -->
+    <output
     class="answer"
     class:tall={model.select !== undefined}
     aria-label="Jouw antwoord"
@@ -84,19 +89,16 @@
         >{/if}{:else}<span class="caret"></span>{/each}{#if suffix}<span class="suffix"
         >{suffix}</span
       >{/if}</output
-  >
-  {#if inNote}
-    <!-- Covers the whole field, slots included: one tap hands the keypad back (spec §3.6). -->
-    <button type="button" class="to-answer" aria-label="Naar antwoordveld" use:press={focusAnswer}
-    ></button>
-  {/if}
-</div>
+    >
+  </div>
+{/if}
 <p class="error" role="alert">{error ?? ''}</p>
 <Keypad
   keys={inNote ? NOTE_KEYS : model.keys}
   columns={inNote ? NOTE_COLUMNS : model.columns}
   canSubmit={model.canSubmit(value)}
   tall={scratch === undefined}
+  tray={inNote}
   onkey={handleKey}
   onsubmit={inNote ? undefined : submit}
 />
@@ -128,11 +130,18 @@
     height: 6rem;
   }
 
+  /* The outlined button that replaces the field while a kladblok cell is active. */
   .to-answer {
-    position: absolute;
-    inset: 0;
+    height: 56px;
     min-height: 0;
-    background: none;
+    margin: 0 16px;
+    border-radius: 16px;
+    border: 1.5px solid var(--border-key);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--muted);
   }
 
   .caret {

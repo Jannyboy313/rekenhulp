@@ -152,7 +152,7 @@ describe('PlayScreen', () => {
     });
 
     await fireEvent.click(screen.getByRole('button', { name: 'Kladblok vak 1: leeg' }));
-    await press('9', 'Naar antwoordveld', '9', 'OK');
+    await press('9', 'Tik hier voor je antwoord', '9', 'OK');
     expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 

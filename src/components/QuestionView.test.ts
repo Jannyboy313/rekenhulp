@@ -403,6 +403,24 @@ describe('QuestionView', () => {
       expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
     });
 
+    it('swaps the answer field for a button and the keypad for the 20-key tray', async () => {
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      expect(screen.getByLabelText('Jouw antwoord')).toBeTruthy();
+      expect(screen.queryByRole('button', { name: 'Tik hier voor je antwoord' })).toBeNull();
+
+      await press(/^Kladblok vak 2:/);
+      expect(cell(2).getAttribute('aria-pressed')).toBe('true');
+      expect(screen.queryByLabelText('Jouw antwoord')).toBeNull();
+      expect(screen.getByRole('button', { name: 'Tik hier voor je antwoord' })).toBeTruthy();
+      const grid = document.querySelector<HTMLElement>('.keypad')!;
+      expect(grid.classList.contains('tray')).toBe(true);
+      expect(grid.querySelectorAll('button')).toHaveLength(20);
+
+      await press('Tik hier voor je antwoord');
+      expect(screen.getByLabelText('Jouw antwoord')).toBeTruthy();
+      expect(document.querySelector('.keypad')!.classList.contains('tray')).toBe(false);
+    });
+
     it('types sums into a tapped cell and swaps OK for a spatie', async () => {
       render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
       await press(/^Kladblok vak 2:/, 'min', '9', '0', 'keer', '2');
@@ -412,7 +430,6 @@ describe('QuestionView', () => {
       expect(cell(2).textContent).toBe('−90×');
       await press('3', 'is', 'min', '2', '7', '0', 'spatie', '1', 'komma', '5');
       expect(cell(2).textContent).toBe('−90×3=−270 1,5');
-      expect(answerText()).toBe('');
       expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
     });
 
@@ -431,7 +448,7 @@ describe('QuestionView', () => {
       ]);
       expect(cell(6).getAttribute('aria-pressed')).toBe('true');
 
-      await press('Naar antwoordveld');
+      await press('Tik hier voor je antwoord');
       expect(cell(6).getAttribute('aria-pressed')).toBe('false');
       expect(answerText()).toBe('12');
       await press('OK');
@@ -440,8 +457,8 @@ describe('QuestionView', () => {
 
     it('hands the keypad back when the answer field is tapped', async () => {
       render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
-      await press('5', /^Kladblok vak 1:/, '7', 'Naar antwoordveld');
-      expect(screen.queryByRole('button', { name: 'Naar antwoordveld' })).toBeNull();
+      await press('5', /^Kladblok vak 1:/, '7', 'Tik hier voor je antwoord');
+      expect(screen.queryByRole('button', { name: 'Tik hier voor je antwoord' })).toBeNull();
       await press('3');
       expect(answerText()).toBe('53');
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 7');
@@ -455,11 +472,11 @@ describe('QuestionView', () => {
       });
       render(QuestionView, { props: { step: percent, scratchpad: true, onanswer: vi.fn() } });
       await press('breuk', '1', /^Kladblok vak 1:/);
-      await fireEvent.pointerDown(screen.getByRole('button', { name: 'Naar antwoordveld' }), {
+      await fireEvent.pointerDown(screen.getByRole('button', { name: 'Tik hier voor je antwoord' }), {
         button: 0,
       });
       await fireEvent.click(screen.getByRole('button', { name: /^noemer/ }), { detail: 1 });
-      expect(screen.queryByRole('button', { name: 'Naar antwoordveld' })).toBeNull();
+      expect(screen.queryByRole('button', { name: 'Tik hier voor je antwoord' })).toBeNull();
       expect(screen.getByRole('button', { name: /^teller/ }).getAttribute('aria-pressed')).toBe(
         'true',
       );
@@ -479,7 +496,7 @@ describe('QuestionView', () => {
       expect(screen.getByRole('button', { name: 'spatie' })).toBeTruthy();
       await press('1', 'breuk', '3', 'breuk', '4');
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 1 en 3/4');
-      await press('Naar antwoordveld');
+      await press('Tik hier voor je antwoord');
       expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
       expect(answerText()).toBe('1/…%');
       unmount();
@@ -490,7 +507,6 @@ describe('QuestionView', () => {
       expect(screen.getByRole('button', { name: 'spatie' })).toBeTruthy();
       await press('min', '2', 'komma', '5', 'plus', '1', 'spatie', '2', 'tot de macht', '3');
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5+1 2³');
-      expect(answerText()).toBe('');
     });
 
     it('shows the kladblok keys in 4 columns with the spatie in the last one', async () => {
@@ -512,7 +528,7 @@ describe('QuestionView', () => {
       expect(columns()).toBe('4');
       expect(screen.getByRole('button', { name: 'is' })).toBeTruthy();
       expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('');
-      await press('Naar antwoordveld');
+      await press('Tik hier voor je antwoord');
       expect(screen.queryByRole('button', { name: 'is' })).toBeNull();
     });
   });
