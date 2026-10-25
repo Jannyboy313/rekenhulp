@@ -91,7 +91,8 @@ only the real choices, update and commit the spec, then implement directly with 
 - Inline markup with stacked fractions (`MathText`, `KeypadAnswer`) is whitespace-sensitive: a line
   break between tags renders as a space, and Svelte trims spaces at the edges of an element's
   content, so write a deliberate edge space as an expression (`{' en '}`). Tests assert exact
-  `textContent` to catch this.
+  `textContent` to catch this. Prettier may split such markup over lines; guard it with
+  `<!-- prettier-ignore -->` (as the tip in `LessonView`).
 
 ## PWA pitfalls
 
