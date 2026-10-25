@@ -191,6 +191,80 @@ the practice topics (main spec §5.2–§5.7).
    - Table `Kwadraat eindigt op | Wortel eindigt op`: `1 | 1 of 9`, `4 | 2 of 8`, `5 | 5`,
      `6 | 4 of 6`, `9 | 3 of 7`, `0 | 0`.
 
+### 7.2 Meten (`meten`)
+
+Seven topics. Metric units first (prefixes, shifting the comma); area and volume build on them
+with ×100 and ×1000; large numbers reuse the ×1000 ladder; then time, speed (which needs the
+parts of an hour) and km/u ↔ m/s. The methods match the explanations of the practice topics
+(main spec §5.10, §5.14, §5.26), the tips repeat the tip texts of main spec §3.4.1. Worked lines
+hold numbers only; the units go in the title.
+
+1. **`metric` — Lengte en gewicht** (summary: `Voorvoegsels en de komma verschuiven`)
+   - Table `Voorvoegsel | Betekent | Voorbeeld`: `kilo | 1000 | 1 km = 1000 m`,
+     `hecto | 100 | 1 hl = 100 L`, `deca | 10 | 1 dam = 10 m`, `deci | 0,1 | 1 dm = 0,1 m`,
+     `centi | 0,01 | 1 cl = 0,01 L`, `milli | 0,001 | 1 mg = 0,001 g`.
+   - Table `Eenheid | Is`: `1 km | 1000 m`, `1 m | 10 dm = 100 cm = 1000 mm`, `1 ton | 1000 kg`,
+     `1 kg | 1000 g`, `1 g | 1000 mg`.
+   - Text: to a smaller unit the number gets larger (multiply), to a larger unit smaller
+     (divide). Every factor 10 moves the comma one place.
+   - Worked `3,5 km naar m`: `3,5 × 1000 = 3500`; `250 g naar kg`: `250 : 1000 = 0,25`;
+     `47 mm naar dm`: `47 : 100 = 0,47`.
+   - Tip: a smaller unit fits more often, so the number grows. Check the direction first.
+2. **`area` — Oppervlakte** (summary: `Elke stap ×100`)
+   - Text: 1 m² is a square of 10 dm by 10 dm, so 1 m² = 100 dm². Every step is ×100: the comma
+     moves two places.
+   - Worked `1 m² in cm²`: `100 × 100 = 10 000`.
+   - Table `Eenheid | Is`: `1 cm² | 100 mm²`, `1 dm² | 100 cm²`, `1 m² | 100 dm²`,
+     `1 are | 100 m² (10 m bij 10 m)`, `1 ha | 100 are = 10 000 m² (100 m bij 100 m)`,
+     `1 km² | 100 ha`.
+   - Worked `2,5 ha naar m²`: `2,5 × 10 000 = 25 000`; `350 cm² naar dm²`: `350 : 100 = 3,5`.
+   - Tip: "Bij oppervlakte is elke stap ×100 (10 × 10), niet ×10."
+3. **`volume` — Inhoud** (summary: `Kubieke eenheden en liters`)
+   - Text: 1 dm³ is a cube of 10 by 10 by 10 cm, so 1 dm³ = 1000 cm³. Every cubic step is ×1000:
+     the comma moves three places.
+   - Text: liters go like length: ml → cl → dl → L each ×10, and 1 hl = 100 L.
+   - Table `Kubiek | Liter`: `1 cm³ | 1 ml`, `1 dm³ | 1 L`, `1 m³ | 1000 L`.
+   - Worked `3,5 L naar cm³`: `3,5 × 1000 = 3500` (text: 1 L = 1 dm³ = 1000 cm³);
+     `0,4 m³ naar L`: `0,4 × 1000 = 400`; `250 ml naar dl`: `250 : 100 = 2,5`.
+   - Tip: "Bij kubieke eenheden is elke stap ×1000 (10 × 10 × 10), niet ×10."
+4. **`largeNumbers` — Grote getallen** (summary: `Miljoen, miljard, biljoen`)
+   - Table `Naam | Macht`: duizend 10³, miljoen 10⁶, miljard 10⁹, biljoen 10¹², biljard 10¹⁵,
+     triljoen 10¹⁸, triljard 10²¹, quadriljoen 10²⁴.
+   - Text: every next name is ×1000, the exponent goes up by 3.
+   - Worked `250 miljoen als macht van 10`: `250 × 10⁶ = 2,5 × 10² × 10⁶ = 2,5 × 10⁸`, with text:
+     exponents of 10 add up when you multiply.
+   - Worked `3,5 biljoen in miljard`: `3,5 × 1000 = 3500`; `2,5 × 10⁹ in miljoen`:
+     `2,5 × 10⁹ = 2500 × 10⁶`.
+   - Tip: "Een biljoen is 10¹²; 10⁹ is een miljard (Engels: billion)."
+5. **`time` — Tijd** (summary: `Rekenen met 60 en 24`)
+   - Text: time is not decimal: 1 min = 60 s, 1 uur = 60 min = 3600 s, 1 dag = 24 uur.
+   - Table `Deel van een uur | Minuten`: `0,1 | 6`, `0,2 | 12`, `1/4 = 0,25 | 15`, `1/3 | 20`,
+     `1/2 = 0,5 | 30`, `3/4 = 0,75 | 45`.
+   - Worked `2,25 uur naar min`: `2,25 × 60 = 2 × 60 + 0,25 × 60 = 120 + 15 = 135`.
+   - Worked `150 min naar uur`: `150 : 60 = 2,5`, with text: 150 min = 120 + 30 min, so 2 hours
+     and half an hour.
+   - Worked `3,5 dag naar uur`: `3,5 × 24 = 72 + 12 = 84`.
+   - Tip: "0,5 uur is 30 min, niet 50 min. En 30 min is 0,5 uur, niet 0,3 uur."
+6. **`speed` — Snelheid** (summary: `Afstand, tijd en km/u`)
+   - Text: km/u is the distance in one hour. Afstand = snelheid × tijd, with the time in hours.
+     Without the formula: a ratio table to 60 min.
+   - Table `Tijd | Afstand`: `20 min | 6 km`, `60 min | 18 km`, with text: three times as long,
+     three times as far, so 18 km/u.
+   - Worked `6 km in 20 min`: `60 : 20 = 3`, `6 × 3 = 18`.
+   - Worked `80 km/u, hoeveel km in 45 min`: `80 × 3/4 = 80 : 4 × 3 = 60`.
+   - Worked `5 km/u, hoe lang over 2 km`: `60 : 5 = 12`, `2 × 12 = 24`, with text: 1 km takes
+     12 min.
+   - Tip: "km/u is per uur: reken eerst uit hoeveel km je in 60 min aflegt."
+7. **`metersPerSecond` — km/u en m/s** (summary: `Keer of gedeeld door 3,6`)
+   - Text: 1 m/s is 3600 m per hour, that is 3,6 km/u.
+   - Worked `1 m/s in km/u`: `1 × 3600 : 1000 = 3,6`.
+   - Text: 3,6 = 18/5, so ×3,6 is :5 then ×18, and :3,6 is :18 then ×5.
+   - Worked `15 m/s naar km/u`: `15 × 3,6 = 15 : 5 × 18 = 3 × 18 = 54`;
+     `72 km/u naar m/s`: `72 : 3,6 = 72 : 18 × 5 = 4 × 5 = 20`.
+   - Table `m/s | km/u`: 5 | 18, 10 | 36, 15 | 54, 20 | 72, 25 | 90, 30 | 108, 35 | 126,
+     40 | 144.
+   - Tip: "Naar m/s wordt het getal kleiner: deel door 3,6."
+
 ## 8. Open assumptions
 
 - **Block types:** `text`, `worked`, `table` and `tip` are assumed to be enough. A bullet list
