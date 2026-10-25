@@ -1,5 +1,6 @@
 import type { PracticeSet } from '../types';
 import { OPERATIONS_LESSON } from './bewerkingen';
+import { NUMBER_SENSE_LESSON } from './getalbegrip';
 import { NUMBERS_LESSON } from './getallen';
 import { MEASUREMENT_LESSON } from './meten';
 import type { Lesson } from './types';
@@ -11,6 +12,7 @@ export const LESSONS: readonly Lesson[] = [
   MEASUREMENT_LESSON,
   PROPORTIONS_LESSON,
   OPERATIONS_LESSON,
+  NUMBER_SENSE_LESSON,
 ];
 
 export function lessonFor(set: PracticeSet, lessons = LESSONS): Lesson | undefined {

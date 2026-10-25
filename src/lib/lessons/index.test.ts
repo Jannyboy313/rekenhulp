@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   MEASUREMENT_SET,
+  NUMBER_SENSE_SET,
   NUMBERS_SET,
   OPERATIONS_SET,
   PROPORTIONS_SET,
@@ -55,6 +56,16 @@ describe('lessonFor', () => {
       'compensation',
       'complement',
       'splitting',
+    ]);
+    expect(lessonFor(NUMBER_SENSE_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'mentalOperations',
+      'remainder',
+      'negativeNumbers',
+      'rounding',
+      'powers',
+      'negativeExponents',
+      'roots',
+      'scientificNotation',
     ]);
   });
 });
