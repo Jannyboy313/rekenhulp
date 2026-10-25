@@ -37,8 +37,10 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 
 ### PWA requirements
 
-- Manifest: name `Rekenhulp`, `display: standalone`, `orientation: portrait`, theme and
-  background colour, icons 192/512 px plus a maskable icon, and an `apple-touch-icon` for iOS.
+- Manifest: name `Rekenhulp`, `display: standalone`, `orientation: portrait`, `theme_color`
+  `#5B3FD1`, `background_color` `#F5F6F8`, icons 192/512 px plus a maskable icon, and an
+  `apple-touch-icon` for iOS. The icon is the Design V1 logo (violet gradient square with
+  + − × ÷ and two yellow dots).
 - An SVG source icon is checked in. PNGs are generated as part of the build.
 - Service worker precaches everything, so the app works in airplane mode after the first visit.
 - When a new version is deployed, the app updates silently on the next launch.
@@ -51,10 +53,14 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
   content does not fit, the question view lets only the prompt shrink and scroll (the kladblok
   and the keypad keep their size), and the feedback scrolls its prompt, answers, tip and
   explanation while **Verder** stays fixed below them. The other screens scroll as usual.
-- Tap targets are ≥ 48 px, except the small **Alle**/**Geen** buttons (40 px, §3.2) and the
+- Tap targets are ≥ 44 px, except the small **Alle**/**Geen** buttons (36 px, §3.2) and the
   fraction slots in the answer field (compact, so the keypad fits; the breuk key selects slots
   too). Feedback is announced via `aria-live`.
-- Supports `prefers-color-scheme` (light/dark) and `prefers-reduced-motion`.
+- Light theme only (`color-scheme: light`, Design V1). All colours come from one set of design
+  tokens in `app.css`; components use no raw colour values. Colour is never the only signal:
+  correct shows a ✓, wrong a ✕ and the words "Niet goed". Supports `prefers-reduced-motion`.
+- Font: Inter, bundled with the app so it works offline, with `system-ui` as fallback. Numbers
+  use tabular figures.
 - The system keyboard is never used for answers; the app has its own keypad (§6).
 - The screen stays on during a session (Screen Wake Lock API). The lock is requested again when
   the app becomes visible after being hidden, and released when the session ends. Where the API
@@ -77,24 +83,30 @@ The app is a state machine in `App.svelte` with four states:
 ### 3.1 Set overview (start screen)
 
 - The app always opens on this screen, with no set preselected.
-- It shows a list of cards, one per available set (§4). Each card shows the set's name and a
-  one-line description of its topics.
+- It shows the logo, the title "Rekenhulp" and "Wat wil je oefenen?", then a list of rows, one
+  per available set (§4). Each row shows an icon tile with a glyph, the set's name and a
+  one-line description of its topics. The list scrolls when the screen is short.
 - Tapping a card opens the setup screen for that set.
 - Sets whose topics are not implemented yet (v2/v3) are not shown.
 
 ### 3.2 Setup screen
 
-- The header shows the set name and a **Terug** button.
-- Below it is a list of the set's topics. For every set except Tafels, the list includes
-  "15% tafels", except when the selected session size is below 10 (§4.2).
+- The header shows a back button (aria-label **Terug**) and the set name.
+- Below it is the section "Wat zit erin": a list of the set's topics, display-only. Each row has
+  the topic name on the left and its detail on the right, both taken from `TOPIC_LABELS`: the
+  label `Naam (detail)` is split at the first ` (`; a label without parentheses has no detail.
+  For every set except Tafels, the list includes "15% tafels", except when the selected session
+  size is below 10 (§4.2).
 - **Table choice (Tafels only):** instead of the topic list, Tafels shows the heading "Kies
   tafels" with two small buttons **Alle** and **Geen**, and a grid of 13 toggles, one per table
   (2–9, 11–15, §5.1), five per row. By default all tables are selected. Alle selects all,
   Geen clears all. With no table selected, **Start** is disabled. The choice applies only to
-  the Tafels set; the 15% tables in the other sets always use all tables.
-- **Count:** 5, 10, 15, 25 or 50 exercises, shown as full-width options stacked in one column.
-  The default is 15.
-- A **Start** button.
+  the Tafels set; the 15% tables in the other sets always use all tables. The heading reads
+  "Welke tafels? · n gekozen", and the toggles are pills with `aria-pressed`.
+- **Count:** 5, 10, 15, 25 or 50 exercises, shown as one segmented control (a radio group of 5
+  equal segments). The default is 15.
+- A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count. On
+  Tafels a caption above it reads "Mix van vermenigvuldigen, delen en ontbrekende factor".
 - The chosen count and table choice are kept in memory only while the app stays open; nothing is
   persisted. **Opnieuw** reuses both.
 
@@ -105,8 +117,9 @@ deliberate longer sessions.
 
 - The header shows the set name, progress (`7 / 15`, or **Herhaling** while a repeated exercise
   is shown, §3.4), the elapsed time (`mm:ss`, counting up, no time limit) and a **Stop**
-  button. Stop is light red (the wrong-answer background with
-  the wrong-answer text colour), so it stands apart from the neutral buttons.
+  button, a ✕ at the top left (aria-label "Stoppen"). Under the set name and the counter sits a
+  progress bar over the first attempts. A repeat shows a yellow "Herhaling" label instead of
+  the number; the counter text keeps the original total.
 - Stop ends the session immediately and goes to results. Results then cover only the answered
   exercises; the current, unanswered exercise is not counted. A two-step exercise counts as
   answered only after its last step, so Stop after step 1 drops it. Repeats still waiting in the
@@ -115,20 +128,25 @@ deliberate longer sessions.
   submission.
 - Most exercises show a kladblok (scratchpad) above the prompt (§3.6).
 - The prompt's font size depends on its length as displayed (a stacked fraction counts as its
-  widest line): up to 18 characters large (2.5rem), up to 40 medium (1.75rem), longer small
-  (1.375rem). Short sums stay large; word problems and property prompts no longer push the
+  widest line): up to 18 characters large (38 px), up to 40 medium (28 px), longer small
+  (22 px). Short sums stay large; word problems and property prompts no longer push the
   keypad down. The thresholds were checked on a phone (2026-10-22).
 
 ### 3.4 Feedback per exercise
 
-- **Correct:** green confirmation for 600 ms, then automatically on to the next exercise. With
-  reduced motion, a static colour is shown instead of an animation.
-- **Wrong:** red, with "Jouw antwoord", "Juist antwoord", an optional tip (§3.4.1) and an
-  optional explanation (e.g. `91 = 7 × 13`). The user moves on by tapping **Verder**.
+- **Correct:** the answer field turns green with a ✓ and the keypad is dimmed and disabled. When
+  the prompt has a `?`, the entered answer replaces it in the correct colour. A bar under the
+  field runs for 600 ms, then the app goes on to the next exercise automatically. With reduced
+  motion, the bar is static.
+- **Wrong:** the keypad is replaced by a panel with ✕ and "Niet goed", two tiles "Jouw antwoord"
+  and "Goed antwoord" (the given answer is not struck through), an optional tip (§3.4.1) and an
+  optional explanation (e.g. `91 = 7 × 13`), each in its own block with the label "Tip" or
+  "Uitleg" (only the explanation scrolls, after 220 px), and a **Verder** button. When the prompt
+  has a `?`, it is shown in the wrong colour.
 - Each time an exercise is shown, it allows exactly one attempt (one per step for property
   exercises, §5.11).
-- The feedback shows the prompt with the size steps of §3.3, one step smaller: 2rem, 1.5rem and
-  1.25rem.
+- The feedback shows the prompt with the size steps of §3.3; the steps are 44, 32 and 24 px
+  (question: 38, 28 and 22 px, §3.3). To be checked on a phone.
 - **Repeat until correct:** an exercise answered wrong (any step wrong) comes back later in the
   same session, unchanged, with all its steps and an empty kladblok. It is inserted at a random
   place among the remaining exercises, but never directly next unless nothing else remains. A
@@ -275,6 +293,7 @@ Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewri
 
 ### 3.5 Results
 
+- The screen is one screen high: the content scrolls and the buttons are pinned below it.
 - Score `x / n` and percentage, over first attempts only: repeats (§3.4) do not count. `n` is
   the number of answered exercises (after Stop, fewer than the count). With none answered the
   screen shows "Geen opgaven beantwoord."
@@ -306,7 +325,10 @@ in the place of OK.
   memory.
 - **Focus:** tapping a cell makes it active; tapping the answer field, or a fraction slot in
   it, makes the answer field active again. Tapping is the only way to switch. The active
-  field has a `--primary` border. Every new step starts with the answer field active.
+  cell has a sky-blue border and fill, and its label row turns primary. While a cell is
+  active, the answer field is replaced by a full-width outlined button "Tik hier voor je
+  antwoord" that makes the answer field active again. Every new step starts with the answer
+  field active.
 - **While a cell is active**, the keypad is the kladblok keypad, whatever the answer kind: the
   expression keys with `^` and the breuk key instead of `(` and `)`, plus `,`, `=` and the
   spatie, in 4 columns and 5 rows (the same height as the other keypads, except the
@@ -318,8 +340,8 @@ in the place of OK.
   7  8  9  +
   4  5  6  −
   1  2  3  ×
-  ^  0  /  :
-  ⌫  ,  =  ␣
+  ,  0  ^  :
+  ⌫  ␣  /  =
   ```
 
   `/` is the breuk key, drawn as a small stacked fraction as on the fraction keypad.
@@ -1634,7 +1656,10 @@ The keypad is custom. The system keyboard is never opened.
 - Every answer kind has its own input model: keys, key reducer, validation and display.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
   a superscript. The feedback and the results show the given answer the same way.
-- `OK` is disabled only while the input is empty.
+- `OK` is disabled only while the input is empty. It is a primary-coloured key that fills the rest
+  of the last row. Operator and auxiliary keys have a darker key colour than the digits.
+- The digit keys are 52 px high (56 px on screens without a kladblok); the kladblok keypad has
+  48 px keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right.
 - Ja/Nee keeps the layout of a keypad step: the buttons sit at the bottom and the prompt stays at
   the height it has above a number keypad, so it does not jump between questions.
 - Input that cannot be submitted, such as `−`, `25/0` or `2 ×`, gives an inline error and does
