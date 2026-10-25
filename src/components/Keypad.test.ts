@@ -27,6 +27,20 @@ describe('Keypad', () => {
     expect(onkey).toHaveBeenCalledWith(' ');
   });
 
+  it('disables every key when disabled, so none calls onkey', async () => {
+    const onkey = vi.fn();
+    const onsubmit = vi.fn();
+    render(Keypad, { props: { keys, canSubmit: true, disabled: true, onkey, onsubmit } });
+    const buttons = screen.getAllByRole<HTMLButtonElement>('button');
+    for (const button of buttons) expect(button.disabled).toBe(true);
+    // A real browser sends no events to a disabled button; press must not rely on that.
+    for (const button of buttons.slice(0, -1)) {
+      await fireEvent.pointerDown(button, { button: 0 });
+      await fireEvent.click(button);
+    }
+    expect(onkey).not.toHaveBeenCalled();
+  });
+
   it('uses 3 columns unless told otherwise', () => {
     const { container } = render(Keypad, {
       props: { keys, canSubmit: true, onkey: vi.fn(), onsubmit: vi.fn() },

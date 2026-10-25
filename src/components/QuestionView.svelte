@@ -8,8 +8,10 @@
     SHORT_SCREENS,
     type ScratchpadInput,
   } from '../lib/scratchpad';
+  import { hasSlot } from '../lib/slot';
   import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
+  import Icon from './Icon.svelte';
   import KeypadAnswer from './KeypadAnswer.svelte';
   import MathText from './MathText.svelte';
   import Scratchpad from './Scratchpad.svelte';
@@ -70,12 +72,25 @@
   {#if scratchpad}
     <Scratchpad {notes} active={activeNote} onselect={(index) => (activeNote = index)} />
   {/if}
-  <p class="prompt {promptSize(step.prompt)}"><MathText text={step.prompt} /></p>
+  <div class="prompt-area">
+    {#if step.kind === 'boolean'}
+      <p class="prompt yesno"><MathText text={step.prompt} /></p>
+    {:else if hasSlot(step.prompt)}
+      <p class="prompt sum {promptSize(step.prompt)}">
+        <MathText text={step.prompt} slot={{ tone: 'primary' }} />
+      </p>
+    {:else}
+      <p class="prompt text"><MathText text={step.prompt} /></p>
+    {/if}
+  </div>
   {#if step.kind === 'boolean'}
     <!-- Ja/Nee has no keypad: a tap on a choice is the answer (spec §6). -->
     <div class="choices">
-      {#each [YES, NO] as choice (choice)}
-        <button type="button" class="choice" onclick={() => answer(choice)}>{choice}</button>
+      {#each [NO, YES] as choice (choice)}
+        <button type="button" class="choice" onclick={() => answer(choice)}>
+          <Icon name={choice === YES ? 'check' : 'cross'} size={32} stroke={2.6} />
+          <span>{choice}</span>
+        </button>
       {/each}
     </div>
   {:else if step.kind === 'fraction'}
@@ -102,53 +117,86 @@
   .question {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
     flex: 1;
     min-height: 0;
-    justify-content: flex-end;
   }
 
-  /* When the screen is too short, only the prompt gives way and scrolls; the kladblok and the
-     keypad keep their size (spec §2, §3.3). */
-  .prompt {
-    min-height: 0;
+  /* The free space between header (or kladblok) and answer. When the screen is too short, only
+     this area gives way, down to 96 px, and scrolls; the kladblok and the keypad keep their size
+     (spec §2, §3.3). The auto margin on the prompt centres it without clipping its top. */
+  .prompt-area {
+    flex: 1 1 120px;
+    min-height: 96px;
+    display: flex;
     overflow-y: auto;
-    font-weight: 600;
+  }
+
+  .prompt {
+    margin: auto;
     text-align: center;
     text-wrap: balance;
   }
 
-  /* Long prompts get smaller text, so they do not push the keypad down (spec §3.3). */
-  .prompt.large {
-    font-size: 2.5rem;
+  /* A sum: the unknown is the primary-coloured slot. Longer sums get smaller text, so they do
+     not push the keypad down (spec §3.3). */
+  .prompt.sum {
+    padding: 0 16px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
 
-  .prompt.medium {
-    font-size: 1.75rem;
+  .prompt.sum.large {
+    font-size: 38px;
   }
 
-  .prompt.small {
-    font-size: 1.375rem;
+  .prompt.sum.medium {
+    font-size: 28px;
   }
 
-  /* As tall as the number answer field plus keypad (4 + 2.25 + 17 rem), with the buttons at the
-     bottom, so the prompt stays at the height it has in keypad steps (spec §6). */
+  .prompt.sum.small {
+    font-size: 22px;
+  }
+
+  /* A sentence without an unknown (word problems, instructions): never truncated. */
+  .prompt.text {
+    padding: 0 24px;
+    font-size: 22px;
+    line-height: 30px;
+    font-weight: 700;
+  }
+
+  .prompt.yesno {
+    padding: 0 24px;
+    font-size: 34px;
+    line-height: 42px;
+    font-weight: 800;
+  }
+
   .choices {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    align-content: end;
-    gap: 0.75rem;
-    min-height: 23.25rem;
+    gap: 12px;
+    padding: 0 16px calc(32px + env(safe-area-inset-bottom));
   }
 
   .choice {
-    min-height: 6rem;
-    font-size: 2rem;
-    font-weight: 600;
-    background: var(--key);
+    height: 120px;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 20px;
+    border: 2px solid var(--border-key);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+    font-size: 22px;
+    font-weight: 700;
   }
 
   .choice:active {
-    background: var(--key-active);
+    background: var(--key-alt);
   }
 </style>

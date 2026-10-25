@@ -9,11 +9,12 @@ import {
   numberStep,
   scientificStep,
 } from '../lib/steps';
+import { SLOT } from '../lib/slot';
 import type { Step } from '../lib/types';
 import QuestionView from './QuestionView.svelte';
 import { stubMatchMedia } from './testMatchMedia';
 
-const step = numberStep({ prompt: '3 × 4 = ?', answer: fromInteger(12) });
+const step = numberStep({ prompt: `3 × 4 = ${SLOT}`, answer: fromInteger(12) });
 
 // A minimal expression step; rewriteStep itself is tested in steps.test.ts.
 const rewrite: Step = {
@@ -39,31 +40,65 @@ async function press(...names: (string | RegExp)[]) {
 }
 
 describe('QuestionView', () => {
-  it('shows the unit suffix next to the answer', () => {
+  it('shows the unit suffix after the number, outside the digit text', async () => {
     const withUnit = numberStep({
-      prompt: '3,5 L = ? cm³',
+      prompt: `3,5 L = ${SLOT} cm³`,
       answer: fromInteger(3500),
       suffix: 'cm³',
     });
     render(QuestionView, { props: { step: withUnit, onanswer: vi.fn() } });
-    expect(answerText()).toBe('…cm³');
+    expect(answerText()).toBe('cm³');
+    await press('3', '5');
+    const field = screen.getByLabelText('Jouw antwoord');
+    expect(field.textContent).toBe('35cm³');
+    expect(field.querySelector('.suffix')?.textContent).toBe('cm³');
   });
 
-  it('shows the prompt, a grey placeholder, no error and a disabled OK', () => {
+  it('shows the prompt, a caret, no error and a disabled OK', () => {
     render(QuestionView, { props: { step, onanswer: vi.fn() } });
-    expect(screen.getByText('3 × 4 = ?')).toBeTruthy();
-    expect(answerText()).toBe('…');
-    expect(screen.getByLabelText('Jouw antwoord').querySelector('.placeholder')).not.toBeNull();
+    expect(document.querySelector('.prompt')?.textContent).toBe('3 × 4 = ?');
+    expect(answerText()).toBe('');
+    expect(screen.getByLabelText('Jouw antwoord').querySelector('.caret')).not.toBeNull();
     expect(errorText()).toBe('');
     expect(okButton().disabled).toBe(true);
   });
 
-  it('sizes the prompt by its length', () => {
+  it('colours the unknown of a sum and sizes the sum by its length', () => {
     const { container, unmount } = render(QuestionView, { props: { step, onanswer: vi.fn() } });
-    expect(container.querySelector('.prompt')?.classList.contains('large')).toBe(true);
+    const prompt = container.querySelector('.prompt')!;
+    expect(prompt.classList.contains('sum')).toBe(true);
+    expect(prompt.classList.contains('large')).toBe(true);
+    expect(prompt.querySelector('.slot.primary')?.textContent).toBe('?');
     unmount();
-    render(QuestionView, { props: { step: rewrite, onanswer: vi.fn() } });
+    const long = numberStep({
+      prompt: `KGV van 1\u{202f}234 en 5\u{202f}678 = ${SLOT}`,
+      answer: fromInteger(1),
+    });
+    render(QuestionView, { props: { step: long, onanswer: vi.fn() } });
     expect(document.querySelector('.prompt')?.classList.contains('medium')).toBe(true);
+  });
+
+  it('shows a sentence without an unknown as question text, however short', () => {
+    const short = numberStep({ prompt: 'Hoeveel is 5?', answer: fromInteger(5) });
+    render(QuestionView, { props: { step: short, onanswer: vi.fn() } });
+    const prompt = document.querySelector('.prompt')!;
+    expect(prompt.classList.contains('text')).toBe(true);
+    expect(prompt.classList.contains('sum')).toBe(false);
+    expect(prompt.querySelector('.slot')).toBeNull();
+  });
+
+  it('shows 13 keys and OK in 3 columns for a number step', () => {
+    render(QuestionView, { props: { step, onanswer: vi.fn() } });
+    const grid = document.querySelector<HTMLElement>('.keypad')!;
+    expect(grid.style.getPropertyValue('--columns')).toBe('3');
+    expect(grid.querySelectorAll('button')).toHaveLength(14);
+    expect(okButton().style.gridColumn).toBe('span 2');
+  });
+
+  it('shows 4 columns and no comma for an expression step', () => {
+    render(QuestionView, { props: { step: rewrite, onanswer: vi.fn() } });
+    expect(document.querySelector<HTMLElement>('.keypad')!.style.getPropertyValue('--columns')).toBe('4');
+    expect(screen.queryByRole('button', { name: 'komma' })).toBeNull();
   });
 
   it('builds the answer from key presses and submits the checked result', async () => {
@@ -83,7 +118,7 @@ describe('QuestionView', () => {
     expect(answerText()).toBe('−');
     expect(okButton().disabled).toBe(false);
     await press('wissen');
-    expect(answerText()).toBe('…');
+    expect(answerText()).toBe('');
     expect(okButton().disabled).toBe(true);
   });
 
@@ -110,7 +145,7 @@ describe('QuestionView', () => {
       prefix: '€',
     });
     render(QuestionView, { props: { step: money, onanswer: vi.fn() } });
-    expect(answerText()).toBe('€…');
+    expect(answerText()).toBe('€');
   });
 
   it('offers the breuk key and the factorization keys only for their kinds', () => {
@@ -284,6 +319,12 @@ describe('QuestionView', () => {
     render(QuestionView, { props: { step: prime, onanswer } });
     expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
     expect(screen.queryByLabelText('Jouw antwoord')).toBeNull();
+    expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+    expect(screen.getAllByRole('button').map((button) => button.textContent?.trim())).toEqual([
+      'Nee',
+      'Ja',
+    ]);
+    expect(document.querySelector('.prompt')?.classList.contains('yesno')).toBe(true);
 
     await press('Nee');
     expect(onanswer).toHaveBeenCalledWith(
@@ -358,7 +399,6 @@ describe('QuestionView', () => {
         'Kladblok vak 6: leeg',
       ]);
       expect(cell(1).getAttribute('aria-pressed')).toBe('false');
-      expect(screen.getByLabelText('Jouw antwoord').classList.contains('focused')).toBe(true);
       expect(okButton().disabled).toBe(true);
       expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
     });
@@ -372,8 +412,7 @@ describe('QuestionView', () => {
       expect(cell(2).textContent).toBe('−90×');
       await press('3', 'is', 'min', '2', '7', '0', 'spatie', '1', 'komma', '5');
       expect(cell(2).textContent).toBe('−90×3=−270 1,5');
-      expect(answerText()).toBe('…');
-      expect(screen.getByLabelText('Jouw antwoord').classList.contains('focused')).toBe(false);
+      expect(answerText()).toBe('');
       expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
     });
 
@@ -451,7 +490,7 @@ describe('QuestionView', () => {
       expect(screen.getByRole('button', { name: 'spatie' })).toBeTruthy();
       await press('min', '2', 'komma', '5', 'plus', '1', 'spatie', '2', 'tot de macht', '3');
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: −2,5+1 2³');
-      expect(answerText()).toBe('…');
+      expect(answerText()).toBe('');
     });
 
     it('shows the kladblok keys in 4 columns with the spatie in the last one', async () => {

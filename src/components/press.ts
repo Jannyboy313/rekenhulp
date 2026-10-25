@@ -13,7 +13,7 @@ export function press(node: HTMLButtonElement, handler: () => void): ActionRetur
     current();
   };
   const onClick = (event: MouseEvent) => {
-    if (event.detail === 0) current();
+    if (event.detail === 0 && !node.disabled) current();
   };
   node.addEventListener('pointerdown', onPointerDown);
   node.addEventListener('click', onClick);

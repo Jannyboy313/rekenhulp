@@ -67,7 +67,6 @@
   <output
     class="answer"
     class:tall={model.select !== undefined}
-    class:focused={scratch !== undefined && !inNote}
     aria-label="Jouw antwoord"
     aria-live="off"
     >{#if prefix}<span class="prefix">{prefix}</span
@@ -82,7 +81,7 @@
               segment.den,
               segment.active,
             )}{/snippet}</Fraction
-        >{/if}{:else}<span class="placeholder">…</span>{/each}{#if suffix}<span class="suffix"
+        >{/if}{:else}<span class="caret"></span>{/each}{#if suffix}<span class="suffix"
         >{suffix}</span
       >{/if}</output
   >
@@ -97,6 +96,7 @@
   keys={inNote ? NOTE_KEYS : model.keys}
   columns={inNote ? NOTE_COLUMNS : model.columns}
   canSubmit={model.canSubmit(value)}
+  tall={scratch === undefined}
   onkey={handleKey}
   onsubmit={inNote ? undefined : submit}
 />
@@ -104,27 +104,28 @@
 <style>
   .field {
     position: relative;
+    margin: 0 16px;
   }
 
+  /* The field is always the active one: the kladblok swaps it for a button (spec §3.6). */
   .answer {
-    display: block;
-    min-height: 4rem;
-    padding: 0.75rem 1rem;
-    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    padding: 0 20px;
+    font-size: 30px;
+    font-weight: 700;
     text-align: center;
     background: var(--surface);
-    border: 2px solid var(--border);
-    border-radius: var(--radius);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
   }
 
   /* Fits an open template with compact slots; kept low so the keypad still fits on small phones. */
   .answer.tall {
-    min-height: 6rem;
-  }
-
-  /* With a kladblok on screen, the active field is marked (spec §3.6). */
-  .answer.focused {
-    border-color: var(--primary);
+    height: 6rem;
   }
 
   .to-answer {
@@ -134,8 +135,15 @@
     background: none;
   }
 
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 32px;
+    background: var(--primary);
+  }
+
   .placeholder {
-    color: var(--muted);
+    color: var(--placeholder);
   }
 
   .slot {
@@ -148,29 +156,34 @@
   }
 
   .slot:active {
-    background: var(--key-active);
+    background: var(--key-alt);
   }
 
   .slot.active {
     border-color: var(--primary);
   }
 
+  .suffix,
+  .prefix {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
   .suffix {
     margin-left: 0.5rem;
-    color: var(--muted);
   }
 
   .prefix {
     margin-right: 0.5rem;
-    color: var(--muted);
   }
 
   .error {
     min-height: 1.25rem;
-    margin-block: -0.5rem;
+    margin: 4px 16px 8px;
     font-size: 1rem;
     text-align: center;
     font-weight: 600;
-    color: var(--wrong);
+    color: var(--bad-text);
   }
 </style>
