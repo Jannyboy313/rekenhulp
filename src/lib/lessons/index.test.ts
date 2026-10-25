@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MEASUREMENT_SET, NUMBERS_SET, TABLES_SET } from '../sets';
+import { MEASUREMENT_SET, NUMBERS_SET, PROPORTIONS_SET, TABLES_SET } from '../sets';
 import { FIXTURE_LESSON } from './fixture';
 import { lessonFor } from './index';
 
@@ -32,6 +32,15 @@ describe('lessonFor', () => {
       'time',
       'speed',
       'metersPerSecond',
+    ]);
+    expect(lessonFor(PROPORTIONS_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'percentages',
+      'priceChange',
+      'percentChange',
+      'ratios',
+      'ratioProblems',
+      'perUnit',
+      'scale',
     ]);
   });
 });

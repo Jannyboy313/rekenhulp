@@ -11,6 +11,7 @@ import {
   MEASUREMENT_SET,
   NUMBERS_SET,
   PRACTICE_SETS,
+  PROPORTIONS_SET,
 } from './lib/sets';
 
 async function click(name: string | RegExp) {
@@ -200,6 +201,7 @@ describe('App', () => {
       expect(rows).toHaveLength(PRACTICE_SETS.length);
       expect(rows.filter((row) => !row.disabled).map((row) => row.textContent)).toEqual([
         expect.stringContaining(MEASUREMENT_SET.name),
+        expect.stringContaining(PROPORTIONS_SET.name),
         expect.stringContaining(NUMBERS_SET.name),
       ]);
     });
