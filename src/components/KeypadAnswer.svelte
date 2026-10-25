@@ -22,6 +22,9 @@
 
   let { model, prefix, suffix, scratch, locked = false, onsubmit }: Props = $props();
 
+  /** Keeps the height of an empty slot that is not the one the next digit goes into. */
+  const BLANK_SLOT = '\u{a0}';
+
   // QuestionView is keyed per step, so the model never changes during this component's life.
   // svelte-ignore state_referenced_locally
   let value = $state.raw(model.empty);
@@ -68,7 +71,9 @@
     aria-pressed={name === active}
     disabled={locked}
     use:press={() => select(name)}
-    >{#if digits === ''}<span class="placeholder">…</span>{:else}{digits}{/if}</button
+    >{#if digits === '' && (name !== active || locked)}{BLANK_SLOT}{:else}{digits}{#if name === active && !locked}<span
+          class="mini-caret"></span
+        >{/if}{/if}</button
   >{/snippet}
 
 {#if inNote}
@@ -209,11 +214,14 @@
     background: var(--primary);
   }
 
-  /* Small, close dots: an empty slot is as wide as a filled one. */
-  .placeholder {
-    color: var(--placeholder);
-    font-size: 0.7em;
-    letter-spacing: -0.12em;
+  /* The small caret inside the slot being filled in: the same cursor as the big one, smaller. */
+  .mini-caret {
+    display: inline-block;
+    width: 1.5px;
+    height: 0.85em;
+    margin-left: 1px;
+    vertical-align: middle;
+    background: var(--primary);
   }
 
   .slot {

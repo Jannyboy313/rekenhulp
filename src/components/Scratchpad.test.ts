@@ -120,16 +120,27 @@ describe('Scratchpad', () => {
     expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 12 3/4');
   });
 
-  // The placeholder marks the slot the next digit goes into; the other empty slot is blank.
+  // A small caret marks the slot the next digit goes into; an empty slot without it is blank.
   it.each([
-    ['_', '…', '\u{a0}'],
-    ['_3', '3', '\u{a0}'],
-    ['_3/', '3', '…'],
-  ])('shows the unfinished fraction %j stacked', (note, numerator, denominator) => {
+    ['_', '', '\u{a0}', 'num'],
+    ['_3', '3', '\u{a0}', 'num'],
+    ['_3/', '3', '', 'den'],
+    ['_3/4', '3', '4', 'den'],
+    ['1_3/4', '3', '4', 'den'],
+  ])('shows the fraction %j stacked, with the small caret in the %s', (note, num, den, slot) => {
     render(Scratchpad, { props: { notes: [note], active: 0, onselect: vi.fn() } });
     const cell = screen.getByRole('button');
-    expect(cell.querySelector('.numerator')?.textContent).toBe(numerator);
-    expect(cell.querySelector('.denominator')?.textContent).toBe(denominator);
+    expect(cell.querySelector('.numerator')?.textContent).toBe(num);
+    expect(cell.querySelector('.denominator')?.textContent).toBe(den);
+    const inNum = cell.querySelector('.numerator .mini-caret') !== null;
+    const inDen = cell.querySelector('.denominator .mini-caret') !== null;
+    expect([inNum, inDen]).toEqual(slot === 'num' ? [true, false] : [false, true]);
+    expect(cell.querySelector('.caret')).toBeNull();
+  });
+
+  it('shows no small caret in a cell that is not active', () => {
+    render(Scratchpad, { props: { notes: ['_3/'], active: null, onselect: vi.fn() } });
+    expect(document.querySelector('.mini-caret')).toBeNull();
   });
 
   it('keeps a trailing space after a fraction', () => {

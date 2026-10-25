@@ -37,6 +37,12 @@
   }
 </script>
 
+<!-- The digits of a slot; the small caret behind them marks the slot being filled in. An empty
+     slot without the caret keeps its height with a blank. -->
+{#snippet slotText(digits: string, caret: boolean)}{#if digits === '' && !caret}{BLANK_SLOT}{:else}{digits}{#if caret}<span
+        class="mini-caret"></span
+      >{/if}{/if}{/snippet}
+
 <!-- The kladblok (spec §3.6): fixed cells for numbers and short sums typed on the keypad. -->
 <div class="scratchpad" role="group" aria-label="Kladblok">
   <p class="label" class:active={active !== null}>
@@ -45,6 +51,8 @@
   </p>
   <div class="cells">
     {#each notes as note, index (index)}
+      {@const segments = splitNoteFractions(formatNote(note))}
+      {@const open = index === active && inFraction(note)}
       <button
         type="button"
         class="cell"
@@ -57,12 +65,15 @@
         ><!-- One scrolling item for the text runs and fractions, so they are clipped as one. --><span
           class="content"
           use:showEnd={note}
-          >{#each splitNoteFractions(formatNote(note)) as segment, part (part)}{#if segment.type === 'text'}{segment.text}{:else}<!-- The placeholder marks the slot the next digit goes into. --><Fraction
-                >{#snippet numerator()}{#if segment.num === ''}<span class="placeholder">…</span
-                    >{:else}{segment.num}{/if}{/snippet}{#snippet denominator()}{#if segment.den === null}{BLANK_SLOT}{:else if segment.den === ''}<span
-                      class="placeholder">…</span
-                    >{:else}{segment.den}{/if}{/snippet}</Fraction
-              >{/if}{/each}{#if index === active && !inFraction(note)}<span class="caret"></span>{/if}</span
+          >{#each segments as segment, part (part)}{#if segment.type === 'text'}{segment.text}{:else}<!-- A small caret marks the slot the next digit goes into. --><Fraction
+                >{#snippet numerator()}{@render slotText(
+                    segment.num,
+                    open && part === segments.length - 1 && segment.den === null,
+                  )}{/snippet}{#snippet denominator()}{#if segment.den === null}{BLANK_SLOT}{:else}{@render slotText(
+                      segment.den,
+                      open && part === segments.length - 1,
+                    )}{/if}{/snippet}</Fraction
+              >{/if}{/each}{#if index === active && !open}<span class="caret"></span>{/if}</span
         ></button
       >
     {/each}
@@ -149,10 +160,14 @@
     background: var(--sky);
   }
 
-  .placeholder {
-    font-size: 0.7em;
-    letter-spacing: -0.12em;
-    color: var(--muted);
+  /* The small caret inside a fraction: the same cursor, smaller. */
+  .mini-caret {
+    display: inline-block;
+    width: 1.5px;
+    height: 0.85em;
+    margin-left: 1px;
+    vertical-align: middle;
+    background: var(--sky);
   }
 
   /* Shorter screens drop rows from the bottom, so the keypad stays on screen. Each row costs

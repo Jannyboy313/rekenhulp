@@ -363,7 +363,10 @@ in the place of OK.
 
   `/` is the breuk key, drawn as a small stacked fraction (two outlined boxes) as on the fraction
   keypad. `^` is drawn as x with a raised n, on every keypad that has it. In a kladblok cell the
-  caret is hidden while the cursor is inside a fraction, and returns when the breuk key is
+  caret is replaced inside a fraction by a small caret (1.5 px, 0.85 em; sky in the kladblok,
+  primary in the answer field) behind the digits of the slot being filled in, alone in an empty
+  slot, so there are no placeholder dots and an empty slot is as narrow as a filled one. The big
+  caret returns when the breuk key is
   pressed once more in a denominator with digits (that leaves the fraction: stored as an
   invisible end marker after `_3/4`; backspace removes it first), or when a space or operator
   follows. After a finished fraction only an operator, `=`, `-` or a spatie are accepted. The

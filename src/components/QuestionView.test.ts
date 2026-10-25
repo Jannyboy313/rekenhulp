@@ -170,11 +170,14 @@ describe('QuestionView', () => {
       const onanswer = vi.fn();
       render(QuestionView, { props: { step: percent, onanswer } });
       await press('breuk');
-      expect(answerText()).toBe('…/…%');
+      // The small caret (no text) is in the numerator; the empty denominator is a blank.
+      expect(answerText()).toBe('/\u{a0}%');
+      expect(document.querySelector('.numerator .mini-caret')).not.toBeNull();
       expect(okButton().disabled).toBe(true);
 
       await press('2', '5', 'breuk');
-      expect(answerText()).toBe('25/…%');
+      expect(answerText()).toBe('25/%');
+      expect(document.querySelector('.denominator .mini-caret')).not.toBeNull();
       await press('OK');
       expect(errorText()).toBe('Ongeldig getal');
       expect(onanswer).not.toHaveBeenCalled();
@@ -515,7 +518,7 @@ describe('QuestionView', () => {
       expect(cell(1).getAttribute('aria-label')).toBe('Kladblok vak 1: 1 en 3/4');
       await press('Tik hier voor je antwoord');
       expect(screen.queryByRole('button', { name: 'spatie' })).toBeNull();
-      expect(answerText()).toBe('1/…%');
+      expect(answerText()).toBe('1/\u{a0}%');
       unmount();
 
       const factorization = factorizationStep({ prompt: 'Ontbind 84 in priemfactoren', value: 84 });
