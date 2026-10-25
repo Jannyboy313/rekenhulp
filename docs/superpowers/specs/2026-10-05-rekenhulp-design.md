@@ -129,26 +129,34 @@ deliberate longer sessions.
 - The time spent on each exercise is recorded, measured from when it is shown until the final
   submission.
 - Most exercises show a kladblok (scratchpad) above the prompt (§3.6).
-- The prompt's font size depends on its length as displayed (a stacked fraction counts as its
-  widest line): up to 18 characters large (38 px), up to 40 medium (28 px), longer small
-  (22 px). Short sums stay large; word problems and property prompts no longer push the
+- A prompt with a slot (§8) is a sum. Its font size depends on its length as displayed (a
+  stacked fraction counts as its widest line): up to 18 characters large (38 px), up to 40
+  medium (28 px), longer small (22 px). Short sums stay large; long sums no longer push the
   keypad down. The thresholds were checked on a phone (2026-10-22).
+- A prompt without a slot (word problems, "Vereenvoudig in één stap: …", "Ontbind … in
+  priemfactoren") is question text: always 22/30 px bold, centred, wrapping, never truncated.
+  A Ja/Nee question is 34/42 px.
+- When a long question meets a short screen, the prompt area shrinks (minimum 96 px) and
+  scrolls; the keypad and the feedback panel stay whole.
 
 ### 3.4 Feedback per exercise
 
-- **Correct:** the answer field turns green with a ✓ and the keypad is dimmed and disabled. When
-  the prompt has a `?`, the entered answer replaces it in the correct colour. A bar under the
-  field runs for 600 ms, then the app goes on to the next exercise automatically. With reduced
-  motion, the bar is static.
+- **Correct:** the answer field turns green with a ✓ and shows the entered answer with its unit
+  (`402 cm²`; screen readers hear "Goed: jouw antwoord is 402 cm²"); the keypad is dimmed and
+  disabled. When the prompt has a slot (§8), the entered answer, as shown in the field, replaces
+  it in the correct colour. A bar under the field runs for 600 ms, then the app goes on to the
+  next exercise automatically. With reduced motion, the bar is static.
 - **Wrong:** the keypad is replaced by a panel with ✕ and "Niet goed", two tiles "Jouw antwoord"
-  and "Goed antwoord" (the given answer is not struck through), an optional tip (§3.4.1) and an
-  optional explanation (e.g. `91 = 7 × 13`), each in its own block with the label "Tip" or
-  "Uitleg" (only the explanation scrolls, after 220 px), and a **Verder** button. When the prompt
-  has a `?`, it is shown in the wrong colour.
+  and "Goed antwoord" (both with the unit; the given answer is not struck through), an optional
+  tip (§3.4.1) and an optional explanation (e.g. `91 = 7 × 13`), each in its own block with the
+  label "Tip" or "Uitleg" (only the explanation scrolls, after 220 px), and a **Verder** button.
+  When the prompt has a slot, it is shown as `?` in the wrong colour.
+- A prompt without a slot never changes colour: correct and wrong show only in the answer field
+  and the panel. For a prompt with a slot the colour is an extra, never the only signal.
 - Each time an exercise is shown, it allows exactly one attempt (one per step for property
   exercises, §5.11).
-- The feedback shows the prompt with the size steps of §3.3; the steps are 44, 32 and 24 px
-  (question: 38, 28 and 22 px, §3.3). To be checked on a phone.
+- The feedback shows a sum with the size steps of §3.3; the steps are 44, 32 and 24 px
+  (question: 38, 28 and 22 px, §3.3). Question text stays 22/30 px. To be checked on a phone.
 - **Repeat until correct:** an exercise answered wrong (any step wrong) comes back later in the
   same session, unchanged, with all its steps and an empty kladblok. It is inserted at a random
   place among the remaining exercises, but never directly next unless nothing else remains. A
@@ -296,9 +304,9 @@ Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewri
 ### 3.5 Results
 
 - The screen is one screen high: the content scrolls and the buttons are pinned below it.
-- Each error card shows the prompt (which already ends in `= ?`) and two tiles: "Jouw
-  antwoord" (red, ✕) and "Goed antwoord" (green, ✓), then the tip and explanation. The given
-  answer is not struck through.
+- Each error card shows the prompt (a slot as a plain `?`, not coloured) and two tiles: "Jouw
+  antwoord" (red, ✕) and "Goed antwoord" (green, ✓), both with the unit, then the tip and
+  explanation. The given answer is not struck through.
 - Score `x / n` and percentage, over first attempts only: repeats (§3.4) do not count. `n` is
   the number of answered exercises (after Stop, fewer than the count). With none answered the
   screen shows "Geen opgaven beantwoord."
@@ -1722,7 +1730,8 @@ The keypad is custom. The system keyboard is never opened.
   dedicated parser next to `parseFactorization`, not `lib/expr`.
 - Units are shown next to the input field, and the user never types them. `€` and `1 :` (the
   find-the-scale form of §5.24) are fixed prefixes (`€ 45`, `1 : 25 000`); other units (`%`,
-  `cm³`, …) are a fixed suffix.
+  `cm³`, …) are a fixed suffix. The feedback tiles and the result tiles show the same prefix
+  and suffix around the answer (`€ 45`, `402 cm²`).
 - While the input is empty, the field shows `…` in the muted colour as a placeholder. Empty
   fraction slots show the same placeholder.
 - Keys act on press (`pointerdown`), not on release, and show a pressed state on every
@@ -1885,12 +1894,17 @@ Required test cases (accept ✔ / reject ✘):
     is rendered as `12` with a stacked `1/2`. Next to the hidden `/`, a hidden ` en ` between
     the whole part and the fraction makes screen readers read `12 en 1/2`.
   - an expected answer with an improper value is a mixed number: `1 5/12` (§6)
-  - a `?` can take the place of the numerator or the denominator (`3/4 = ?/12`); it is drawn
-    stacked like a digit
+  - the slot can take the place of the numerator or the denominator (`3/4 = ?/12`); it is
+    drawn stacked like a digit
   - a whole number directly followed by one space and a fraction always reads as a mixed number
     (`3 1/2`). Text must therefore never put a number, a space and a fraction side by side when
     they are not a mixed number, and never put a decimal next to `/` (`37,5/100`): both would be
     drawn wrong.
+- **Slot:** the unknown of a sum (`7 × ? = 56`, `2 uur = ? min`, `KGV van 12 en 18 = ?`,
+  `… is in het echt ? km`) is written by the generator as the marker `SLOT` (`lib/slot.ts`),
+  never as a literal `?`. The UI draws it as `?` (coloured, or filled in, §3.4). A literal `?`
+  in a prompt is always a question mark (word problems) and is never coloured or replaced. A
+  step has at most one slot, and a literal `?` only as the last character of its prompt.
 - **Language:** UI text is in Dutch. Code, comments, tests and documentation are in English.
 
 ## 9. Code structure
