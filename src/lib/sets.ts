@@ -132,6 +132,25 @@ export function choosesTables(set: PracticeSet): boolean {
 /** Sessions below this size get no mixed-in table exercises (spec §4.2). */
 export const MIN_SIZE_FOR_MIXED_TABLES = 10;
 
+export interface TopicRow {
+  name: string;
+  detail?: string;
+}
+
+/** Splits `Name (detail)` at the first ' (' when the label ends with ')'. */
+export function splitTopicLabel(label: string): TopicRow {
+  const open = label.indexOf(' (');
+  if (open === -1 || !label.endsWith(')')) return { name: label };
+  return { name: label.slice(0, open), detail: label.slice(open + 2, -1) };
+}
+
+export function describeSetTopicRows(
+  set: PracticeSet,
+  size = MIN_SIZE_FOR_MIXED_TABLES,
+): TopicRow[] {
+  return describeSetTopics(set, size).map(splitTopicLabel);
+}
+
 export function describeSetTopics(set: PracticeSet, size = MIN_SIZE_FOR_MIXED_TABLES): string[] {
   if (choosesTables(set)) return [TOPIC_LABELS.tables];
   const labels = set.topics.map(({ topic }) => TOPIC_LABELS[topic]);

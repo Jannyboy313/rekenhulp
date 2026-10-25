@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
+  describeSetTopicRows,
   describeSetTopics,
   FRACTIONS_SET,
   GEOMETRY_SET,
@@ -12,9 +13,51 @@ import {
   PRACTICE_SETS,
   PROPORTIONS_SET,
   SESSION_SIZES,
+  splitTopicLabel,
   TABLES_SET,
 } from './sets';
+import { TOPIC_LABELS } from './topics';
 import type { PracticeSet } from './types';
+
+describe('splitTopicLabel', () => {
+  it.each([
+    ['Lengte (mm t/m km)', { name: 'Lengte', detail: 'mm t/m km' }],
+    [
+      'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
+      { name: 'Machten en wortels', detail: '2⁵, 0,3², 10⁻³, ∛64' },
+    ],
+    [
+      'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
+      { name: 'Procenten', detail: 'deel, percentage, korting/verhoging, terug naar 100%' },
+    ],
+    ['Omzetten tussen breuk, kommagetal en procent', { name: 'Omzetten tussen breuk, kommagetal en procent' }],
+    ['KGV (kleinste gemene veelvoud)', { name: 'KGV', detail: 'kleinste gemene veelvoud' }],
+    ['Tafels van 2 t/m 15 (zonder 10)', { name: 'Tafels van 2 t/m 15', detail: 'zonder 10' }],
+  ])('splits %s', (label, expected) => {
+    expect(splitTopicLabel(label)).toEqual(expected);
+  });
+
+  it('gives every topic label a name and no leftover opening parenthesis', () => {
+    for (const label of Object.values(TOPIC_LABELS)) {
+      const { name, detail } = splitTopicLabel(label);
+      expect(name.length).toBeGreaterThan(0);
+      expect(detail ?? '').not.toContain(' (');
+    }
+  });
+});
+
+describe('describeSetTopicRows', () => {
+  it('adds the tables row last at size 15 and drops it at size 5', () => {
+    expect(describeSetTopicRows(MEASUREMENT_SET, 15).at(-1)).toEqual({ name: '15% tafels' });
+    expect(describeSetTopicRows(MEASUREMENT_SET, 5).map((r) => r.name)).not.toContain('15% tafels');
+  });
+
+  it('gives Tafels one row', () => {
+    expect(describeSetTopicRows(TABLES_SET)).toEqual([
+      { name: 'Tafels van 2 t/m 15', detail: 'zonder 10' },
+    ]);
+  });
+});
 
 describe('practice sets', () => {
   it('offers the implemented sets in roadmap order', () => {
