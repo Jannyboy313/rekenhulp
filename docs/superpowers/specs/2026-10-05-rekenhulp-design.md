@@ -1412,7 +1412,8 @@ The set Meetkunde (v2). Figures are described in words; there are no pictures. I
 reads "Omtrek, oppervlakte, inhoud, hoeken en vormen". Circles and cylinders use `π = 3,14`,
 said in the prompt (`Neem π = 3,14.`). Answers with a unit show it as the suffix (§6): `cm`,
 `cm²`, `cm³`, `m`, `m²`, `L` or `°`. The longest prompts (up to about 140 characters: the `symmetry`
-rotation and the `pythagoras` walk) use the small size of §3.3; check them on a phone.
+rotation and the `pythagoras` walk) use the small size of §3.3; they were checked on a phone
+(2026-10-25).
 
 ### 5.27 Perimeter and area (`perimeterArea`)
 
