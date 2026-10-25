@@ -24,6 +24,19 @@ Breuken & kommagetallen and Meetkunde (`perimeterArea`, `solids`, `pythagoras`, 
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
+Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
+content checks, back guard). `LESSONS` is still empty, so every Lesstof row is disabled. Next:
+the content per set, Tafels first, one set per session and only when the user says so. Linking
+from other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not
+used yet.
+
+To add a lesson: write its topics in the lesstof spec §7 first, then add `lib/lessons/<set>.ts`
+(a `Lesson` with the set's id), append it to `LESSONS` in `lib/lessons/index.ts` and remove the
+set from the parity list in `lib/lessons/index.test.ts`. `validate.test.ts` checks structure,
+notation and that every `worked` line is a true equality chain. Keep lesson code separate from
+the practice code: lesson components get their own files, practice components get no lesson
+props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
+
 Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
 says so:
 
@@ -138,9 +151,12 @@ Everything else from the global allowlist still applies (no `git push`, `git che
 
 ```
 src/
-  App.svelte            state machine: sets → setup → playing → results
-  components/           SetOverview, SetupScreen, PlayScreen (question queue incl. repeats,
-                        auto-advance timer), QuestionView (also the correct state),
+  App.svelte            state machine: sets → setup → playing → results, plus lessonTopics and
+                        lesson (lesstof)
+  components/           SetOverview (shell: header + Oefenen/Lesstof tabs, a snippet per tab),
+                        PracticeSetList, LessonSetList, SetRow (shared row), LessonTopicList,
+                        LessonView (renders lesson blocks), SetupScreen, PlayScreen (question
+                        queue incl. repeats, auto-advance timer), QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
                         panel), ResultScreen, MathText + Fraction (stacked fractions, the slot of
@@ -180,6 +196,8 @@ src/
     expr/               tokenizer, parser, evaluate, format, reduce (evaluation steps), chains,
                         rewriteCheck (one property per step), misconceptions (for tips)
     topics/             one generator module per topic + index.ts (registry and labels)
+    lessons/            lesstof: types, LESSONS registry + lessonFor, validate (structure,
+                        notation, equality chains via expr), fixture (tests only)
 ```
 
 - A topic generator is a pure function `(rng) => Question`. Each of its steps has a check:
