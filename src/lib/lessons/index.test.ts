@@ -24,5 +24,14 @@ describe('lessonFor', () => {
       'lcm',
       'squares',
     ]);
+    expect(lessonFor(MEASUREMENT_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'metric',
+      'area',
+      'volume',
+      'largeNumbers',
+      'time',
+      'speed',
+      'metersPerSecond',
+    ]);
   });
 });

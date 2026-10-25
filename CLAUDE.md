@@ -25,8 +25,8 @@ Breuken & kommagetallen and Meetkunde (`perimeterArea`, `solids`, `pythagoras`, 
 Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
-content checks, back guard). Lessons done: Getallen & delers (`lib/lessons/getallen.ts`); the
-other Lesstof rows are disabled. The
+content checks, back guard). Lessons done: Getallen & delers (`lib/lessons/getallen.ts`) and
+Meten (`lib/lessons/meten.ts`); the other Lesstof rows are disabled. The
 lesstof is developed separately from the practice sets and is not part of the roadmap below: no
 fixed order, content only when the user asks for it (iterate its spec §7 first). Linking from
 other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not used

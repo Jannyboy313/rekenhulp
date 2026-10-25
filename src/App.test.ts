@@ -8,6 +8,7 @@ import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
   describeSetTopicRows,
+  MEASUREMENT_SET,
   NUMBERS_SET,
   PRACTICE_SETS,
 } from './lib/sets';
@@ -198,6 +199,7 @@ describe('App', () => {
       const rows = screen.getAllByRole<HTMLButtonElement>('button');
       expect(rows).toHaveLength(PRACTICE_SETS.length);
       expect(rows.filter((row) => !row.disabled).map((row) => row.textContent)).toEqual([
+        expect.stringContaining(MEASUREMENT_SET.name),
         expect.stringContaining(NUMBERS_SET.name),
       ]);
     });
