@@ -7,9 +7,7 @@ import type { Lesson, LessonBlock } from './types';
 // The tokenizer knows neither fractions nor grouped digits: '3/4' becomes '(3 : 4)' and the thin
 // space of '2 500' is dropped. A mixed number ('1 1/2') stays unparsable and fails the chain.
 function sideValue(side: string): Rational | null {
-  const plain = side
-    .replace(/(\d)\u{202f}(?=\d)/gu, '$1')
-    .replace(/(\d+)\/(\d+)/g, '($1 : $2)');
+  const plain = side.replace(/(\d)\u{202f}(?=\d)/gu, '$1').replace(/(\d+)\/(\d+)/g, '($1 : $2)');
   const expr = parse(plain);
   return expr && evaluate(expr);
 }

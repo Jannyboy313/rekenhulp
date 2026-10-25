@@ -261,10 +261,7 @@ export const GEOMETRY_LESSON: Lesson = {
               'ruit',
               'vier gelijke zijden, overstaande zijden evenwijdig, een diagonaal is symmetrieas, diagonalen loodrecht en ze delen elkaar middendoor',
             ],
-            [
-              'parallellogram',
-              'overstaande zijden evenwijdig, diagonalen delen elkaar middendoor',
-            ],
+            ['parallellogram', 'overstaande zijden evenwijdig, diagonalen delen elkaar middendoor'],
             ['trapezium', 'minstens twee zijden evenwijdig'],
             ['vlieger', 'een diagonaal is symmetrieas, diagonalen loodrecht'],
           ],

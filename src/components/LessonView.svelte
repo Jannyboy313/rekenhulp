@@ -35,7 +35,8 @@
           <table>
             <thead>
               <tr>
-                {#each block.head as cell, cellIndex (cellIndex)}<th><MathText text={cell} /></th>{/each}
+                {#each block.head as cell, cellIndex (cellIndex)}<th><MathText text={cell} /></th
+                  >{/each}
               </tr>
             </thead>
             <tbody>
@@ -49,6 +50,7 @@
         </div>
       {:else}
         <!-- Inline markup is whitespace-sensitive: keep the tags tight (CLAUDE.md). -->
+        <!-- prettier-ignore -->
         <div class="tip"><p class="label">Tip</p><p><MathText text={block.text} /></p></div>
       {/if}
     {/each}
