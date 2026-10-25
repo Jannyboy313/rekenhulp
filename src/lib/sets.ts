@@ -148,13 +148,9 @@ export function describeSetTopicRows(
   set: PracticeSet,
   size = MIN_SIZE_FOR_MIXED_TABLES,
 ): TopicRow[] {
-  return describeSetTopics(set, size).map(splitTopicLabel);
-}
-
-export function describeSetTopics(set: PracticeSet, size = MIN_SIZE_FOR_MIXED_TABLES): string[] {
-  if (choosesTables(set)) return [TOPIC_LABELS.tables];
-  const labels = set.topics.map(({ topic }) => TOPIC_LABELS[topic]);
+  if (choosesTables(set)) return [splitTopicLabel(TOPIC_LABELS.tables)];
+  const rows = set.topics.map(({ topic }) => splitTopicLabel(TOPIC_LABELS[topic]));
   return set.tablesPercent > 0 && size >= MIN_SIZE_FOR_MIXED_TABLES
-    ? [...labels, `${set.tablesPercent}% tafels`]
-    : labels;
+    ? [...rows, { name: `${set.tablesPercent}% tafels` }]
+    : rows;
 }

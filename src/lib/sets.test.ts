@@ -3,7 +3,6 @@ import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
   describeSetTopicRows,
-  describeSetTopics,
   FRACTIONS_SET,
   GEOMETRY_SET,
   MEASUREMENT_SET,
@@ -178,9 +177,16 @@ describe('choosesTables', () => {
   });
 });
 
-describe('describeSetTopics', () => {
+/** The rows joined back into their original labels, so each set's full text stays covered. */
+function rowLabels(set: PracticeSet, size?: number): string[] {
+  return describeSetTopicRows(set, size).map(({ name, detail }) =>
+    detail ? `${name} (${detail})` : name,
+  );
+}
+
+describe('describeSetTopicRows per set', () => {
   it('describes the Tafels set', () => {
-    expect(describeSetTopics(TABLES_SET)).toEqual(['Tafels van 2 t/m 15 (zonder 10)']);
+    expect(rowLabels(TABLES_SET)).toEqual(['Tafels van 2 t/m 15 (zonder 10)']);
   });
 
   it('appends the mixed-in tables share for other sets', () => {
@@ -189,7 +195,7 @@ describe('describeSetTopics', () => {
       topics: [{ topic: 'tables', weight: 1 }],
       tablesPercent: 15,
     };
-    expect(describeSetTopics(mixed)).toEqual(['Tafels van 2 t/m 15 (zonder 10)', '15% tafels']);
+    expect(rowLabels(mixed)).toEqual(['Tafels van 2 t/m 15 (zonder 10)', '15% tafels']);
   });
 
   it('omits the mixed-in tables share for sessions below 10 exercises', () => {
@@ -198,11 +204,11 @@ describe('describeSetTopics', () => {
       topics: [{ topic: 'tables', weight: 1 }],
       tablesPercent: 15,
     };
-    expect(describeSetTopics(mixed, 5)).toEqual(['Tafels van 2 t/m 15 (zonder 10)']);
+    expect(rowLabels(mixed, 5)).toEqual(['Tafels van 2 t/m 15 (zonder 10)']);
   });
 
   it('describes the Meten set', () => {
-    expect(describeSetTopics(MEASUREMENT_SET)).toEqual([
+    expect(rowLabels(MEASUREMENT_SET)).toEqual([
       'Inhoud (ml t/m hl, mm³ t/m m³)',
       'Oppervlakte (mm² t/m km², are, ha)',
       'Lengte (mm t/m km)',
@@ -215,7 +221,7 @@ describe('describeSetTopics', () => {
   });
 
   it('describes the Getallen & delers set', () => {
-    expect(describeSetTopics(NUMBERS_SET)).toEqual([
+    expect(rowLabels(NUMBERS_SET)).toEqual([
       'KGV (kleinste gemene veelvoud)',
       'GGD (grootste gemene deler)',
       'Priemgetal of niet (11 t/m 199)',
@@ -227,7 +233,7 @@ describe('describeSetTopics', () => {
   });
 
   it('describes the Bewerkingen set', () => {
-    expect(describeSetTopics(OPERATIONS_SET)).toEqual([
+    expect(rowLabels(OPERATIONS_SET)).toEqual([
       'Volgorde van bewerkingen (ook met negatieve getallen)',
       'Eigenschappen (commutatief, associatief, distributief)',
       'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
@@ -236,7 +242,7 @@ describe('describeSetTopics', () => {
   });
 
   it('describes the Getalbegrip set', () => {
-    expect(describeSetTopics(NUMBER_SENSE_SET)).toEqual([
+    expect(rowLabels(NUMBER_SENSE_SET)).toEqual([
       'Hoofdrekenen met grote getallen (ook delen met rest)',
       'Negatieve getallen (ook temperatuur)',
       'Afronden (tientallen t/m miljoenen, decimalen)',
@@ -247,7 +253,7 @@ describe('describeSetTopics', () => {
   });
 
   it('describes the Breuken & kommagetallen set', () => {
-    expect(describeSetTopics(FRACTIONS_SET)).toEqual([
+    expect(rowLabels(FRACTIONS_SET)).toEqual([
       'Omzetten tussen breuk, kommagetal en procent',
       'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
       'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
@@ -256,7 +262,7 @@ describe('describeSetTopics', () => {
   });
 
   it('describes the Meetkunde set', () => {
-    expect(describeSetTopics(GEOMETRY_SET)).toEqual([
+    expect(rowLabels(GEOMETRY_SET)).toEqual([
       'Omtrek en oppervlakte (vierkant t/m cirkel)',
       'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
       'Pythagoras (schuine zijde en rechthoekszijde)',
@@ -268,7 +274,7 @@ describe('describeSetTopics', () => {
   });
 
   it('describes the Verhoudingen set', () => {
-    expect(describeSetTopics(PROPORTIONS_SET)).toEqual([
+    expect(rowLabels(PROPORTIONS_SET)).toEqual([
       'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
       'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
       'Procentuele verandering (stijging en daling, btw, oude prijs)',

@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import { stubMatchMedia } from './components/testMatchMedia';
-import { choosesTables, DEFAULT_SESSION_SIZE, describeSetTopics, PRACTICE_SETS } from './lib/sets';
+import { choosesTables, DEFAULT_SESSION_SIZE, describeSetTopicRows, PRACTICE_SETS } from './lib/sets';
 
 async function click(name: string | RegExp) {
   await fireEvent.click(screen.getByRole('button', { name }));
@@ -33,7 +33,7 @@ describe('App', () => {
     expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
 
     await click(/Tafels/);
-    await click('Start');
+    await click(/^Start/);
     await click('Stop');
     await systemBack();
     expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
@@ -43,7 +43,7 @@ describe('App', () => {
     const pushState = vi.spyOn(history, 'pushState');
     render(App);
     await click(/Tafels/);
-    await click('Start');
+    await click(/^Start/);
     await systemBack();
     await systemBack();
     expect(screen.getByText('1 / 15')).toBeTruthy();
@@ -58,7 +58,7 @@ describe('App', () => {
     expect(history.back).toHaveBeenCalledTimes(1);
 
     await click(/Tafels/);
-    await click('Start');
+    await click(/^Start/);
     await click('Stop');
     await click('Menu');
     expect(history.back).toHaveBeenCalledTimes(2);
@@ -77,9 +77,9 @@ describe('App', () => {
     render(App);
     await click(/Tafels/);
     expect(screen.getByRole('heading', { name: 'Tafels' })).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Kies tafels' })).toBeTruthy();
-    expect(screen.getByRole<HTMLInputElement>('radio', { name: '15' }).checked).toBe(true);
-    await click('Start');
+    expect(screen.getByRole('heading', { name: 'Welke tafels?' })).toBeTruthy();
+    expect(screen.getByRole('radio', { name: '15' }).getAttribute('aria-checked')).toBe('true');
+    await click(/^Start/);
     expect(screen.getByText('1 / 15')).toBeTruthy();
   });
 
@@ -87,8 +87,8 @@ describe('App', () => {
     render(App);
     await click(/Tafels/);
     await click('Geen');
-    await fireEvent.click(screen.getByRole('checkbox', { name: '7' }));
-    await click('Start');
+    await click('7');
+    await click(/^Start/);
     for (let round = 0; round < 10; round++) {
       // Every prompt shows the table itself or a multiple of it (the product).
       const prompt = document.querySelector('.prompt')!.textContent!;
@@ -100,22 +100,24 @@ describe('App', () => {
     await click('Stop');
     await click('Menu');
     await click(/Tafels/);
-    const checked = screen.getAllByRole<HTMLInputElement>('checkbox').filter((box) => box.checked);
-    expect(checked.map((box) => box.value)).toEqual(['7']);
+    const pressed = screen
+      .getAllByRole('button')
+      .filter((button) => button.getAttribute('aria-pressed') === 'true');
+    expect(pressed.map((button) => button.textContent)).toEqual(['7']);
   });
 
   it('uses the chosen session size and keeps it after Menu', async () => {
     render(App);
     await click(/Tafels/);
-    await fireEvent.click(screen.getByLabelText('25'));
-    await click('Start');
+    await fireEvent.click(screen.getByRole('radio', { name: '25' }));
+    await click(/^Start/);
     expect(screen.getByText('1 / 25')).toBeTruthy();
 
     await click('Stop');
     expect(screen.getByText('Geen opgaven beantwoord.')).toBeTruthy();
     await click('Menu');
     await click(/Tafels/);
-    expect((screen.getByLabelText('25') as HTMLInputElement).checked).toBe(true);
+    expect(screen.getByRole('radio', { name: '25' }).getAttribute('aria-checked')).toBe('true');
   });
 
   it('Terug returns to the overview and Opnieuw starts a fresh session', async () => {
@@ -125,7 +127,7 @@ describe('App', () => {
     expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
 
     await click(/Tafels/);
-    await click('Start');
+    await click(/^Start/);
     await click('Stop');
     await click('Opnieuw');
     expect(screen.getByText('1 / 15')).toBeTruthy();
@@ -137,9 +139,11 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: set.name })).toBeTruthy();
     // Tafels shows the table choice instead (see above).
     if (!choosesTables(set)) {
-      for (const label of describeSetTopics(set)) expect(screen.getByText(label)).toBeTruthy();
+      for (const { name } of describeSetTopicRows(set)) {
+        expect(screen.getAllByText(name).length).toBeGreaterThan(0);
+      }
     }
-    await click('Start');
+    await click(/^Start/);
     expect(screen.getByText(`1 / ${DEFAULT_SESSION_SIZE}`)).toBeTruthy();
   });
 });

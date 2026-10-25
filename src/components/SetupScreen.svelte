@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { choosesTables, describeSetTopics, SESSION_SIZES } from '../lib/sets';
+  import { choosesTables, describeSetTopicRows, SESSION_SIZES } from '../lib/sets';
   import { TABLE_FACTORS } from '../lib/topics/tables';
   import type { PracticeSet } from '../lib/types';
+  import Icon from './Icon.svelte';
+  import SetGlyph from './SetGlyph.svelte';
 
   interface Props {
     set: PracticeSet;
@@ -15,155 +17,267 @@
   let { set, size = $bindable(), tables = $bindable(), onstart, onback }: Props = $props();
 
   const canStart = $derived(!choosesTables(set) || tables.length > 0);
+
+  function toggleTable(table: number) {
+    tables = TABLE_FACTORS.filter((t) => (t === table ? !tables.includes(t) : tables.includes(t)));
+  }
+
+  function onSizeKey(event: KeyboardEvent) {
+    const step =
+      event.key === 'ArrowRight' || event.key === 'ArrowDown'
+        ? 1
+        : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
+          ? -1
+          : 0;
+    if (step === 0) return;
+    event.preventDefault();
+    const next = SESSION_SIZES[SESSION_SIZES.indexOf(size) + step];
+    if (next === undefined) return;
+    size = next;
+    const group = event.currentTarget as HTMLElement;
+    queueMicrotask(() => group.querySelector<HTMLElement>('[tabindex="0"]')?.focus());
+  }
 </script>
 
 <main class="setup">
   <header>
-    <button type="button" class="secondary" onclick={onback}>Terug</button>
+    <button type="button" class="back" aria-label="Terug" onclick={onback}>
+      <Icon name="chevron-left" size={24} stroke={2.2} />
+    </button>
+    <span class="tile"><SetGlyph id={set.id} name={set.name} size={24} /></span>
     <h1>{set.name}</h1>
   </header>
 
-  {#if choosesTables(set)}
+  <div class="content">
+    {#if choosesTables(set)}
+      <section>
+        <div class="section-header">
+          <h2 id="tables-heading">Welke tafels?</h2>
+          <button type="button" class="link" onclick={() => (tables = [...TABLE_FACTORS])}>
+            Alle
+          </button>
+          <button type="button" class="link" onclick={() => (tables = [])}>Geen</button>
+        </div>
+        <div class="tables" role="group" aria-labelledby="tables-heading">
+          {#each TABLE_FACTORS as table (table)}
+            <button
+              type="button"
+              class="pill"
+              aria-pressed={tables.includes(table)}
+              onclick={() => toggleTable(table)}>{table}</button
+            >
+          {/each}
+        </div>
+      </section>
+    {:else}
+      <section>
+        <div class="section-header"><h2>Wat zit erin</h2></div>
+        <ul class="info">
+          {#each describeSetTopicRows(set, size) as row (row.name)}
+            <li>
+              <span class="row-name">{row.name}</span>
+              {#if row.detail}<span class="row-detail">{row.detail}</span>{/if}
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
+
     <section>
-      <div class="choice-header">
-        <h2 id="tables-heading">Kies tafels</h2>
-        <button type="button" class="secondary quick" onclick={() => (tables = [...TABLE_FACTORS])}>
-          Alle
-        </button>
-        <button type="button" class="secondary quick" onclick={() => (tables = [])}>Geen</button>
-      </div>
-      <div class="tables" role="group" aria-labelledby="tables-heading">
-        {#each TABLE_FACTORS as table (table)}
-          <label>
-            <input type="checkbox" name="tables" value={table} bind:group={tables} />
-            <span>{table}</span>
-          </label>
+      <div class="section-header"><h2 id="size-heading">Aantal opgaven</h2></div>
+      <!-- svelte-ignore a11y_interactive_supports_focus -->
+      <div class="sizes" role="radiogroup" aria-labelledby="size-heading" onkeydown={onSizeKey}>
+        {#each SESSION_SIZES as option (option)}
+          <button
+            type="button"
+            role="radio"
+            class="segment"
+            aria-checked={size === option}
+            tabindex={size === option ? 0 : -1}
+            onclick={() => (size = option)}>{option}</button
+          >
         {/each}
       </div>
     </section>
-  {:else}
-    <section>
-      <h2>Onderwerpen</h2>
-      <ul>
-        {#each describeSetTopics(set, size) as label (label)}
-          <li>{label}</li>
-        {/each}
-      </ul>
-    </section>
-  {/if}
+  </div>
 
-  <fieldset>
-    <legend>Aantal opgaven</legend>
-    <div class="sizes">
-      {#each SESSION_SIZES as option (option)}
-        <label>
-          <input type="radio" name="size" value={option} bind:group={size} />
-          <span>{option}</span>
-        </label>
-      {/each}
-    </div>
-  </fieldset>
-
-  <button type="button" class="primary start" disabled={!canStart} onclick={onstart}>Start</button>
+  <footer>
+    <button type="button" class="primary start" disabled={!canStart} onclick={onstart}
+      >Start · <span class="start-number">{size}</span> opgaven</button
+    >
+  </footer>
 </main>
 
 <style>
   .setup {
     flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    overflow: hidden;
+    padding-top: env(safe-area-inset-top);
   }
 
   header {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    padding: 8px 16px 8px 4px;
+  }
+
+  .back {
+    width: 44px;
+    height: 44px;
+    min-height: 0;
+    padding: 0;
+    background: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tile {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--primary-tint);
+    margin: 0 10px 0 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   h1 {
-    font-size: 1.75rem;
+    font-size: 22px;
+    line-height: 28px;
+    font-weight: 700;
   }
 
-  h2,
-  legend {
-    font-size: 1rem;
-    color: var(--muted);
-    margin-bottom: 0.5rem;
+  .content {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
   }
 
-  ul {
-    margin: 0;
-    padding-left: 1.25rem;
-  }
-
-  fieldset {
-    border: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .choice-header {
+  .section-header {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    gap: 8px;
+    min-height: 36px;
   }
 
-  .choice-header h2 {
-    margin-bottom: 0;
+  h2 {
     margin-right: auto;
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 600;
   }
 
-  .quick {
-    min-height: 2.5rem;
+  .link {
+    min-height: 36px;
+    padding: 0 8px;
+    background: none;
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 600;
   }
 
-  .sizes {
-    display: grid;
-    gap: 0.5rem;
+  .info {
+    list-style: none;
+    margin: 0;
+    padding: 4px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .info li {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 11px 0;
+  }
+
+  .info li + li {
+    border-top: 1px solid var(--list-divider);
+  }
+
+  .row-name {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .row-detail {
+    font-size: 13px;
+    color: var(--muted);
+    text-align: right;
   }
 
   .tables {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 0.5rem;
+    gap: 8px;
   }
 
-  label {
-    position: relative;
-  }
-
-  input {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  label span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 3rem;
-    border-radius: var(--radius);
-    background: var(--key);
+  .pill {
+    height: 52px;
+    min-height: 0;
+    padding: 0;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border-key);
+    font-size: 18px;
     font-weight: 600;
   }
 
-  input:checked + span {
+  .pill[aria-pressed='true'] {
     background: var(--primary);
+    border-color: var(--primary);
     color: var(--primary-text);
+    font-weight: 700;
   }
 
-  /* The input is invisible, so its span shows the focus ring that buttons get (app.css). */
-  input:focus-visible + span {
-    outline: 3px solid var(--primary);
-    outline-offset: 2px;
+  .sizes {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    background: var(--sky-track);
+  }
+
+  .segment {
+    height: 44px;
+    min-height: 0;
+    padding: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-2);
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .segment[aria-checked='true'] {
+    background: var(--surface);
+    color: var(--primary);
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  }
+
+  footer {
+    padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
   }
 
   .start {
-    margin-top: auto;
-    min-height: 3.5rem;
+    width: 100%;
+    box-shadow: var(--shadow-glow);
+  }
+
+  .start-number {
+    color: var(--start-number);
   }
 </style>
