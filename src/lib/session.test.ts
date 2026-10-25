@@ -26,6 +26,8 @@ import type { Generator, Question } from './types';
 
 describe('tablesCount', () => {
   it.each([
+    [5, 0],
+    [10, 2],
     [15, 2],
     [25, 4],
     [50, 8],

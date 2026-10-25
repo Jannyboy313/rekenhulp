@@ -129,8 +129,13 @@ export function choosesTables(set: PracticeSet): boolean {
   return set.tablesPercent === 100;
 }
 
-export function describeSetTopics(set: PracticeSet): string[] {
+/** Sessions below this size get no mixed-in table exercises (spec §4.2). */
+export const MIN_SIZE_FOR_MIXED_TABLES = 10;
+
+export function describeSetTopics(set: PracticeSet, size = MIN_SIZE_FOR_MIXED_TABLES): string[] {
   if (choosesTables(set)) return [TOPIC_LABELS.tables];
   const labels = set.topics.map(({ topic }) => TOPIC_LABELS[topic]);
-  return set.tablesPercent > 0 ? [...labels, `${set.tablesPercent}% tafels`] : labels;
+  return set.tablesPercent > 0 && size >= MIN_SIZE_FOR_MIXED_TABLES
+    ? [...labels, `${set.tablesPercent}% tafels`]
+    : labels;
 }

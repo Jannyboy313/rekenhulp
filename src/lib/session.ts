@@ -1,5 +1,5 @@
 import { randomInt, shuffle, type Rng } from './random';
-import { choosesTables } from './sets';
+import { choosesTables, MIN_SIZE_FOR_MIXED_TABLES } from './sets';
 import { GENERATORS } from './topics';
 import { generateTables } from './topics/tables';
 import type { Generator, PracticeSet, Question, Topic } from './types';
@@ -11,8 +11,12 @@ interface Weighted<K> {
   weight: number;
 }
 
-/** Number of table exercises; the share is an integer percentage to avoid float artefacts. */
+/**
+ * Number of table exercises; the share is an integer percentage to avoid float artefacts. A mixed
+ * share (below 100%) only applies from `MIN_SIZE_FOR_MIXED_TABLES` exercises.
+ */
 export function tablesCount(tablesPercent: number, size: number): number {
+  if (tablesPercent < 100 && size < MIN_SIZE_FOR_MIXED_TABLES) return 0;
   return Math.round((tablesPercent * size) / 100);
 }
 

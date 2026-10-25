@@ -149,6 +149,15 @@ describe('describeSetTopics', () => {
     expect(describeSetTopics(mixed)).toEqual(['Tafels van 2 t/m 15 (zonder 10)', '15% tafels']);
   });
 
+  it('omits the mixed-in tables share for sessions below 10 exercises', () => {
+    const mixed: PracticeSet = {
+      ...TABLES_SET,
+      topics: [{ topic: 'tables', weight: 1 }],
+      tablesPercent: 15,
+    };
+    expect(describeSetTopics(mixed, 5)).toEqual(['Tafels van 2 t/m 15 (zonder 10)']);
+  });
+
   it('describes the Meten set', () => {
     expect(describeSetTopics(MEASUREMENT_SET)).toEqual([
       'Inhoud (ml t/m hl, mm³ t/m m³)',

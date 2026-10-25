@@ -45,7 +45,7 @@
     <section>
       <h2>Onderwerpen</h2>
       <ul>
-        {#each describeSetTopics(set) as label (label)}
+        {#each describeSetTopics(set, size) as label (label)}
           <li>{label}</li>
         {/each}
       </ul>

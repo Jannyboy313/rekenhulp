@@ -86,7 +86,7 @@ The app is a state machine in `App.svelte` with four states:
 
 - The header shows the set name and a **Terug** button.
 - Below it is a list of the set's topics. For every set except Tafels, the list includes
-  "15% tafels".
+  "15% tafels", except when the selected session size is below 10 (§4.2).
 - **Table choice (Tafels only):** instead of the topic list, Tafels shows the heading "Kies
   tafels" with two small buttons **Alle** and **Geen**, and a grid of 13 toggles, one per table
   (2–9, 11–15, §5.1), five per row. By default all tables are selected. Alle selects all,
@@ -380,7 +380,7 @@ in the place of OK.
 ### 4.1 Sets
 
 A set is pure configuration (`lib/sets.ts`). Every set except **Tafels** mixes in 15% table
-exercises.
+exercises, from a session size of 10 (§4.2).
 
 | Set                         | Topics (weight 1 unless stated)                                                   | Tables | Version |
 |-----------------------------|-----------------------------------------------------------------------------------|--------|---------|
@@ -417,7 +417,8 @@ Given a set and a session size `n`:
 
 1. `tablesCount = Math.round(tablesPercent × n / 100)`. The share is stored as an integer
    percentage to avoid float artefacts: `0.15 × 50` must give exactly 7.5, so it rounds to 8.
-   For the Tafels set, `tablesPercent = 100` and `topics` is empty.
+   For the Tafels set, `tablesPercent = 100` and `topics` is empty. A mixed share (below 100%)
+   only applies from `n = 10`: with `n = 5`, `tablesCount = 0`.
 2. The remaining `r = n − tablesCount` exercises are distributed over the set's topics in
    proportion to their weights, using the **largest remainder method**:
    - Each topic first gets `floor(r × wᵢ / Σw)`.
