@@ -177,8 +177,8 @@
   }
 
   .link {
-    min-height: 36px;
-    padding: 0 8px;
+    min-height: 44px;
+    padding: 0 12px;
     background: none;
     color: var(--primary);
     font-size: 14px;

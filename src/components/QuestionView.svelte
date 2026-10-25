@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
   import { displayAnswer, INPUT_MODELS } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
   import { promptSize } from '../lib/promptSize';
@@ -74,7 +75,8 @@
   }
 </script>
 
-<div class="question">
+<!-- The bar of the correct state runs as long as PlayScreen's timer (inherited by KeypadAnswer). -->
+<div class="question" style:--advance-ms="{CORRECT_FEEDBACK_MS}ms">
   {#if scratchpad}
     <Scratchpad
       {notes}
@@ -258,7 +260,7 @@
   .advance-fill {
     height: 100%;
     background: var(--good);
-    animation: advance 600ms linear forwards;
+    animation: advance var(--advance-ms) linear forwards;
   }
 
   @keyframes advance {

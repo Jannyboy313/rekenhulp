@@ -44,6 +44,8 @@
       <p class="prompt sum {promptSize(prompt)}">
         <MathText text={prompt} slot={{ tone: 'bad' }} />
       </p>
+    {:else if kind === 'boolean'}
+      <p class="prompt yesno"><MathText text={prompt} /></p>
     {:else}
       <p class="prompt text"><MathText text={prompt} /></p>
     {/if}
@@ -120,6 +122,14 @@
     font-size: 22px;
     line-height: 30px;
     font-weight: 700;
+  }
+
+  /* The same size as the Ja/Nee question, so the text does not jump. */
+  .prompt.yesno {
+    padding: 0 24px;
+    font-size: 34px;
+    line-height: 42px;
+    font-weight: 800;
   }
 
   .panel {

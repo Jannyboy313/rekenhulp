@@ -178,7 +178,7 @@
   .advance-fill {
     height: 100%;
     background: var(--good);
-    animation: advance 600ms linear forwards;
+    animation: advance var(--advance-ms) linear forwards;
   }
 
   @keyframes advance {

@@ -150,11 +150,18 @@ describe('Feedback', () => {
   });
 
   it('leaves a sentence without an unknown as plain question text', () => {
-    renderFeedback({ prompt: 'Is 91 een priemgetal?', kind: 'boolean', input: 'Ja' });
+    renderFeedback({ prompt: 'Hoeveel busjes zijn er nodig?', input: '3' });
     const prompt = document.querySelector('.prompt')!;
     expect(prompt.classList.contains('text')).toBe(true);
     expect(prompt.querySelector('.slot')).toBeNull();
-    expect(prompt.textContent).toBe('Is 91 een priemgetal?');
+    expect(prompt.textContent).toBe('Hoeveel busjes zijn er nodig?');
+  });
+
+  it('keeps the Ja/Nee question at the size of the question view', () => {
+    renderFeedback({ prompt: 'Is 91 een priemgetal?', kind: 'boolean', input: 'Ja' });
+    const prompt = document.querySelector('.prompt')!;
+    expect(prompt.classList.contains('yesno')).toBe(true);
+    expect(prompt.querySelector('.slot')).toBeNull();
     expect(tileValues()).toEqual(['Ja', '13']);
   });
 

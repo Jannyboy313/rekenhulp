@@ -222,12 +222,18 @@
     line-height: 20px;
   }
 
+  /* A long set name is cut, so the counter keeps its place and the header its height. */
   .set-name {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     font-weight: 600;
     color: var(--text);
   }
 
   .counter {
+    flex: none;
     display: inline-flex;
     align-items: center;
     gap: 6px;
