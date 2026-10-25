@@ -12,6 +12,8 @@ not all of it:
   (input) and §8 (conventions)
 - per topic: its §5.x section and its rows in the tips table (§3.4.1)
 - expressions: §7; a new set: its entry in §12.1, open assumptions in §11
+- lesstof (study material per set): its own spec, `docs/superpowers/specs/2026-10-25-lesstof-design.md`
+  (framework §3–§6, content per set §7); the main spec only holds its entry points
 
 ## Status
 
