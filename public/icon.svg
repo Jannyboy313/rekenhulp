@@ -5,13 +5,15 @@
       <stop offset="1" stop-color="#4B33B8"/>
     </linearGradient>
   </defs>
-  <rect width="100" height="100" rx="22" fill="url(#lg)"/>
-  <g stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" fill="none">
-    <path d="M20 30h20M30 20v20"/>
-    <path d="M60 30h20"/>
-    <path d="M21 61l18 18M39 61L21 79"/>
-    <path d="M60 70h20"/>
+  <rect width="100" height="100" fill="url(#lg)"/>
+  <g transform="translate(5 5) scale(0.9)">
+    <g stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" fill="none">
+      <path d="M20 30h20M30 20v20"/>
+      <path d="M60 30h20"/>
+      <path d="M21 61l18 18M39 61L21 79"/>
+      <path d="M60 70h20"/>
+    </g>
+    <circle cx="70" cy="59" r="4.4" fill="#F5B700"/>
+    <circle cx="70" cy="81" r="4.4" fill="#F5B700"/>
   </g>
-  <circle cx="70" cy="59" r="4.4" fill="#F5B700"/>
-  <circle cx="70" cy="81" r="4.4" fill="#F5B700"/>
 </svg>

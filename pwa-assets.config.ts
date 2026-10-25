@@ -1,17 +1,11 @@
 import { defineConfig, minimal2023Preset } from '@vite-pwa/assets-generator/config';
 
-// Maskable and apple icons get a padded safe zone; fill it with the brand colour instead of
-// the default white so the icon does not look like a small square on a white tile.
+// The source is full-bleed with its symbols inside the 80 % safe zone, so the maskable and apple
+// icons use it as it is: padding it would show an inner square inside Android's round mask.
 const preset = {
   ...minimal2023Preset,
-  maskable: {
-    ...minimal2023Preset.maskable,
-    resizeOptions: { background: '#5B3FD1' },
-  },
-  apple: {
-    ...minimal2023Preset.apple,
-    resizeOptions: { background: '#5B3FD1' },
-  },
+  maskable: { ...minimal2023Preset.maskable, padding: 0 },
+  apple: { ...minimal2023Preset.apple, padding: 0 },
 };
 
 export default defineConfig({

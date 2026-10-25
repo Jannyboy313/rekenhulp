@@ -544,7 +544,10 @@ describe('QuestionView', () => {
       await press(/^Kladblok vak 1:/);
       expect(columns()).toBe('4');
       expect(screen.getByRole('button', { name: 'is' })).toBeTruthy();
-      expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('');
+      // The tray has 5 tracks per column: the spatie is 6 wide, an ordinary key 5.
+      expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('span 6');
+      expect(screen.getByRole('button', { name: 'is' }).style.gridColumn).toBe('span 4');
+      expect(screen.getByRole('button', { name: 'wissen' }).style.gridColumn).toBe('span 5');
       await press('Tik hier voor je antwoord');
       expect(screen.queryByRole('button', { name: 'is' })).toBeNull();
     });

@@ -20,6 +20,12 @@
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
 
+  /** The cursor is inside a fraction (`_3/4`): the slots mark it, so there is no caret until a
+   * space or operator takes it out again. */
+  function inFraction(note: string): boolean {
+    return /_\d*(?:\/\d*)?$/.test(note);
+  }
+
   /** A cell is clipped, not wrapped: after every change it shows the end, where the caret is. */
   function showEnd(node: HTMLElement, _note: string) {
     node.scrollLeft = node.scrollWidth;
@@ -56,7 +62,7 @@
                     >{:else}{segment.num}{/if}{/snippet}{#snippet denominator()}{#if segment.den === null}{BLANK_SLOT}{:else if segment.den === ''}<span
                       class="placeholder">…</span
                     >{:else}{segment.den}{/if}{/snippet}</Fraction
-              >{/if}{/each}{#if index === active}<span class="caret"></span>{/if}</span
+              >{/if}{/each}{#if index === active && !inFraction(note)}<span class="caret"></span>{/if}</span
         ></button
       >
     {/each}
@@ -143,6 +149,8 @@
   }
 
   .placeholder {
+    font-size: 0.7em;
+    letter-spacing: -0.12em;
     color: var(--muted);
   }
 

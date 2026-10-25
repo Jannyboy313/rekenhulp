@@ -260,12 +260,13 @@
   .advance-fill {
     height: 100%;
     background: var(--good);
-    animation: advance var(--advance-ms) linear forwards;
+    transform-origin: left;
+    animation: advance var(--advance-ms) linear both;
   }
 
   @keyframes advance {
     from {
-      width: 0;
+      transform: scaleX(0);
     }
   }
 </style>

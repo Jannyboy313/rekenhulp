@@ -25,6 +25,20 @@ describe('Scratchpad', () => {
     expect(document.querySelector('.label')?.classList.contains('active')).toBe(true);
   });
 
+  it.each([
+    ['_', false],
+    ['_3', false],
+    ['_3/', false],
+    ['1_3/4', false],
+    ['_3/4 ', true],
+    ['_3/4+', true],
+    ['12', true],
+    ['', true],
+  ])('shows the caret in the note %j: %s', (note, caret) => {
+    render(Scratchpad, { props: { notes: [note], active: 0, onselect: vi.fn() } });
+    expect(document.querySelector('.caret') !== null).toBe(caret);
+  });
+
   it('shows a caret only in the active cell', () => {
     render(Scratchpad, {
       props: { notes: ['12', '', '', '', '', ''], active: 0, onselect: vi.fn() },

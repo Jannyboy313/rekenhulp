@@ -41,6 +41,14 @@ describe('Keypad', () => {
     expect(onkey).not.toHaveBeenCalled();
   });
 
+  it('draws ^ as x with a raised n, and the breuk key as two outlined boxes', () => {
+    render(Keypad, { props: { keys: NOTE_KEYS, columns: NOTE_COLUMNS, canSubmit: false, onkey: vi.fn(), tray: true } });
+    const power = screen.getByRole('button', { name: 'tot de macht' });
+    expect(power.querySelector('sup')?.textContent).toBe('n');
+    expect(power.textContent?.replace(/\s/g, '')).toBe('xn');
+    expect(screen.getByRole('button', { name: 'breuk' }).querySelectorAll('.box')).toHaveLength(2);
+  });
+
   it('uses 3 columns unless told otherwise', () => {
     const { container } = render(Keypad, {
       props: { keys, canSubmit: true, onkey: vi.fn(), onsubmit: vi.fn() },

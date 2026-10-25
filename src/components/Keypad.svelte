@@ -20,6 +20,11 @@
     onsubmit?: () => void;
   }
 
+  // The tray is a grid of 5 tracks per column, so a key can be a little wider: the last row
+  // (⌫ ␣ / =) is spaced 5 : 6 : 5 : 4, and the spatie is longer than the others.
+  const TRAY_KEY_SPAN = 5;
+  const TRAY_SPANS: Partial<Record<KeypadKey, number>> = { ' ': 6, '=': 4 };
+
   let {
     keys,
     columns = 3,
@@ -39,12 +44,15 @@
       class="key"
       class:digit={/^\d$/.test(key)}
       aria-label={ariaLabel ?? label}
+      style:grid-column={tray ? `span ${TRAY_SPANS[key] ?? TRAY_KEY_SPAN}` : undefined}
       {disabled}
       use:press={() => onkey(key)}
     >
       {#if icon === 'fraction'}<Fraction
-          >{#snippet numerator()}□{/snippet}{#snippet denominator()}□{/snippet}</Fraction
-        >{:else}{label}{/if}
+          >{#snippet numerator()}<span class="box"></span>{/snippet}{#snippet denominator()}<span
+              class="box"></span
+            >{/snippet}</Fraction
+        >{:else if icon === 'power'}x<sup>n</sup>{:else}{label}{/if}
     </button>
   {/each}
   {#if onsubmit}
@@ -95,17 +103,38 @@
     filter: brightness(0.94);
   }
 
+  /* As tall as the normal keypad (5 × 52 + 4 × 8 px), so the prompt does not move when the
+     kladblok takes over: 7 + 1 border + 5 × 52 + 4 × 6. The keys have a 3 px side margin instead
+     of a column gap, so a key that spans more tracks is not squeezed by extra gaps. */
   .tray {
-    gap: 6px;
-    padding: 8px 12px calc(24px + env(safe-area-inset-bottom));
+    grid-template-columns: repeat(calc(var(--columns, 4) * 5), 1fr);
+    column-gap: 0;
+    row-gap: 6px;
+    padding: 7px 9px calc(24px + env(safe-area-inset-bottom));
     background: var(--tray-bg);
     border-top: 1px solid var(--tray-border);
   }
 
   .tray .key {
-    height: 48px;
+    margin-inline: 3px;
     border-radius: 12px;
     background: var(--tray-key-op);
+  }
+
+  /* The breuk key: two outlined boxes. */
+  .box {
+    display: inline-block;
+    width: 0.6em;
+    height: 0.6em;
+    border: 2.5px solid currentColor;
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+
+  sup {
+    font-size: 0.6em;
+    line-height: 0;
+    vertical-align: super;
   }
 
   .tray .key.digit {

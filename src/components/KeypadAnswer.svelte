@@ -77,10 +77,8 @@
   <button type="button" class="to-answer" use:press={focusAnswer}>Tik hier voor je antwoord</button>
 {:else}
   <div class="field">
-    <!-- Kinds with a fraction template get a taller field, so opening one does not shift the layout. -->
     <output
       class="answer"
-      class:tall={model.select !== undefined}
       class:good={locked}
       aria-label={locked ? goodLabel : 'Jouw antwoord'}
       aria-live="off"
@@ -131,7 +129,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 64px;
+    /* As high as the "Tik hier voor je antwoord" button, so nothing moves when the kladblok
+       takes over; an open fraction template is drawn smaller to fit. */
+    height: 56px;
     padding: 0 20px;
     font-size: 30px;
     font-weight: 700;
@@ -142,9 +142,9 @@
     box-shadow: var(--shadow-card);
   }
 
-  /* Fits an open template with compact slots; kept low so the keypad still fits on small phones. */
-  .answer.tall {
-    height: 6rem;
+  .answer :global(.fraction) {
+    font-size: 0.62em;
+    line-height: 1.1;
   }
 
   /* The correct state: lighter than the wrong one, no shadow (spec §3.4). */
@@ -178,12 +178,13 @@
   .advance-fill {
     height: 100%;
     background: var(--good);
-    animation: advance var(--advance-ms) linear forwards;
+    transform-origin: left;
+    animation: advance var(--advance-ms) linear both;
   }
 
   @keyframes advance {
     from {
-      width: 0;
+      transform: scaleX(0);
     }
   }
 
@@ -208,17 +209,21 @@
     background: var(--primary);
   }
 
+  /* Small, close dots: an empty slot is as wide as a filled one. */
   .placeholder {
     color: var(--placeholder);
+    font-size: 0.7em;
+    letter-spacing: -0.12em;
   }
 
   .slot {
-    min-width: 2.5rem;
-    min-height: 1.9rem;
-    padding: 0 0.25rem;
+    min-width: 1.1em;
+    min-height: 0;
+    padding: 0 0.15em;
+    line-height: 1.1;
     background: none;
-    border: 2px solid transparent;
-    border-radius: 0.375rem;
+    border: 1.5px solid transparent;
+    border-radius: 0.3em;
   }
 
   .slot:active {

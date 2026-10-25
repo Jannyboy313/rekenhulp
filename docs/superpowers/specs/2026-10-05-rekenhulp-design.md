@@ -40,7 +40,9 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 - Manifest: name `Rekenhulp`, `display: standalone`, `orientation: portrait`, `theme_color`
   `#5B3FD1`, `background_color` `#F5F6F8`, icons 192/512 px plus a maskable icon, and an
   `apple-touch-icon` for iOS. The icon is the Design V1 logo (violet gradient square with
-  + − × ÷ and two yellow dots).
+  + − × ÷ and two yellow dots). The source is full-bleed (no rounded corners) with the symbols
+  inside the 80 % safe zone, so the maskable icon fills a round Android mask without a visible
+  inner square. The in-app logo keeps its rounded corners.
 - An SVG source icon is checked in. PNGs are generated as part of the build.
 - Service worker precaches everything, so the app works in airplane mode after the first visit.
 - When a new version is deployed, the app updates silently on the next launch.
@@ -345,9 +347,11 @@ in the place of OK.
 - **While a cell is active**, the keypad is the kladblok keypad, whatever the answer kind: the
   expression keys with `^` and the breuk key instead of `(` and `)`, plus `,`, `=` and the
   spatie, in 4 columns and 5 rows (the same height as the other keypads, except the
-  4-row scientific keypad: there the keypad grows one row while a cell is active). The spatie takes one
-  column, has the normal key colour, acts on press like the other keys and is always enabled.
-  The kladblok has no parentheses.
+  4-row scientific keypad: there the keypad grows one row while a cell is active). The tray
+  keys are 52 px high with 6 px gaps, so the tray is exactly as tall as the other keypads and
+  the prompt does not move when switching. The last row is spaced 5 : 6 : 5 : 4 (⌫ ␣ / =): the
+  spatie is a little longer than the others. It has the normal key colour, acts on press like the
+  other keys and is always enabled. The kladblok has no parentheses.
 
   ```
   7  8  9  +
@@ -357,7 +361,11 @@ in the place of OK.
   ⌫  ␣  /  =
   ```
 
-  `/` is the breuk key, drawn as a small stacked fraction as on the fraction keypad.
+  `/` is the breuk key, drawn as a small stacked fraction (two outlined boxes) as on the fraction
+  keypad. `^` is drawn as x with a raised n, on every keypad that has it. In a kladblok cell the
+  caret is hidden while the cursor is inside a fraction (until a space or operator follows).
+  The answer field is 56 px high, as high as the "Tik hier voor je antwoord" button, also while
+  a fraction template is open (the template is drawn smaller in the field), so nothing moves.
 
 - **Typing in a cell.** A cell is a list of items separated by single spaces; an item is a
   number or a short sum such as `12×7=84`, `2^3=8`, `−¾+1` or `7/4=1¾`. A number is digits with
