@@ -1,6 +1,7 @@
 import { formatEuro, formatInteger } from '../format';
 import { gcd } from '../primes';
 import { drawUntil, pick, randomInt, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { positiveInteger, type Diagnose } from '../tips';
@@ -106,7 +107,7 @@ function missingTerm(rng: Rng): Question {
   const n = randomIntExcept(rng, 1, Math.floor(MAX_SCALED_TERM / largest), m);
   const terms: Terms = [p * m, q * m, p * n, q * n];
   const position = randomInt(rng, 0, 3);
-  const shown = terms.map((term, index) => (index === position ? '?' : formatInteger(term)));
+  const shown = terms.map((term, index) => (index === position ? SLOT : formatInteger(term)));
   return ratioQuestion(
     `missing:${terms.join(':')}:${position}`,
     numberStep({

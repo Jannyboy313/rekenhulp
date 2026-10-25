@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes';
 import { createRng, type Rng } from '../random';
 import { fromInteger, rational } from '../rational';
+import { plain } from '../slot';
 import { NO, YES } from '../steps';
 import type { Generator, Question } from '../types';
 import {
@@ -347,7 +348,7 @@ describe('lcmTip and gcdTip', () => {
     let seen = 0;
     for (let i = 0; i < 300; i++) {
       const step = generateLcm(rng).steps[0]!;
-      const match = /^KGV van (\d+) en (\d+) = \?$/.exec(step.prompt);
+      const match = /^KGV van (\d+) en (\d+) = \?$/.exec(plain(step.prompt));
       expect(match, step.prompt).not.toBeNull();
       const divisor = gcd(Number(match![1]), Number(match![2]));
       seen++;
@@ -363,7 +364,7 @@ describe('lcmTip and gcdTip', () => {
     let seen = 0;
     for (let i = 0; i < 300; i++) {
       const step = generateGcd(rng).steps[0]!;
-      const match = /^GGD van (\d+) en (\d+) = \?$/.exec(step.prompt);
+      const match = /^GGD van (\d+) en (\d+) = \?$/.exec(plain(step.prompt));
       expect(match, step.prompt).not.toBeNull();
       const multiple = lcm(Number(match![1]), Number(match![2]));
       seen++;

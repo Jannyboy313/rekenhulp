@@ -4,6 +4,7 @@ import { evaluateMisconception, type Misconception } from '../expr/misconception
 import type { BinaryOperator, Expr } from '../expr/parser';
 import { explainEvaluation } from '../expr/reduce';
 import { pick, randomInt, shuffle, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { equals, fromInteger, isInteger, negate, type Rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
@@ -210,7 +211,7 @@ export function generateOrderOfOperations(rng: Rng): Question {
     topic: 'orderOfOperations',
     steps: [
       numberStep({
-        prompt: `${text} = ?`,
+        prompt: `${text} = ${SLOT}`,
         answer: evaluate(expr)!,
         explanation: explainEvaluation(expr),
         diagnose: orderOfOperationsTip(expr),

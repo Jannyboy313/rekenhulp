@@ -5,6 +5,7 @@ import { parse, type Expr } from '../expr/parser';
 import { evaluateMisconception } from '../expr/misconceptions';
 import { formatRational } from '../format';
 import { createRng } from '../random';
+import { SLOT } from '../slot';
 import { decimalPlaces, equals, parseDutchNumber, type Rational } from '../rational';
 import {
   CUBE_SHARE,
@@ -182,8 +183,8 @@ describe('generateOrderOfOperations', () => {
       expect(question.topic).toBe('orderOfOperations');
       expect(question.steps).toHaveLength(1);
       expect(step.kind).toBe('number');
-      expect(step.prompt.endsWith(' = ?')).toBe(true);
-      const text = step.prompt.slice(0, -' = ?'.length);
+      expect(step.prompt.endsWith(` = ${SLOT}`)).toBe(true);
+      const text = step.prompt.slice(0, -` = ${SLOT}`.length);
       expect(question.key).toBe(`orderOfOperations:${text}`);
       const answer = evaluate(parse(text)!)!;
       const expected = formatRational(answer);
@@ -230,7 +231,7 @@ describe('order-of-operations tips end to end', () => {
     for (let i = 0; i < 1000; i++) {
       const step = generateOrderOfOperations(questionRng).steps[0]!;
       const expr = generateExpression(expressionRng);
-      expect(step.prompt).toBe(`${formatExpr(expr)} = ?`);
+      expect(step.prompt).toBe(`${formatExpr(expr)} = ${SLOT}`);
       const answer = evaluate(expr)!;
       const leftToRight = evaluateMisconception(expr, 'leftToRight');
       if (leftToRight === null || decimalPlaces(leftToRight) === null) continue;

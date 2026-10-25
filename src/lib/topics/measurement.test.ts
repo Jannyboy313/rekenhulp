@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { formatRational, GROUP_SEPARATOR as S } from '../format';
 import { createRng } from '../random';
+import { plain, SLOT } from '../slot';
 import {
   compare,
   decimalPlaces,
@@ -265,7 +266,7 @@ describe('conversionQuestion', () => {
     expect(question.steps).toHaveLength(1);
     const step = question.steps[0]!;
     expect(step.kind).toBe('number');
-    expect(step.prompt).toBe('3,5 L = ? cm³');
+    expect(step.prompt).toBe(`3,5 L = ${SLOT} cm³`);
     expect(step.suffix).toBe('cm³');
     expect(step.check('3500')).toEqual({
       correct: true,
@@ -348,7 +349,7 @@ describe.each([
       const step = question.steps[0]!;
       expect(step.kind).toBe('number');
       expect(symbols(units)).toContain(step.suffix);
-      expect(step.prompt.endsWith(` = ? ${step.suffix}`)).toBe(true);
+      expect(step.prompt.endsWith(` = ${SLOT} ${step.suffix}`)).toBe(true);
     }
   });
 
@@ -495,13 +496,13 @@ describe('timeTip', () => {
     let seen = 0;
     for (let i = 0; i < 1000; i++) {
       const step = generateTime(rng).steps[0]!;
-      const toSmaller = /^(\S+) uur = \? min$/.exec(step.prompt);
+      const toSmaller = /^(\S+) uur = \? min$/.exec(plain(step.prompt));
       if (toSmaller) {
         seen++;
         const mistaken = multiply(n(typed(toSmaller[1]!)), fromInteger(100));
         expect(step.check(String(mistaken.num)).tip).toBe(tip);
       }
-      const toLarger = /^(\S+) min = \? uur$/.exec(step.prompt);
+      const toLarger = /^(\S+) min = \? uur$/.exec(plain(step.prompt));
       if (toLarger) {
         seen++;
         const mistaken = divide(n(typed(toLarger[1]!)), fromInteger(100));
@@ -535,7 +536,7 @@ describe('generateTime', () => {
       const step = question.steps[0]!;
       expect(step.kind).toBe('number');
       expect(step.suffix).toBe(parts(question).to);
-      expect(step.prompt.endsWith(` = ? ${step.suffix}`)).toBe(true);
+      expect(step.prompt.endsWith(` = ${SLOT} ${step.suffix}`)).toBe(true);
       expect(step.check('').explanation?.startsWith('1 ')).toBe(true);
       expect(step.check(typed(expectedOf(question))).correct).toBe(true);
     }

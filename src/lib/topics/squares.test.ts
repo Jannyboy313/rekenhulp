@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
 import { fromInteger, rational } from '../rational';
+import { plain } from '../slot';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
 import {
@@ -114,7 +115,7 @@ describe('square tips', () => {
     let seen = 0;
     for (let i = 0; i < 300; i++) {
       const step = generateSquares(rng).steps[0]!;
-      const match = /^(\d+)² = \?$/.exec(step.prompt);
+      const match = /^(\d+)² = \?$/.exec(plain(step.prompt));
       if (!match) continue;
       const n = Number(match[1]);
       // 2² = 2 × 2, so typing 4 is correct.

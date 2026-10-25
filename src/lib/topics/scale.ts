@@ -1,5 +1,6 @@
 import { formatInteger, formatRational, NO_BREAK_SPACE } from '../format';
 import { pick, range, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   divide,
   equals,
@@ -128,17 +129,17 @@ function wording(
   switch (form) {
     case 'mapToReal':
       return {
-        prompt: `Schaal 1 : ${formatInteger(n)}. ${map} ${picture} is in het echt ? ${unit}`,
+        prompt: `Schaal 1 : ${formatInteger(n)}. ${map} ${picture} is in het echt ${SLOT} ${unit}`,
         suffix: unit,
       };
     case 'realToMap':
       return {
-        prompt: `Schaal 1 : ${formatInteger(n)}. ${real} in het echt is ${picture} ? cm`,
+        prompt: `Schaal 1 : ${formatInteger(n)}. ${real} in het echt is ${picture} ${SLOT} cm`,
         suffix: 'cm',
       };
     case 'findScale':
       return {
-        prompt: `${map} ${picture} is ${real} in het echt. Schaal 1 : ?`,
+        prompt: `${map} ${picture} is ${real} in het echt. Schaal 1 : ${SLOT}`,
         prefix: `1${NO_BREAK_SPACE}:`,
       };
   }

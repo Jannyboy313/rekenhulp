@@ -1,5 +1,6 @@
 import { formatEuro, formatInteger as f, formatRational } from '../format';
 import { drawUntil, notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { decimalPlaces, divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
@@ -90,7 +91,7 @@ function arithmetic(key: string, prompt: string, answer: number, explanation: st
   return {
     key: `mentalOperations:${key}`,
     topic: 'mentalOperations',
-    steps: [numberStep({ prompt: `${prompt} = ?`, answer: fromInteger(answer), explanation })],
+    steps: [numberStep({ prompt: `${prompt} = ${SLOT}`, answer: fromInteger(answer), explanation })],
   };
 }
 

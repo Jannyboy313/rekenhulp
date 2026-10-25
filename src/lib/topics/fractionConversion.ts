@@ -1,6 +1,7 @@
 import { formatFraction, formatInteger, formatMixedNumber, formatRational } from '../format';
 import { gcd } from '../primes';
 import { pick, randomIntWhere, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   decimalPlaces,
   finiteDecimalPlaces,
@@ -110,7 +111,7 @@ function conversionStep(direction: ConversionDirection, fraction: Rational): Ste
     case 'fractionToPercentage':
       // The fraction keypad for every fraction, so the breuk key does not give away thirds.
       return fractionStep({
-        prompt: `${shownFraction} = ?%`,
+        prompt: `${shownFraction} = ${SLOT}%`,
         answer: percent,
         suffix: '%',
         expected: percentNumber,
@@ -126,7 +127,7 @@ function conversionStep(direction: ConversionDirection, fraction: Rational): Ste
       });
     case 'decimalToPercentage':
       return numberStep({
-        prompt: `${shownDecimal()} = ?%`,
+        prompt: `${shownDecimal()} = ${SLOT}%`,
         answer: percent,
         suffix: '%',
         explanation: `${shownDecimal()} = ${shownDecimal()} × 100% = ${percentNumber}%`,

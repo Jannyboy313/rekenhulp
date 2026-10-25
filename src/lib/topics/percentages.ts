@@ -1,5 +1,6 @@
 import { formatEuro, formatInteger, formatMoney, formatRational, MINUS } from '../format';
 import { pick, range, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   add,
   compare,
@@ -188,7 +189,7 @@ function partOfWhole(rng: Rng): Question {
     p,
     whole,
     numberStep({
-      prompt: `${percentLabel(p.value)} van ${formatRational(whole)} = ?`,
+      prompt: `${percentLabel(p.value)} van ${formatRational(whole)} = ${SLOT}`,
       answer: part,
       explanation: partExplanation(p, whole),
       diagnose: partTip(p, whole),
@@ -211,7 +212,7 @@ function whatPercentage(rng: Rng): Question {
     p,
     whole,
     fractionStep({
-      prompt: `${formatRational(part)} is ?% van ${formatRational(whole)}`,
+      prompt: `${formatRational(part)} is ${SLOT}% van ${formatRational(whole)}`,
       answer: p.value,
       suffix: '%',
       explanation: partExplanation(p, whole),
@@ -297,7 +298,7 @@ function priceChange(rng: Rng): Question {
     p,
     price,
     numberStep({
-      prompt: `${formatEuro(price)} na ${percentLabel(p.value)} ${increase ? 'verhoging' : 'korting'} = ?`,
+      prompt: `${formatEuro(price)} na ${percentLabel(p.value)} ${increase ? 'verhoging' : 'korting'} = ${SLOT}`,
       answer,
       prefix: '€',
       expected: formatMoney(answer),

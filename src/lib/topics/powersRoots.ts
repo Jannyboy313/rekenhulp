@@ -6,6 +6,7 @@ import {
   UNKNOWN_EXPONENT,
 } from '../format';
 import { pick, randomInt, randomIntWhere, range, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   divide,
   equals,
@@ -138,7 +139,7 @@ function powerQuestion(base: Rational, exponent: number, diagnose: Diagnose): Qu
     topic: 'powersRoots',
     steps: [
       numberStep({
-        prompt: `${prompt} = ?`,
+        prompt: `${prompt} = ${SLOT}`,
         answer: power(base, exponent),
         explanation: explainPower(base, exponent),
         diagnose,
@@ -170,7 +171,7 @@ export function negativeExponentQuestion(n: number, askExponent: boolean): Quest
       topic: 'powersRoots',
       steps: [
         numberStep({
-          prompt: `${negativePower} = ?`,
+          prompt: `${negativePower} = ${SLOT}`,
           answer: value,
           explanation: `${negativePower} = 1 : ${formatPowerOfTen(n)} = ${division} = ${shown}`,
           diagnose: (given) =>
@@ -186,7 +187,7 @@ export function negativeExponentQuestion(n: number, askExponent: boolean): Quest
     topic: 'powersRoots',
     steps: [
       numberStep({
-        prompt: `${shown} = 10${UNKNOWN_EXPONENT}. n = ?`,
+        prompt: `${shown} = 10${UNKNOWN_EXPONENT}. n = ${SLOT}`,
         answer: fromInteger(-n),
         explanation: `${shown} = ${division} = 1 : ${formatPowerOfTen(n)} = ${negativePower}`,
         // The answer is an exponent: a factor-of-ten tip would be meaningless (as in §5.14).
@@ -216,7 +217,7 @@ export function cubeRootQuestion(n: number): Question {
     topic: 'powersRoots',
     steps: [
       numberStep({
-        prompt: `∛${cube} = ?`,
+        prompt: `∛${cube} = ${SLOT}`,
         answer: fromInteger(n),
         explanation: `∛${cube} = ${n}, want ${n} × ${n} × ${n} = ${cube}`,
         diagnose: (given) =>
@@ -238,7 +239,7 @@ export function squareRootQuestion(root: Rational): Question {
     topic: 'powersRoots',
     steps: [
       numberStep({
-        prompt: `√${square} = ?`,
+        prompt: `√${square} = ${SLOT}`,
         answer: root,
         explanation: `√${square} = ${shown}, want ${shown} × ${shown} = ${square}`,
       }),

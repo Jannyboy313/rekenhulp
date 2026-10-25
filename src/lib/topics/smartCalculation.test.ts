@@ -3,6 +3,7 @@ import { evaluate } from '../expr/evaluate';
 import { parse } from '../expr/parser';
 import { formatInteger as f } from '../format';
 import { createRng } from '../random';
+import { SLOT } from '../slot';
 import { fromInteger, parseDutchNumber } from '../rational';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
@@ -37,7 +38,7 @@ function exercisesOf(strategy: Strategy, count = PER_STRATEGY): Exercise[] {
 }
 
 function promptText(question: Question): string {
-  return question.steps[0]!.prompt.slice(0, -' = ?'.length);
+  return question.steps[0]!.prompt.slice(0, -` = ${SLOT}`.length);
 }
 
 function explanationOf(question: Question): string {
@@ -94,7 +95,7 @@ describe('generateSmartCalculation', () => {
       const answer = valueOf(promptText(question));
       expect(question.topic).toBe('smartCalculation');
       expect(step.kind).toBe('number');
-      expect(step.prompt.endsWith(' = ?')).toBe(true);
+      expect(step.prompt.endsWith(` = ${SLOT}`)).toBe(true);
       expect(question.key).toBe(dedupKey(promptText(question)));
       expect(Number.isInteger(answer)).toBe(true);
       expect(answer).toBeGreaterThanOrEqual(MIN_ANSWER);

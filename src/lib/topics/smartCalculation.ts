@@ -1,5 +1,6 @@
 import { formatInteger as f } from '../format';
 import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { exactTip, positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
@@ -185,7 +186,12 @@ export function generateSmartCalculation(rng: Rng): Question {
     key: dedupKey(prompt),
     topic: 'smartCalculation',
     steps: [
-      numberStep({ prompt: `${prompt} = ?`, answer: fromInteger(answer), explanation, diagnose }),
+      numberStep({
+        prompt: `${prompt} = ${SLOT}`,
+        answer: fromInteger(answer),
+        explanation,
+        diagnose,
+      }),
     ],
   };
 }

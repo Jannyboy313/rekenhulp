@@ -1,6 +1,7 @@
 // Helpers shared by the topic tests.
 import { formatRational, GROUP_SEPARATOR } from '../format';
 import { parseDutchNumber, type Rational } from '../rational';
+import { plain } from '../slot';
 import type { Question, Step } from '../types';
 
 /** A value written in Dutch notation: '7,5'. */
@@ -13,8 +14,13 @@ export function typed(value: Rational): string {
   return formatRational(value).replaceAll(GROUP_SEPARATOR, '');
 }
 
+/**
+ * The first step with its prompt as plain text (the slot written as `?`), so wording tests stay
+ * readable. `slot.sweep.test.ts` checks the slot itself.
+ */
 export function stepOf(question: Question): Step {
-  return question.steps[0]!;
+  const step = question.steps[0]!;
+  return { ...step, prompt: plain(step.prompt) };
 }
 
 /** The correct answer of a question, read back from its expected answer. */

@@ -1,6 +1,7 @@
 import { formatFraction, formatRational } from '../format';
 import { gcd } from '../primes';
 import { pick, range, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   divide,
   equals,
@@ -355,8 +356,8 @@ export function speedConversionQuestion(
     steps: [
       numberStep({
         prompt: toMetresPerSecond
-          ? `${formatRational(kmh)} km/u = ? m/s`
-          : `${metresPerSecond} m/s = ? km/u`,
+          ? `${formatRational(kmh)} km/u = ${SLOT} m/s`
+          : `${metresPerSecond} m/s = ${SLOT} km/u`,
         answer: toMetresPerSecond ? ms : kmh,
         suffix: toMetresPerSecond ? 'm/s' : 'km/u',
         explanation: `1 m/s = 3600 m/u = ${factor} km/u → ${calculation}`,

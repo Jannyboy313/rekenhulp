@@ -1,6 +1,7 @@
 import { formatEuro, formatInteger, formatMoney, MINUS } from '../format';
 import { gcd } from '../primes';
 import { pick, range, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   add,
   divide,
@@ -193,8 +194,8 @@ export function vatQuestion(rate: VatRate, adding: boolean, withoutVat: number):
   const withVat = priceWithVat(rate, without);
   const answer = adding ? withVat : without;
   const prompt = adding
-    ? `${formatEuro(without)} zonder btw. Met ${rate}% btw = ?`
-    : `${formatEuro(withVat)} met ${rate}% btw. Zonder btw = ?`;
+    ? `${formatEuro(without)} zonder btw. Met ${rate}% btw = ${SLOT}`
+    : `${formatEuro(withVat)} met ${rate}% btw. Zonder btw = ${SLOT}`;
   return {
     key: `percentChange:vat:${adding ? 'add' : 'remove'}:${rate}:${withoutVat}`,
     topic: 'percentChange',

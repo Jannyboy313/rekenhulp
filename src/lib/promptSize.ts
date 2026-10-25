@@ -10,10 +10,9 @@ const MEDIUM_MAX = 40;
 export function displayLength(text: string): number {
   let length = 0;
   for (const segment of splitFractions(text)) {
-    length +=
-      segment.type === 'text'
-        ? [...segment.text].length
-        : Math.max(segment.num.length, segment.den.length);
+    if (segment.type === 'slot') length += 1;
+    else if (segment.type === 'text') length += [...segment.text].length;
+    else length += Math.max(segment.num.length, segment.den.length);
   }
   return length;
 }

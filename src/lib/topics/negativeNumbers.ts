@@ -1,5 +1,6 @@
 import { formatInteger as f, NO_BREAK_SPACE } from '../format';
 import { drawUntil, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
@@ -76,7 +77,7 @@ export function addSubtractQuestion(a: number, add: boolean, b: number): Questio
     topic: 'negativeNumbers',
     steps: [
       numberStep({
-        prompt: `${prompt} = ?`,
+        prompt: `${prompt} = ${SLOT}`,
         answer: fromInteger(add ? a + b : a - b),
         explanation: explainAddSubtract(a, add, b),
         diagnose: addSubtractTip(a, add, b),
@@ -103,7 +104,7 @@ export function multiplyDivideQuestion(left: number, operator: '×' | ':', right
     topic: 'negativeNumbers',
     steps: [
       numberStep({
-        prompt: `${prompt} = ?`,
+        prompt: `${prompt} = ${SLOT}`,
         answer: fromInteger(answer),
         explanation: explainSigns(left, operator, right),
         diagnose: (given) => (equals(given, fromInteger(-answer)) ? PRODUCT_SIGN_TIP : undefined),

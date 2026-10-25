@@ -1,5 +1,6 @@
 import { formatFixed, formatInteger, formatRational, MINUS } from '../format';
 import { drawUntil, notRound, pick, randomInt, randomIntWhere, shuffle, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   add,
   compare,
@@ -69,7 +70,7 @@ export function addSubtractQuestion(a: Rational, b: Rational, subtracting: boole
     topic: 'decimalArithmetic',
     steps: [
       numberStep({
-        prompt: `${formatRational(a)} ${operator} ${formatRational(b)} = ?`,
+        prompt: `${formatRational(a)} ${operator} ${formatRational(b)} = ${SLOT}`,
         answer,
         explanation: `${aligned} = ${formatRational(answer)}`,
         diagnose,
@@ -110,7 +111,7 @@ export function multiplyQuestion(first: DecimalFactor, second: DecimalFactor): Q
     topic: 'decimalArithmetic',
     steps: [
       numberStep({
-        prompt: `${formatRational(a)} × ${formatRational(b)} = ?`,
+        prompt: `${formatRational(a)} × ${formatRational(b)} = ${SLOT}`,
         answer,
         explanation:
           `${first.digits} × ${second.digits} = ${formatInteger(first.digits * second.digits)}; ` +
@@ -140,7 +141,7 @@ export function divideQuestion(p: number, s: number, q: number, t: number): Ques
     topic: 'decimalArithmetic',
     steps: [
       numberStep({
-        prompt: `${sum} = ?`,
+        prompt: `${sum} = ${SLOT}`,
         answer: quotient,
         explanation: wholeDivisor
           ? `${formatInteger(p * q)} : ${q} = ${p} → ${sum} = ${formatRational(quotient)}`

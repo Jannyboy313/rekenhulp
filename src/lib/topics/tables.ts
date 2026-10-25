@@ -1,5 +1,6 @@
 import { formatInteger } from '../format';
 import { drawUntil, pick, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
@@ -67,14 +68,14 @@ export function generateTables(rng: Rng, chosen: readonly number[] = TABLE_FACTO
     case 'product':
       return tableQuestion(
         `product:${a}x${b}`,
-        `${fa} × ${fb} = ?`,
+        `${fa} × ${fb} = ${SLOT}`,
         product,
         neighbourRowTip(a, b),
       );
     case 'division':
       return tableQuestion(
         `division:${product}:${b}`,
-        `${fp} : ${fb} = ?`,
+        `${fp} : ${fb} = ${SLOT}`,
         a,
         productCheckTip(b, product, a, true),
         fact,
@@ -83,14 +84,14 @@ export function generateTables(rng: Rng, chosen: readonly number[] = TABLE_FACTO
       return rng() < 0.5
         ? tableQuestion(
             `missingLeft:${b}:${product}`,
-            `? × ${fb} = ${fp}`,
+            `${SLOT} × ${fb} = ${fp}`,
             a,
             productCheckTip(b, product, a, true),
             fact,
           )
         : tableQuestion(
             `missingRight:${a}:${product}`,
-            `${fa} × ? = ${fp}`,
+            `${fa} × ${SLOT} = ${fp}`,
             b,
             productCheckTip(a, product, b, false),
             fact,

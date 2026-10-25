@@ -4,6 +4,7 @@ import { parse } from '../expr/parser';
 import { checkRewrite, type Property } from '../expr/rewriteCheck';
 import { formatInteger } from '../format';
 import { createRng } from '../random';
+import { SLOT } from '../slot';
 import {
   applicableProperties,
   drawPropertyExercise,
@@ -182,7 +183,7 @@ describe('propertyQuestion', () => {
       expected: '7 × 100 − 7 × 2',
       explanation: 'Geldige stap (commutatief), maar niet handig. Probeer distributief.',
     });
-    expect(value!.prompt).toBe('7 × 98 = ?');
+    expect(value!.prompt).toBe(`7 × 98 = ${SLOT}`);
     expect(value!.check('686')).toEqual({ correct: true, expected: '686', explanation });
   });
 
@@ -222,7 +223,7 @@ describe('generateProperties', () => {
       expect(question.topic).toBe('properties');
       expect(question.steps.map((step) => step.kind)).toEqual(['expression', 'number']);
       const text = prompt.exec(rewrite!.prompt)?.[1] ?? '';
-      expect(value!.prompt).toBe(`${text} = ?`);
+      expect(value!.prompt).toBe(`${text} = ${SLOT}`);
       expect(question.key).toBe(`properties:${text}`);
 
       // Unparsable input returns the expected answer (the example) without judging it.

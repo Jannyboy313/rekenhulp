@@ -1,5 +1,6 @@
 import { formatInteger } from '../format';
 import { randomInt, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { divide, equals, fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { positiveInteger, powerOfTenShift, type Diagnose } from '../tips';
@@ -25,7 +26,8 @@ export function generateSquares(rng: Rng): Question {
     topic: 'squares',
     steps: [
       numberStep({
-        prompt: form === 'square' ? `${formatInteger(n)}² = ?` : `√${formatInteger(square)} = ?`,
+        prompt:
+          form === 'square' ? `${formatInteger(n)}² = ${SLOT}` : `√${formatInteger(square)} = ${SLOT}`,
         answer: fromInteger(form === 'square' ? square : n),
         explanation: squareExplanation(n),
         diagnose: form === 'square' ? squareTip(n) : rootTip(n),

@@ -1,6 +1,7 @@
 import { formatInteger, formatPrimeFactors } from '../format';
 import { gcd, isPrime, lcm, primeFactors, smallestPrimeFactor } from '../primes';
 import { drawUntil, pick, randomInt, range, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { fromInteger } from '../rational';
 import { booleanStep, factorizationStep, numberStep } from '../steps';
 import { positiveInteger, type Diagnose } from '../tips';
@@ -70,7 +71,7 @@ export function generateLcm(rng: Rng): Question {
     'lcm',
     pairKey(pair),
     numberStep({
-      prompt: `KGV van ${formatInteger(a)} en ${formatInteger(b)} = ?`,
+      prompt: `KGV van ${formatInteger(a)} en ${formatInteger(b)} = ${SLOT}`,
       answer: fromInteger(lcm(a, b)),
       explanation: lcmExplanation(a, b),
       diagnose: lcmTip(a, b),
@@ -110,7 +111,7 @@ export function generateGcd(rng: Rng): Question {
     'gcd',
     pairKey(pair),
     numberStep({
-      prompt: `GGD van ${formatInteger(a)} en ${formatInteger(b)} = ?`,
+      prompt: `GGD van ${formatInteger(a)} en ${formatInteger(b)} = ${SLOT}`,
       answer: fromInteger(gcd(a, b)),
       explanation: gcdExplanation(a, b),
       diagnose: gcdTip(a, b),

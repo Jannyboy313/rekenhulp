@@ -1,11 +1,22 @@
+import { SLOT } from './slot';
+
 type TextSegment =
   | { type: 'text'; text: string }
+  /** The unknown of the prompt, outside a fraction. */
+  | { type: 'slot' }
   /** Mixed: the fraction belongs to the whole number before it, as in `−12 1/2`. */
   | { type: 'fraction'; num: string; den: string; mixed: boolean };
 
 // 'a/b', where the digits may be grouped with thin spaces (spec §8).
-// A '?' can take the place of either term: '3/4 = ?/12'.
-const FRACTION = /(\d[\d\u{202f}]*|\?)\/(\d[\d\u{202f}]*|\?)/gu;
+// The slot can take the place of either term: '3/4 = SLOT/12'. A literal '?' is plain text.
+const FRACTION = new RegExp(`(\\d[\\d\\u{202f}]*|${SLOT})/(\\d[\\d\\u{202f}]*|${SLOT})`, 'gu');
+
+function pushText(segments: TextSegment[], text: string): void {
+  text.split(SLOT).forEach((part, index) => {
+    if (index > 0) segments.push({ type: 'slot' });
+    if (part !== '') segments.push({ type: 'text', text: part });
+  });
+}
 
 // The whole part of a mixed number, followed by the one space of '12 1/2'.
 const WHOLE_PART_END = /\d $/u;
@@ -20,12 +31,12 @@ export function splitFractions(text: string): TextSegment[] {
     const mixed = WHOLE_PART_END.test(before);
     // Drop the space of '12 1/2': the whole part stands right next to the stacked fraction.
     if (mixed) before = before.slice(0, -1);
-    if (before !== '') segments.push({ type: 'text', text: before });
+    pushText(segments, before);
     const [found, num = '', den = ''] = match;
     segments.push({ type: 'fraction', num, den, mixed });
     last = index + found.length;
   }
-  if (last < text.length) segments.push({ type: 'text', text: text.slice(last) });
+  pushText(segments, text.slice(last));
   return segments;
 }
 

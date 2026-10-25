@@ -1,6 +1,7 @@
 import { formatFraction, formatInteger, formatMixedNumber, MINUS } from '../format';
 import { gcd, lcm } from '../primes';
 import { drawUntil, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   add,
   compare,
@@ -107,7 +108,9 @@ export function equivalentQuestion(
   const unknownNumerator = variant === 'upNumerator' || variant === 'downNumerator';
   const answer = unknownNumerator ? other[0] : other[1];
   const left = terms(known[0], known[1]);
-  const right = unknownNumerator ? `?/${formatInteger(other[1])}` : `${formatInteger(other[0])}/?`;
+  const right = unknownNumerator
+    ? `${SLOT}/${formatInteger(other[1])}`
+    : `${formatInteger(other[0])}/${SLOT}`;
   // The additive mistake keeps the difference: 3/4 = ?/12 → 3 + (12 − 4) = 11.
   const additive = unknownNumerator
     ? known[0] + (other[1] - known[1])
@@ -152,7 +155,7 @@ export function partQuestion(fraction: Rational, m: number): Question {
     topic: 'fractionArithmetic',
     steps: [
       numberStep({
-        prompt: `${shown} van ${whole} = ?`,
+        prompt: `${shown} van ${whole} = ${SLOT}`,
         answer: fromInteger(answer),
         explanation: p === 1 ? onePart : `${onePart} → ${shown} = ${p} × ${m} = ${answer}`,
         diagnose,
@@ -292,7 +295,7 @@ export function addSubtractQuestion(left: Term, right: Term, subtracting: boolea
     topic: 'fractionArithmetic',
     steps: [
       simplestFractionStep({
-        prompt: `${shown} = ?`,
+        prompt: `${shown} = ${SLOT}`,
         answer,
         decimalAllowed: true,
         explanation: chain.join(' = '),
@@ -343,7 +346,7 @@ export function multiplyDivideQuestion(x: Rational, y: Rational, dividing: boole
     topic: 'fractionArithmetic',
     steps: [
       simplestFractionStep({
-        prompt: `${shown} = ?`,
+        prompt: `${shown} = ${SLOT}`,
         answer,
         decimalAllowed: true,
         explanation: chain.join(' = '),

@@ -1,5 +1,6 @@
 import { formatInteger, formatPowerOfTen, formatRational, formatScientific } from '../format';
 import { drawUntil, pick, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { equals, multiply, ONE, powerOfTen, type Rational } from '../rational';
 import { numberStep, scientificStep, type ScientificInput } from '../steps';
 import type { Question } from '../types';
@@ -78,7 +79,7 @@ export function toNumberQuestion(mantissa: number, exponent: number): Question {
     topic: 'scientificNotation',
     steps: [
       numberStep({
-        prompt: `${prompt} = ?`,
+        prompt: `${prompt} = ${SLOT}`,
         answer: multiply(coefficient, powerOfTen(exponent)),
         explanation: bare
           ? `${prompt} = ${shown}`

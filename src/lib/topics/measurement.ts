@@ -1,5 +1,6 @@
 import { formatInteger, formatRational } from '../format';
 import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { SLOT } from '../slot';
 import {
   add,
   compare,
@@ -230,7 +231,7 @@ export function conversionQuestion(
     topic,
     steps: [
       numberStep({
-        prompt: `${formatRational(value)} ${from} = ? ${to}`,
+        prompt: `${formatRational(value)} ${from} = ${SLOT} ${to}`,
         answer,
         suffix: to,
         explanation: conversionExplanation(from, to, value, answer),

@@ -1,5 +1,6 @@
 import { formatInteger, formatPowerOfTen, formatRational, UNKNOWN_EXPONENT } from '../format';
 import { pick, randomInt, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { divide, equals, fromInteger, multiply, powerOfTen, type Rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
@@ -94,8 +95,8 @@ function nameToPower(rng: Rng): Question {
   const exponent = unit.exponent + shift;
   const prompt =
     value === 1
-      ? `1 ${unit.symbol} = 10${UNKNOWN_EXPONENT}. n = ?`
-      : `${formatInteger(value)} ${unit.symbol} = ${coefficient} × 10${UNKNOWN_EXPONENT}. n = ?`;
+      ? `1 ${unit.symbol} = 10${UNKNOWN_EXPONENT}. n = ${SLOT}`
+      : `${formatInteger(value)} ${unit.symbol} = ${coefficient} × 10${UNKNOWN_EXPONENT}. n = ${SLOT}`;
   return {
     key: `numberUnits:power:${value}:${unit.symbol}`,
     topic: 'numberUnits',
@@ -153,7 +154,7 @@ function powerToName(rng: Rng): Question {
     topic: 'numberUnits',
     steps: [
       numberStep({
-        prompt: `${mantissa === 1 ? power : `${shownCoefficient} × ${power}`} = ? ${unit.symbol}`,
+        prompt: `${mantissa === 1 ? power : `${shownCoefficient} × ${power}`} = ${SLOT} ${unit.symbol}`,
         answer,
         suffix: unit.symbol,
         explanation: factOnly

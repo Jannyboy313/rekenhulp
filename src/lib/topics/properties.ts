@@ -3,6 +3,7 @@ import { parse } from '../expr/parser';
 import { explainEvaluation } from '../expr/reduce';
 import { PROPERTIES, type Property } from '../expr/rewriteCheck';
 import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
+import { SLOT } from '../slot';
 import { numberStep, rewriteStep } from '../steps';
 import type { Question } from '../types';
 
@@ -231,7 +232,11 @@ export function propertyQuestion(
             ? `Geldige stap (${ADJECTIVES[detected]}), maar niet handig. Probeer ${ADJECTIVES[property]}.`
             : `Geldige stap (${ADJECTIVES[detected]}), maar gevraagd is ${ADJECTIVES[property]}.`,
       }),
-      numberStep({ prompt: `${text} = ?`, answer: value, explanation: explainEvaluation(useful) }),
+      numberStep({
+        prompt: `${text} = ${SLOT}`,
+        answer: value,
+        explanation: explainEvaluation(useful),
+      }),
     ],
   };
 }

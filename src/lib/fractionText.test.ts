@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { splitFractions, splitNoteFractions } from './fractionText';
+import { SLOT } from './slot';
 
 const text = (value: string) => ({ type: 'text', text: value });
+const slot = { type: 'slot' };
 const fraction = (num: string, den: string, mixed = false) => ({
   type: 'fraction',
   num,
@@ -12,19 +14,23 @@ const fraction = (num: string, den: string, mixed = false) => ({
 describe('splitFractions', () => {
   it.each([
     ['', []],
-    ['7 : 2 = ?', [text('7 : 2 = ?')]],
+    ['7 : 2 = ' + SLOT, [text('7 : 2 = '), slot]],
+    ['7 × ' + SLOT + ' = 56', [text('7 × '), slot, text(' = 56')]],
     ['25/2', [fraction('25', '2')]],
     ['12,5 of 25/2', [text('12,5 of '), fraction('25', '2')]],
     ['−3/4', [text('−'), fraction('3', '4')]],
     ['−12 1/2', [text('−12'), fraction('1', '2', true)]],
-    ['12 1/2% van 80 = ?', [text('12'), fraction('1', '2', true), text('% van 80 = ?')]],
+    ['12 1/2% van 80 = ' + SLOT, [text('12'), fraction('1', '2', true), text('% van 80 = '), slot]],
     ['12 1/2% = 80 : 8 = 10', [text('12'), fraction('1', '2', true), text('% = 80 : 8 = 10')]],
     ['1/3 en 2/3', [fraction('1', '3'), text(' en '), fraction('2', '3')]],
     ['1\u{202f}000/3', [fraction('1\u{202f}000', '3')]],
     ['3  1/2', [text('3  '), fraction('1', '2')]],
-    ['3/4 = ?/12', [fraction('3', '4'), text(' = '), fraction('?', '12')]],
-    ['9/12 = 3/?', [fraction('9', '12'), text(' = '), fraction('3', '?')]],
+    ['3/4 = ' + SLOT + '/12', [fraction('3', '4'), text(' = '), fraction(SLOT, '12')]],
+    ['9/12 = 3/' + SLOT, [fraction('9', '12'), text(' = '), fraction('3', SLOT)]],
     ['Hoeveel is het geheel?', [text('Hoeveel is het geheel?')]],
+    // A literal '?' is plain text, also next to a '/'.
+    ['3/4 = ?/12', [fraction('3', '4'), text(' = ?/12')]],
+    ['wat is 3/?', [text('wat is 3/?')]],
   ])('splits %j', (input, expected) => {
     expect(splitFractions(input)).toEqual(expected);
   });

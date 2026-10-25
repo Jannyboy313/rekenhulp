@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { GROUP_SEPARATOR, toSuperscript } from '../format';
 import { createRng } from '../random';
+import { SLOT } from '../slot';
 import {
   compare,
   equals,
@@ -250,7 +251,7 @@ describe('nameToPowerTip', () => {
     let seen = 0;
     for (let i = 0; i < 1000; i++) {
       const step = generateNumberUnits(rng).steps[0]!;
-      if (!step.prompt.endsWith('n = ?')) continue;
+      if (!step.prompt.endsWith(`n = ${SLOT}`)) continue;
       seen++;
       const exponent = Number(step.check('0').expected);
       expect(step.check(String(exponent * 10)).tip).toBeUndefined();

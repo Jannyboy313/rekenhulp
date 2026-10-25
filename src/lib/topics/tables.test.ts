@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
 import { formatInteger } from '../format';
 import { fromInteger, parseDutchNumber } from '../rational';
+import { SLOT } from '../slot';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
 import { generateTables, neighbourRowTip, productCheckTip, TABLE_FACTORS } from './tables';
@@ -33,7 +34,7 @@ describe('generateTables', () => {
       expect(question.key.startsWith('tables:')).toBe(true);
       expect(question.steps).toHaveLength(1);
       expect(question.steps[0]!.kind).toBe('number');
-      expect(question.steps[0]!.prompt).toMatch(/\?/);
+      expect(question.steps[0]!.prompt).toContain(SLOT);
     }
   });
 
