@@ -19,7 +19,8 @@ Done: the sets Tafels, Meten (v1 + v2: `speed`), Verhoudingen (v1 + v2: `percent
 `ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip,
 Breuken & kommagetallen and Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
 `symmetry`, `shapeProperties`), plus stacked fractions, the kladblok (§3.6), repeat until correct
-(§3.4), tips (§3.4.1) and the table choice for Tafels (§3.2).
+(§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
+Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
 Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
 says so:
@@ -34,7 +35,10 @@ says so:
 Mental arithmetic only: problems that need a calculator are out of scope (spec §12.3).
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
-`lib/topics/index.ts`, and append the set to `PRACTICE_SETS` in `lib/sets.ts`. A new `AnswerKind`
+`lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in
+`SetGlyph.svelte` (multicolour, violet/amber/blue tokens; without one the list shows a letter).
+Write the unknown of a prompt as `${SLOT}` (`lib/slot.ts`), never as a literal `?`: a literal `?`
+is a question mark, and `slot.sweep.test.ts` checks every generator. A new `AnswerKind`
 also needs a `KeypadStates` entry and an `INPUT_MODELS` entry in `lib/inputModels.ts`, and a
 reducer in `lib/keypadInput.ts`.
 
@@ -57,9 +61,8 @@ only the real choices, update and commit the spec, then implement directly with 
 
 ## Open follow-ups
 
-- Focus falls back to `body` after a screen or question change, and when the kladblok's "Naar
-  antwoordveld" overlay is activated by keyboard (keyboard/screen-reader users only).
-- Android splash uses the light `background_color` in dark mode (cosmetic).
+- Focus falls back to `body` after a screen or question change, and when the kladblok's "Tik hier
+  voor je antwoord" button is activated by keyboard (keyboard/screen-reader users only).
 - Move the `PlayScreen` session state (queue, repeats, records) into a pure reducer in
   `lib/play.ts`; separate session with a light plan.
 
@@ -75,10 +78,15 @@ only the real choices, update and commit the spec, then implement directly with 
 - Do not add `webmanifest` to `workbox.globPatterns`: vite-plugin-pwa already precaches the manifest,
   and a second entry with a different revision makes Workbox throw at SW startup (no offline mode).
   After `npm run build`, `dist/sw.js` must contain exactly one `manifest.webmanifest` entry.
+- `woff2` is in `workbox.globPatterns` (the Inter font is precached; `dist/sw.js` must list it).
+  Import only the latin file in `app.css`, not the package's `index.css`: that pulls in every
+  subset and bloats the precache.
 
 ## Stack
 
 - Svelte 5 (runes) + TypeScript (strict) + Vite — no SvelteKit
+- Inter (`@fontsource-variable/inter`, latin subset) and a light theme only: colours, shadows and
+  sizes are tokens in `app.css`; no raw colour values in components (apart from `Logo.svelte`)
 - `vite-plugin-pwa` (generateSW, full precache, works fully offline)
 - Vitest for tests, `svelte-check` for type checking, Prettier for formatting
 - Output is a static `dist/` folder; the user hosts it themselves
@@ -129,11 +137,12 @@ Everything else from the global allowlist still applies (no `git push`, `git che
 ```
 src/
   App.svelte            state machine: sets → setup → playing → results
-  components/           SetOverview, SetupScreen, PlayScreen (question queue incl. repeats),
-                        QuestionView, KeypadAnswer (answer field + error + keypad, routes keys
-                        to the kladblok), Keypad, Scratchpad (kladblok cells), Feedback,
-                        ResultScreen, MathText + Fraction (stacked fractions), press.ts
-                        (act-on-press action)
+  components/           SetOverview, SetupScreen, PlayScreen (question queue incl. repeats,
+                        auto-advance timer), QuestionView (also the correct state),
+                        KeypadAnswer (answer field + error + keypad, routes keys to the
+                        kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
+                        panel), ResultScreen, MathText + Fraction (stacked fractions, the slot of
+                        a prompt), Icon, Logo, SetGlyph, press.ts (act-on-press action)
   lib/
     types.ts            Question, Step, AnswerKind, CheckResult, Topic, PracticeSet
     random.ts           seedable RNG; every generator takes an rng argument; drawUntil redraws
@@ -149,7 +158,10 @@ src/
     inputModels.ts      per answer kind: keys, columns, typing state, reducer, validate,
                         display, view
     scratchpad.ts       kladblok: cell count, keys, typing, when shown
-    fractionText.ts     splits text into plain runs and (mixed) fractions for stacked display
+    fractionText.ts     splits text into plain runs, slots and (mixed) fractions for display
+    slot.ts             SLOT marker for the unknown of a prompt, hasSlot, plain
+    feedback.ts         CORRECT_FEEDBACK_MS (auto-advance after a correct answer)
+    units.ts            withUnits: an answer with its prefix and suffix
     promptSize.ts       prompt font size step from the displayed length
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary

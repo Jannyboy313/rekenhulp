@@ -265,7 +265,7 @@
     background: var(--surface);
     color: var(--primary);
     font-weight: 700;
-    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+    box-shadow: var(--shadow-segment);
   }
 
   footer {
