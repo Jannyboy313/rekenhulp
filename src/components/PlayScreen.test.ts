@@ -193,7 +193,8 @@ describe('PlayScreen', () => {
     ).toBeTruthy();
 
     await press('Verder');
-    expect(screen.getByText('7 × 98 = ?')).toBeTruthy();
+    // The slot is its own element, so the whole prompt is matched on its text content.
+    expect(document.querySelector('.prompt')?.textContent).toBe('7 × 98 = ?');
     await press('6', '8', '6', 'OK');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
 
