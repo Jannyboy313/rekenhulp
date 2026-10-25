@@ -6,11 +6,11 @@ const preset = {
   ...minimal2023Preset,
   maskable: {
     ...minimal2023Preset.maskable,
-    resizeOptions: { background: '#1d4ed8' },
+    resizeOptions: { background: '#5B3FD1' },
   },
   apple: {
     ...minimal2023Preset.apple,
-    resizeOptions: { background: '#1d4ed8' },
+    resizeOptions: { background: '#5B3FD1' },
   },
 };
 
