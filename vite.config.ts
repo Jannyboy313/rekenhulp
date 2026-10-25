@@ -19,11 +19,11 @@ const pwa = VitePWA({
     scope: '.',
     display: 'standalone',
     orientation: 'portrait',
-    theme_color: '#1d4ed8',
-    background_color: '#f8fafc',
+    theme_color: '#5B3FD1',
+    background_color: '#F5F6F8',
   },
   workbox: {
-    globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
+    globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
   },
 });
 

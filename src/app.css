@@ -1,49 +1,72 @@
+/* Latin subset only: the package's index.css pulls in every subset and bloats the precache. */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
 :root {
-  color-scheme: light dark;
-  --bg: #f8fafc;
+  color-scheme: light;
+  --bg: #f5f6f8;
   --surface: #ffffff;
   --text: #0f172a;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --primary: #1d4ed8;
+  --text-2: #3b4352;
+  --muted: #5a6475;
+  --placeholder: #8a93a3;
+  --border: #e3e6eb;
+  --border-key: #d5dae2;
+  --list-divider: #eef0f3;
+  --key-alt: #e6e9ef;
+  --sky-track: #e1f0fc;
+  --start-number: #ffd84d;
+  --glyph-amber: #e8a600;
+  --glyph-blue: #1873c4;
+  --glyph-fill: #a8d0f0;
+  --primary: #5b3fd1;
   --primary-text: #ffffff;
-  --key: #e2e8f0;
-  --key-active: #cbd5e1;
-  --correct: #15803d;
-  --correct-bg: #dcfce7;
-  --wrong: #b91c1c;
-  --wrong-bg: #fee2e2;
-  --radius: 0.75rem;
+  --primary-tint: #eeeafb;
+  --primary-dark: #3f2a9b;
+  --primary-disabled: #cbbff0;
+  --yellow-tint: #fff6d1;
+  --yellow-text: #6b4e00;
+  --sky: #1873c4;
+  --sky-tint: #e1f0fc;
+  --sky-text: #0f4f8a;
+  --good: #2e9e5b;
+  --good-tint: #e2f6ea;
+  --good-text: #0e5a33;
+  --good-sum: #1d7b45;
+  --good-track: #dce3d9;
+  --bad: #d3303a;
+  --bad-tint: #fde9eb;
+  --bad-text: #9c1a2b;
+  --scratch-border: #b8c0cc;
+  --tray-bg: #e9ecf1;
+  --tray-border: #dde1e7;
+  --tray-key-shadow: #cdd3dc;
+  --tray-key-op: #d5dae2;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.04);
+  --shadow-glow: 0 4px 12px rgba(91, 63, 209, 0.28);
+  --shadow-panel: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --radius: 1rem;
 
-  font-family:
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  /* Temporary aliases for the old names; removed in the cleanup task. */
+  --key: var(--key-alt);
+  --key-active: var(--border-key);
+  --correct: var(--good-text);
+  --correct-bg: var(--good-tint);
+  --wrong: var(--bad-text);
+  --wrong-bg: var(--bad-tint);
+
+  font-family: 'Inter Variable', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
   background: var(--bg);
   color: var(--text);
   -webkit-text-size-adjust: 100%;
   touch-action: manipulation;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-    --border: #334155;
-    --primary: #2563eb;
-    --key: #334155;
-    --key-active: #475569;
-    --correct: #4ade80;
-    --correct-bg: #14532d;
-    --wrong: #f87171;
-    /* Dark enough for --wrong text (the stop button) to reach 4.5:1. */
-    --wrong-bg: #450a0a;
-  }
 }
 
 *,
@@ -57,6 +80,7 @@ body {
   margin: 0;
   min-height: 100%;
   overscroll-behavior: none;
+  background: var(--bg);
 }
 
 body {
@@ -65,14 +89,13 @@ body {
   user-select: none;
 }
 
+/* No padding: every screen sets its own side padding and safe-area insets. */
 #app {
-  min-height: 100dvh;
+  height: 100dvh;
   max-width: 30rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
-    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
 }
 
 h1,
@@ -100,15 +123,23 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+.primary,
+.secondary {
+  height: 56px;
+  border-radius: 16px;
+  font-size: 17px;
+}
+
 .primary {
   background: var(--primary);
   color: var(--primary-text);
-  font-weight: 600;
+  font-weight: 700;
   padding: 0 1.5rem;
 }
 
 .secondary {
-  background: var(--key);
+  background: var(--key-alt);
+  font-weight: 600;
   padding: 0 1rem;
 }
 
