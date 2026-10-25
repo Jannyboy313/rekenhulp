@@ -118,7 +118,78 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
 
 ## 7. Content per set
 
-Added per set in its own session (§2). None yet.
+Added per set in its own session (§2). Worked lines below are pure equality chains (§6); words,
+`√` and "GGD van" go in text blocks or the worked block's title.
+
+### 7.1 Getallen & delers (`getallen`)
+
+Eight topics, ordered so each builds on the previous one (divisibility before primes, primes
+before factorization, factorization before GGD and KGV). The methods match the explanations of
+the practice topics (main spec §5.2–§5.7).
+
+1. **`digitRules` — Deelbaarheid aan de cijfers** (summary: `2, 3, 4, 5, 8, 9 en 11`)
+   - Table `Deler | Kijk naar | Deelbaar als`: 2 and 5 last digit; 4 last two digits; 8 last
+     three digits; 3 and 9 cijfersom; 11 alternerende som (starting with `+` at the leftmost
+     digit) is a multiple of 11 (0 counts).
+   - Worked `2718 en 9`: `2 + 7 + 1 + 8 = 18`, `2718 = 9 × 302`.
+   - Worked `9174 en 11`: `9 − 1 + 7 − 4 = 11`, `9174 = 11 × 834`.
+   - Tip: a cijfersom you are unsure of: take the cijfersom again (`18 → 1 + 8 = 9`).
+2. **`combinedRules` — Deelbaarheid door 6, 12, 14 en 15** (summary: `Twee regels tegelijk`)
+   - Text: split the divisor into two factors without a common divisor and check both.
+   - Table `Deler | Factoren`: `6 | 2 × 3`, `12 | 3 × 4`, `14 | 2 × 7`, `15 | 3 × 5`.
+   - Text example: `1246` is even, but cijfersom `1 + 2 + 4 + 6 = 13` → not by 3 → not by 6.
+   - Tip: `12 = 2 × 6` does not work: 2 and 6 share 2. `18` is divisible by 2 and by 6, not by 12.
+3. **`chunking` — Deelbaarheid door 7 en 13** (summary: `Happen in veelvouden`)
+   - Text: there is no digit rule; take off big multiples you know (`7 × 300`, `7 × 80`) until a
+     small remainder is left.
+   - Worked `2716 en 7`: `2716 = 2100 + 560 + 56`, `2716 : 7 = 300 + 80 + 8 = 388`.
+   - Text: `2718 = 2100 + 560 + 56 + 2` → remainder 2, not divisible.
+   - Worked `1859 en 13`: `1859 = 1300 + 520 + 39`, `1859 : 13 = 100 + 40 + 3 = 143`.
+4. **`primes` — Priemgetallen** (summary: `Precies twee delers`)
+   - Text: a prime has exactly two divisors, 1 and itself. 1 is not a prime; 2 is the only even
+     prime.
+   - Text: to test `n`, divide by the primes whose square is at most `n`. For `151`: 2, 3, 5, 7
+     and 11, because `13² = 169` is more than 151. None divides, so 151 is prime.
+   - Table `Priemgetallen tot 100`, one row per ten (`0–9 | 2, 3, 5, 7`, …, `90–99 | 97`).
+   - Table `Lijkt priem, is het niet` with the hard composites under 200 (not divisible by 2, 3
+     or 5): `49 = 7²`, `77 = 7 × 11`, `91 = 7 × 13`, `119 = 7 × 17`, `121 = 11²`,
+     `133 = 7 × 19`, `143 = 11 × 13`, `161 = 7 × 23`, `169 = 13²`, `187 = 11 × 17`.
+   - Tip: below 200, a number not divisible by 2, 3 or 5 is prime unless it is in this table.
+5. **`factorization` — Ontbinden in priemfactoren** (summary: `De deelladder`)
+   - Text: divide by the smallest prime that fits, again and again, until a prime is left;
+     write repeated factors as a power.
+   - Worked `84`: `84 = 2 × 42 = 2 × 2 × 21 = 2 × 2 × 3 × 7 = 2² × 3 × 7`.
+   - Worked `180, met een makkelijke splitsing`: `180 = 18 × 10 = 2 × 9 × 2 × 5 = 2² × 3² × 5`.
+   - Tip: 1 is not a factor; check by multiplying back.
+6. **`gcd` — GGD** (summary: `Grootste gemeenschappelijke deler`)
+   - Text: the largest number that divides both; at most the smaller number.
+   - Worked `84 en 126`: `84 = 2² × 3 × 7`, `126 = 2 × 3² × 7`, `2 × 3 × 7 = 42`, with text:
+     take the primes in both, each with its lowest power.
+   - Text, difference method: the GGD also divides the difference. `126 − 84 = 42` and 42
+     divides 84, so GGD = 42. Otherwise repeat with the smaller number and the difference:
+     120 and 72 → 48; 72 and 48 → 24; 24 divides 48, so GGD = 24.
+   - Tip: if the smaller number divides the larger, it is the GGD. No common prime → GGD = 1.
+7. **`lcm` — KGV** (summary: `Kleinste gemeenschappelijke veelvoud`)
+   - Text: the smallest number both divide; at least the larger number.
+   - Text, counting up: walk the multiples of the larger number until the smaller divides it:
+     12 and 18 → 18 no, 36 yes.
+   - Worked `12 en 18, met priemfactoren`: `12 = 2² × 3`, `18 = 2 × 3²`, `2² × 3² = 36`, with
+     text: every prime that occurs, with its highest power.
+   - Worked `12 en 18, via de GGD`: `12 × 18 : 6 = 216 : 6 = 36`.
+   - Table `GGD | KGV`: `deler van allebei | veelvoud van allebei`, `hoogstens het kleinste getal
+     | minstens het grootste getal`, `laagste macht van gedeelde priemen | hoogste macht van alle
+     priemen`.
+   - Tip: no common divisor (GGD 1) → KGV = the product: `8 × 15 = 120`.
+8. **`squares` — Kwadraten en wortels** (summary: `11² tot en met 25²`)
+   - Table `n | n²` for 11 to 25.
+   - Worked `Tientallen afsplitsen`: `17² = 17 × 10 + 17 × 7 = 170 + 119 = 289`,
+     `23² = 23 × 20 + 23 × 3 = 460 + 69 = 529`.
+   - Worked `Eindigt op 5`: `15² = 1 × 2 × 100 + 25 = 225`, `25² = 2 × 3 × 100 + 25 = 625`, with
+     text: tens digit times one more, then 25.
+   - Text, roots: √529 lies between 20 and 30 (`20² = 400`, `30² = 900`); a square ending in 9
+     has a root ending in 3 or 7; `25² = 625` is too big, so √529 = 23.
+   - Table `Kwadraat eindigt op | Wortel eindigt op`: `1 | 1 of 9`, `4 | 2 of 8`, `5 | 5`,
+     `6 | 4 of 6`, `9 | 3 of 7`, `0 | 0`.
 
 ## 8. Open assumptions
 
