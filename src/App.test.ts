@@ -8,6 +8,7 @@ import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
   describeSetTopicRows,
+  FRACTIONS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBERS_SET,
@@ -207,6 +208,7 @@ describe('App', () => {
         expect.stringContaining(NUMBERS_SET.name),
         expect.stringContaining(OPERATIONS_SET.name),
         expect.stringContaining(NUMBER_SENSE_SET.name),
+        expect.stringContaining(FRACTIONS_SET.name),
       ]);
     });
   });
