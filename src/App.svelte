@@ -1,10 +1,13 @@
 <script lang="ts">
+  import LessonSetList from './components/LessonSetList.svelte';
   import PlayScreen from './components/PlayScreen.svelte';
   import PracticeSetList from './components/PracticeSetList.svelte';
   import ResultScreen from './components/ResultScreen.svelte';
-  import SetOverview from './components/SetOverview.svelte';
+  import SetOverview, { type OverviewTab } from './components/SetOverview.svelte';
   import SetupScreen from './components/SetupScreen.svelte';
   import { createBackGuard } from './lib/backGuard';
+  import { LESSONS } from './lib/lessons';
+  import type { Lesson } from './lib/lessons/types';
   import { createRng, randomSeed } from './lib/random';
   import { summarize, type QuestionRecord, type SessionSummary } from './lib/results';
   import { buildSession, generatorsFor } from './lib/session';
@@ -18,8 +21,16 @@
     | { name: 'playing'; set: PracticeSet; questions: Question[] }
     | { name: 'results'; set: PracticeSet; summary: SessionSummary };
 
+  interface Props {
+    /** Tests pass a fixture; the app uses the registry. */
+    lessons?: readonly Lesson[];
+  }
+
+  let { lessons: allLessons = LESSONS }: Props = $props();
+
   let screen = $state.raw<Screen>({ name: 'sets' });
-  // Kept in memory only while the app is open (spec §3.2: nothing is persisted).
+  // Kept in memory only while the app is open (spec §3.1, §3.2: nothing is persisted).
+  let tab = $state<OverviewTab>('practice');
   let size = $state(DEFAULT_SESSION_SIZE);
   let tables = $state([...TABLE_FACTORS]);
 
@@ -55,8 +66,13 @@
 <svelte:window onpopstate={handlePopState} />
 
 {#if screen.name === 'sets'}
-  <SetOverview>
-    <PracticeSetList sets={PRACTICE_SETS} onselect={(set) => (screen = { name: 'setup', set })} />
+  <SetOverview {tab} ontab={(next) => (tab = next)}>
+    {#snippet practice()}
+      <PracticeSetList sets={PRACTICE_SETS} onselect={(set) => (screen = { name: 'setup', set })} />
+    {/snippet}
+    {#snippet lessons()}
+      <LessonSetList sets={PRACTICE_SETS} lessons={allLessons} onopen={() => {}} />
+    {/snippet}
   </SetOverview>
 {:else if screen.name === 'setup'}
   {@const set = screen.set}
