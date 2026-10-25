@@ -30,13 +30,13 @@ describe('App', () => {
     render(App);
     await click(/Tafels/);
     await systemBack();
-    expect(screen.getByText('Kies een oefenset')).toBeTruthy();
+    expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
 
     await click(/Tafels/);
     await click('Start');
     await click('Stop');
     await systemBack();
-    expect(screen.getByText('Kies een oefenset')).toBeTruthy();
+    expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
   });
 
   it('system back is ignored during a session, also when repeated', async () => {
@@ -64,12 +64,12 @@ describe('App', () => {
     expect(history.back).toHaveBeenCalledTimes(2);
     // The popstate of that history.back() must not count as a system back.
     await systemBack();
-    expect(screen.getByText('Kies een oefenset')).toBeTruthy();
+    expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
   });
 
   it('opens on the set overview without a preselected set', () => {
     render(App);
-    expect(screen.getByText('Kies een oefenset')).toBeTruthy();
+    expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
     expect(screen.getByRole('button', { name: /Tafels/ })).toBeTruthy();
   });
 
@@ -122,7 +122,7 @@ describe('App', () => {
     render(App);
     await click(/Tafels/);
     await click('Terug');
-    expect(screen.getByText('Kies een oefenset')).toBeTruthy();
+    expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
 
     await click(/Tafels/);
     await click('Start');
