@@ -1,5 +1,6 @@
 <script lang="ts">
   import PlayScreen from './components/PlayScreen.svelte';
+  import PracticeSetList from './components/PracticeSetList.svelte';
   import ResultScreen from './components/ResultScreen.svelte';
   import SetOverview from './components/SetOverview.svelte';
   import SetupScreen from './components/SetupScreen.svelte';
@@ -54,7 +55,9 @@
 <svelte:window onpopstate={handlePopState} />
 
 {#if screen.name === 'sets'}
-  <SetOverview sets={PRACTICE_SETS} onselect={(set) => (screen = { name: 'setup', set })} />
+  <SetOverview>
+    <PracticeSetList sets={PRACTICE_SETS} onselect={(set) => (screen = { name: 'setup', set })} />
+  </SetOverview>
 {:else if screen.name === 'setup'}
   {@const set = screen.set}
   <SetupScreen {set} bind:size bind:tables onstart={() => startSession(set)} onback={showSets} />

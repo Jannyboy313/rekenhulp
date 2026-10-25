@@ -136,6 +136,19 @@ button:focus-visible {
   padding: 0 1rem;
 }
 
+/* The scrolling list of SetRows on the overview, shared by the practice and the lesson list. */
+.set-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0 16px calc(16px + env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
