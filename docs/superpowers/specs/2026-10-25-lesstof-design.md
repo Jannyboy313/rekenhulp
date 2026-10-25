@@ -26,9 +26,11 @@ RWT. It is read on demand, never part of a session.
 
 1. **Framework** (this spec, §3–§6): data model, checks, screens, tabs, navigation. Ships with
    no lessons.
-2. **Content per set**, one set per session, Tafels first, then the sets in the order of
-   `PRACTICE_SETS`. Each set adds its section to §7 (topics, examples) before its content is
-   written.
+2. **Content per set**, developed separately from the practice sets and outside the main
+   roadmap (main spec §12): no fixed order, one set at a time, only when the user asks. Each set
+   adds its section to §7 (topics, examples) before its content is written.
+
+A new practice set appears greyed out on the Lesstof tab by itself (§3) and needs no lesson.
 
 ## 3. Navigation
 
@@ -95,7 +97,7 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
 ```
 
 - A lesson belongs to a set by `setId`. Its topics are its own and need not match the set's
-  practice topics (Tafels has one practice topic and will have several lesson topics).
+  practice topics (Tafels has one practice topic but could have several lesson topics).
 - Rendering: all text goes through `MathText`, so stacked fractions, mixed numbers and the slot
   work as in prompts. Text follows the number conventions of main spec §8 (decimal comma, thin
   space thousands separator, `×` and `:`, `−`, the `SLOT` marker for an unknown).
@@ -105,8 +107,7 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
 - Every `lesson.setId` is the id of a set in `PRACTICE_SETS`, at most one lesson per set; topic
   ids are unique within a lesson; a lesson has at least one topic and every topic at least one
   block.
-- **Parity:** the sets without a lesson equal an explicit list in the test. Adding a lesson
-  shortens the list; at the end it is empty and every set has a lesson.
+- No test requires a set to have a lesson: adding a practice set never touches lesson code.
 - **Worked examples are correct:** every line of a `worked` block is an equality chain
   (`13 × 7 = 10 × 7 + 3 × 7 = 70 + 21 = 91`); each side is parsed and evaluated with `lib/expr`
   and all sides must be equal. Fractions (`3/4`) and thin-space grouped numbers (`2 500`) are

@@ -25,14 +25,15 @@ Breuken & kommagetallen and Meetkunde (`perimeterArea`, `solids`, `pythagoras`, 
 Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
-content checks, back guard). `LESSONS` is still empty, so every Lesstof row is disabled. Next:
-the content per set, Tafels first, one set per session and only when the user says so. Linking
-from other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not
-used yet.
+content checks, back guard). `LESSONS` is still empty, so every Lesstof row is disabled. The
+lesstof is developed separately from the practice sets and is not part of the roadmap below: no
+fixed order, content only when the user asks for it (iterate its spec §7 first). Linking from
+other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not used
+yet.
 
 To add a lesson: write its topics in the lesstof spec §7 first, then add `lib/lessons/<set>.ts`
-(a `Lesson` with the set's id), append it to `LESSONS` in `lib/lessons/index.ts` and remove the
-set from the parity list in `lib/lessons/index.test.ts`. `validate.test.ts` checks structure,
+(a `Lesson` with the set's id) and append it to `LESSONS` in `lib/lessons/index.ts`.
+`validate.test.ts` checks structure,
 notation and that every `worked` line is a true equality chain. Keep lesson code separate from
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
@@ -55,7 +56,8 @@ To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators 
 Write the unknown of a prompt as `${SLOT}` (`lib/slot.ts`), never as a literal `?`: a literal `?`
 is a question mark, and `slot.sweep.test.ts` checks every generator. A new `AnswerKind`
 also needs a `KeypadStates` entry and an `INPUT_MODELS` entry in `lib/inputModels.ts`, and a
-reducer in `lib/keypadInput.ts`.
+reducer in `lib/keypadInput.ts`. A new set shows up greyed out on the Lesstof tab by itself; it
+needs no lesson.
 
 ## Workflow
 

@@ -8,9 +8,10 @@
 A phone-first PWA for practising arithmetic without a calculator. Purpose: improve general
 mental-arithmetic skill and prepare for the PABO rekentoets. The user picks a themed practice
 set, works through a generated session of exercises, gets immediate feedback per exercise and
-an overview at the end. Per set there is also short study material (**lesstof**): a cheat sheet
-to refresh the method before practising. It has its own spec, `2026-10-25-lesstof-design.md`;
-this spec only covers its entry points (§3, §3.1).
+an overview at the end. A set can also have short study material (**lesstof**): a cheat sheet
+to refresh the method before practising. It is developed separately from the practice sets and
+has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entry points (§3,
+§3.1).
 
 ### Non-goals
 
@@ -1974,6 +1975,9 @@ is in git.
 None at the moment.
 
 ## 12. Roadmap (not in v1)
+
+The roadmap covers the practice sets only. The lesstof has its own order (lesstof spec §2); a new
+set needs no lesson.
 
 ### 12.1 v2 — PABO mental arithmetic and basic knowledge
 
