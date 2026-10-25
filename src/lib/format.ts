@@ -131,9 +131,15 @@ export function formatFactorizationInput(raw: string): string {
   return caretPowers(raw).replaceAll('×', ' × ');
 }
 
+/**
+ * Marks the end of a fraction in a kladblok note (`_3/4` + this): the breuk key pressed once more
+ * in the denominator. Invisible, and the only thing that tells the UI the cursor left the fraction.
+ */
+export const NOTE_FRACTION_END = '\u{200b}';
+
 /** A kladblok note '2^3=8 -3/4' as '2³=8 −3/4', compact. A '^' without exponent stays visible. */
 export function formatNote(raw: string): string {
-  return formatInput(caretPowers(raw));
+  return formatInput(caretPowers(raw.replaceAll(NOTE_FRACTION_END, '')));
 }
 
 /** A kladblok note for screen readers: '1_2/3' as '1 en 2/3', '_3/4' as '3/4' (spec §3.6). */

@@ -20,10 +20,10 @@
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
 
-  /** The cursor is still filling in a fraction: the slots mark it, so there is no caret until the
-   * numerator and the first digit of the denominator are in (`_`, `_3` and `_3/` have none). */
+  /** The cursor is inside a fraction: the slots mark it, so there is no caret until the breuk key
+   * leaves it (`NOTE_FRACTION_END`), or a space or operator follows. */
   function inFraction(note: string): boolean {
-    return /_\d*\/?$/.test(note);
+    return /_\d*(?:\/\d*)?$/.test(note);
   }
 
   /** A cell is clipped, not wrapped: after every change it shows the end, where the caret is. */

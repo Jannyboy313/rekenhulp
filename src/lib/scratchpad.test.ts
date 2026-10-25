@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { NOTE_FRACTION_END as END } from './format';
 import type { KeypadKey } from './keypadInput';
 import {
   applyNoteKey,
@@ -70,7 +71,15 @@ describe('scratchpad', () => {
     ['moves to the denominator only after a numerator digit', '//3', '_3'],
     ['ignores operators, =, comma, ^ and spatie in the numerator', '/3+×:-=,^ 4', '_34'],
     ['ignores the breuk key after a number with a comma', '0,5/2 5,/', '0,52 5,'],
-    ['ignores the breuk key in a denominator or an exponent', '/3/4/5 2^3/4', '_3/45 2^34'],
+    ['leaves the fraction with the breuk key in a denominator', '/3/4/', `_3/4${END}`],
+    ['ignores the breuk key in an empty denominator', '/3//', '_3/'],
+    ['ignores the breuk key in an exponent', '2^3/4', '2^34'],
+    [
+      'allows only an operator, =, - or a spatie after a finished fraction',
+      '/3/4/5,^/+1 /1/2/=',
+      `_3/4${END}+1 _1/2${END}=`,
+    ],
+    ['deletes the end of a fraction first', '/3/4/<', '_3/4'],
     ['ignores a comma in an exponent or a fraction', '2^,3, /,3,/,4,', '2^3 _3/4'],
     ['ignores ^ and / after a comma', '5,^/', '5,'],
     ['allows = more than once per item', '3+4=7=7,0 2=2', '3+4=7=7,0 2=2'],

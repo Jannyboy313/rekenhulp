@@ -363,8 +363,11 @@ in the place of OK.
 
   `/` is the breuk key, drawn as a small stacked fraction (two outlined boxes) as on the fraction
   keypad. `^` is drawn as x with a raised n, on every keypad that has it. In a kladblok cell the
-  caret is hidden while a fraction is being filled in, and returns as soon as the numerator and
-  the first digit of the denominator are in. The label row turns sky blue (not primary) while a
+  caret is hidden while the cursor is inside a fraction, and returns when the breuk key is
+  pressed once more in a denominator with digits (that leaves the fraction: stored as an
+  invisible end marker after `_3/4`; backspace removes it first), or when a space or operator
+  follows. After a finished fraction only an operator, `=`, `-` or a spatie are accepted. The
+  spatie icon is a long open box, only a little longer than the glyph it replaces. The label row turns sky blue (not primary) while a
   cell is active, like the cell.
   The answer field is 56 px high, as high as the "Tik hier voor je antwoord" button, also while
   a fraction template is open (the template is drawn smaller in the field), so nothing moves.

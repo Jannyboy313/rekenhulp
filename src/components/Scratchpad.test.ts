@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
+import { NOTE_FRACTION_END } from '../lib/format';
 import { SHORT_SCREENS } from '../lib/scratchpad';
 import Scratchpad from './Scratchpad.svelte';
 import source from './Scratchpad.svelte?raw';
@@ -30,8 +31,10 @@ describe('Scratchpad', () => {
     ['_3', false],
     ['_3/', false],
     ['1_', false],
-    ['_3/4', true],
-    ['1_3/4', true],
+    ['_3/4', false],
+    ['1_3/4', false],
+    [`_3/4${NOTE_FRACTION_END}`, true],
+    [`1_3/4${NOTE_FRACTION_END}`, true],
     ['_3/4 ', true],
     ['_3/4+', true],
     ['12', true],
@@ -39,6 +42,15 @@ describe('Scratchpad', () => {
   ])('shows the caret in the note %j: %s', (note, caret) => {
     render(Scratchpad, { props: { notes: [note], active: 0, onselect: vi.fn() } });
     expect(document.querySelector('.caret') !== null).toBe(caret);
+  });
+
+  it('does not show the end-of-fraction marker, to the eye or to a screen reader', () => {
+    render(Scratchpad, {
+      props: { notes: [`_3/4${NOTE_FRACTION_END}+1`], active: 0, onselect: vi.fn() },
+    });
+    const cell = screen.getByRole('button');
+    expect(cell.textContent).toBe('3/4+1');
+    expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 3/4+1');
   });
 
   it('shows a caret only in the active cell', () => {

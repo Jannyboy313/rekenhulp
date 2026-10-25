@@ -119,7 +119,7 @@
   /* The spatie key: an open box, longer than a normal glyph. */
   .space {
     display: inline-block;
-    width: 1.9em;
+    width: 1.1em;
     height: 0.4em;
     border: 2px solid currentColor;
     border-top: none;
@@ -132,7 +132,7 @@
     display: inline-block;
     width: 0.6em;
     height: 0.6em;
-    border: 2.5px solid currentColor;
+    border: 2px solid currentColor;
     border-radius: 2px;
     vertical-align: middle;
   }

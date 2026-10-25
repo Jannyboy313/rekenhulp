@@ -1,3 +1,4 @@
+import { NOTE_FRACTION_END } from './format';
 import { MAX_INPUT_LENGTH, type KeypadKey } from './keypadInput';
 import { keyDefs, type KeyDef } from './keys';
 import type { AnswerKind, Topic } from './types';
@@ -40,7 +41,8 @@ export const NOTE_COLUMNS = 4;
  * One key typed into a note: items (numbers or short sums like `12×7=84`) separated by single
  * spaces. Every key acts on the last item; the rules per key are in spec §3.6. A note stores a
  * fraction as `_3/4`: the breuk key writes `_` to open it and `/` to move to the denominator, so
- * `1_3/4` is a mixed number and backspace undoes one breuk press at a time.
+ * `1_3/4` is a mixed number, and once more in the denominator to leave it (`NOTE_FRACTION_END`).
+ * Backspace undoes one breuk press at a time.
  */
 function applyNote(note: string, key: KeypadKey): string {
   if (key === 'backspace') return note.slice(0, -1);
@@ -56,8 +58,10 @@ function noteKeyText(item: string, key: KeypadKey): string {
   // An exponent, numerator or denominator: integer digits only, and no ^ or breuk after it.
   const numberIsPart = before === '^' || before === '_' || before === '/';
   const inNumerator = before === '_';
+  // A finished fraction: only an operator, = or a spatie may follow.
+  const closed = item.endsWith(NOTE_FRACTION_END);
   // A digit that may end a number: an open numerator still needs its denominator.
-  const afterDigit = /\d$/.test(item) && !inNumerator;
+  const afterDigit = (/\d$/.test(item) || closed) && !inNumerator;
   switch (key) {
     case ' ':
     case '+':
@@ -70,15 +74,17 @@ function noteKeyText(item: string, key: KeypadKey): string {
       // operator. A '-' after a digit is the operator, so '5--3' is possible but '--' is not.
       return afterDigit || /(^|[+×:=]|\d-)$/.test(item) ? key : '';
     case '^':
-      return afterDigit && !numberIsPart ? key : '';
+      return afterDigit && !numberIsPart && !closed ? key : '';
     case '/':
       if (inNumerator) return number === '' ? '' : '/';
-      return !numberIsPart && !number.includes(',') ? '_' : '';
+      // A press in a denominator with digits leaves the fraction.
+      if (before === '/') return number === '' ? '' : NOTE_FRACTION_END;
+      return !numberIsPart && !closed && !number.includes(',') ? '_' : '';
     case ',':
-      return !numberIsPart && !number.includes(',') && !numberFull ? key : '';
+      return !numberIsPart && !closed && !number.includes(',') && !numberFull ? key : '';
     default:
       // Only digits are appended; any other key is ignored until handled explicitly above.
-      return /^\d$/.test(key) && !numberFull ? key : '';
+      return /^\d$/.test(key) && !numberFull && !closed ? key : '';
   }
 }
 
