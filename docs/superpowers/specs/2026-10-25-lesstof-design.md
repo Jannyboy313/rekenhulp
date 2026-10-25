@@ -577,7 +577,7 @@ lines hold numbers only.
 7. **`symmetry` — Symmetrie** (summary: `Spiegelen, draaien en puntsymmetrie`)
    - Text: a symmetrieas folds the figure onto itself; draaisymmetrie: the smallest turn that
      makes it fall onto itself; puntsymmetrisch: a half turn (180°) does.
-   - Table `Figuur | Assen | Draaihoek | Punt`, the rows of §5.31 with short names (rechthoek
+   - Table `Figuur | Assen | Draaihoek | Puntsymmetrisch`, the rows of §5.31 with short names (rechthoek
      (geen vierkant), …) and `ja` / `nee`.
    - Worked `Regelmatige vijfhoek`: `360 : 5 = 72`.
    - Tip: "Een regelmatige n-hoek heeft n symmetrieassen en een draaihoek van 360° : n; hij is
