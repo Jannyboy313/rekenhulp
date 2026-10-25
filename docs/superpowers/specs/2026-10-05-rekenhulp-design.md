@@ -10,7 +10,7 @@ mental-arithmetic skill and prepare for the PABO rekentoets. The user picks a th
 set, works through a generated session of exercises, gets immediate feedback per exercise and
 an overview at the end. Per set there is also short study material (**lesstof**): a cheat sheet
 to refresh the method before practising. It has its own spec, `2026-10-25-lesstof-design.md`;
-this spec only covers its entry points (§3, §3.1, §3.2).
+this spec only covers its entry points (§3, §3.1).
 
 ### Non-goals
 
@@ -116,10 +116,7 @@ The app is a state machine in `App.svelte` with four states:
 - **Count:** 5, 10, 15, 25 or 50 exercises, shown as one segmented control (a radio group of 5
   equal segments). The default is 15.
 - A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count
-  (the number in a lighter yellow). There is no caption above it.
-- A set with a lesson shows a secondary button **Lesstof** (lesstof spec §3). Terug from the
-  lesstof returns to this screen with count and table choice unchanged.
-- The chosen count and table choice are kept in memory only while the app stays open; nothing is
+  (the number in a lighter yellow). There is no caption above it.- The chosen count and table choice are kept in memory only while the app stays open; nothing is
   persisted. **Opnieuw** reuses both.
 
 Note: the 3-minute target corresponds to roughly 15 exercises (~12 s each). Larger counts are

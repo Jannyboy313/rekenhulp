@@ -3,7 +3,7 @@
 - Started: 2026-10-25
 - Status: living spec for the study material (lesstof). The main spec
   (`2026-10-05-rekenhulp-design.md`) stays the source of truth for everything else, incl. the
-  number conventions (§8) and the entry points to the lesstof (§3, §3.1, §3.2). Decision history
+  number conventions (§8) and the entry points to the lesstof (§3, §3.1). Decision history
   is in git.
 
 ## 1. Goal
@@ -34,23 +34,24 @@ RWT. It is read on demand, never part of a session.
 
 States in `App.svelte` (main spec §3), next to `sets → setup → playing → results`:
 
-- `lessonTopics` (set, origin): the topic list of one lesson. Origin is `sets` or `setup`.
-- `lesson` (set, topic, origin): one topic.
+- `lessonTopics` (set, lesson, return target): the topic list of one lesson.
+- `lesson` (set, lesson, topic, return target of its topic list): one topic.
 
-Entry points:
+Entry point: the **Lesstof tab** on the overview (main spec §3.1). It lists **all** practice
+sets, in `PRACTICE_SETS` order, with the same glyph, name and description as **Oefenen**. A set
+with a lesson is a normal row and opens `lessonTopics`; a set without a lesson is shown greyed
+out and disabled (the global disabled style, `disabled` attribute, not focusable).
 
-- **Lesstof tab** on the overview (main spec §3.1): lists the sets that have a lesson, in
-  `PRACTICE_SETS` order, with the same rows as **Oefenen**. Tapping a row opens `lessonTopics`.
-  Sets without a lesson are not listed. With no lessons at all the list is empty, with no
-  placeholder text (temporary state, §2).
-- **Lesstof button** on the setup screen (main spec §3.2), only for a set with a lesson. Opens
-  `lessonTopics` with origin `setup`.
+**Linking is supported, not used yet.** `lessonTopics` carries the screen to return to, so a
+later entry point (e.g. a button on the setup screen) only has to open it with its own screen as
+return target; the lesson screens do not change. No such entry point is built now: the practice
+screens (setup, playing, results) stay untouched.
 
 Back:
 
 - **Terug** on `lesson` → `lessonTopics` of the same set.
-- **Terug** on `lessonTopics` → origin: `sets` (the Lesstof tab stays active) or `setup` (count and
-  table choice unchanged, they live in `App.svelte`).
+- **Terug** on `lessonTopics` → its return target; for now always `sets`, with the Lesstof tab
+  still active.
 - The **system back** does what Terug does and never closes the app (main spec §3). Because both
   lesson states are off `sets`, the back-guard entry consumed by a `popstate` must be pushed
   again whenever the new screen is still off `sets`.
@@ -60,6 +61,14 @@ Back:
 - **Overview tabs:** a segmented control **Oefenen | Lesstof** under the title, `role="tablist"`,
   two `role="tab"` with `aria-selected`, arrow keys move between them. Default **Oefenen**; the
   active tab lives in `App.svelte` memory only.
+- **Code separation:** the lesstof is its own part of the app, not mixed into the practice
+  code. Lesson screens and lists are their own components (`LessonSetList`, `LessonTopicList`,
+  `LessonView`); practice components get no lesson props or branches; `lib/lessons/` does not
+  extend `PracticeSet` or `lib/sets.ts` (it only reads the sets to link a lesson by `setId`).
+  Shared pieces are purely presentational: the overview shell (header + tabs) that renders
+  either list, and the set row (glyph tile, name, description, chevron, `disabled`) used by both
+  lists. `App.svelte` stays the single state machine, with the lesson states as their own
+  branches.
 - **`lessonTopics`:** header like the setup screen (back button with aria-label **Terug**, glyph
   tile, set name), then one row per topic with its title and a one-line summary, in the row style
   of the overview. Scrolls when long.
@@ -112,5 +121,3 @@ Added per set in its own session (§2). None yet.
 
 - **Block types:** `text`, `worked`, `table` and `tip` are assumed to be enough. A bullet list
   is left out until a lesson needs it.
-- **Setup button placement:** a secondary button **Lesstof** above Start is assumed; checked on a
-  phone during implementation.
