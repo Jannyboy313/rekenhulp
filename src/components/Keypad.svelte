@@ -44,11 +44,10 @@
     >
       {#if icon === 'fraction'}<Fraction
           >{#snippet numerator()}<span class="box"></span>{/snippet}{#snippet denominator()}<span
-              class="box"></span
-            >{/snippet}</Fraction
-        >{:else if icon === 'power'}x<sup>n</sup>{:else if icon === 'space'}<span
-          class="space"></span
-        >{:else}{label}{/if}
+              class="box"
+            ></span>{/snippet}</Fraction
+        >{:else if icon === 'power'}x<sup>n</sup>{:else if icon === 'space'}<span class="space"
+        ></span>{:else}{label}{/if}
     </button>
   {/each}
   {#if onsubmit}

@@ -42,7 +42,15 @@ describe('Keypad', () => {
   });
 
   it('draws ^ as x with a raised n, and the breuk key as two outlined boxes', () => {
-    render(Keypad, { props: { keys: NOTE_KEYS, columns: NOTE_COLUMNS, canSubmit: false, onkey: vi.fn(), tray: true } });
+    render(Keypad, {
+      props: {
+        keys: NOTE_KEYS,
+        columns: NOTE_COLUMNS,
+        canSubmit: false,
+        onkey: vi.fn(),
+        tray: true,
+      },
+    });
     const power = screen.getByRole('button', { name: 'tot de macht' });
     expect(power.querySelector('sup')?.textContent).toBe('n');
     expect(power.textContent?.replace(/\s/g, '')).toBe('xn');

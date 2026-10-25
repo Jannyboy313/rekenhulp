@@ -39,9 +39,11 @@
 
 <!-- The digits of a slot; the small caret behind them marks the slot being filled in. An empty
      slot without the caret keeps its height with a blank. -->
-{#snippet slotText(digits: string, caret: boolean)}{#if digits === '' && !caret}{BLANK_SLOT}{:else}{digits}{#if caret}<span
-        class="mini-caret"></span
-      >{/if}{/if}{/snippet}
+{#snippet slotText(
+  digits: string,
+  caret: boolean,
+)}{#if digits === '' && !caret}{BLANK_SLOT}{:else}{digits}{#if caret}<span class="mini-caret"
+      ></span>{/if}{/if}{/snippet}
 
 <!-- The kladblok (spec §3.6): fixed cells for numbers and short sums typed on the keypad. -->
 <div class="scratchpad" role="group" aria-label="Kladblok">

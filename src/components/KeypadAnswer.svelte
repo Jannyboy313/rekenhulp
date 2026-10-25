@@ -72,8 +72,8 @@
     disabled={locked}
     use:press={() => select(name)}
     >{#if digits === '' && (name !== active || locked)}{BLANK_SLOT}{:else}{digits}{#if name === active && !locked}<span
-          class="mini-caret"></span
-        >{/if}{/if}</button
+          class="mini-caret"
+        ></span>{/if}{/if}</button
   >{/snippet}
 
 {#if inNote}
