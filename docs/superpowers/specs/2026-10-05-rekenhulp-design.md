@@ -84,14 +84,16 @@ The app is a state machine in `App.svelte` with four states:
 
 - The app always opens on this screen, with no set preselected.
 - It shows the logo, the title "Rekenhulp" and "Wat wil je oefenen?", then a list of rows, one
-  per available set (§4). Each row shows an icon tile with a glyph, the set's name and a
+  per available set (§4). Each row shows a tile with a multicolour glyph (violet, amber and
+  blue; a new set needs a glyph in the same style), the set's name and a
   one-line description of its topics. The list scrolls when the screen is short.
 - Tapping a card opens the setup screen for that set.
 - Sets whose topics are not implemented yet (v2/v3) are not shown.
 
 ### 3.2 Setup screen
 
-- The header shows a back button (aria-label **Terug**) and the set name.
+- The header shows a back button (aria-label **Terug**), the set's glyph in a small tile and the
+  set name.
 - Below it is the section "Wat zit erin": a list of the set's topics, display-only. Each row has
   the topic name on the left and its detail on the right, both taken from `TOPIC_LABELS`: the
   label `Naam (detail)` is split at the first ` (`; a label without parentheses has no detail.
@@ -102,11 +104,11 @@ The app is a state machine in `App.svelte` with four states:
   (2–9, 11–15, §5.1), five per row. By default all tables are selected. Alle selects all,
   Geen clears all. With no table selected, **Start** is disabled. The choice applies only to
   the Tafels set; the 15% tables in the other sets always use all tables. The heading reads
-  "Welke tafels? · n gekozen", and the toggles are pills with `aria-pressed`.
+  "Welke tafels?" (no count), and the toggles are pills with `aria-pressed`.
 - **Count:** 5, 10, 15, 25 or 50 exercises, shown as one segmented control (a radio group of 5
   equal segments). The default is 15.
-- A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count. On
-  Tafels a caption above it reads "Mix van vermenigvuldigen, delen en ontbrekende factor".
+- A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count
+  (the number in a lighter yellow). There is no caption above it.
 - The chosen count and table choice are kept in memory only while the app stays open; nothing is
   persisted. **Opnieuw** reuses both.
 
@@ -294,6 +296,9 @@ Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewri
 ### 3.5 Results
 
 - The screen is one screen high: the content scrolls and the buttons are pinned below it.
+- Each error card shows the prompt (which already ends in `= ?`) and two tiles: "Jouw
+  antwoord" (red, ✕) and "Goed antwoord" (green, ✓), then the tip and explanation. The given
+  answer is not struck through.
 - Score `x / n` and percentage, over first attempts only: repeats (§3.4) do not count. `n` is
   the number of answered exercises (after Stop, fewer than the count). With none answered the
   screen shows "Geen opgaven beantwoord."
