@@ -102,15 +102,17 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
 
 ## 6. Checks (tests)
 
-- Every `lesson.setId` is the id of a set in `PRACTICE_SETS`; topic ids are unique within a
-  lesson; a lesson has at least one topic and every topic at least one block.
+- Every `lesson.setId` is the id of a set in `PRACTICE_SETS`, at most one lesson per set; topic
+  ids are unique within a lesson; a lesson has at least one topic and every topic at least one
+  block.
 - **Parity:** the sets without a lesson equal an explicit list in the test. Adding a lesson
   shortens the list; at the end it is empty and every set has a lesson.
 - **Worked examples are correct:** every line of a `worked` block is an equality chain
   (`13 × 7 = 10 × 7 + 3 × 7 = 70 + 21 = 91`); each side is parsed and evaluated with `lib/expr`
-  and all sides must be equal. A line without ` = ` or with an unparsable side fails.
-- Text uses no ASCII operators (`*`, ` x `, `/` as division) and no literal `?` in a `worked`
-  line.
+  and all sides must be equal. Fractions (`3/4`) and thin-space grouped numbers (`2 500`) are
+  allowed; a line without ` = `, with a mixed number or with an unparsable side fails.
+- Text uses no ASCII operators: no `*`, no `x` between numbers, no `/` with spaces around it
+  (`km/u` and `3/4` are fine). A `worked` line has no literal `?` and no ASCII `-` as minus.
 - The framework itself is tested with a fixture lesson in the tests, since `LESSONS` is empty.
 
 ## 7. Content per set
