@@ -265,6 +265,343 @@ hold numbers only; the units go in the title.
      40 | 144.
    - Tip: "Naar m/s wordt het getal kleiner: deel door 3,6."
 
+### 7.3 Verhoudingen (`verhoudingen`)
+
+Seven topics: percentages first (they come back in every later topic), then ratios, ratio
+stories, the step via a unit and scale. The methods match the explanations of main spec §5.12,
+§5.13 and §5.23–§5.25; the tips repeat or generalise their tip texts (§3.4.1). Worked lines hold
+numbers only (no `%`, no `€`); percentages and units go in the title and the text.
+
+1. **`percentages` — Procenten** (summary: `Via 1%, 10%, 25% en 50%`)
+   - Text: procent means hundredth. Work via a base percentage you can see at once.
+   - Table `Procent | Breuk | Reken`: `1% | 1/100 | : 100`, `5% | 1/20 | 10% : 2`,
+     `10% | 1/10 | : 10`, `12,5% | 1/8 | : 8`, `20% | 1/5 | : 5`, `25% | 1/4 | : 4`,
+     `50% | 1/2 | : 2`.
+   - Worked `30% van 80`: `80 : 10 = 8`, `3 × 8 = 24`.
+   - Worked `15% van 80`: `80 : 10 = 8`, `8 : 2 = 4`, `8 + 4 = 12`, with text: 10% + 5%.
+   - Worked `30 is hoeveel procent van 120`: `30 : 120 = 1/4 = 25/100`, with text: deel : geheel,
+     then × 100: 25%.
+   - Worked `20% is 14, hoeveel is 100%`: `14 : 2 = 7`, `10 × 7 = 70`, with text: 10% = 7.
+   - Tip: "Deel : geheel is nog geen percentage; × 100 geeft het percentage."
+2. **`priceChange` — Korting, verhoging en btw** (summary: `De nieuwe en de oude prijs`)
+   - Text: korting: trek het bedrag af; verhoging and btw: tel het op.
+   - Worked `€ 60 na 25% korting`: `60 : 4 = 15`, `60 − 15 = 45`.
+   - Worked `€ 80 met 21% btw`: `80 : 10 = 8`, `2 × 8 = 16`, `80 : 100 = 0,80`,
+     `16 + 0,80 = 16,80`, `80 + 16,80 = 96,80`, with text: 21% = 20% + 1%.
+   - Text: back to the old price: after 25% korting the new price is 75%; with 21% btw it is
+     121%.
+   - Worked `Na 25% korting € 60, oude prijs`: `60 : 3 = 20`, `4 × 20 = 80`, with text:
+     75% = 60, so 25% = 20 and 100% = 80.
+   - Worked `€ 96,80 met 21% btw, zonder btw`: `96,80 : 121 = 0,80`, `100 × 0,80 = 80`.
+   - Tip: "De korting is een percentage van de oude prijs, niet van de nieuwe."
+3. **`percentChange` — Procentuele verandering** (summary: `Stijging of daling in procenten`)
+   - Text: first the change (new − old, or old − new), then that change as a percentage of the
+     **old** value.
+   - Worked `€ 80 naar € 92`: `92 − 80 = 12`, `12 : 80 = 15/100`, with text: 15% stijging.
+   - Worked `400 naar 340 bezoekers`: `400 − 340 = 60`, `60 : 400 = 15/100`, with text: 15%
+     daling.
+   - Tip: "Reken met de oude waarde: de stijging is een percentage van 80, niet van 92."
+4. **`ratios` — Verhoudingen** (summary: `Beide getallen met hetzelfde getal`)
+   - Text: in a ratio you multiply or divide both numbers by the same number.
+   - Worked `3 : 5 = 12 : SLOT`: `12 : 3 = 4`, `5 × 4 = 20`.
+   - Table `Personen | Pasta (g)`: `4 | 300`, `2 | 150`, `6 | 450`, with text: a ratio table
+     via a step both numbers reach (here 2).
+   - Worked `Verdeel 60 in de verhouding 2 : 3`: `2 + 3 = 5`, `60 : 5 = 12`, `3 × 12 = 36`, with
+     text: 5 delen, 1 deel = 12, het grootste deel is 3 delen.
+   - Tip: "Bij een verhouding vermenigvuldig of deel je beide getallen met hetzelfde getal; het
+     verschil blijft niet gelijk."
+5. **`ratioProblems` — Deel van het geheel en mengen** (summary: `Tel eerst de delen op`)
+   - Text: `jongens : meisjes = 2 : 3` compares two groups; the whole class is 2 + 3 = 5 delen.
+   - Worked `Jongens : meisjes = 2 : 3, deel jongens`: `2/5 = 40/100`, with text: 2/5 = 40%.
+   - Worked `Siroop : water = 1 : 6, siroop in 350 ml limonade`: `1 + 6 = 7`, `350 : 7 = 50`.
+   - Worked `Cement : zand = 2 : 5, zand bij 100 kg cement`: `100 : 2 = 50`, `5 × 50 = 250`.
+   - Tip: "2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5."
+6. **`perUnit` — Prijs per eenheid** (summary: `Een tussenstap via 100 g, 1 L of 1 uur`)
+   - Text: when neither amount is a multiple of the other, step via a convenient unit.
+   - Table `Kaas | Prijs`: `1,5 kg | € 12`, `100 g | € 0,80`, `400 g | € 3,20`.
+   - Worked `1,5 kg kost € 12, wat kost 400 g`: `12 : 15 = 0,80`, `4 × 0,80 = 3,20`, with text:
+     1,5 kg = 15 × 100 g.
+   - Tip: "Controleer de richting: 400 g is minder dan 1,5 kg, dus het kost minder dan € 12."
+7. **`scale` — Schaal** (summary: `1 cm op de kaart is … in het echt`)
+   - Text: schaal 1 : 25 000 means 1 cm on the map is 25 000 cm in reality; convert to m or km
+     (1 m = 100 cm, 1 km = 100 000 cm).
+   - Table `Schaal | 1 cm is`: `1 : 100 | 1 m`, `1 : 1000 | 10 m`, `1 : 25 000 | 250 m`,
+     `1 : 50 000 | 500 m`, `1 : 100 000 | 1 km`, `1 : 1 000 000 | 10 km`.
+   - Worked `Schaal 1 : 25 000, 4 cm op de kaart in km`: `25 000 : 100 000 = 0,25`,
+     `4 × 0,25 = 1`.
+   - Worked `Schaal 1 : 50 000, 3 km op de kaart in cm`: `50 000 : 100 000 = 0,5`,
+     `3 : 0,5 = 6`.
+   - Worked `4 cm op de kaart is 2 km, schaal`: `2 × 100 000 = 200 000`,
+     `200 000 : 4 = 50 000`.
+   - Tip: "Reken in dezelfde eenheid: 1 km = 100 000 cm."
+
+### 7.4 Bewerkingen (`bewerkingen`)
+
+Six topics: the order of operations, the properties (split in two: swapping and grouping, and
+distributing), then the smart-calculation strategies of main spec §5.9. The worked examples are
+the explanations of §5.8, §5.9 and §5.11.
+
+1. **`orderOfOperations` — Volgorde van bewerkingen** (summary: `Haakjes, machten, × en :, + en −`)
+   - Table `Stap | Wat`: `1 | haakjes`, `2 | machten`, `3 | × en :, van links naar rechts`,
+     `4 | + en −, van links naar rechts`.
+   - Text: × and : are equally strong, as are + and −. The mnemonic "Meneer Van Dale Wacht Op
+     Antwoord" misleads: it puts × before :.
+   - Worked: `3 × (8 − 2) + 4 = 3 × 6 + 4 = 18 + 4 = 22`, `24 : 4 × 2 = 6 × 2 = 12`,
+     `20 − 8 + 2 = 12 + 2 = 14`, `(2 + 3)² − 4 × 5 = 5² − 4 × 5 = 25 − 20 = 5`.
+   - Text: a negative base is written in parentheses: `(−4)² = 16`.
+   - Worked `(−4)² − 10 = 16 − 10 = 6`.
+   - Tip: "× en : zijn even sterk: reken die van links naar rechts."
+2. **`swapGroup` — Commutatief en associatief** (summary: `Wisselen en anders groeperen`)
+   - Table `Eigenschap | Wat mag | Voorbeeld`: `commutatief | de volgorde wisselen |
+     38 + 57 + 62 = 38 + 62 + 57`, `associatief | de haakjes verschuiven |
+     (17 + 25) + 75 = 17 + (25 + 75)`.
+   - Text: both only hold for + and ×, never for − and :: `10 − 4 ≠ 4 − 10`,
+     `(16 : 4) : 2 ≠ 16 : (4 : 2)`.
+   - Worked: `25 × 37 × 4 = 25 × 4 × 37 = 100 × 37 = 3700`,
+     `(17 + 25) + 75 = 17 + (25 + 75) = 17 + 100 = 117`, with text: look for a pair that makes
+     100 or 1000.
+   - Tip: "Wisselen en anders groeperen mag alleen bij + en ×, nooit bij − en :."
+3. **`distributive` — Distributief** (summary: `Verdelen over + en −`)
+   - Text: `a × (b + c) = a × b + a × c`, and the other way round (buiten haakjes brengen).
+   - Worked: `7 × 98 = 7 × 100 − 7 × 2 = 700 − 14 = 686`,
+     `6 × (40 + 3) = 6 × 40 + 6 × 3 = 240 + 18 = 258`,
+     `7 × 13 + 7 × 87 = 7 × (13 + 87) = 7 × 100 = 700`.
+   - Tip: "Pas één eigenschap per stap toe."
+4. **`compensation` — Compenseren** (summary: `Rond af en verbeter`)
+   - Text: make one number round, then correct for what you added or took off too much.
+   - Worked: `398 + 247 = 400 + 247 − 2 = 647 − 2 = 645`,
+     `5003 − 2998 = 5003 − 3000 + 2 = 2003 + 2 = 2005`, with text: you took off 2 too much, so
+     add 2 back.
+   - Tip: "398 = 400 − 2, dus compenseer met − 2, niet met + 2."
+5. **`complement` — Aanvullen tot 100 en 1000** (summary: `Wat mist er nog`)
+   - Text: count up from the smaller number to the round one.
+   - Worked `1000 − 463`: `463 + 7 = 470`, `470 + 30 = 500`, `500 + 500 = 1000`,
+     `7 + 30 + 500 = 537`.
+   - Text, shortcut: the digits fill up to 9, the last one to 10: 463 → 537.
+   - Tip: "Controleer door op te tellen: 463 + 537 = 1000."
+6. **`splitting` — Handig vermenigvuldigen en delen** (summary: `× 25, × 50, × 125, : 4 en : 5`)
+   - Table `Som | Handig`: `× 25 | : 4 × 100`, `× 50 | : 2 × 100`, `× 125 | : 8 × 1000`,
+     `: 4 | : 2 : 2`, `: 8 | : 2 : 2 : 2`, `: 5 | × 2 : 10`, `: 25 | × 4 : 100`.
+   - Worked: `48 × 25 = 48 : 4 × 100 = 12 × 100 = 1200`,
+     `16 × 125 = 16 : 8 × 1000 = 2 × 1000 = 2000`, `72 : 4 = 72 : 2 : 2 = 36 : 2 = 18`,
+     `340 : 5 = 340 × 2 : 10 = 680 : 10 = 68`.
+   - Text, double and halve: when one factor ends in 5 and the other is even.
+   - Worked `35 × 18 = 70 × 9 = 630`.
+   - Tip: "Verdubbel de factor die op 5 eindigt en halveer de andere: 35 × 18 = 70 × 9."
+
+### 7.5 Getalbegrip (`getalbegrip`)
+
+Eight topics, in the order of the practice topics (main spec §5.15–§5.19); powers are split into
+whole and decimal powers, negative exponents and roots. `10⁻³` cannot be parsed, so negative
+exponents only appear in text and tables.
+
+1. **`mentalOperations` — Hoofdrekenen met grote getallen** (summary: `Rijgen en rekenen met nullen`)
+   - Text: add or subtract in steps, the largest part first.
+   - Worked: `6347 + 2800 = 6347 + 2000 + 800 = 8347 + 800 = 9147`,
+     `15 213 − 470 = 15 213 − 400 − 70 = 14 813 − 70 = 14 743`.
+   - Text: multiply: the table fact, then the zeros. Divide: strike equal zeros first.
+   - Worked: `28 × 500 = 28 × 5 × 100 = 140 × 100 = 14 000`, `7200 : 80 = 720 : 8 = 90`.
+   - Tip: "Streep bij delen evenveel nullen weg in beide getallen."
+2. **`remainder` — Delen met rest** (summary: `Naar boven, naar beneden of de rest`)
+   - Worked `230 leerlingen, busjes van 8`: `230 = 28 × 8 + 6`, with text: 28 rest 6, the last 6
+     need a bus too → 29.
+   - Worked `200 eieren, dozen van 12`: `200 = 16 × 12 + 8`.
+   - Table `Vraag | Antwoord`: `Hoeveel busjes nodig? | naar boven: 29`,
+     `Hoeveel volle dozen? | naar beneden: 16`, `Hoeveel eieren over? | de rest: 8`.
+   - Tip: "Moet wat overblijft ook mee, rond dan naar boven af."
+3. **`negativeNumbers` — Negatieve getallen** (summary: `Door nul heen en de tekenregels`)
+   - Text: crossing zero, split at zero.
+   - Worked: `3 − 8 = 3 − 3 − 5 = −5`, `−7 + 12 = −7 + 7 + 5 = 5`.
+   - Worked: `−4 − (−6) = −4 + 6 = 2`, `5 + (−8) = 5 − 8 = −3`.
+   - Table `× of : met | Uitkomst`: `twee positieve getallen | positief`,
+     `twee negatieve getallen | positief`, `één negatief getal | negatief`.
+   - Worked: `−6 × 4 = −24`, `−24 : (−3) = 8`.
+   - Worked `Verschil tussen −7 °C en 4 °C`: `4 − (−7) = 4 + 7 = 11`.
+   - Tip: "Min een negatief getal is plus: −4 − (−6) = −4 + 6."
+4. **`rounding` — Afronden** (summary: `Het eerste cijfer dat wegvalt beslist`)
+   - Text: 5 or more rounds up, less than 5 down. First name the two neighbours: 4386 ligt
+     tussen 4300 en 4400; the first dropped digit is 8 → 4400.
+   - Table `Getal | Afronden op | Uitkomst`: `4386 | tientallen | 4390`,
+     `4386 | honderdtallen | 4400`, `48 512 | duizendtallen | 49 000`,
+     `3970 | honderdtallen | 4000`, `12,5 | een heel getal | 13`, `3,746 | 1 decimaal | 3,7`,
+     `2,96 | 1 decimaal | 3,0`, `0,385 | 2 decimalen | 0,39`.
+   - Tip: "Alleen het eerste cijfer dat wegvalt telt: 3,746 op 1 decimaal is 3,7."
+5. **`powers` — Machten** (summary: `Herhaald vermenigvuldigen`)
+   - Worked: `2⁵ = 2 × 2 × 2 × 2 × 2 = 32`, `(−3)³ = (−3) × (−3) × (−3) = −27`.
+   - Text: an even number of minus signs gives plus, an odd number minus. `7¹ = 7` and every
+     number (except 0) to the power 0 is 1.
+   - Worked: `0,3² = 0,3 × 0,3 = 0,09`, `0,2³ = 0,2 × 0,2 × 0,2 = 0,008`, with text: the result
+     has as many decimals as all factors together.
+   - Table `Macht | Uitkomst`: 2³ to 2¹⁰ (8 … 1024), 3³, 3⁴, 3⁵ (27, 81, 243).
+   - Tip: "Een macht is herhaald vermenigvuldigen: 2⁵ = 2 × 2 × 2 × 2 × 2, niet 2 × 5."
+6. **`negativeExponents` — Negatieve exponenten** (summary: `10⁻³ = 0,001`)
+   - Text: `10⁻³ = 1 : 10³ = 1 : 1000 = 0,001`. Every step down is : 10.
+   - Worked `1 : 10³ = 1 : 1000 = 0,001`.
+   - Table `Macht | Getal`: `10³ | 1000`, `10² | 100`, `10¹ | 10`, `10⁰ | 1`, `10⁻¹ | 0,1`,
+     `10⁻² | 0,01`, `10⁻³ | 0,001`, `10⁻⁶ | 0,000001`.
+   - Text: the exponent counts the places the comma moves: `0,001 = 10⁻³` (3 places, not the
+     2 zeros after the comma).
+   - Tip: "Een negatieve exponent maakt geen negatief getal: 10⁻³ = 1 : 1000."
+7. **`roots` — Wortels** (summary: `Derdemachtswortels en geschaalde wortels`)
+   - Text: `∛64 = 4`, because 4 × 4 × 4 = 64.
+   - Table `n | n³` for 2 to 10.
+   - Text: a root of a scaled square: √0,49 = 0,7 (half the decimals), √6400 = 80 (half the
+     zeros).
+   - Worked: `0,7 × 0,7 = 0,49`, `80 × 80 = 6400`, `120 × 120 = 14 400`.
+   - Tip: "∛27 is het getal dat 3 keer met zichzelf vermenigvuldigd 27 geeft, niet 27 : 3."
+8. **`scientificNotation` — Wetenschappelijke notatie** (summary: `Getal van 1 tot 10 keer een macht
+   van 10`)
+   - Text: `c × 10ⁿ` with `1 ≤ c < 10`. Count the places the comma moves: a number of 10 or
+     more gets a positive exponent, a number below 1 a negative one.
+   - Worked `4 500 000 = 4,5 × 1 000 000 = 4,5 × 10⁶`.
+   - Worked `0,000045 = 4,5 × 0,00001`, with text: `0,00001 = 10⁻⁵`, so `4,5 × 10⁻⁵`.
+   - Worked `450 × 10⁴ = 4,5 × 10² × 10⁴ = 4,5 × 10⁶`, with text: c gets 100 times smaller, so
+     the exponent goes up by 2.
+   - Tip: "Tel de plaatsen waarover de komma schuift, niet de nullen."
+
+### 7.6 Breuken & kommagetallen (`breuken`)
+
+Seven topics: converting (with the fractions to know by heart), then simplifying, the four
+operations with fractions, part of a number, and decimals. The worked examples are the
+explanations of main spec §5.20–§5.22. Mixed numbers cannot be parsed, so they only appear in
+text and tables.
+
+1. **`conversion` — Breuk, kommagetal en procent** (summary: `Omzetten via 10, 100 of 1000`)
+   - Text: a fraction is a division (3/8 = 3 : 8). Make the denominator 10, 100 or 1000.
+   - Worked: `3/8 = 375/1000 = 0,375`, `7/20 = 35/100 = 0,35`.
+   - Text: procent means hundredth: × 100 to a percentage, : 100 back.
+   - Worked: `0,375 × 100 = 37,5`, `37,5 : 100 = 0,375`.
+   - Tip: "3/8 betekent 3 : 8, niet 3,8."
+2. **`knownFractions` — Breuken om te kennen** (summary: `Van 1/2 tot 1/50, derden en zesden`)
+   - Table `Breuk | Kommagetal | Procent`: 1/2, 1/4, 3/4, 1/5, 1/8, 3/8, 1/10, 1/20, 1/25, 1/50,
+     then 1/3, 2/3, 1/6, 5/6 with `—` as decimal and `33 1/3%`, `66 2/3%`, `16 2/3%`,
+     `83 1/3%`.
+   - Text: thirds and sixths are no finite decimals (0,333…): via 100% : 3 = 33 1/3%, and
+     5/6 = 5 × 16 2/3% = 83 1/3%.
+   - Tip: "2/3 is geen eindig kommagetal: schrijf het als breuk."
+3. **`simplify` — Vereenvoudigen en gelijknamig** (summary: `Teller en noemer met hetzelfde getal`)
+   - Worked: `18/24 = 3/4` (text: teller en noemer : 6), `3/4 = 9/12` (teller en noemer × 3).
+   - Text: to a mixed number, take out the wholes.
+   - Worked `17/12 = 12/12 + 5/12 = 1 + 5/12`, with text: so 1 5/12.
+   - Tip: "Vermenigvuldig of deel teller en noemer met hetzelfde getal; het verschil blijft niet
+     gelijk."
+4. **`addSubtract` — Optellen en aftrekken** (summary: `Eerst de noemers gelijk`)
+   - Text: make the denominators equal (the KGV), then add or subtract the numerators only.
+   - Worked: `2/3 + 1/4 = 8/12 + 3/12 = 11/12`, `2/3 + 3/4 = 8/12 + 9/12 = 17/12` (text: =
+     1 5/12).
+   - Text, mixed numbers keep their wholes; exchange one whole when the fraction is too small:
+     3 1/2 − 1 3/4 = 3 2/4 − 1 3/4 = 2 6/4 − 1 3/4 = 1 3/4.
+   - Tip: "Maak eerst de noemers gelijk; tel daarna alleen de tellers op."
+5. **`multiplyDivide` — Vermenigvuldigen en delen** (summary: `Delen is keer het omgekeerde`)
+   - Text: teller × teller and noemer × noemer; simplify at the end.
+   - Worked: `3/4 × 2/5 = 6/20 = 3/10`, `6 × 2/3 = 12/3 = 4` (text: only the numerator goes
+     × 6).
+   - Worked: `2/3 : 4/9 = 2/3 × 9/4 = 18/12 = 3/2`, `3/4 : 3 = 3/4 × 1/3 = 3/12 = 1/4`.
+   - Tip: "Delen door 4/9 is keer het omgekeerde: × 9/4."
+6. **`partOf` — Deel van een getal** (summary: `3/4 van 24 en terug naar het geheel`)
+   - Worked `3/4 van 24`: `24 : 4 = 6`, `3 × 6 = 18`, with text: first 1/4, then 3/4.
+   - Worked `3/4 is 18, het geheel`: `18 : 3 = 6`, `4 × 6 = 24`, with text: 1/4 = 6, 4/4 = 24.
+   - Tip: "Is 18 zelf al 3/4, reken dan terug: eerst 1/4, dan 4/4."
+7. **`decimals` — Rekenen met kommagetallen** (summary: `Komma's onder elkaar, decimalen tellen`)
+   - Text: add and subtract with the commas aligned; fill up with zeros.
+   - Worked: `4,70 + 0,35 = 5,05`, `5,00 − 0,25 = 4,75`.
+   - Text: multiply without commas, then give the result as many decimals as both numbers
+     together.
+   - Worked `0,3 × 0,4`: `3 × 4 = 12`, `0,3 × 0,4 = 0,12`.
+   - Text: divide by a decimal: make the divisor whole first, both × the same power of 10.
+   - Worked: `2,5 : 0,05 = 250 : 5 = 50`, `0,36 : 4 = 0,09` (text: 36 : 4 = 9).
+   - Tip: "De uitkomst heeft evenveel decimalen als beide getallen samen."
+
+### 7.7 Meetkunde (`meetkunde`)
+
+Nine topics: flat figures (perimeter and area, the circle), solids, Pythagoras, angles, the
+clock, symmetry, quadrilaterals and triangles. The worked examples are the explanations of main
+spec §5.27–§5.31, the facts those of §5.31–§5.32. Formulas with letters go in tables; worked
+lines hold numbers only.
+
+1. **`perimeterArea` — Omtrek en oppervlakte** (summary: `Vierkant, rechthoek, driehoek, trapezium`)
+   - Table `Figuur | Oppervlakte | Omtrek`: `vierkant | z × z | 4 × z`,
+     `rechthoek | l × b | 2 × (l + b)`, `driehoek | basis × hoogte : 2 | de zijden samen`,
+     `parallellogram | basis × hoogte | 2 × (basis + schuine zijde)`,
+     `trapezium | (a + b) : 2 × hoogte | de zijden samen`.
+   - Text: the height is perpendicular to the base; a slanted side is not the height.
+   - Worked: `8 × 5 : 2 = 20` (driehoek, basis 8, hoogte 5), `2 × (12 + 5) = 2 × 17 = 34`
+     (omtrek rechthoek 12 bij 5), `(6 + 10) : 2 × 4 = 8 × 4 = 32` (trapezium).
+   - Worked `Tafelblad 1,6 m bij 80 cm, in m²`: `1,6 × 0,8 = 1,28`, with text: first 80 cm =
+     0,8 m.
+   - Text, a missing side: `48 : 6 = 8` (area 48, width 6), `34 : 2 − 5 = 12` (perimeter 34,
+     one side 5), as worked lines.
+   - Tip: "Een driehoek is de helft van een rechthoek: deel nog door 2."
+2. **`circle` — De cirkel** (summary: `Straal, diameter en π = 3,14`)
+   - Table `Wat | Formule`: `diameter | 2 × straal`, `omtrek | π × diameter`,
+     `oppervlakte | π × straal × straal`.
+   - Worked: `3,14 × 10 = 31,4` (omtrek, diameter 10), `3,14 × 5 × 5 = 3,14 × 25 = 78,5`
+     (oppervlakte, straal 5).
+   - Worked `Oppervlakte, diameter 10`: `10 : 2 = 5`, `3,14 × 5 × 5 = 78,5`.
+   - Tip: "De straal is de helft van de diameter."
+3. **`solids` — Ruimtefiguren** (summary: `Inhoud, oppervlakte en liters`)
+   - Table `Figuur | Inhoud | Oppervlakte`: `kubus | z × z × z | 6 × z × z`,
+     `balk | l × b × h | 2 × (l × b + l × h + b × h)`, `cilinder | π × straal × straal × hoogte |
+     —`.
+   - Worked: `8 × 5 × 3 = 40 × 3 = 120`,
+     `2 × (8 × 5 + 8 × 3 + 5 × 3) = 2 × (40 + 24 + 15) = 2 × 79 = 158`,
+     `3,14 × 5 × 5 × 4 = 3,14 × 100 = 314`.
+   - Worked `Aquarium 60 bij 30 bij 40 cm, in liters`: `6 × 3 × 4 = 72`, with text: reken in dm,
+     1 dm³ = 1 L.
+   - Tip: "Reken liters in dm: 1 dm³ = 1 L."
+4. **`pythagoras` — Stelling van Pythagoras** (summary: `Kwadraten optellen of aftrekken`)
+   - Text: in a right-angled triangle the square of the schuine zijde (the longest side, opposite
+     the right angle) is the sum of the squares of the rechthoekszijden.
+   - Worked `Schuine zijde bij 6 en 8`: `6² + 8² = 36 + 64 = 100`, with text: √100 = 10.
+   - Worked `Rechthoekszijde bij 13 en 5`: `13² − 5² = 169 − 25 = 144`, with text: √144 = 12.
+   - Table `a | b | c` with the triples of §5.29: 3 4 5, 6 8 10, 9 12 15, 12 16 20, 15 20 25,
+     5 12 13, 8 15 17, 7 24 25.
+   - Tip: "Tel de kwadraten op voor de schuine zijde, trek ze af voor een rechthoekszijde, en
+     neem daarna de wortel."
+5. **`angles` — Hoeken** (summary: `Driehoek en veelhoek`)
+   - Text: the angles of a triangle add up to 180°; an isosceles triangle has two equal base
+     angles.
+   - Worked: `180 − 50 − 70 = 60`, `(180 − 40) : 2 = 70`, `180 − 2 × 70 = 40`.
+   - Text: an n-hoek splits into n − 2 triangles.
+   - Worked: `(6 − 2) × 180 = 720`, `(8 − 2) × 180 : 8 = 135` (regelmatige achthoek).
+   - Table `Veelhoek | Samen | Eén hoek, regelmatig`: vierhoek 360° 90°, vijfhoek 540° 108°,
+     zeshoek 720° 120°, achthoek 1080° 135°, tienhoek 1440° 144°, twaalfhoek 1800° 150°.
+   - Tip: "Een zeshoek kun je verdelen in 6 − 2 = 4 driehoeken: 4 × 180°."
+6. **`clock` — De klok** (summary: `Elk uur is 30°`)
+   - Worked: `360 : 12 = 30`, `4 × 30 = 120` (om 4 uur).
+   - Text: at half past, the big hand is on the 6 and the small hand halfway between two hours.
+     Om half 4 (3:30) it is halfway between the 3 and the 4: 2,5 hours from the 6.
+   - Worked `Om half 4`: `2,5 × 30 = 75`.
+   - Text: past 6, count the other way round the clock: om 9 uur 3 × 30 = 90.
+   - Tip: "Om half 4 staat de kleine wijzer halverwege de 3 en de 4."
+7. **`symmetry` — Symmetrie** (summary: `Spiegelen, draaien en puntsymmetrie`)
+   - Text: a symmetrieas folds the figure onto itself; draaisymmetrie: the smallest turn that
+     makes it fall onto itself; puntsymmetrisch: a half turn (180°) does.
+   - Table `Figuur | Assen | Draaihoek | Punt`, the rows of §5.31 with short names (rechthoek
+     (geen vierkant), …) and `ja` / `nee`.
+   - Worked `Regelmatige vijfhoek`: `360 : 5 = 72`.
+   - Tip: "Een regelmatige n-hoek heeft n symmetrieassen en een draaihoek van 360° : n; hij is
+     puntsymmetrisch als n even is."
+8. **`quadrilaterals` — Vierhoeken** (summary: `Eigenschappen en wie is wat`)
+   - Text: the definitions are inclusive: a trapezium has at least one pair of parallel sides,
+     a vlieger a diagonal that is a symmetrieas. X is a Y when X always has every property of Y.
+   - Table `Figuur | Altijd`, per quadrilateral its properties from the table in §5.32, in
+     short words.
+   - Table `Figuur | Is ook een`: `vierkant | rechthoek, ruit, parallellogram, trapezium,
+     vlieger`, `rechthoek | parallellogram, trapezium`, `ruit | parallellogram, trapezium,
+     vlieger`, `parallellogram | trapezium`, `trapezium | —`, `vlieger | —`.
+   - Tip: "Elk vierkant is ook een rechthoek en een ruit."
+9. **`triangles` — Driehoeken** (summary: `Soorten en welke bestaan`)
+   - Table `Soort | Betekent`: `scherphoekig | alle hoeken kleiner dan 90°`,
+     `rechthoekig | één hoek van 90°`, `stomphoekig | één hoek groter dan 90°`,
+     `gelijkbenig | minstens twee zijden even lang`, `gelijkzijdig | drie zijden even lang,
+     alle hoeken 60°`.
+   - Text: the angles add up to 180°, so at most one right or obtuse angle. Every gelijkzijdige
+     driehoek is gelijkbenig.
+   - Text: the two shortest sides together must be longer than the longest: 2, 3 en 6 cm no;
+     3, 4 en 6 cm yes.
+   - Tip: "De twee kortste zijden samen moeten langer zijn dan de langste."
+
 ## 8. Open assumptions
 
 - **Block types:** `text`, `worked`, `table` and `tip` are assumed to be enough. A bullet list
