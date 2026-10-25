@@ -9,7 +9,8 @@ import type { Question } from '../types';
 export const TABLE_FACTORS: readonly number[] = [2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15];
 
 type TableForm = 'product' | 'division' | 'missingFactor';
-const FORMS: readonly TableForm[] = ['product', 'division', 'missingFactor'];
+/** `product` is listed twice: half of the exercises, the other two forms a quarter each (spec §5.1). */
+const FORMS: readonly TableForm[] = ['product', 'product', 'division', 'missingFactor'];
 
 /** A neighbouring row of the table: '63 = 7 × 9: je zit één rij ernaast.' (spec §3.4.1) */
 export function neighbourRowTip(a: number, b: number): Diagnose {

@@ -473,10 +473,10 @@ topic answers with a number unless stated otherwise.
   redrawn until one factor is chosen, so every allowed pair is equally likely and choosing all
   tables gives exactly the distribution above. With one table chosen there are 25 pairs, enough
   unique keys for 50 exercises across the three forms.
-- There are three forms, each picked with equal probability:
-  - product: `13 × 7 = ?`
-  - division: `91 : 7 = ?`, where the dividend is always `a × b`
-  - missing factor: `? × 7 = 91` or `13 × ? = 91`
+- There are three forms; the product form is the focus:
+  - product (50%): `13 × 7 = ?`
+  - division (25%): `91 : 7 = ?`, where the dividend is always `a × b`
+  - missing factor (25%): `? × 7 = 91` or `13 × ? = 91`, each side equally likely
 - Answer: integer.
 
 ### 5.2 LCM — KGV (`lcm`)

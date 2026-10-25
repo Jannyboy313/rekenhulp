@@ -65,16 +65,18 @@ describe('generateTables', () => {
     expect([...seen].sort((x, y) => x - y)).toEqual(TABLE_FACTORS);
   });
 
-  it('uses the three forms roughly equally', () => {
+  it('weights the product form 50% and division and missing factor 25% each', () => {
     const counts = { product: 0, division: 0, missing: 0 };
     for (const { key } of questions) {
       if (key.startsWith('tables:product:')) counts.product++;
       else if (key.startsWith('tables:division:')) counts.division++;
       else if (key.startsWith('tables:missing')) counts.missing++;
     }
-    for (const count of Object.values(counts)) {
-      expect(count / SAMPLES).toBeGreaterThan(0.28);
-      expect(count / SAMPLES).toBeLessThan(0.39);
+    expect(counts.product / SAMPLES).toBeGreaterThan(0.46);
+    expect(counts.product / SAMPLES).toBeLessThan(0.54);
+    for (const count of [counts.division, counts.missing]) {
+      expect(count / SAMPLES).toBeGreaterThan(0.22);
+      expect(count / SAMPLES).toBeLessThan(0.28);
     }
   });
 
