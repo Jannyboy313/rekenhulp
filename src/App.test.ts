@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import { stubMatchMedia } from './components/testMatchMedia';
+import { FIXTURE_LESSON } from './lib/lessons/fixture';
 import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
@@ -150,5 +151,52 @@ describe('App', () => {
     }
     await click(/^Start/);
     expect(screen.getByText(`1 / ${DEFAULT_SESSION_SIZE}`)).toBeTruthy();
+  });
+
+  describe('lesstof', () => {
+    function lessonsTabSelected(): boolean {
+      return screen.getByRole('tab', { name: 'Lesstof' }).getAttribute('aria-selected') === 'true';
+    }
+
+    async function openFixtureTopic() {
+      await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+      await click(/^Tafels/);
+      await click(/^Halveren/);
+    }
+
+    it('opens a topic from the Lesstof tab and goes back with Terug', async () => {
+      render(App, { lessons: [FIXTURE_LESSON] });
+      await openFixtureTopic();
+      expect(screen.getByRole('heading', { name: 'Halveren' })).toBeTruthy();
+
+      await click('Terug');
+      expect(screen.getByRole('heading', { name: 'Tafels' })).toBeTruthy();
+
+      await click('Terug');
+      expect(lessonsTabSelected()).toBe(true);
+      expect(history.back).toHaveBeenCalledTimes(1);
+    });
+
+    it('moves one level up on a system back and re-arms the guard', async () => {
+      const pushState = vi.spyOn(history, 'pushState');
+      render(App, { lessons: [FIXTURE_LESSON] });
+      await openFixtureTopic();
+      expect(pushState).toHaveBeenCalledTimes(1);
+
+      await systemBack();
+      expect(screen.getByRole('heading', { name: 'Tafels' })).toBeTruthy();
+      expect(pushState).toHaveBeenCalledTimes(2);
+
+      await systemBack();
+      expect(lessonsTabSelected()).toBe(true);
+    });
+
+    it('lists every set disabled with the real, empty registry', async () => {
+      render(App);
+      await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+      const rows = screen.getAllByRole<HTMLButtonElement>('button');
+      expect(rows).toHaveLength(PRACTICE_SETS.length);
+      expect(rows.every((row) => row.disabled)).toBe(true);
+    });
   });
 });
