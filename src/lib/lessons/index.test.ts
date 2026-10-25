@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { MEASUREMENT_SET, NUMBERS_SET, PROPORTIONS_SET, TABLES_SET } from '../sets';
+import {
+  MEASUREMENT_SET,
+  NUMBERS_SET,
+  OPERATIONS_SET,
+  PROPORTIONS_SET,
+  TABLES_SET,
+} from '../sets';
 import { FIXTURE_LESSON } from './fixture';
 import { lessonFor } from './index';
 
@@ -41,6 +47,14 @@ describe('lessonFor', () => {
       'ratioProblems',
       'perUnit',
       'scale',
+    ]);
+    expect(lessonFor(OPERATIONS_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'orderOfOperations',
+      'swapGroup',
+      'distributive',
+      'compensation',
+      'complement',
+      'splitting',
     ]);
   });
 });

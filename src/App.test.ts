@@ -10,6 +10,7 @@ import {
   describeSetTopicRows,
   MEASUREMENT_SET,
   NUMBERS_SET,
+  OPERATIONS_SET,
   PRACTICE_SETS,
   PROPORTIONS_SET,
 } from './lib/sets';
@@ -203,6 +204,7 @@ describe('App', () => {
         expect.stringContaining(MEASUREMENT_SET.name),
         expect.stringContaining(PROPORTIONS_SET.name),
         expect.stringContaining(NUMBERS_SET.name),
+        expect.stringContaining(OPERATIONS_SET.name),
       ]);
     });
   });
