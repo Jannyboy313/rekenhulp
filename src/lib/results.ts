@@ -26,6 +26,9 @@ export interface SessionSummary {
 export interface WrongStep {
   prompt: string;
   kind: AnswerKind;
+  /** The unit around the answer, as on the step. */
+  prefix?: string;
+  suffix?: string;
   attempt: StepAttempt;
 }
 
@@ -35,7 +38,13 @@ export function wrongSteps(records: readonly QuestionRecord[]): WrongStep[] {
     record.attempts
       .map((attempt, index): WrongStep => {
         const step = record.question.steps[index];
-        return { prompt: step?.prompt ?? '', kind: step?.kind ?? 'number', attempt };
+        return {
+          prompt: step?.prompt ?? '',
+          kind: step?.kind ?? 'number',
+          prefix: step?.prefix,
+          suffix: step?.suffix,
+          attempt,
+        };
       })
       .filter(({ attempt }) => !attempt.result.correct),
   );

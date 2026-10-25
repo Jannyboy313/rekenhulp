@@ -39,6 +39,27 @@ describe('wrongSteps', () => {
     expect(prompts).toEqual(['p0', 'p0', 'p1']);
   });
 
+  it('carries the prefix and suffix of the step, undefined without a unit', () => {
+    const withUnit = {
+      question: {
+        key: 'area',
+        topic: 'perimeterArea',
+        steps: [
+          numberStep({ prompt: 'p', answer: fromInteger(126), suffix: 'cm²' }),
+          numberStep({ prompt: 'q', answer: fromInteger(45), prefix: '€' }),
+          numberStep({ prompt: 'r', answer: fromInteger(3) }),
+        ],
+      },
+      attempts: [1, 2, 3].map((n) => ({ input: String(n), result: { correct: false, expected: '0' } })),
+      durationMs: 1000,
+    } satisfies QuestionRecord;
+    const [area, money, bare] = wrongSteps([withUnit]);
+    expect(area).toMatchObject({ prefix: undefined, suffix: 'cm²' });
+    expect(money).toMatchObject({ prefix: '€', suffix: undefined });
+    expect(bare!.prefix).toBeUndefined();
+    expect(bare!.suffix).toBeUndefined();
+  });
+
   it('is empty without mistakes', () => {
     expect(wrongSteps([record([true, true], 1000)])).toEqual([]);
     expect(wrongSteps([])).toEqual([]);
