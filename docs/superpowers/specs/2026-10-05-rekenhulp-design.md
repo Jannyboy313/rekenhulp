@@ -8,7 +8,8 @@
 A phone-first PWA for practising arithmetic without a calculator. Purpose: improve general
 mental-arithmetic skill and prepare for the PABO rekentoets. The user picks a themed practice
 set, works through a generated session of exercises, gets immediate feedback per exercise and
-an overview at the end.
+an overview at the end. Per set there is also short study material (**lesstof**, §3.7): a cheat
+sheet to refresh the method before practising.
 
 ### Non-goals
 
@@ -71,20 +72,28 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 ## 3. Session flow
 
 The app is a state machine in `App.svelte` with four states:
-`sets → setup → playing → results`.
+`sets → setup → playing → results`, plus two for the study material (§3.7): `lessonTopics` and
+`lesson`.
 
 - "Terug" moves from `setup` back to `sets`.
 - "Opnieuw" moves from `results` back to `playing`, with the same set, count and table choice.
 - "Menu" moves from `results` to `sets`.
 - The system back action (Android back button or gesture, iOS swipe back) never closes the app
-  from another screen. On `setup` and `results` it moves to `sets`, like Terug and Menu. During
+  from another screen. On `setup` and `results` it moves to `sets`, like Terug and Menu. On
+  `lessonTopics` and `lesson` it does what Terug does (§3.7). During
   `playing` it is ignored; only Stop ends a session. On `sets` it behaves as the system default.
   Implementation: one history entry is kept above the start screen while the app is not on
   `sets`; a `popstate` that consumes it is handled as back.
 
 ### 3.1 Set overview (start screen)
 
-- The app always opens on this screen, with no set preselected.
+- The app always opens on this screen, with no set preselected and the tab **Oefenen** active.
+- Under the title sits a segmented control with two tabs, **Oefenen** and **Lesstof** (a
+  `tablist`, tabs with `aria-selected`). The active tab is kept in memory only, so Terug from a
+  lesson returns to the tab it came from. **Lesstof** lists the sets that have study material
+  (§3.7), in the same order and with the same rows as **Oefenen**; tapping a row opens
+  `lessonTopics` for that set. Sets without study material are not shown there (as in the
+  rule below for sets that are not implemented).
 - It shows the logo, the title "Rekenhulp" and "Wat wil je oefenen?", then a list of rows, one
   per available set (§4). Each row shows a tile with a multicolour glyph (violet, amber and
   blue; a new set needs a glyph in the same style), the set's name and a
@@ -111,6 +120,9 @@ The app is a state machine in `App.svelte` with four states:
   equal segments). The default is 15.
 - A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count
   (the number in a lighter yellow). There is no caption above it.
+- Sets with study material (§3.7) show a secondary button **Lesstof** above Start (or a link in
+  the header; layout decided in the plan). It opens `lessonTopics` for the set; Terug returns to
+  this screen with count and table choice unchanged.
 - The chosen count and table choice are kept in memory only while the app stays open; nothing is
   persisted. **Opnieuw** reuses both.
 
@@ -425,6 +437,48 @@ in the place of OK.
   `1 en 2/3`, as elsewhere (§8). The spatie key shows `␣` and is labelled `spatie`; `=` is
   labelled `is`.
 - To make room, keypad keys are 3 rem (48 px) high instead of 3.5 rem.
+
+### 3.7 Lesstof (study material)
+
+A cheat sheet per set, to refresh the method. It is read on demand, never part of a session, and
+nothing about it is stored (no "read" marks).
+
+- **Per set, not per topic.** A set with study material has exactly one lesson, named like the
+  set. A lesson has its own **lesson topics** (`LessonTopic`), which need not match the set's
+  practice topics (Tafels has one practice topic and several lesson topics): they follow the
+  methods a learner needs, not the generators.
+- **Navigation:** Lesstof tab (§3.1) or the Lesstof button on the setup screen (§3.2) →
+  `lessonTopics`: the header (back button, glyph tile, set name) and a list of rows, one per
+  lesson topic, with title and one-line summary. Tapping a row opens `lesson`: the back button,
+  the topic title and its content, scrolling as one page. Nothing walks through the topics in
+  sequence: no "next" button, no progress.
+- **Terug:** `lesson` → `lessonTopics`; `lessonTopics` → where it came from (`sets` with the
+  Lesstof tab, or `setup` of the same set). The system back does the same one level up and never
+  closes the app.
+- **Content** is typed data in `lib/lessons/`, one module per set, registered in
+  `lib/lessons/index.ts`. A topic is a list of blocks:
+  - `text`: a paragraph
+  - `worked`: a worked example, each line an equality chain such as
+    `13 × 7 = 10 × 7 + 3 × 7 = 70 + 21 = 91`
+  - `table`: a small table (header row + rows)
+  - `tip`: a highlighted rule of thumb
+  All text is Dutch, uses the number conventions of §8 and is rendered with `MathText` (stacked
+  fractions, the slot). No images, no interaction, no network.
+- **Correctness is tested:** every side of every equality chain in a `worked` block is evaluated
+  with `lib/expr` and must be equal.
+- Study material explains arithmetic methods only. Didactics (§12.3) stays out of scope.
+
+#### 3.7.1 Tafels
+
+Source: §5.1 (tables 2–9 and 11–15, no 1 and 10). Topics, in this order:
+
+| Id | Title | Content |
+|----|-------|---------|
+| `tricks` | Handige trucs | ×2 doubling; ×4 doubling twice; ×5 half of ×10; ×9 as ×10 minus one time; ×11 (digit twice up to 9; above that ×10 plus one time) |
+| `neighbours` | Buursommen | Derive an unknown fact from a known neighbour: `7 × 8 = 7 × 7 + 7`, `8 × 7 = 8 × 8 − 8` (matches the tip "je zit één rij ernaast", §3.4.1) |
+| `splitting` | Grote tafels splitsen | `13 × 7 = 10 × 7 + 3 × 7`; same for 12, 14 and 15 (15 = 10 + 5); both factors large: `13 × 14 = 13 × 10 + 13 × 4` |
+| `division` | Delen met tafels | Division as the reverse of a table fact; large dividends split: `84 : 6 = 60 : 6 + 24 : 6`; check by multiplying |
+| `missingFactor` | Ontbrekende factor | `SLOT × 7 = 91` and `14 × SLOT = 126` are divisions (`91 : 7`, `126 : 14`); check by filling in |
 
 ## 4. Practice sets & session composition
 
