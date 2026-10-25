@@ -12,7 +12,12 @@ describe('KEYS', () => {
     expect(KEYS['7']).toEqual({ key: '7', label: '7' });
     expect(KEYS['-']).toEqual({ key: '-', label: '−', ariaLabel: 'min' });
     expect(KEYS['/']).toEqual({ key: '/', label: 'breuk', icon: 'fraction' });
-    expect(KEYS[' ']).toEqual({ key: ' ', label: '␣', ariaLabel: 'spatie' });
+    expect(KEYS[' ']).toEqual({
+      key: ' ',
+      label: '␣',
+      ariaLabel: 'spatie',
+      icon: 'space',
+    });
     expect(KEYS.backspace).toEqual({ key: 'backspace', label: '⌫', ariaLabel: 'wissen' });
   });
 });

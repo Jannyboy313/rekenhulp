@@ -48,12 +48,21 @@ describe('MathText slot', () => {
     const slot = container.querySelector('.slot');
     expect(slot?.textContent).toBe('?');
     for (const tone of ['primary', 'good', 'bad'])
-      expect(slot?.classList.contains(tone)).toBe(false);
+      expect(slot?.classList.contains(`tone-${tone}`)).toBe(false);
   });
 
-  it.each(['primary', 'bad'] as const)('puts the ? in .slot.%s', (tone) => {
+  it.each(['primary', 'bad'] as const)('puts the ? in .slot.tone-%s', (tone) => {
     const { container } = render(MathText, { props: { text: sum, slot: { tone } } });
-    expect(container.querySelector(`.slot.${tone}`)?.textContent).toBe('?');
+    expect(container.querySelector(`.slot.tone-${tone}`)?.textContent).toBe('?');
+  });
+
+  // The global `.primary` (the primary button: purple fill, white text, padding) turned the
+  // unknown into a purple bar. No class of a slot may be a global class of app.css.
+  it.each(['primary', 'good', 'bad', 'plain'] as const)('has no global class (%s)', (tone) => {
+    const { container } = render(MathText, { props: { text: sum, slot: { tone } } });
+    const classes = [...container.querySelector('.slot')!.classList];
+    expect(classes).not.toContain('primary');
+    expect(classes).not.toContain('secondary');
   });
 
   it('fills the slot with a value', () => {
@@ -61,7 +70,7 @@ describe('MathText slot', () => {
       props: { text: sum, slot: { tone: 'good', fill: '8' } },
     });
     expect(container.textContent).toBe('7 × 8 = 56');
-    expect(container.querySelector('.slot.good')?.textContent).toBe('8');
+    expect(container.querySelector('.slot.tone-good')?.textContent).toBe('8');
   });
 
   it('never wraps a literal question mark', () => {
@@ -79,7 +88,7 @@ describe('MathText slot', () => {
     const plain = render(MathText, { props: { text: '3/4 = 9/12' } });
     expect(container.textContent).toBe(plain.container.textContent);
     expect(container.querySelectorAll('.fraction')).toHaveLength(2);
-    expect(container.querySelector('.numerator .slot.good')?.textContent).toBe('9');
+    expect(container.querySelector('.numerator .slot.tone-good')?.textContent).toBe('9');
   });
 
   it('draws a mixed number as the fill without extra spaces', () => {

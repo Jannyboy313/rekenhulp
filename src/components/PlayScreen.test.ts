@@ -112,7 +112,7 @@ describe('PlayScreen', () => {
       await press('8', 'OK');
       const prompt = document.querySelector('.prompt')!;
       expect(prompt.textContent).toBe('7 × 8 = 56');
-      expect(prompt.querySelector('.slot.good')?.textContent).toBe('8');
+      expect(prompt.querySelector('.slot.tone-good')?.textContent).toBe('8');
     });
 
     it('shows the typed input, not the normalised one, in the field and the sum', async () => {

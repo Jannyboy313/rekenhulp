@@ -12,7 +12,7 @@
   let { text, slot = { tone: 'plain' } }: Props = $props();
 
   const segments = $derived(splitFractions(text));
-  const slotClass = $derived(slot.tone === 'plain' ? 'slot' : `slot ${slot.tone}`);
+  const slotClass = $derived(slot.tone === 'plain' ? 'slot' : `slot tone-${slot.tone}`);
 </script>
 
 <!-- Inline markup is whitespace-sensitive: keep the tags tight (CLAUDE.md, Svelte pitfalls). -->
@@ -34,15 +34,16 @@
     >{/if}{/each}
 
 <style>
-  .slot.primary {
+  /* Not `.primary`: that is the global class of the primary button (app.css). */
+  .slot.tone-primary {
     color: var(--primary);
   }
 
-  .slot.good {
+  .slot.tone-good {
     color: var(--good-sum);
   }
 
-  .slot.bad {
+  .slot.tone-bad {
     color: var(--bad);
   }
 </style>

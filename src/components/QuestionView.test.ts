@@ -68,7 +68,7 @@ describe('QuestionView', () => {
     const prompt = container.querySelector('.prompt')!;
     expect(prompt.classList.contains('sum')).toBe(true);
     expect(prompt.classList.contains('large')).toBe(true);
-    expect(prompt.querySelector('.slot.primary')?.textContent).toBe('?');
+    expect(prompt.querySelector('.slot.tone-primary')?.textContent).toBe('?');
     unmount();
     const long = numberStep({
       prompt: `KGV van 1\u{202f}234 en 5\u{202f}678 = ${SLOT}`,
@@ -544,10 +544,9 @@ describe('QuestionView', () => {
       await press(/^Kladblok vak 1:/);
       expect(columns()).toBe('4');
       expect(screen.getByRole('button', { name: 'is' })).toBeTruthy();
-      // The tray has 5 tracks per column: the spatie is 6 wide, an ordinary key 5.
-      expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('span 6');
-      expect(screen.getByRole('button', { name: 'is' }).style.gridColumn).toBe('span 4');
-      expect(screen.getByRole('button', { name: 'wissen' }).style.gridColumn).toBe('span 5');
+      // Every tray key is one column wide; only the drawn spatie is longer.
+      expect(screen.getByRole('button', { name: 'spatie' }).style.gridColumn).toBe('');
+      expect(screen.getByRole('button', { name: 'spatie' }).querySelector('.space')).not.toBeNull();
       await press('Tik hier voor je antwoord');
       expect(screen.queryByRole('button', { name: 'is' })).toBeNull();
     });

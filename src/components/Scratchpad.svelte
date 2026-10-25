@@ -20,10 +20,10 @@
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
 
-  /** The cursor is inside a fraction (`_3/4`): the slots mark it, so there is no caret until a
-   * space or operator takes it out again. */
+  /** The cursor is still filling in a fraction: the slots mark it, so there is no caret until the
+   * numerator and the first digit of the denominator are in (`_`, `_3` and `_3/` have none). */
   function inFraction(note: string): boolean {
-    return /_\d*(?:\/\d*)?$/.test(note);
+    return /_\d*\/?$/.test(note);
   }
 
   /** A cell is clipped, not wrapped: after every change it shows the end, where the caret is. */
@@ -85,8 +85,9 @@
     color: var(--muted);
   }
 
+  /* The label of the active kladblok takes the sky colour of its active cell, not the primary. */
   .label.active {
-    color: var(--primary);
+    color: var(--sky);
     font-weight: 600;
   }
 

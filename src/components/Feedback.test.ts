@@ -146,7 +146,7 @@ describe('Feedback', () => {
     const prompt = document.querySelector('.prompt')!;
     expect(prompt.classList.contains('sum')).toBe(true);
     expect(prompt.textContent).toBe('91 : 7 = ?');
-    expect(prompt.querySelector('.slot.bad')?.textContent).toBe('?');
+    expect(prompt.querySelector('.slot.tone-bad')?.textContent).toBe('?');
   });
 
   it('leaves a sentence without an unknown as plain question text', () => {

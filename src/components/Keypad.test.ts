@@ -20,7 +20,7 @@ describe('Keypad', () => {
     render(Keypad, { props: { keys: NOTE_KEYS, columns: NOTE_COLUMNS, canSubmit: false, onkey } });
     expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
     const space = screen.getByRole('button', { name: 'spatie' });
-    expect(space.textContent?.trim()).toBe('␣');
+    expect(space.querySelector('.space')).not.toBeNull();
     expect(space.style.gridColumn).toBe('');
     expect(space.classList.contains('ok')).toBe(false);
     await fireEvent.pointerDown(space, { button: 0 });

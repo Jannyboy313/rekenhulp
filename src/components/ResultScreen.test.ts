@@ -96,7 +96,7 @@ describe('ResultScreen', () => {
     expect(prompt.textContent).toBe('7 × ? = 56');
     const slot = prompt.querySelector('.slot')!;
     for (const tone of ['primary', 'good', 'bad'])
-      expect(slot.classList.contains(tone)).toBe(false);
+      expect(slot.classList.contains(`tone-${tone}`)).toBe(false);
   });
 
   it('keeps a step that was wrong on the first attempt in the list', () => {

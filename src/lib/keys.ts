@@ -4,8 +4,8 @@ export interface KeyDef {
   key: KeypadKey;
   label: string;
   ariaLabel?: string;
-  /** Drawn instead of the label: a small stacked fraction (breuk) or x with a raised n (^). */
-  icon?: 'fraction' | 'power';
+  /** Drawn instead of the label: a stacked fraction (breuk), x with a raised n (^), an open box. */
+  icon?: 'fraction' | 'power' | 'space';
 }
 
 const digit = <K extends KeypadKey>(key: K) => ({ key, label: key });
@@ -35,7 +35,7 @@ export const KEYS: { readonly [K in KeypadKey]: KeyDef & { key: K } } = {
   ')': { key: ')', label: ')', ariaLabel: 'haakje sluiten' },
   '/': { key: '/', label: 'breuk', icon: 'fraction' },
   '=': { key: '=', label: '=', ariaLabel: 'is' },
-  ' ': { key: ' ', label: '␣', ariaLabel: 'spatie' },
+  ' ': { key: ' ', label: '␣', ariaLabel: 'spatie', icon: 'space' },
   backspace: { key: 'backspace', label: '⌫', ariaLabel: 'wissen' },
 };
 

@@ -348,10 +348,10 @@ in the place of OK.
   expression keys with `^` and the breuk key instead of `(` and `)`, plus `,`, `=` and the
   spatie, in 4 columns and 5 rows (the same height as the other keypads, except the
   4-row scientific keypad: there the keypad grows one row while a cell is active). The tray
-  keys are 52 px high with 6 px gaps, so the tray is exactly as tall as the other keypads and
-  the prompt does not move when switching. The last row is spaced 5 : 6 : 5 : 4 (⌫ ␣ / =): the
-  spatie is a little longer than the others. It has the normal key colour, acts on press like the
-  other keys and is always enabled. The kladblok has no parentheses.
+  keys are 48 px high with 6 px gaps; a 19 px margin above the tray makes the total as tall as
+  the other keypads, so the prompt does not move when switching. The spatie takes one column
+  like every key, but its icon is a long open box (`␣`, drawn). It has the normal key colour,
+  acts on press like the other keys and is always enabled. The kladblok has no parentheses.
 
   ```
   7  8  9  +
@@ -363,7 +363,9 @@ in the place of OK.
 
   `/` is the breuk key, drawn as a small stacked fraction (two outlined boxes) as on the fraction
   keypad. `^` is drawn as x with a raised n, on every keypad that has it. In a kladblok cell the
-  caret is hidden while the cursor is inside a fraction (until a space or operator follows).
+  caret is hidden while a fraction is being filled in, and returns as soon as the numerator and
+  the first digit of the denominator are in. The label row turns sky blue (not primary) while a
+  cell is active, like the cell.
   The answer field is 56 px high, as high as the "Tik hier voor je antwoord" button, also while
   a fraction template is open (the template is drawn smaller in the field), so nothing moves.
 

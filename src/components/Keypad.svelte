@@ -20,11 +20,6 @@
     onsubmit?: () => void;
   }
 
-  // The tray is a grid of 5 tracks per column, so a key can be a little wider: the last row
-  // (⌫ ␣ / =) is spaced 5 : 6 : 5 : 4, and the spatie is longer than the others.
-  const TRAY_KEY_SPAN = 5;
-  const TRAY_SPANS: Partial<Record<KeypadKey, number>> = { ' ': 6, '=': 4 };
-
   let {
     keys,
     columns = 3,
@@ -44,7 +39,6 @@
       class="key"
       class:digit={/^\d$/.test(key)}
       aria-label={ariaLabel ?? label}
-      style:grid-column={tray ? `span ${TRAY_SPANS[key] ?? TRAY_KEY_SPAN}` : undefined}
       {disabled}
       use:press={() => onkey(key)}
     >
@@ -52,7 +46,9 @@
           >{#snippet numerator()}<span class="box"></span>{/snippet}{#snippet denominator()}<span
               class="box"></span
             >{/snippet}</Fraction
-        >{:else if icon === 'power'}x<sup>n</sup>{:else}{label}{/if}
+        >{:else if icon === 'power'}x<sup>n</sup>{:else if icon === 'space'}<span
+          class="space"></span
+        >{:else}{label}{/if}
     </button>
   {/each}
   {#if onsubmit}
@@ -103,22 +99,32 @@
     filter: brightness(0.94);
   }
 
-  /* As tall as the normal keypad (5 × 52 + 4 × 8 px), so the prompt does not move when the
-     kladblok takes over: 7 + 1 border + 5 × 52 + 4 × 6. The keys have a 3 px side margin instead
-     of a column gap, so a key that spans more tracks is not squeezed by extra gaps. */
+  /* The tray is 19 px lower than the normal keypad (5 × 48 + 4 × 6 + 9 against 5 × 52 + 4 × 8).
+     The margin above it keeps the total height equal, so the prompt does not move when the
+     kladblok takes over, without the tray itself getting taller. */
   .tray {
-    grid-template-columns: repeat(calc(var(--columns, 4) * 5), 1fr);
-    column-gap: 0;
-    row-gap: 6px;
-    padding: 7px 9px calc(24px + env(safe-area-inset-bottom));
+    gap: 6px;
+    margin-top: 19px;
+    padding: 8px 12px calc(24px + env(safe-area-inset-bottom));
     background: var(--tray-bg);
     border-top: 1px solid var(--tray-border);
   }
 
   .tray .key {
-    margin-inline: 3px;
+    height: 48px;
     border-radius: 12px;
     background: var(--tray-key-op);
+  }
+
+  /* The spatie key: an open box, longer than a normal glyph. */
+  .space {
+    display: inline-block;
+    width: 1.9em;
+    height: 0.4em;
+    border: 2px solid currentColor;
+    border-top: none;
+    border-radius: 0 0 3px 3px;
+    vertical-align: middle;
   }
 
   /* The breuk key: two outlined boxes. */
