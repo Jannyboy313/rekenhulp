@@ -106,6 +106,8 @@ with the commands below, so work can proceed autonomously. Authorised by the use
 - `npm run format` (Prettier, authorised 2026-10-06)
 - `sed -n` (read-only printing only; `sed -i` and other write forms stay forbidden; authorised
   2026-10-06)
+- `rm docs/superpowers/plans/<file>.md` (plan files only, named explicitly; no `-r`, no `-f`, no
+  globs, no other paths; authorised 2026-10-25)
 - `git init`
 - `git add`
 - `git commit`
