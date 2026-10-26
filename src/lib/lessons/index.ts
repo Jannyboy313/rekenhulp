@@ -5,6 +5,7 @@ import { NUMBER_SENSE_LESSON } from './getalbegrip';
 import { NUMBERS_LESSON } from './getallen';
 import { GEOMETRY_LESSON } from './meetkunde';
 import { MEASUREMENT_LESSON } from './meten';
+import { NUMBER_SYSTEMS_LESSON } from './talstelsels';
 import type { Lesson } from './types';
 import { RELATIONS_LESSON } from './verbanden';
 import { PROPORTIONS_LESSON } from './verhoudingen';
@@ -19,6 +20,7 @@ export const LESSONS: readonly Lesson[] = [
   FRACTIONS_LESSON,
   GEOMETRY_LESSON,
   RELATIONS_LESSON,
+  NUMBER_SYSTEMS_LESSON,
 ];
 
 export function lessonFor(set: PracticeSet, lessons = LESSONS): Lesson | undefined {

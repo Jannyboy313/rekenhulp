@@ -4,6 +4,7 @@ import {
   GEOMETRY_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
+  NUMBER_SYSTEMS_SET,
   NUMBERS_SET,
   OPERATIONS_SET,
   PROPORTIONS_SET,
@@ -98,6 +99,11 @@ describe('lessonFor', () => {
       'formulas',
       'equations',
       'probability',
+    ]);
+    expect(lessonFor(NUMBER_SYSTEMS_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'toDecimal',
+      'fromDecimal',
+      'romanNumerals',
     ]);
   });
 });
