@@ -28,12 +28,12 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
   the app.
-- No problems that need a calculator, at either level (§12.4). Verdieping is harder through
+- No problems that need a calculator, at either level (§12.7). Verdieping is harder through
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- The v1 topics and all v2 sets in §4 are implemented. v3 is on the roadmap (§12), and the
-  architecture must make adding it cheap.
+- v1 and v2 are done: all sets in §4 are implemented. v3 and v4 are on the roadmap (§12), and
+  the architecture must make adding them cheap.
 
 ## 2. Platform & stack
 
@@ -2454,7 +2454,11 @@ None at the moment.
 The roadmap covers the practice sets only. The lesstof has its own order (lesstof spec §2); a new
 set needs no lesson.
 
-### 12.1 v2 — PABO mental arithmetic and basic knowledge
+v3 deepens practice: levels (§12.2), mixed categories (§12.3) and a practice test (§12.4). v4
+focuses on the RWT and adds multiple choice (§12.5). The check against the toetsmatrijs (§12.6)
+is not tied to a version.
+
+### 12.1 v2 — PABO mental arithmetic and basic knowledge (done)
 
 v2 covers the PABO tests: the RWT (landelijke reken- en wiskundetoets, year 1, replaced the
 Wiscat in 2024) and the LKT (landelijke kennistoets, year 3). Both test these domains: whole
@@ -2530,10 +2534,10 @@ build on both. Talstelsels and Heuristieken are LKT-only and come last.
 
 ### 12.2 v3 — levels: Opfrisser and Verdieping
 
-Comes after the v2 sets (§12.1) and before multiple choice (§12.3). Every set except Tafels
+Comes after the v2 sets (§12.1). Every set except Tafels
 gets a second level, **Verdieping**: exercises closer to the PABO tests (Cito), with more steps,
 combined skills and word problems, so an exercise takes longer than the ~12 s of Opfrisser. It
-stays mental arithmetic with the kladblok (§1, §12.4). Tafels has no levels: the table choice
+stays mental arithmetic with the kladblok (§1, §12.7). Tafels has no levels: the table choice
 (§3.2) already sets what is practised.
 
 Built in steps, each its own session and only when the user says so:
@@ -2563,17 +2567,41 @@ Built in steps, each its own session and only when the user says so:
 
 The lesstof (lesstof spec) is not split by level.
 
-### 12.3 v3 — multiple choice
+### 12.3 v3 — mixed categories
 
-Comes after the levels (§12.2).
+Comes after the levels framework (§12.2 step 2). A session that mixes exercises from more than
+one set. The form (the user picks sets, or a fixed mixed set) is decided in its own spec
+iteration.
 
-- A multiple-choice answer kind. It serves:
+### 12.4 v3 — practice test (oefentoets)
+
+Comes after mixed categories (§12.3), whose mixing it reuses. A session in the style of a PABO
+test. Its form (composition, count, level, feedback during or after the test) is decided in its
+own spec iteration. The non-goals of §1 hold: no stored results or history.
+
+Within v3, after the levels framework, the user picks the next step: a set's Verdieping (§12.2
+step 3), mixed categories or the practice test.
+
+### 12.5 v4 — RWT focus and multiple choice
+
+Comes after v3.
+
+- **RWT coverage**: close the gaps between the sets and the RWT, within mental arithmetic and
+  basic knowledge. The calculator part stays out of scope (§12.7). The gaps are listed in its
+  own spec iteration.
+- **Multiple choice**: a multiple-choice answer kind. It serves:
   - mathematical language and concepts, such as absolute versus relative, and mean versus
     median
   - estimating (`welk antwoord ligt het dichtst bij`)
   - comparing and ordering
 
-### 12.4 Out of scope until further notice
+### 12.6 Check against the toetsmatrijs
+
+Once the toetsmatrijs is available, check the sets (topics, ranges, weights) against it and
+record the gaps. Not tied to a version: it is done between versions, and each later version
+checks its scope against it.
+
+### 12.7 Out of scope until further notice
 
 - Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at
   the Verdieping level. The app is for mental arithmetic and ways of thinking. This drops the
@@ -2585,6 +2613,6 @@ Comes after the levels (§12.2).
   - measuring angles
 - Didactics (part of the LKT).
 
-### 12.5 Optional later
+### 12.8 Optional later
 
-An "Alles gemengd" set, and topic toggles on the setup screen.
+Topic toggles on the setup screen.

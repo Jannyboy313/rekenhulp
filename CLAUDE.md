@@ -44,16 +44,22 @@ notation and that every `worked` line is a true equality chain. Keep lesson code
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 
-Next steps, in this order (spec §12.2–§12.3), one at a time and only when the user says so:
+Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The levels
+framework comes first; after it the user picks the next v3 step. v4 comes after v3.
 
 | Step                                                                                                    | New infrastructure                   |
 | ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
 | v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set           | level choice on setup, `deep` config |
 | v3: Verdieping per set (§12.2 step 3), one set at a time in no fixed order (the user picks); not Tafels | —                                    |
-| v3: multiple choice (§12.3)                                                                             | multiple-choice answer kind          |
+| v3: mixed categories (§12.3), form decided in its spec iteration                                        | sessions across sets                 |
+| v3: practice test (§12.4), after mixed categories                                                       | test session                         |
+| v4: RWT coverage without calculator (§12.5)                                                             | —                                    |
+| v4: multiple choice (§12.5)                                                                             | multiple-choice answer kind          |
+
+Between versions, once it is available: check the sets against the toetsmatrijs (§12.6).
 
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
-§12.4).
+§12.7).
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in

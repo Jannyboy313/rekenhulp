@@ -23,7 +23,7 @@ different ways, so a topic shows **more than one method** wherever a common seco
 
 - No persistence of any kind: no "read" marks, no last-opened topic (main spec §1).
 - No exercises, interaction, images or network inside a lesson.
-- No didactics (main spec §12.4): the lesstof shows calculation methods, not how to teach them:
+- No didactics (main spec §12.7): the lesstof shows calculation methods, not how to teach them:
   no teaching models or terms, no typical pupils' errors.
 - No link from a session or the feedback panel to a lesson (for now).
 
