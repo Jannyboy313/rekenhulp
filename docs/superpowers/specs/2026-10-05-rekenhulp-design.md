@@ -32,8 +32,8 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- v1 and v2 are done: all sets in §4 are implemented. v3 and v4 are on the roadmap (§12), and
-  the architecture must make adding them cheap.
+- v1 and v2 are done: all sets in §4 are implemented. v3 is on the roadmap (§12), and the
+  architecture must make adding it cheap.
 
 ## 2. Platform & stack
 
@@ -2454,9 +2454,9 @@ None at the moment.
 The roadmap covers the practice sets only. The lesstof has its own order (lesstof spec §2); a new
 set needs no lesson.
 
-v3 deepens practice: levels (§12.2), mixed categories (§12.3) and a practice test (§12.4). v4
-focuses on the RWT and adds multiple choice (§12.5). The check against the toetsmatrijs (§12.6)
-is not tied to a version.
+v3 deepens practice: levels (§12.2), mixed categories (§12.3), a practice test (§12.4), and
+multiple choice with the RWT gaps (§12.5). The check against the toetsmatrijs (§12.6) is not
+tied to a version.
 
 ### 12.1 v2 — PABO mental arithmetic and basic knowledge (done)
 
@@ -2561,15 +2561,18 @@ Built in steps, each its own session and only when the user says so:
      unchanged. "Wat zit erin" (§3.2) shows the topics of the selected level.
    - Verdieping topics are their own `Topic` ids and generators (`lib/topics/`), with their own
      labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
-3. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
+3. **Multiple choice** — the multiple-choice answer kind (§12.5), framework only, right after
+   the levels framework so every set step can use it.
+4. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
    light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
-   No fixed order: the user picks the next set.
+   The step also closes the set's RWT gaps (§12.5), at both levels. No fixed order: the user
+   picks the next set.
 
 The lesstof (lesstof spec) is not split by level.
 
 ### 12.3 v3 — mixed categories
 
-Comes after the levels framework (§12.2 step 2). A session that mixes exercises from more than
+Comes after the levels and multiple-choice frameworks (§12.2 steps 2–3). A session that mixes exercises from more than
 one set. The form (the user picks sets, or a fixed mixed set) is decided in its own spec
 iteration.
 
@@ -2579,22 +2582,67 @@ Comes after mixed categories (§12.3), whose mixing it reuses. A session in the 
 test. Its form (composition, count, level, feedback during or after the test) is decided in its
 own spec iteration. The non-goals of §1 hold: no stored results or history.
 
-Within v3, after the levels framework, the user picks the next step: a set's Verdieping (§12.2
-step 3), mixed categories or the practice test.
+Within v3, after the levels and multiple-choice frameworks (§12.2 steps 2–3), the user picks
+the next step: a set (§12.2 step 4), mixed categories or the practice test.
 
-### 12.5 v4 — RWT focus and multiple choice
+### 12.5 v3 — multiple choice and the RWT gaps
 
-Comes after v3.
+**Multiple choice** (§12.2 step 3): a multiple-choice answer kind. It serves:
 
-- **RWT coverage**: close the gaps between the sets and the RWT, within mental arithmetic and
-  basic knowledge. The calculator part stays out of scope (§12.7). The gaps are listed in its
-  own spec iteration, against the eindtermen in ch. 6 of the Cito handreiking
-  (`docs/references/cito-rwt-handreiking.md`).
-- **Multiple choice**: a multiple-choice answer kind. It serves:
-  - mathematical language and concepts, such as absolute versus relative, and mean versus
-    median
-  - estimating (`welk antwoord ligt het dichtst bij`)
-  - comparing and ordering
+- mathematical language and concepts, such as absolute versus relative, and mean versus median
+- estimating (`welk antwoord ligt het dichtst bij`)
+- comparing and ordering
+
+**RWT gaps**: what the eindtermen of the Cito handreiking
+(`docs/references/cito-rwt-handreiking.md`, ch. 6) ask and the sets do not have yet, within
+mental arithmetic and basic knowledge. Checked 2026-10-26 against §5 and the lesstof. Each set closes its gaps in its own step (§12.2 step 4);
+the details (forms, ranges, input) are decided in that set's spec iteration. Per gap: the
+eindterm, then the level, or **MC** when it needs multiple choice. Lessons for the new topics
+follow separately (lesstof spec §2).
+
+- **Meten**
+  - 0.2: the standard reference values (a door ≈ 2 m, walking ≈ 5 km/u, the Netherlands
+    ≈ 18 miljoen inhabitants) and estimating with them. Opfrisser, estimating MC.
+  - 0.1: measuring instruments. MC.
+  - A.1: writing out a number with a name in full (`10,6 miljoen = 10 600 000`). Opfrisser.
+  - C.2: the missing units: `hm`, `dam`, `kl`, `km³`, `ca`, kuub and cc; time above a day
+    (week, maand, kwartaal, jaar, etmaal, lustrum, decennium, eeuw, millennium); money (`ton`);
+    memory (kB, MB, GB, TB). Opfrisser. Choosing the most suitable unit and ordering lengths in
+    mixed units: MC.
+  - C.3: compound quantities other than speed, such as population density (inwoners per km²),
+    and speed from metres (`500 m in 3 min → km/u`). Verdieping.
+  - C.9: reading the time (`tien voor half 9` ↔ `20:20`) and elapsed time. Opfrisser; how a time
+    is typed is decided in the spec iteration.
+- **Getalbegrip**
+  - A.3: ordering positive and negative numbers, and estimating. MC.
+  - A.2: the words of arithmetic (som, verschil, bijna, ruim). MC.
+  - A.4b: shortages with money (`€ 462 te kort`, `in het rood`). Verdieping.
+- **Verhoudingen**
+  - B.1, B.7: promille, missing everywhere. Opfrisser and Verdieping.
+  - B.10: enlarging and reducing with percentages (a copier at 125%). Verdieping.
+  - B.4: comparing ratios (`appels : peren = 1 : 2` against `3 : 4`). Verdieping.
+  - B.1: concepts such as absolute versus relative. MC.
+- **Breuken & kommagetallen**
+  - B.2: naming small decimals (`acht duizendste`, `drie miljardste`). Opfrisser.
+  - B.4: comparing fractions and decimals (`Welke breuk is het grootst?`, the answer typed with
+    the existing keys). Opfrisser; ordering a whole list MC.
+  - B.9: combinations of fractions, decimals and percentages (`4 3/5 : 0,20`). Verdieping.
+  - §3.6 of the handreiking: every eindterm is tested formally and in a context; the set is now
+    almost only formal. Verdieping adds contexts.
+  - B.1: concepts such as gelijkwaardig and samengestelde breuk. MC.
+- **Meetkunde**
+  - C.13: quadratic and cubic enlargement (`de ribbe wordt 2 keer zo lang → de inhoud 8 keer`).
+    Verdieping.
+  - C.10: the surface area of a pyramid from given parts (`9 + 4 × 7,5`). Verdieping.
+  - C.1: the names of solids (prisma, kegel, piramide). MC.
+- **Verbanden & statistiek**
+  - B.11: probability with two dice. Verdieping.
+  - Mean versus median and other concepts. MC.
+
+Getallen & delers, Bewerkingen, Talstelsels and Heuristieken have no RWT gaps. Out of scope
+(§12.7): C.5 to C.8 and C.14 (pictures), C.12 the volume of a sphere (calculator), D.1 to D.3
+(graphs, tables, spreadsheets). The hoofdrekenen part of the RWT has no questions from domain
+D.
 
 ### 12.6 Check against the toetsmatrijs
 
@@ -2602,7 +2650,7 @@ Check the sets (topics, ranges, weights) against the toetsmatrijs and record the
 toetsmatrijs is in the Cito handreiking (`docs/references/cito-rwt-handreiking.md`): the
 distribution per domain and part in §3.3 (table 1), the eindtermen with H/NH per eindterm in
 ch. 6. Not tied to a version: it is done between versions, and each later version checks its
-scope against it.
+scope against it. The check of 2026-10-26 gave the RWT gaps of §12.5.
 
 ### 12.7 Out of scope until further notice
 
