@@ -19,6 +19,11 @@ export function formatInteger(value: number | bigint): string {
   return (negative ? MINUS : '') + groupDigits((negative ? -big : big).toString());
 }
 
+/** A literal in a sum (spec §5.8): a negative one in parentheses, except as the first term. */
+export function formatLiteral(value: number, first = false): string {
+  return value < 0 && !first ? `(${formatInteger(value)})` : formatInteger(value);
+}
+
 /** Formats a terminating decimal in Dutch notation; throws for e.g. 1/3. */
 export function formatRational(value: Rational): string {
   const decimals = finiteDecimalPlaces(value);

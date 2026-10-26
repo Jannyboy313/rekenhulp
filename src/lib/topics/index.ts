@@ -32,6 +32,7 @@ import { generateSmartCalculation } from './smartCalculation';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
+import { generateStatistics } from './statistics';
 import { generateSymmetry } from './symmetry';
 import { generateTables } from './tables';
 
@@ -72,6 +73,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   angles: generateAngles,
   symmetry: generateSymmetry,
   shapeProperties: generateShapeProperties,
+  statistics: generateStatistics,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -112,4 +114,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   angles: 'Hoeken (driehoek, veelhoek, klok)',
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
+  statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
 };

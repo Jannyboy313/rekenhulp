@@ -41,7 +41,8 @@ export type Topic =
   | 'pythagoras'
   | 'angles'
   | 'symmetry'
-  | 'shapeProperties';
+  | 'shapeProperties'
+  | 'statistics';
 
 export interface CheckResult {
   correct: boolean;

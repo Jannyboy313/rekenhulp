@@ -9,6 +9,7 @@ import {
   formatFraction,
   formatInput,
   formatInteger,
+  formatLiteral,
   formatMixedNumber,
   formatMoney,
   formatNote,
@@ -49,6 +50,18 @@ describe('formatInteger', () => {
 
   it('accepts bigint', () => {
     expect(formatInteger(12345n)).toBe(`12${S}345`);
+  });
+});
+
+describe('formatLiteral', () => {
+  it.each<[number, boolean | undefined, string]>([
+    [5, undefined, '5'],
+    [-5, undefined, `(${MINUS}5)`],
+    [-5, true, `${MINUS}5`],
+    [5, true, '5'],
+    [0, undefined, '0'],
+  ])('formats %d (first: %s)', (value, first, expected) => {
+    expect(formatLiteral(value, first)).toBe(expected);
   });
 });
 

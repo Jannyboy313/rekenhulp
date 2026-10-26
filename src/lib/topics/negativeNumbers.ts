@@ -1,4 +1,4 @@
-import { formatInteger as f, NO_BREAK_SPACE } from '../format';
+import { formatInteger as f, formatLiteral as literal, NO_BREAK_SPACE } from '../format';
 import { drawUntil, pick, randomInt, randomIntWhere, type Rng } from '../random';
 import { SLOT } from '../slot';
 import { equals, fromInteger } from '../rational';
@@ -31,11 +31,6 @@ export const MAX_DAY = 30;
 export const SIGN_TIP = 'Let op het teken van de uitkomst.';
 export const PRODUCT_SIGN_TIP =
   'Twee negatieve getallen geven een positieve uitkomst, één negatief getal een negatieve.';
-
-/** A literal in a sum (§5.8): a negative one in parentheses, except as the first term. */
-function literal(value: number, first = false): string {
-  return value < 0 && !first ? `(${f(value)})` : f(value);
-}
 
 function sumText(a: number, add: boolean, b: number): string {
   return `${literal(a, true)} ${add ? '+' : '−'} ${literal(b)}`;
