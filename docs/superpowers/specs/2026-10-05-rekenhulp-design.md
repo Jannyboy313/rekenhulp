@@ -2218,7 +2218,7 @@ in each set's own spec iteration.
      figure named in words (regular polygons, quadrilaterals, triangles).
    - `shapeProperties`: yes/no statements about quadrilaterals and triangles
      (`Is elk vierkant een ruit?`), with the boolean answer kind of `prime`.
-6. **Verbanden & statistiek** (new set) — specified in §5.33–§5.38
+6. **Verbanden & statistiek** (new set) — done, specified in §5.33–§5.38
    - `statistics`: mean, median, mode and range of a short list, and the missing value for a
      given mean.
    - `percentagePoints`: the change between two percentages in percentage points versus in

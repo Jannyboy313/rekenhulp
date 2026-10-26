@@ -21,8 +21,9 @@ not all of it:
 
 Done: the sets Tafels, Meten (v1 + v2: `speed`), Verhoudingen (v1 + v2: `percentChange`, `scale`,
 `ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip,
-Breuken & kommagetallen and Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
-`symmetry`, `shapeProperties`), plus stacked fractions, the kladblok (§3.6), repeat until correct
+Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
+`symmetry`, `shapeProperties`) and Verbanden & statistiek (`statistics`, `percentagePoints`,
+`sequences`, `formulas`, `equations`, `probability`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
@@ -47,7 +48,6 @@ says so:
 
 | Set                                                                                                               | New infrastructure                   |
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **Verbanden & statistiek**: `statistics`, `percentagePoints`, `sequences`, `formulas`, `equations`, `probability` | —                                    |
 | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                                           | text answer kind with letter keys    |
 | **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`              | check the longest prompts on a phone |
 | v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set                     | level choice on setup, `deep` config |
