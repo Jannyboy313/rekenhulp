@@ -1,28 +1,55 @@
 <script lang="ts">
-  import { choosesTables, describeSetTopicRows, SESSION_SIZES } from '../lib/sets';
+  import {
+    choosesTables,
+    describeSetTopicRows,
+    forLevel,
+    hasDeep,
+    SESSION_SIZES,
+  } from '../lib/sets';
   import { TABLE_FACTORS } from '../lib/topics/tables';
-  import type { PracticeSet } from '../lib/types';
+  import type { Level, PracticeSet } from '../lib/types';
   import Icon from './Icon.svelte';
   import SetGlyph from './SetGlyph.svelte';
 
   interface Props {
     set: PracticeSet;
     size: number;
+    /** Opfrisser or Verdieping; not shown for Tafels (spec §12.2). */
+    level?: Level;
     /** Chosen tables; used by the Tafels set only (spec §3.2). */
     tables: number[];
     onstart: () => void;
     onback: () => void;
   }
 
-  let { set, size = $bindable(), tables = $bindable(), onstart, onback }: Props = $props();
+  let {
+    set,
+    size = $bindable(),
+    level = $bindable('quick'),
+    tables = $bindable(),
+    onstart,
+    onback,
+  }: Props = $props();
+
+  const LEVELS: readonly { value: Level; label: string }[] = [
+    { value: 'quick', label: 'Opfrisser' },
+    { value: 'deep', label: 'Verdieping' },
+  ];
 
   const canStart = $derived(!choosesTables(set) || tables.length > 0);
+  const enabledLevels = $derived<Level[]>(hasDeep(set) ? ['quick', 'deep'] : ['quick']);
 
   function toggleTable(table: number) {
     tables = TABLE_FACTORS.filter((t) => (t === table ? !tables.includes(t) : tables.includes(t)));
   }
 
-  function onSizeKey(event: KeyboardEvent) {
+  /** Arrow keys step through the enabled options of a radio group (disabled ones are skipped). */
+  function onRadioKey<T>(
+    event: KeyboardEvent,
+    options: readonly T[],
+    current: T,
+    choose: (next: T) => void,
+  ) {
     const step =
       event.key === 'ArrowRight' || event.key === 'ArrowDown'
         ? 1
@@ -31,9 +58,9 @@
           : 0;
     if (step === 0) return;
     event.preventDefault();
-    const next = SESSION_SIZES[SESSION_SIZES.indexOf(size) + step];
+    const next = options[options.indexOf(current) + step];
     if (next === undefined) return;
-    size = next;
+    choose(next);
     const group = event.currentTarget as HTMLElement;
     queueMicrotask(() => group.querySelector<HTMLElement>('[tabindex="0"]')?.focus());
   }
@@ -73,7 +100,7 @@
       <section>
         <div class="section-header"><h2>Wat zit erin</h2></div>
         <ul class="info">
-          {#each describeSetTopicRows(set, size) as row (row.name)}
+          {#each describeSetTopicRows(forLevel(set, level), size) as row (row.name)}
             <li>
               <span class="row-name">{row.name}</span>
               {#if row.detail}<span class="row-detail">{row.detail}</span>{/if}
@@ -86,7 +113,12 @@
     <section>
       <div class="section-header"><h2 id="size-heading">Aantal opgaven</h2></div>
       <!-- svelte-ignore a11y_interactive_supports_focus -->
-      <div class="sizes" role="radiogroup" aria-labelledby="size-heading" onkeydown={onSizeKey}>
+      <div
+        class="segments sizes"
+        role="radiogroup"
+        aria-labelledby="size-heading"
+        onkeydown={(event) => onRadioKey(event, SESSION_SIZES, size, (next) => (size = next))}
+      >
         {#each SESSION_SIZES as option (option)}
           <button
             type="button"
@@ -99,6 +131,31 @@
         {/each}
       </div>
     </section>
+
+    {#if !choosesTables(set)}
+      <section>
+        <div class="section-header"><h2 id="level-heading">Niveau</h2></div>
+        <!-- svelte-ignore a11y_interactive_supports_focus -->
+        <div
+          class="segments levels"
+          role="radiogroup"
+          aria-labelledby="level-heading"
+          onkeydown={(event) => onRadioKey(event, enabledLevels, level, (next) => (level = next))}
+        >
+          {#each LEVELS as option (option.value)}
+            <button
+              type="button"
+              role="radio"
+              class="segment"
+              aria-checked={level === option.value}
+              tabindex={level === option.value ? 0 : -1}
+              disabled={!enabledLevels.includes(option.value)}
+              onclick={() => (level = option.value)}>{option.label}</button
+            >
+          {/each}
+        </div>
+      </section>
+    {/if}
   </div>
 
   <footer>
@@ -241,13 +298,20 @@
     font-weight: 700;
   }
 
-  .sizes {
+  .segments {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 4px;
     padding: 4px;
     border-radius: 14px;
     background: var(--sky-track);
+  }
+
+  .sizes {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .levels {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .segment {

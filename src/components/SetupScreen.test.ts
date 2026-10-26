@@ -1,22 +1,32 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
-import { DEFAULT_SESSION_SIZE, MEASUREMENT_SET, TABLES_SET } from '../lib/sets';
+import { DEEP_FIXTURE_SET } from '../lib/setFixture';
+import { DEFAULT_SESSION_SIZE, MEASUREMENT_SET, NUMBERS_SET, TABLES_SET } from '../lib/sets';
 import { TABLE_FACTORS } from '../lib/topics/tables';
-import type { PracticeSet } from '../lib/types';
+import type { Level, PracticeSet } from '../lib/types';
 import SetupScreen from './SetupScreen.svelte';
 
-/** The setup screen with App's defaults: the default size and every table chosen. */
+/** The setup screen with App's defaults: the default size, Opfrisser and every table chosen. */
 function renderSetup(
   set: PracticeSet,
   {
     tables = [...TABLE_FACTORS],
     size = DEFAULT_SESSION_SIZE,
+    level = 'quick' as Level,
     onstart = vi.fn(),
     onback = vi.fn(),
   } = {},
 ) {
-  render(SetupScreen, { props: { set, size, tables, onstart, onback } });
+  render(SetupScreen, { props: { set, size, level, tables, onstart, onback } });
+}
+
+function levelRadio(name: 'Opfrisser' | 'Verdieping'): HTMLButtonElement {
+  return screen.getByRole<HTMLButtonElement>('radio', { name });
+}
+
+function rowNames(): (string | null)[] {
+  return [...document.querySelectorAll('.row-name')].map((el) => el.textContent);
 }
 
 function pills(): HTMLButtonElement[] {
@@ -126,5 +136,47 @@ describe('SetupScreen', () => {
     renderSetup(MEASUREMENT_SET, { onback });
     await fireEvent.click(screen.getByRole('button', { name: 'Terug' }));
     expect(onback).toHaveBeenCalledOnce();
+  });
+});
+
+describe('SetupScreen level', () => {
+  it('shows Niveau below the count, on Opfrisser, with Verdieping disabled for a real set', () => {
+    renderSetup(NUMBERS_SET);
+    const groups = screen.getAllByRole('radiogroup');
+    expect(groups.map((group) => group.getAttribute('aria-labelledby'))).toEqual([
+      'size-heading',
+      'level-heading',
+    ]);
+    expect(screen.getByRole('heading', { name: 'Niveau', level: 2 })).toBeTruthy();
+    expect(levelRadio('Opfrisser').getAttribute('aria-checked')).toBe('true');
+    expect(levelRadio('Verdieping').disabled).toBe(true);
+  });
+
+  it('offers no level for Tafels', () => {
+    renderSetup(TABLES_SET);
+    expect(screen.queryByRole('radio', { name: 'Opfrisser' })).toBeNull();
+    expect(screen.getAllByRole('radiogroup')).toHaveLength(1);
+  });
+
+  it('lists the Verdieping topics without tables once Verdieping is chosen', async () => {
+    renderSetup(DEEP_FIXTURE_SET);
+    expect(rowNames()).toEqual(['Priemgetal of niet', '15% tafels']);
+    await fireEvent.click(levelRadio('Verdieping'));
+    expect(levelRadio('Verdieping').getAttribute('aria-checked')).toBe('true');
+    expect(rowNames()).toEqual(['KGV', 'GGD']);
+  });
+
+  it('moves to Verdieping with the arrow keys and focuses it', async () => {
+    renderSetup(DEEP_FIXTURE_SET);
+    await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });
+    expect(levelRadio('Verdieping').getAttribute('aria-checked')).toBe('true');
+    await Promise.resolve();
+    expect(document.activeElement).toBe(levelRadio('Verdieping'));
+  });
+
+  it('skips a disabled Verdieping with the arrow keys', async () => {
+    renderSetup(NUMBERS_SET);
+    await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });
+    expect(levelRadio('Opfrisser').getAttribute('aria-checked')).toBe('true');
   });
 });
