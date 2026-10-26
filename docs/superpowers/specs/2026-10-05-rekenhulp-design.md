@@ -317,6 +317,16 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `angles`, angle sum | `n × 180` | "Een zeshoek kun je verdelen in 6 − 2 = 4 driehoeken: 4 × 180°." |
 | `angles`, regular polygon | the exterior angle `360 : n` | "Dat is de buitenhoek; één hoek binnenin is 180° − 45° = 135°." |
 | `angles`, clock at half past | the angle with the hour hand on either whole hour | "Om half 4 staat de kleine wijzer halverwege de 3 en de 4." |
+| `statistics`, mean | the sum of the list | "Deel de som nog door het aantal getallen: 35 : 5." |
+| `statistics`, median | the middle of the list as shown (the mean of the two middle values for an even length) | "Zet de getallen eerst op volgorde; de mediaan is het middelste getal." |
+| `percentagePoints`, difference in procentpunten | the change in procent (`25`) | "Procentpunten is het verschil tussen de percentages: 5 − 4 = 1." |
+| `percentagePoints`, difference in procent | the change in procentpunten (`1`) | "Dat is het verschil in procentpunten; 1 van 4 is 1/4 = 25%." |
+| `percentagePoints`, new value, change in procent | the change added as procentpunten (`4 + 25`; decrease: `−`) | "25% van 4% is 1 procentpunt: 4% + 1% = 5%." |
+| `sequences`, n-th term | start + n × difference (`3 + 20 × 4`) | "Van het 1e naar het 20e getal zijn 19 stappen, geen 20." |
+| `formulas`, hellingsgetal, x-step 2 | the y-difference (`6`) | "y wordt 6 groter als x 2 groter wordt; per 1 is dat 6 : 2 = 3." |
+| `formulas`, startgetal | the first y of the table | "Het startgetal is y bij x = 0, niet bij x = 2." |
+| `equations` | the solution with the sign of the moved term flipped (`(20 + 5) : 3`, whole) | "Haal 5 aan beide kanten weg: 3x = 20 − 5." (for `− 5`: "Tel 5 aan beide kanten op: 3x = 20 + 5."; brackets: "… x = 3 + 2.") |
+| `probability`, marbles | the colour divided by the other marbles (`5/5`) | "Deel door het totaal aantal knikkers: 3 + 5 + 2 = 10." |
 
 Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewrites get no tips: their explanation (§5.4,
 §5.6) or rewrite message (§5.11) already names the mistake.
@@ -525,6 +535,8 @@ Examples with `n = 15`:
   at random.
 - **Meetkunde:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is chosen at
   random.
+- **Verbanden & statistiek:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3
+  is chosen at random.
 
 ## 5. Topics
 
@@ -1687,6 +1699,181 @@ kinds: quadrilateral hierarchy (40%), quadrilateral properties (40%) and triangl
 
 - The de-duplication key is the statement.
 
+### Verbanden & statistiek (§5.33–§5.38)
+
+The set Verbanden & statistiek (v2). Its card (§3.1) reads "Statistiek, rijen, formules,
+vergelijkingen en kans". Every topic uses an existing answer kind: `number`, or `fraction` for
+`probability`. Negative numbers are typed with the `−` key (§5.16) and written as `−4` in lists
+and as the first term, in parentheses elsewhere (§5.8). The longest prompts (about 120
+characters: the marbles of `probability`) use the small size of §3.3.
+
+### 5.33 Statistics (`statistics`)
+
+There are five forms, each picked with equal probability:
+
+| Form             | Example                                                                  | Answer |
+|------------------|--------------------------------------------------------------------------|--------|
+| Mean             | `Cijfers: 6, 8, 7, 5, 9. Wat is het gemiddelde?`                         | 7      |
+| Median           | `Temperaturen deze week in °C: 4, −2, 3, 0, 5, 1, −4. Wat is de mediaan?` | 1      |
+| Mode             | `Doelpunten per wedstrijd: 2, 0, 3, 1, 2. Wat is de modus?`             | 2      |
+| Range            | `Cijfers: 6, 8, 7, 5, 9. Wat is de spreidingsbreedte?`                   | 4      |
+| Missing value    | `Je hebt de cijfers 6, 8 en 7. Welk cijfer moet je nog halen om gemiddeld een 7 te staan?` | 7 |
+
+- **Contexts** for the first four forms, each equally likely, with their values and list lengths.
+  The list is shown in the drawn order, not sorted:
+
+  | Context    | Label                            | Values (whole)   | Length    | Suffix |
+  |------------|----------------------------------|------------------|-----------|--------|
+  | cijfers    | `Cijfers:`                       | `[3, 10]`        | 5 or 6    | —      |
+  | doelpunten | `Doelpunten per wedstrijd:`      | `[0, 6]`         | 5, 6 or 7 | —      |
+  | temperatuur | `Temperaturen deze week in °C:` | `[−5, 15]`       | 7         | `°C` (range: `graden`) |
+
+  Temperature lists have at least one value below zero.
+- **Mean:** the sum is divisible by the length, so the mean is whole (redraw otherwise).
+- **Median:** an odd length gives the middle value, an even length the mean of the two middle
+  values (`6,5` possible).
+- **Mode:** exactly one value occurs most often (2 or 3 times; redraw otherwise).
+- **Range:** highest − lowest.
+- **Missing value:** cijfers only. 3, 4 or 5 given values in `[3, 10]`, a whole mean in `[5, 8]`,
+  the answer in `[4, 10]`.
+- Answers are `number` steps.
+- Explanations: `6 + 8 + 7 + 5 + 9 = 35 → 35 : 5 = 7`; `op volgorde: −4, −2, 0, 1, 3, 4, 5 →
+  de middelste is 1`, even length `… → (6 + 7) : 2 = 6,5`; `2 komt het vaakst voor (2 keer)`;
+  `hoogste − laagste = 9 − 5 = 4`, `15 − (−3) = 18`; `gemiddeld 7 bij 4 cijfers = 4 × 7 = 28
+  → 28 − 6 − 8 − 7 = 7`.
+- The de-duplication key is the form, the context and the list.
+
+### 5.34 Percentage points (`percentagePoints`)
+
+There are two forms, each picked with equal probability:
+
+| Form       | Example                                                                     | Answer | Suffix |
+|------------|-----------------------------------------------------------------------------|--------|--------|
+| Difference | `De rente stijgt van 4% naar 5%. Hoeveel procentpunt is dat?`               | 1      | `procentpunt` |
+| Difference | `De rente stijgt van 4% naar 5%. Met hoeveel procent stijgt de rente?`      | 25     | `%`    |
+| New value  | `De rente is 4%. Die stijgt met 1 procentpunt. Hoeveel procent is de rente nu?` | 5  | `%`    |
+| New value  | `De rente is 4%. Die stijgt met 25%. Hoeveel procent is de rente nu?`        | 5      | `%`    |
+
+- An old percentage `o` and a relative change `r ∈ {10, 20, 25, 50, 75, 100}` (a decrease only
+  `r ≤ 75`) give the new percentage `n = o × (100 ± r) / 100`, which is whole. The difference
+  `|n − o|` is the change in procentpunten. Increase or decrease, each 50%.
+- Contexts, each equally likely, with the range of `o` and `n`: rente `[1, 8]`
+  (`De rente stijgt van …`), werkloosheid `[2, 12]` (`De werkloosheid daalt van …`), opkomst bij
+  verkiezingen `[40, 95]` (`De opkomst bij de verkiezingen stijgt van …`). The verb follows the
+  direction (`stijgt`/`daalt`, `Met hoeveel procent daalt …`). A drawn `o` and `r` without a
+  whole `n` in range is redrawn.
+- **Difference:** asks procentpunten or procent, each 50%. **New value:** gives the change in
+  procentpunten or in procent, each 50%, and asks `n`.
+- Answers are whole `number` steps.
+- Explanations: `5 − 4 = 1 procentpunt`; `5 − 4 = 1 → 1 van 4 = 1/4 = 25%`; `4 + 1 = 5%`;
+  `25% van 4 = 1 → 4 + 1 = 5%`.
+- The de-duplication key is the form, the context, `o`, `n` and what is asked or given.
+
+### 5.35 Sequences (`sequences`)
+
+There are three forms, each picked with equal probability:
+
+| Form       | Example                                                                 | Answer |
+|------------|-------------------------------------------------------------------------|--------|
+| Next term  | `3, 7, 11, 15, … Wat is het volgende getal?`                            | 19     |
+| n-th term  | `3, 7, 11, 15, … Wat is het 20e getal?`                                 | 79     |
+| Figurate   | `Driehoeksgetallen: 1, 3, 6, 10, … Wat is het 8e driehoeksgetal?`       | 36     |
+
+- Four terms are shown, then `…`.
+- **Next term:** arithmetic or geometric, each 50%.
+  - arithmetic: start in `[−20, 50]`, difference in `[2, 15]`, decreasing in 30% of the
+    exercises; every term, the answer included, in `[−50, 100]`
+  - geometric: `× 2` (start `[1, 12]`), `× 3` (start `[1, 5]`) or `: 2` (start `16 × k`,
+    `k ∈ [1, 10]`), each equally likely; every term at most 1000
+- **n-th term:** arithmetic and increasing, start in `[1, 20]`, difference in `[2, 10]`,
+  `n ∈ {10, 12, 15, 20, 25, 30, 50, 100}`, the answer at most 1000.
+- **Figurate:** triangular numbers (`n(n + 1) : 2`, `n ∈ [5, 20]`) or square numbers
+  (`Kwadraatgetallen: 1, 4, 9, 16, …`, `n ∈ [5, 20]`), each 50%.
+- Answers are `number` steps.
+- Explanations: `+4 → 15 + 4 = 19`, `× 2 → 24 × 2 = 48`, `: 2 → 20 : 2 = 10`; `van het 1e naar
+  het 20e getal zijn 19 stappen van 4 → 3 + 19 × 4 = 79`; `1 + 2 + … + 8 = 8 × 9 : 2 = 36`,
+  `15 × 15 = 225`.
+- The de-duplication key is the form and the numbers.
+
+### 5.36 Formulas (`formulas`)
+
+There are two forms, each picked with equal probability:
+
+| Form         | Example                                                                         | Answer |
+|--------------|---------------------------------------------------------------------------------|--------|
+| Substitution | `Taxi: kosten in euro = 4 + 2,50 × aantal km. Wat kost een rit van 12 km?`      | 34     |
+| Substitution | `y = 3x − 4. Wat is y als x = 5?`                                               | 11     |
+| Table        | `Tabel: bij x = 2, 4, 6, 8 hoort y = 11, 17, 23, 29. Wat is het hellingsgetal?` | 3      |
+
+- **Substitution:** a word formula or a letter formula, each 50%.
+  - Word formulas, each equally likely:
+
+    | Context      | Formula                                         | Start          | Rate                 | Input           | Answer |
+    |--------------|-------------------------------------------------|----------------|----------------------|-----------------|--------|
+    | taxi         | `Taxi: kosten in euro = 4 + 2,50 × aantal km.`   | `{3, 4, 5}`    | `{2; 2,50; 3}`       | km `[2, 20]`    | `€` prefix |
+    | fietsverhuur | `Fietsverhuur: prijs in euro = 5 + 8 × aantal dagen.` | `{5, 10, 15}` | `[6, 15]`       | dagen `[2, 10]` | `€` prefix |
+    | kaars        | `Kaars: lengte in cm = 24 − 2 × aantal uren.`    | `{15, 20, 24, 30}` | `{1; 1,5; 2; 3}` | uren `[2, 12]`, length at least 1 | `cm` suffix |
+
+    Questions: `Wat kost een rit van 12 km?`, `Wat kost 4 dagen huren?`, `Hoe lang is de kaars
+    na 5 uur?`
+  - Letter formula `y = ax ± b`: `a ∈ [2, 9]`, `b ∈ [1, 20]`, `x ∈ [−5, 10]`, `x ≠ 0`,
+    negative in 25% of the exercises.
+- **Table:** a linear relation `y = ax + b`, four x-values starting at `[1, 3]` with step 1 or 2
+  (each 50%), `a ∈ [−5, 10]`, `a ≠ 0`, decreasing in 25%, `b ∈ [−10, 30]`, every y in
+  `[−50, 100]`. Asks the startgetal (`b`) or the hellingsgetal (`a`), each 50%.
+- Answers are `number` steps; money answers with the formatting of §8.
+- Explanations: `4 + 2,50 × 12 = 4 + 30 = 34`; `3 × 5 − 4 = 15 − 4 = 11`, `3 × (−2) − 4 =
+  −6 − 4 = −10`; `x wordt 2 groter, y wordt 6 groter → 6 : 2 = 3` (step 1: `… → 3`);
+  `hellingsgetal 3 → bij x = 0: 11 − 2 × 3 = 5`.
+- The de-duplication key is the form, the context and the numbers.
+
+### 5.37 Equations (`equations`)
+
+Linear equations in `x` with a whole solution. There are three forms, each picked with equal
+probability:
+
+| Form             | Example                     | Answer |
+|------------------|-----------------------------|--------|
+| `ax ± b = c`     | `Los op: 3x + 5 = 20`       | 5      |
+| `a(x ± b) = c`   | `Los op: 4(x − 2) = 12`     | 5      |
+| `ax ± b = cx ± d` | `Los op: 5x + 3 = 2x + 18` | 5      |
+
+- The answer is a `number` step with the prefix `x =` (§6).
+- The solution `x ∈ [−10, 20]`, `x ≠ 0`, negative in 25% of the exercises.
+- `a ∈ [2, 9]`, `b ∈ [1, 20]` with `+` or `−` (each 50%). In the third form `a ∈ [3, 9]` and the
+  `x` on the right has a coefficient in `[1, a − 1]` (written `x` for 1), the constant on the
+  right is not 0 and its absolute value at most 50. The right side of the other forms is not 0,
+  at most 100 in absolute value and may be negative (`= −4`).
+- Explanations, by balancing:
+  - `3x + 5 = 20 → 3x = 20 − 5 = 15 → x = 15 : 3 = 5`
+  - `3x + 20 = 5 → 3x = 5 − 20 = −15 → x = −15 : 3 = −5`
+  - `4(x − 2) = 12 → x − 2 = 12 : 4 = 3 → x = 3 + 2 = 5`
+  - `5x + 3 = 2x + 18 → 3x + 3 = 18 → 3x = 15 → x = 5`
+- The de-duplication key is the equation.
+
+### 5.38 Probability (`probability`)
+
+There are two forms, each picked with equal probability:
+
+| Form     | Example                                                                                                       | Answer |
+|----------|---------------------------------------------------------------------------------------------------------------|--------|
+| Die      | `Je gooit met een dobbelsteen. Hoe groot is de kans op een even getal?`                                        | 1/2    |
+| Marbles  | `In een zak zitten 3 rode, 5 blauwe en 2 groene knikkers. Je pakt er zonder te kijken één. Hoe groot is de kans op een blauwe?` | 1/2 |
+
+- **Die:** one regular die, events from a fixed list, each equally likely: `een 6` (1/6), `een
+  even getal` (1/2), `een oneven getal` (1/2), `meer dan 4` (1/3), `minder dan 3` (1/3),
+  `meer dan 2` (2/3), `een 5 of een 6` (1/3), `geen 6` (5/6), `een veelvoud van 3` (1/3).
+- **Marbles:** 2 or 3 colours from rood, blauw, groen and geel, each count in `[1, 12]`, the total
+  in `[5, 20]`. Asks for one colour (75%) or for `een knikker die niet rood is` (25%, any of
+  the colours).
+- The answer is a fraction step in simplest form, decimal allowed (§6): `1/2` and `0,5` are
+  correct, `3/6` is not. Non-terminating answers (`1/3`) can only be typed as a fraction; the
+  existing tips of §3.4.1 cover `0,33` and `3/6`.
+- Explanations: `3 van de 6 uitkomsten zijn even (2, 4, 6) → 3/6 = 1/2`; `5 van de 3 + 5 + 2 =
+  10 knikkers zijn blauw → 5/10 = 1/2`; `7 van de 10 knikkers zijn niet rood → 7/10`. The
+  `→ …` simplification is left out when the fraction is already in simplest form.
+- The de-duplication key is the form and the event or the counts.
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -1762,8 +1949,9 @@ The keypad is custom. The system keyboard is never opened.
   gives "Ongeldige notatie" and does not count as the attempt. A plain number (`4500000`) is
   valid input; it is judged wrong with a tip when its value is right (§5.19). Parsing is a small
   dedicated parser next to `parseFactorization`, not `lib/expr`.
-- Units are shown next to the input field, and the user never types them. `€` and `1 :` (the
-  find-the-scale form of §5.24) are fixed prefixes (`€ 45`, `1 : 25 000`); other units (`%`,
+- Units are shown next to the input field, and the user never types them. `€`, `1 :` (the
+  find-the-scale form of §5.24) and `x =` (§5.37) are fixed prefixes (`€ 45`, `1 : 25 000`,
+  `x = 5`); other units (`%`,
   `cm³`, …) are a fixed suffix. The feedback tiles and the result tiles show the same prefix
   and suffix around the answer (`€ 45`, `402 cm²`).
 - While the input is empty, the field shows `…` in the muted colour as a placeholder. Empty
@@ -2028,18 +2216,20 @@ in each set's own spec iteration.
      figure named in words (regular polygons, quadrilaterals, triangles).
    - `shapeProperties`: yes/no statements about quadrilaterals and triangles
      (`Is elk vierkant een ruit?`), with the boolean answer kind of `prime`.
-6. **Verbanden & statistiek** (new set)
+6. **Verbanden & statistiek** (new set) — specified in §5.33–§5.38
    - `statistics`: mean, median, mode and range of a short list, and the missing value for a
      given mean.
    - `percentagePoints`: the change between two percentages in percentage points versus in
-     percent (`van 20% naar 25%`: 5 procentpunt, 25% hoger).
+     percent (`van 20% naar 25%`: 5 procentpunt, 25% hoger), and the new percentage after
+     either.
    - `sequences`: arithmetic and geometric sequences, and figurate numbers (triangular and
      square numbers): the next term or the n-th term.
    - `formulas`: substituting into a formula, and the start value and slope of a linear
      relation given as a table.
-   - `equations`: linear equations in one unknown with an integer solution: `3x + 5 = 20`.
-   - `probability`: simple probabilities as a fraction (dice, marbles).
-   - Depends on negative numbers (set 1) and fraction answers (set 2).
+   - `equations`: linear equations in one unknown with an integer solution: `3x + 5 = 20`,
+     with brackets, and with `x` on both sides.
+   - `probability`: simple probabilities as a fraction (one die, marbles).
+   - Infrastructure: none; uses the `x =` prefix, the `€` prefix and the unit suffix.
 7. **Talstelsels** (new set; LKT)
    - `numberSystems`: binary, base 5 and hexadecimal ↔ decimal.
    - `romanNumerals`: Roman numerals ↔ decimal.
