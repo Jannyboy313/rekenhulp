@@ -42,7 +42,7 @@ Files: `src/lib/keypadInput.ts`, `src/lib/keys.ts`, tests in `keypadInput.test.t
 ## Task 2 — Answer kinds `baseDigits` and `roman`
 
 Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, `okSpan`,
-`keyRows`), `src/components/Keypad.svelte`, `src/components/KeypadAnswer.svelte`, tests
+`keyRows`), `src/components/Keypad.svelte`, tests
 `inputModels.test.ts`, `keys.test.ts`.
 
 - `AnswerKind` gains `'baseDigits' | 'roman'`.
@@ -54,14 +54,15 @@ Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, 
 - `okSpan(keys, columns)` counts cells as the sum of spans: `columns − (cells % columns)`
   (roman: 9 cells → OK spans 3, its own row).
 - `keyRows(keys, columns): number`: rows including the OK row (`(cells + okSpan) / columns`).
-- `InputModel.fullHeight?: true`, set on `roman` only: the keypad keeps the height of five rows
-  (spec §6). `KeypadAnswer` passes it to `Keypad`, which sets `--rows` and gives `.full .key`
-  `height: calc((5 * 52px + 4 * 8px - (var(--rows) - 1) * 8px) / var(--rows))` (56 px in the
-  `.tall` variant). The scientific keypad is unchanged (4 rows, lower, spec §6).
+- Every keypad is as high as five rows (spec §6): `Keypad` always sets `--rows` from
+  `keyRows(keys, columns)` and gives `.key`
+  `height: calc((5 * 52px + 4 * 8px - (var(--rows) - 1) * 8px) / var(--rows))`, and `.tall .key`
+  the same with 56 px. Five-row keypads keep 52/56 px; scientific and roman (4 rows) get 67/72
+  px. The tray keeps its own 48 px (`.tray .key` must still win). No flag on the model.
 - `Keypad.svelte`: `style:grid-column="span {span}"` on a key with a span.
 - `INPUT_MODELS.baseDigits = { ...textModel(BASE_DIGITS_KEYS, applyBaseDigitsKey, () => null,
   (input) => input), columns: 4 }`; `INPUT_MODELS.roman = { ...textModel(ROMAN_KEYS,
-  applyRomanKey, () => null, (input) => input), fullHeight: true }` (3 columns, the default).
+  applyRomanKey, () => null, (input) => input)` (3 columns, the default).
 - `QuestionView` needs no change: its `else` branch takes every text model.
 
 | Test                                   | Expected |
@@ -73,10 +74,11 @@ Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, 
 | `okSpan` of existing keypads           | unchanged (regression: number 2, expression 3, scientific 1) |
 | `keyRows`                              | roman 4, baseDigits 5, number 5, scientific 4 |
 | every keypad incl. kladblok            | `⌫` is bottom left: the cells before it ≡ 0 mod columns, and the keys after it fit in its row |
-| `INPUT_MODELS.roman.fullHeight`        | `true`; absent on every other model |
 
-Component check (`Keypad.test.ts` or `QuestionView.test.ts`): with `fullHeight` the keypad
-sets `--rows: 4`; `M` has `grid-column: span 2`.
+Component check (`Keypad.test.ts` or `QuestionView.test.ts`): the roman and scientific keypads
+set `--rows: 4`, the number keypad `--rows: 5`; `M` has `grid-column: span 2`. Phone check
+later by the user: the prompt does not move between a number step and a scientific or roman
+step, nor when a kladblok cell becomes active.
 | `validate('B4')`, `validate('IIII')`   | `null` |
 | `display('B4')`, `view('MCM')`         | `B4`, `[{ type: 'text', text: 'MCM' }]` |
 | `displayAnswer('roman', 'XIV')`        | `XIV` |

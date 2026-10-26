@@ -376,8 +376,7 @@ in the place of OK.
   field active.
 - **While a cell is active**, the keypad is the kladblok keypad, whatever the answer kind: the
   expression keys with `^` and the breuk key instead of `(` and `)`, plus `,`, `=` and the
-  spatie, in 4 columns and 5 rows (the same height as the other keypads, except the
-  4-row scientific keypad: there the keypad grows one row while a cell is active). The tray
+  spatie, in 4 columns and 5 rows (the same height as every other keypad, §6). The tray
   keys are 48 px high with 6 px gaps; a 19 px margin above the tray makes the total as tall as
   the other keypads, so the prompt does not move when switching. The spatie takes one column
   like every key, but its icon is a long open box (`␣`, drawn). It has the normal key colour,
@@ -1958,13 +1957,17 @@ The keypad is custom. The system keyboard is never opened.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
   a superscript. The feedback and the results show the given answer the same way.
 - `OK` is disabled only while the input is empty. It is a primary-coloured key that fills the rest
-  of the last row.
+  of the last row. Operator and auxiliary keys have a darker key colour than the digits.
 - `⌫` is always bottom left: the left key of the bottom row of keys, with OK beside it or in a
   row of its own below it (roman), on every keypad and on the kladblok tray (§3.6). A new
   keypad keeps it there; when its keys do not fill a row, a key spans the rest of that row (the
-  `M` of the roman keypad), never an empty cell. Operator and auxiliary keys have a darker key colour than the digits.
-- The digit keys are 52 px high (56 px on screens without a kladblok); the kladblok keypad has
-  48 px keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right.
+  `M` of the roman keypad), never an empty cell.
+- Every keypad is as high as five rows of keys: 5 × 52 + 4 × 8 = 292 px (312 px with 56 px
+  keys on screens without a kladblok). A five-row keypad has 52 px keys (56 px without a
+  kladblok); a keypad with fewer rows gets taller keys, `(292 − (rows − 1) × 8) / rows`
+  (scientific and roman, 4 rows: 67 px, 72 px without a kladblok). So the prompt never moves
+  between answer kinds or when the kladblok tray takes over. The kladblok keypad has 48 px
+  keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right.
 - Ja/Nee keeps the layout of a keypad step: the buttons sit at the bottom and the prompt stays at
   the height it has above a number keypad, so it does not jump between questions.
 - Input that cannot be submitted, such as `−`, `25/0` or `2 ×`, gives an inline error and does
@@ -1994,9 +1997,8 @@ The keypad is custom. The system keyboard is never opened.
   prevent (a trailing operator, an unclosed `(`) gives "Ongeldige som".
 - **Scientific input** (only the scientific-notation steps of §5.19 use it): the user writes the
   notation itself, `4,5×10^6`, with the existing keys. No new key is needed. Four columns like
-  the expression keypad, but four rows, because it has fewer keys. The keypad is therefore one row lower than
-  the others and the prompt sits a little lower; empty grid cells to keep five rows are not
-  worth it:
+  the expression keypad, but four rows, because it has fewer keys. Its keys are taller, so the
+  keypad is as high as the others (see the key heights above):
 
   ```
   7  8  9  ×
@@ -2037,9 +2039,8 @@ The keypad is custom. The system keyboard is never opened.
 
   - **roman**: the symbols in order of value, in 3 columns and 4 rows; at most 15 characters
     (the longest answer, `MDCCCLXXXVIII`, has 13). `M` spans two columns next to `⌫`, and OK
-    fills the last row. The keypad keeps the height of a five-row keypad (5 × 52 + 4 × 8 =
-    292 px, 312 px without a kladblok), so its keys are taller (67 px, 72 px without a
-    kladblok) and nothing moves when the kladblok tray takes over:
+    fills the last row. Like the scientific keypad it has taller keys, so it is as high as the
+    others:
 
     ```
     I  V  X
