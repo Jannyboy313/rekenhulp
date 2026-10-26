@@ -7,6 +7,7 @@ import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
 import { generateEquations } from './equations';
+import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
 import { generateFractionConversion } from './fractionConversion';
@@ -70,6 +71,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   compoundUnits: generateCompoundUnits,
   measureProblems: generateMeasureProblems,
   timeCalc: generateTimeCalc,
+  estimating: generateEstimating,
   percentages: generatePercentages,
   ratios: generateRatios,
   percentChange: generatePercentChange,
@@ -129,6 +131,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   compoundUnits: 'Samengestelde grootheden (snelheid, dichtheid, debiet, verbruik)',
   measureProblems: 'Rekenen met maten (omrekenen in contexten)',
   timeCalc: 'Rekenen met tijd (aankomst, vertrek, duur)',
+  estimating: 'Schatten (met referentiematen)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',

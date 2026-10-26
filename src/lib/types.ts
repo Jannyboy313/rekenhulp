@@ -29,6 +29,7 @@ export type Topic =
   | 'compoundUnits'
   | 'measureProblems'
   | 'timeCalc'
+  | 'estimating'
   | 'percentages'
   | 'ratios'
   | 'percentChange'
