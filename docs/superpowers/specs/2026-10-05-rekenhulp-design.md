@@ -41,7 +41,7 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 |------------|------------------------------------------------------------------------|
 | UI         | Svelte 5 (runes), TypeScript strict, no SvelteKit                      |
 | Build      | Vite, static output in `dist/`                                         |
-| PWA        | `vite-plugin-pwa`, `generateSW`, precache all assets, `autoUpdate`     |
+| PWA        | `vite-plugin-pwa`, `generateSW`, precache all assets, `prompt` update  |
 | Tests      | Vitest (unit), `@testing-library/svelte` for a few component tests     |
 | Quality    | `svelte-check`, Prettier                                               |
 | Hosting    | Self-hosted by the user, as static files                                |
@@ -59,7 +59,21 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
   inner square. The in-app logo keeps its rounded corners.
 - An SVG source icon is checked in. PNGs are generated as part of the build.
 - Service worker precaches everything, so the app works in airplane mode after the first visit.
-- When a new version is deployed, the app updates silently on the next launch.
+- When a new version is deployed, the app asks before updating (see "Update prompt" below).
+
+### Update prompt
+
+- Service worker registration uses `registerType: 'prompt'`: a new version waits until the user
+  confirms. The app checks for one on start and on every resume (`visibilitychange` to visible).
+- A modal dialog (Dutch: "Er is een nieuwe versie beschikbaar. Nu installeren?", buttons
+  Installeren and Later) is shown only on the set overview (`sets`) and the set setup (`setup`).
+  Never on `lessonTopics`, `lesson`, `playing` or `results`.
+- An update that arrives on another screen is not lost: the dialog appears as soon as the user is
+  back on an allowed screen.
+- Later closes the dialog until the next resume or start; if the update is still waiting it is
+  offered again then. Installeren activates the new version and reloads.
+- Escape closes the dialog like Later. A system back is not handled by the dialog: it navigates as
+  on the screen underneath (spec §3), and the dialog follows the allowed-screen rule above.
 
 ### Mobile UX requirements
 
