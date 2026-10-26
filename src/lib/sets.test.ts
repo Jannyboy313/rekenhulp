@@ -5,6 +5,7 @@ import {
   describeSetTopicRows,
   FRACTIONS_SET,
   GEOMETRY_SET,
+  HEURISTICS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBER_SYSTEMS_SET,
@@ -76,6 +77,7 @@ describe('practice sets', () => {
       'meetkunde',
       'verbanden',
       'talstelsels',
+      'heuristieken',
     ]);
   });
 
@@ -320,8 +322,7 @@ describe('describeSetTopicRows per set', () => {
 });
 
 describe('Talstelsels set', () => {
-  it('is the last practice set, two equally weighted topics with 15% tables', () => {
-    expect(PRACTICE_SETS.at(-1)).toBe(NUMBER_SYSTEMS_SET);
+  it('has two equally weighted topics with 15% tables', () => {
     expect(NUMBER_SYSTEMS_SET.id).toBe('talstelsels');
     expect(NUMBER_SYSTEMS_SET.name).toBe('Talstelsels');
     expect(NUMBER_SYSTEMS_SET.description).toBe(
@@ -338,6 +339,34 @@ describe('Talstelsels set', () => {
     expect(rowLabels(NUMBER_SYSTEMS_SET, 15)).toEqual([
       'Talstelsels (tweetallig, vijftallig, zestientallig)',
       'Romeinse cijfers (tot 100 en jaartallen)',
+      '15% tafels',
+    ]);
+  });
+});
+
+describe('Heuristieken set', () => {
+  it('is the last practice set, four equally weighted topics with 15% tables', () => {
+    expect(PRACTICE_SETS.at(-1)).toBe(HEURISTICS_SET);
+    expect(HEURISTICS_SET.id).toBe('heuristieken');
+    expect(HEURISTICS_SET.name).toBe('Heuristieken');
+    expect(HEURISTICS_SET.description).toBe(
+      'Systematisch tellen, terugrekenen, proberen en vereenvoudigen',
+    );
+    expect(HEURISTICS_SET.tablesPercent).toBe(15);
+    expect(HEURISTICS_SET.topics).toEqual([
+      { topic: 'systematicCounting', weight: 1 },
+      { topic: 'workingBackwards', weight: 1 },
+      { topic: 'guessAndCheck', weight: 1 },
+      { topic: 'simplifyProblem', weight: 1 },
+    ]);
+  });
+
+  it('describes its topics and the tables share', () => {
+    expect(rowLabels(HEURISTICS_SET, 15)).toEqual([
+      'Systematisch tellen (combinaties, handdrukken, volgordes)',
+      'Terugrekenen (ik denk aan een getal, geld over)',
+      'Slim proberen (kippen en konijnen, som en verschil)',
+      'Vereenvoudigen (Gauss, tellen, figuurpatronen)',
       '15% tafels',
     ]);
   });

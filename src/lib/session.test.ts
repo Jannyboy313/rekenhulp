@@ -12,6 +12,7 @@ import {
 import {
   FRACTIONS_SET,
   GEOMETRY_SET,
+  HEURISTICS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBER_SYSTEMS_SET,
@@ -381,6 +382,30 @@ describe('buildSession for Talstelsels', () => {
 
   it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
     const questions = buildSession(NUMBER_SYSTEMS_SET, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
+describe('buildSession for Heuristieken', () => {
+  function counts(size: number) {
+    const perTopic = new Map<string, number>();
+    for (const { topic } of buildSession(HEURISTICS_SET, size, createRng(3))) {
+      perTopic.set(topic, (perTopic.get(topic) ?? 0) + 1);
+    }
+    return perTopic;
+  }
+
+  const TOPICS = ['systematicCounting', 'workingBackwards', 'guessAndCheck', 'simplifyProblem'];
+
+  it('mixes 2 tables with 4 + 3 + 3 + 3 exercises at n = 15 (spec §4.2)', () => {
+    const perTopic = counts(15);
+    expect(perTopic.get('tables')).toBe(2);
+    expect(TOPICS.map((topic) => perTopic.get(topic)).sort()).toEqual([3, 3, 3, 4]);
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(HEURISTICS_SET, size, createRng(size));
     expect(questions).toHaveLength(size);
     expect(new Set(questions.map((q) => q.key)).size).toBe(size);
   });

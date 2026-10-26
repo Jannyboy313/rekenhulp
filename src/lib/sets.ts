@@ -138,6 +138,19 @@ export const NUMBER_SYSTEMS_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+export const HEURISTICS_SET: PracticeSet = {
+  id: 'heuristieken',
+  name: 'Heuristieken',
+  description: 'Systematisch tellen, terugrekenen, proberen en vereenvoudigen',
+  topics: [
+    { topic: 'systematicCounting', weight: 1 },
+    { topic: 'workingBackwards', weight: 1 },
+    { topic: 'guessAndCheck', weight: 1 },
+    { topic: 'simplifyProblem', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
 export const PRACTICE_SETS: readonly PracticeSet[] = [
   TABLES_SET,
@@ -150,6 +163,7 @@ export const PRACTICE_SETS: readonly PracticeSet[] = [
   GEOMETRY_SET,
   RELATIONS_SET,
   NUMBER_SYSTEMS_SET,
+  HEURISTICS_SET,
 ];
 
 /** Only the Tafels set lets the user choose which tables to practise (spec §3.2). */

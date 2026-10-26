@@ -20,6 +20,7 @@
     'meetkunde',
     'verbanden',
     'talstelsels',
+    'heuristieken',
   ];
 </script>
 
@@ -89,6 +90,14 @@
       <path d="M4 4l9 11M13 4l-9 11" class="sa nf" stroke-width="2.6" />
       <text x="15" y="15" font-size="10" class="fv txt">1 0</text>
       <rect x="4" y="21" width="20" height="2.4" rx="1.2" class="fb" />
+    {:else if id === 'heuristieken'}
+      <path
+        d="M14 2v2.5M4.5 12H7M21 12h2.5M7.3 5.3l1.8 1.8M20.7 5.3l-1.8 1.8"
+        class="sa"
+        stroke-width="2"
+      />
+      <circle cx="14" cy="13" r="6" class="fv" />
+      <rect x="10.5" y="20" width="7" height="5" rx="1.4" class="fb" />
     {/if}
   </svg>
 {:else}
