@@ -5,10 +5,18 @@
 
 ## 1. Goal
 
-A phone-first PWA for practising arithmetic without a calculator. Purpose: improve general
-mental-arithmetic skill and prepare for the PABO rekentoets. The user picks a themed practice
-set, works through a generated session of exercises, gets immediate feedback per exercise and
-an overview at the end. A set can also have short study material (**lesstof**): a cheat sheet
+A phone-first PWA for practising arithmetic without a calculator, growing into a practice
+platform for the arithmetic of PABO students. Purpose: improve general mental-arithmetic skill
+and prepare for the PABO rekentoetsen (RWT and LKT). The user picks a themed practice set,
+works through a generated session of exercises, gets immediate feedback per exercise and an
+overview at the end.
+
+The app started as short practice on the go, and that stays the default level, **Opfrisser**:
+short sessions (~3 minutes) of quick exercises, as all sets have now. v3 adds a second level,
+**Verdieping** (§12.2): exercises at the level of the PABO tests (Cito), with more steps and
+more time per exercise. The user chooses the level per session; Tafels has only one level.
+
+A set can also have short study material (**lesstof**): a cheat sheet
 to refresh the method before practising. It is developed separately from the practice sets and
 has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entry points (§3,
 §3.1).
@@ -18,9 +26,12 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 - No accounts, database, statistics, streaks or history
 - No persistence at all, including localStorage. Every app start uses defaults.
 - No network traffic after the initial load. The app works fully offline.
-- No adaptive difficulty
-- No problems that need a calculator. The app is for short mental-arithmetic sessions on the go
-  (§12.3).
+- No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
+  the app.
+- No problems that need a calculator, at either level (§12.4). Verdieping is harder through
+  more steps and combined skills, not through numbers that need a calculator; the kladblok
+  (§3.6) is the tool for the longer exercises.
+- "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
 - The v1 topics and the completed v2 sets in §4 are implemented. The rest of v2 and v3 are on
   the roadmap (§12), and the architecture must make adding them cheap.
 
@@ -120,8 +131,9 @@ The app is a state machine in `App.svelte` with four states:
   (the number in a lighter yellow). There is no caption above it.- The chosen count and table choice are kept in memory only while the app stays open; nothing is
   persisted. **Opnieuw** reuses both.
 
-Note: the 3-minute target corresponds to roughly 15 exercises (~12 s each). Larger counts are
-deliberate longer sessions.
+Note: the 3-minute target of Opfrisser corresponds to roughly 15 exercises (~12 s each).
+Larger counts are deliberate longer sessions. The level choice (Opfrisser/Verdieping) is added
+to this screen in v3 (§12.2).
 
 ### 3.3 Playing
 
@@ -1972,7 +1984,15 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-None at the moment.
+Levels (§12.2), to settle before the framework step:
+
+- **Names:** "Opfrisser" and "Verdieping" are working names. The code uses `quick` and `deep`
+  regardless.
+- **Default count for Verdieping:** assumed the same as Opfrisser (15, same options). An
+  exercise takes longer, so 10 may fit better.
+- **Level in the play header and results:** assumed not shown; the user chose it seconds ago.
+- **Disabled option:** assumed the Verdieping segment is greyed out with no extra hint text.
+- **First set for Verdieping:** decided when the framework is done (roadmap step 3).
 
 ## 12. Roadmap (not in v1)
 
@@ -2049,7 +2069,41 @@ little new infrastructure. Its negative numbers are needed later. Fractions and 
 next because percentages, scale, probability and statistics build on them. The remaining sets
 build on both. Talstelsels and Heuristieken are LKT-only and come last.
 
-### 12.2 v3 — multiple choice
+### 12.2 v3 — levels: Opfrisser and Verdieping
+
+Comes after the v2 sets (§12.1) and before multiple choice (§12.3). Every set except Tafels
+gets a second level, **Verdieping**: exercises closer to the PABO tests (Cito), with more steps,
+combined skills and word problems, so an exercise takes longer than the ~12 s of Opfrisser. It
+stays mental arithmetic with the kladblok (§1, §12.4). Tafels has no levels: the table choice
+(§3.2) already sets what is practised.
+
+Built in steps, each its own session and only when the user says so:
+
+1. **Docs** — this section, §1 and the roadmap in `CLAUDE.md` (done).
+2. **Framework** — no new exercises:
+   - Setup screen (§3.2): a **Niveau** segmented control (radio group, 2 equal segments,
+     **Opfrisser** and **Verdieping**) above the count, in the style of the count control. Not
+     shown for Tafels. The default is Opfrisser. The choice is kept in memory like the count;
+     **Opnieuw** reuses it.
+   - The Verdieping segment is greyed out and disabled while a set has no Verdieping. After
+     this step that is every set.
+   - Model: `Level = 'quick' | 'deep'`. A set keeps its current topics, weights and tables share
+     as the quick level and gets an optional `deep` config with its own topics and weights. A set
+     without `deep` disables the segment. The deep config has no tables share: Verdieping mixes
+     in no tables.
+   - `buildSession` takes the level and picks the config; the quota algorithm (§4.2) is
+     unchanged. "Wat zit erin" (§3.2) shows the topics of the selected level.
+   - Verdieping topics are their own `Topic` ids and generators (`lib/topics/`), with their own
+     labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
+3. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
+   light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
+   Order to be decided (§11).
+
+The lesstof (lesstof spec) is not split by level.
+
+### 12.3 v3 — multiple choice
+
+Comes after the levels (§12.2).
 
 - A multiple-choice answer kind. It serves:
   - mathematical language and concepts, such as absolute versus relative, and mean versus
@@ -2057,11 +2111,11 @@ build on both. Talstelsels and Heuristieken are LKT-only and come last.
   - estimating (`welk antwoord ligt het dichtst bij`)
   - comparing and ordering
 
-### 12.3 Out of scope until further notice
+### 12.4 Out of scope until further notice
 
-- Problems that need a calculator, such as the RWT calculator part and the LKT part 2. The app
-  is for mental arithmetic and ways of thinking, practised on the go. This drops the earlier
-  plans for calculator problems and the set *Toepassingen*.
+- Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at
+  the Verdieping level. The app is for mental arithmetic and ways of thinking. This drops the
+  earlier plans for calculator problems and the set *Toepassingen*.
 - Anything that needs pictures:
   - reading graphs, tables and diagrams
   - spatial geometry: views, nets and cube buildings
@@ -2069,6 +2123,6 @@ build on both. Talstelsels and Heuristieken are LKT-only and come last.
   - measuring angles
 - Didactics (part of the LKT).
 
-### 12.4 Optional later
+### 12.5 Optional later
 
 An "Alles gemengd" set, and topic toggles on the setup screen.

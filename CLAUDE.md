@@ -1,8 +1,10 @@
 # Rekenhulp
 
-Offline-first PWA for practising mental arithmetic on a phone (no calculator), aimed at general
-skill and the PABO rekentoets. A session is a short, generated set of exercises (default 15,
-target ~3 minutes). No accounts, no database, no persistence, no network calls.
+Offline-first PWA for practising mental arithmetic on a phone (no calculator), growing into a
+practice platform for the arithmetic of PABO students (RWT and LKT). A session is a generated set
+of exercises (default 15). The current level, Opfrisser, is short practice on the go (target ~3
+minutes); v3 adds Verdieping, at PABO-test level with more time per exercise (spec §12.2). No
+accounts, no database, no persistence, no network calls.
 
 The design spec is the source of truth: `docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
 If code and spec disagree, ask which one is wrong. The spec is long; read what the change needs,
@@ -48,9 +50,12 @@ says so:
 | **Verbanden & statistiek**: `statistics`, `percentagePoints`, `sequences`, `formulas`, `equations`, `probability` | —                                    |
 | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                                           | text answer kind with letter keys    |
 | **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`              | check the longest prompts on a phone |
-| v3: multiple choice (§12.2)                                                                                       | multiple-choice answer kind          |
+| v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set                     | level choice on setup, `deep` config |
+| v3: Verdieping per set (§12.2 step 3), one set at a time; not Tafels                                              | —                                    |
+| v3: multiple choice (§12.3)                                                                                       | multiple-choice answer kind          |
 
-Mental arithmetic only: problems that need a calculator are out of scope (spec §12.3).
+Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
+§12.4).
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in
@@ -232,4 +237,4 @@ src/
 ## Out of scope
 
 Persistence of any kind (incl. localStorage), statistics, streaks, accounts, analytics,
-adaptive difficulty, network requests. Do not add these without an explicit request.
+adaptive difficulty (the user-chosen level of spec §12.2 is not adaptive), network requests. Do not add these without an explicit request.

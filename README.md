@@ -1,7 +1,8 @@
 # Rekenhulp
 
-Offline PWA for practising mental arithmetic on a phone, without a calculator. No accounts,
-no tracking, no network traffic after the first load.
+Offline PWA for practising mental arithmetic on a phone, without a calculator, aimed at PABO
+students (rekentoetsen RWT and LKT). No accounts, no tracking, no network traffic after the
+first load.
 
 Practice sets: **Tafels**, **Meten**, **Verhoudingen**, **Getallen & delers**,
 **Bewerkingen**, **Getalbegrip**, **Breuken & kommagetallen** and **Meetkunde**. The design and
