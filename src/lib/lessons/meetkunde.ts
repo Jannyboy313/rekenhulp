@@ -35,6 +35,11 @@ export const GEOMETRY_LESSON: Lesson = {
           title: 'Trapezium, zijden 6 cm en 10 cm, hoogte 4 cm',
           lines: ['(6 + 10) : 2 × 4 = 8 × 4 = 32'],
         },
+        {
+          type: 'text',
+          text: 'Of splits het trapezium in een rechthoek van 6 bij 4 en twee driehoeken met samen een basis van 10 − 6 = 4 en hoogte 4.',
+        },
+        { type: 'worked', lines: ['6 × 4 + 4 × 4 : 2 = 24 + 8 = 32'] },
         { type: 'text', text: 'Reken eerst om naar dezelfde eenheid: 80 cm = 0,8 m.' },
         { type: 'worked', title: 'Tafelblad 1,6 m bij 80 cm, in m²', lines: ['1,6 × 0,8 = 1,28'] },
         {
@@ -169,6 +174,15 @@ export const GEOMETRY_LESSON: Lesson = {
         { type: 'worked', title: 'Zeshoek', lines: ['(6 − 2) × 180 = 720'] },
         { type: 'worked', title: 'Regelmatige achthoek', lines: ['(8 − 2) × 180 : 8 = 135'] },
         {
+          type: 'text',
+          text: 'Of via de buitenhoek: loop je om de figuur heen, dan draai je samen 360°. Bij een regelmatige veelhoek is elke draai even groot, en binnenhoek + buitenhoek = 180°.',
+        },
+        {
+          type: 'worked',
+          title: 'Regelmatige achthoek, via de buitenhoek',
+          lines: ['360 : 8 = 45', '180 − 45 = 135'],
+        },
+        {
           type: 'table',
           head: ['Veelhoek', 'Samen', 'Eén hoek, regelmatig'],
           rows: [
@@ -197,6 +211,15 @@ export const GEOMETRY_LESSON: Lesson = {
           text: 'Bij een half uur staat de grote wijzer op de 6 en de kleine halverwege twee uren. Om half 4 (3:30) staat de kleine wijzer halverwege de 3 en de 4: 2,5 uur van de 6.',
         },
         { type: 'worked', title: 'Om half 4', lines: ['2,5 × 30 = 75'] },
+        {
+          type: 'text',
+          text: 'Of via de minuten: de grote wijzer draait 6° per minuut (360 : 60), de kleine 0,5° (30 : 60). Reken beide standen vanaf de 12 uit en trek ze af.',
+        },
+        {
+          type: 'worked',
+          title: 'Om half 4, via de minuten',
+          lines: ['30 × 6 = 180', '3 × 30 + 30 × 0,5 = 90 + 15 = 105', '180 − 105 = 75'],
+        },
         {
           type: 'text',
           text: 'Na 6 uur tel je de andere kant om: om 9 uur is de hoek 3 × 30 = 90°.',

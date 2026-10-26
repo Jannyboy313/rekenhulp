@@ -130,7 +130,7 @@ Several methods (§1): a topic shows at least two methods when a common second m
 second preferably on the same numbers so the reader can compare them. Facts, definitions and
 properties need only one. The first method is the one of the practice explanation (main spec
 §5); where a set below says its methods match the practice explanations, that is the first
-method. §7.8 lists the second methods still missing.
+method.
 
 ### 7.1 Getallen & delers (`getallen`)
 
@@ -587,6 +587,8 @@ lines hold numbers only.
    - Text: the height is perpendicular to the base; a slanted side is not the height.
    - Worked: `8 × 5 : 2 = 20` (driehoek, basis 8, hoogte 5), `2 × (12 + 5) = 2 × 17 = 34`
      (omtrek rechthoek 12 bij 5), `(6 + 10) : 2 × 4 = 8 × 4 = 32` (trapezium).
+   - Text: or split the trapezium into a rectangle 6 by 4 and two triangles with together base
+     10 − 6 = 4 and height 4; worked `6 × 4 + 4 × 4 : 2 = 24 + 8 = 32`.
    - Worked `Tafelblad 1,6 m bij 80 cm, in m²`: `1,6 × 0,8 = 1,28`, with text: first 80 cm =
      0,8 m.
    - Text, a missing side: `48 : 6 = 8` (area 48, width 6), `34 : 2 − 5 = 12` (perimeter 34,
@@ -624,6 +626,9 @@ lines hold numbers only.
    - Worked: `180 − 50 − 70 = 60`, `(180 − 40) : 2 = 70`, `180 − 2 × 70 = 40`.
    - Text: an n-hoek splits into n − 2 triangles.
    - Worked: `(6 − 2) × 180 = 720`, `(8 − 2) × 180 : 8 = 135` (regelmatige achthoek).
+   - Text, via the exterior angle: walking round the figure you turn 360° in total, every turn
+     equal in a regular polygon, and interior + exterior angle = 180°. Worked `Regelmatige
+     achthoek, via de buitenhoek`: `360 : 8 = 45`, `180 − 45 = 135`.
    - Table `Veelhoek | Samen | Eén hoek, regelmatig`: vierhoek 360° 90°, vijfhoek 540° 108°,
      zeshoek 720° 120°, achthoek 1080° 135°, tienhoek 1440° 144°, twaalfhoek 1800° 150°.
    - Tip: "Een zeshoek kun je verdelen in 6 − 2 = 4 driehoeken: 4 × 180°."
@@ -632,6 +637,9 @@ lines hold numbers only.
    - Text: at half past, the big hand is on the 6 and the small hand halfway between two hours.
      Om half 4 (3:30) it is halfway between the 3 and the 4: 2,5 hours from the 6.
    - Worked `Om half 4`: `2,5 × 30 = 75`.
+   - Text, via the minutes: the big hand turns 6° per minute, the small one 0,5°; both
+     positions from the 12, then subtract. Worked `Om half 4, via de minuten`: `30 × 6 = 180`,
+     `3 × 30 + 30 × 0,5 = 90 + 15 = 105`, `180 − 105 = 75`.
    - Text: past 6, count the other way round the clock: om 9 uur 3 × 30 = 90.
    - Tip: "Om half 4 staat de kleine wijzer halverwege de 3 en de 4."
 7. **`symmetry` — Symmetrie** (summary: `Spiegelen, draaien en puntsymmetrie`)
@@ -661,14 +669,6 @@ lines hold numbers only.
    - Text: the two shortest sides together must be longer than the longest: 2, 3 en 6 cm no;
      3, 4 en 6 cm yes.
    - Tip: "De twee kortste zijden samen moeten langer zijn dan de langste."
-
-### 7.8 Second methods still missing
-
-Found in a review on 2026-10-26 against §1. Each is worked out in the set's section above, in its
-own session, only when the user asks; then it is removed here.
-
-- **Meetkunde:** `perimeterArea`, a trapezium split into a rectangle and triangles; `angles`,
-  via the exterior angle (`360 : 8 = 45`, `180 − 45 = 135`); `clock`, via minutes.
 
 ## 8. Open assumptions
 
