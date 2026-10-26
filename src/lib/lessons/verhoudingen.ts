@@ -41,6 +41,18 @@ export const PROPORTIONS_LESSON: Lesson = {
         },
         { type: 'text', text: 'Reken deel : geheel en vermenigvuldig met 100: 25%.' },
         {
+          type: 'text',
+          text: 'Of met een verhoudingstabel: 120 hoort bij 100%. 120 : 4 = 30, dus 100% : 4 = 25%.',
+        },
+        {
+          type: 'table',
+          head: ['Getal', 'Procent'],
+          rows: [
+            ['120', '100%'],
+            ['30', '25%'],
+          ],
+        },
+        {
           type: 'worked',
           title: '20% is 14, hoeveel is 100%',
           lines: ['14 : 2 = 7', '10 × 7 = 70'],
@@ -63,6 +75,12 @@ export const PROPORTIONS_LESSON: Lesson = {
           title: '€\u{a0}60 na 25% korting',
           lines: ['60 : 4 = 15', '60 − 15 = 45'],
         },
+        {
+          type: 'worked',
+          title: '€\u{a0}60 na 25% korting, in één keer',
+          lines: ['3/4 × 60 = 60 : 4 × 3 = 45'],
+        },
+        { type: 'text', text: 'Na 25% korting betaal je 75%, dat is 3/4 van de prijs.' },
         {
           type: 'worked',
           title: '€\u{a0}80 met 21% btw',
@@ -117,6 +135,16 @@ export const PROPORTIONS_LESSON: Lesson = {
           lines: ['400 − 340 = 60', '60 : 400 = 15/100'],
         },
         { type: 'text', text: 'Dat is 15% daling.' },
+        { type: 'text', text: 'Of neem de nieuwe waarde als percentage van de oude.' },
+        {
+          type: 'worked',
+          title: 'Nieuw als percentage van oud',
+          lines: ['92 : 80 = 115/100', '340 : 400 = 85/100'],
+        },
+        {
+          type: 'text',
+          text: '115% is 15% meer dan 100%: 15% stijging. 85% is 15% minder: 15% daling.',
+        },
         {
           type: 'tip',
           text: 'Reken met de oude waarde: de stijging is een percentage van 80, niet van 92.',
@@ -182,6 +210,18 @@ export const PROPORTIONS_LESSON: Lesson = {
           lines: ['1 + 6 = 7', '350 : 7 = 50'],
         },
         {
+          type: 'text',
+          text: 'Of met een verhoudingstabel: van 7 delen naar 350 ml is × 50, dus siroop is 1 × 50 = 50 ml.',
+        },
+        {
+          type: 'table',
+          head: ['Siroop', 'Water', 'Limonade'],
+          rows: [
+            ['1 deel', '6 delen', '7 delen'],
+            ['50 ml', '300 ml', '350 ml'],
+          ],
+        },
+        {
           type: 'worked',
           title: 'Cement : zand = 2 : 5, zand bij 100 kg cement',
           lines: ['100 : 2 = 50', '5 × 50 = 250'],
@@ -217,6 +257,20 @@ export const PROPORTIONS_LESSON: Lesson = {
           lines: ['12 : 15 = 0,80', '4 × 0,80 = 3,20'],
         },
         {
+          type: 'text',
+          text: 'Of in kleine stappen met een verhoudingstabel: : 3, dan : 5, dan × 4.',
+        },
+        {
+          type: 'table',
+          head: ['Kaas', 'Prijs'],
+          rows: [
+            ['1,5 kg', '€\u{a0}12'],
+            ['500 g', '€\u{a0}4'],
+            ['100 g', '€\u{a0}0,80'],
+            ['400 g', '€\u{a0}3,20'],
+          ],
+        },
+        {
           type: 'tip',
           text: 'Controleer de richting: 400 g is minder dan 1,5 kg, dus het kost minder dan €\u{a0}12.',
         },
@@ -247,6 +301,18 @@ export const PROPORTIONS_LESSON: Lesson = {
           type: 'worked',
           title: 'Schaal 1 : 25\u{202f}000, 4 cm op de kaart in km',
           lines: ['25\u{202f}000 : 100\u{202f}000 = 0,25', '4 × 0,25 = 1'],
+        },
+        {
+          type: 'text',
+          text: 'Of met een verhoudingstabel: eerst × 4, pas daarna omrekenen naar km.',
+        },
+        {
+          type: 'table',
+          head: ['Kaart', 'In het echt'],
+          rows: [
+            ['1 cm', '25\u{202f}000 cm'],
+            ['4 cm', '100\u{202f}000 cm = 1 km'],
+          ],
         },
         {
           type: 'worked',

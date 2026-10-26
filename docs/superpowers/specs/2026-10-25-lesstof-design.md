@@ -304,11 +304,15 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
    - Worked `15% van 80`: `80 : 10 = 8`, `8 : 2 = 4`, `8 + 4 = 12`, with text: 10% + 5%.
    - Worked `30 is hoeveel procent van 120`: `30 : 120 = 1/4 = 25/100`, with text: deel : geheel,
      then × 100: 25%.
+   - Text and table `Getal | Procent`, the ratio table: `120 | 100%`, `30 | 25%` (120 : 4 = 30,
+     so 100% : 4 = 25%).
    - Worked `20% is 14, hoeveel is 100%`: `14 : 2 = 7`, `10 × 7 = 70`, with text: 10% = 7.
    - Tip: "Deel : geheel is nog geen percentage; × 100 geeft het percentage."
 2. **`priceChange` — Korting, verhoging en btw** (summary: `De nieuwe en de oude prijs`)
    - Text: korting: trek het bedrag af; verhoging and btw: tel het op.
    - Worked `€ 60 na 25% korting`: `60 : 4 = 15`, `60 − 15 = 45`.
+   - Worked `€ 60 na 25% korting, in één keer`: `3/4 × 60 = 60 : 4 × 3 = 45`, with text: you pay
+     75%, that is 3/4.
    - Worked `€ 80 met 21% btw`: `80 : 10 = 8`, `2 × 8 = 16`, `80 : 100 = 0,80`,
      `16 + 0,80 = 16,80`, `80 + 16,80 = 96,80`, with text: 21% = 20% + 1%.
    - Text: back to the old price: after 25% korting the new price is 75%; with 21% btw it is
@@ -323,6 +327,8 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
    - Worked `€ 80 naar € 92`: `92 − 80 = 12`, `12 : 80 = 15/100`, with text: 15% stijging.
    - Worked `400 naar 340 bezoekers`: `400 − 340 = 60`, `60 : 400 = 15/100`, with text: 15%
      daling.
+   - Worked `Nieuw als percentage van oud`: `92 : 80 = 115/100`, `340 : 400 = 85/100`, with text:
+     115% is 15% stijging, 85% is 15% daling.
    - Tip: "Reken met de oude waarde: de stijging is een percentage van 80, niet van 92."
 4. **`ratios` — Verhoudingen** (summary: `Beide getallen met hetzelfde getal`)
    - Text: in a ratio you multiply or divide both numbers by the same number.
@@ -337,6 +343,8 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
    - Text: `jongens : meisjes = 2 : 3` compares two groups; the whole class is 2 + 3 = 5 delen.
    - Worked `Jongens : meisjes = 2 : 3, deel jongens`: `2/5 = 40/100`, with text: 2/5 = 40%.
    - Worked `Siroop : water = 1 : 6, siroop in 350 ml limonade`: `1 + 6 = 7`, `350 : 7 = 50`.
+   - Text and table `Siroop | Water | Limonade`, the ratio table: `1 deel | 6 delen | 7 delen`,
+     `50 ml | 300 ml | 350 ml` (× 50).
    - Worked `Cement : zand = 2 : 5, zand bij 100 kg cement`: `100 : 2 = 50`, `5 × 50 = 250`.
    - Tip: "2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5."
 6. **`perUnit` — Prijs per eenheid** (summary: `Een tussenstap via 100 g, 1 L of 1 uur`)
@@ -344,6 +352,8 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
    - Table `Kaas | Prijs`: `1,5 kg | € 12`, `100 g | € 0,80`, `400 g | € 3,20`.
    - Worked `1,5 kg kost € 12, wat kost 400 g`: `12 : 15 = 0,80`, `4 × 0,80 = 3,20`, with text:
      1,5 kg = 15 × 100 g.
+   - Text and table `Kaas | Prijs`, in small steps (: 3, : 5, × 4): `1,5 kg | € 12`,
+     `500 g | € 4`, `100 g | € 0,80`, `400 g | € 3,20`.
    - Tip: "Controleer de richting: 400 g is minder dan 1,5 kg, dus het kost minder dan € 12."
 7. **`scale` — Schaal** (summary: `1 cm op de kaart is … in het echt`)
    - Text: schaal 1 : 25 000 means 1 cm on the map is 25 000 cm in reality; convert to m or km
@@ -352,6 +362,8 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
      `1 : 50 000 | 500 m`, `1 : 100 000 | 1 km`, `1 : 1 000 000 | 10 km`.
    - Worked `Schaal 1 : 25 000, 4 cm op de kaart in km`: `25 000 : 100 000 = 0,25`,
      `4 × 0,25 = 1`.
+   - Text and table `Kaart | In het echt`, × 4 first, then convert: `1 cm | 25 000 cm`,
+     `4 cm | 100 000 cm = 1 km`.
    - Worked `Schaal 1 : 50 000, 3 km op de kaart in cm`: `50 000 : 100 000 = 0,5`,
      `3 : 0,5 = 6`.
    - Worked `4 cm op de kaart is 2 km, schaal`: `2 × 100 000 = 200 000`,
@@ -630,10 +642,6 @@ lines hold numbers only.
 Found in a review on 2026-10-26 against §1. Each is worked out in the set's section above, in its
 own session, only when the user asks; then it is removed here.
 
-- **Verhoudingen:** a ratio table as second route in `percentages` (how many percent),
-  `percentChange` (new as a percentage of old: `92 : 80 = 115/100`), `perUnit`
-  (`1,5 kg → 0,5 kg → 0,1 kg → 0,4 kg`), `scale` and `ratioProblems`; `priceChange`, korting in
-  one step (`75%` of 60).
 - **Bewerkingen:** `compensation`, the same sum also in steps (`398 + 247 = 398 + 200 + 47`).
 - **Getalbegrip:** `mentalOperations`, splitting both numbers next to stepping on;
   `negativeNumbers`, as debts; `remainder`, repeated subtraction of big multiples; `roots`,
