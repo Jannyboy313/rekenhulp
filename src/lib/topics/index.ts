@@ -41,6 +41,7 @@ import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
 import { generateStatistics } from './statistics';
 import { generateSymmetry } from './symmetry';
+import { generateSystematicCounting } from './systematicCounting';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -88,6 +89,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   formulas: generateFormulas,
   equations: generateEquations,
   probability: generateProbability,
+  systematicCounting: generateSystematicCounting,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -136,4 +138,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   formulas: 'Formules (invullen, startgetal en hellingsgetal)',
   equations: 'Vergelijkingen (x oplossen)',
   probability: 'Kans (dobbelsteen, knikkers)',
+  systematicCounting: 'Systematisch tellen (combinaties, handdrukken, volgordes)',
 };
