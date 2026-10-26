@@ -2920,7 +2920,7 @@ Built in steps, each its own session and only when the user says so:
 4. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
    light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
    The step also closes the set's RWT gaps (§12.5), at both levels. No fixed order: the user
-   picks the next set.
+   picks the next set. Done: Meten (§5.45–§5.52).
 
 The lesstof (lesstof spec) is not split by level.
 

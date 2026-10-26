@@ -22,7 +22,9 @@ not all of it:
 
 ## Status
 
-Done: the sets Tafels, Meten (v1 + v2: `speed`), Verhoudingen (v1 + v2: `percentChange`, `scale`,
+Done: the sets Tafels, Meten (v1 + v2: `speed` + v3: Opfrisser `calendar`, `dataSize`, `clock`,
+`measureSense` and the first Verdieping `compoundUnits`, `measureProblems`, `timeCalc`,
+`estimating`), Verhoudingen (v1 + v2: `percentChange`, `scale`,
 `ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip,
 Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
 `symmetry`, `shapeProperties`) and Verbanden & statistiek (`statistics`, `percentagePoints`,
@@ -31,10 +33,10 @@ Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `an
 `simplifyProblem`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
-(§12.2 step 2: Niveau on setup, `deep` topics via `forLevel`; no set has a Verdieping yet, so
-it is tested with `lib/setFixture.ts`), and the multiple-choice framework (§12.2 step 3, §6:
-answer kind `choice`, `choiceStep` with four options; no topic uses it yet, so it is tested
-with steps built in the tests).
+(§12.2 step 2: Niveau on setup, `deep` topics via `forLevel`; Meten has a Verdieping, the
+fixture set `lib/setFixture.ts` still tests the framework), and the multiple-choice framework
+(§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
+`measureSense`, `timeCalc` and `estimating`).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
