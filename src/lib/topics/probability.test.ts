@@ -145,9 +145,19 @@ describe('tips', () => {
     ['red over the others', '3/7', () => marblesQuestion(BAG_352, 'rood', false), TIP_BAG],
     ['blue over the others (5/5)', '1', () => marblesQuestion(BAG_352, 'blauw', false), TIP_BAG],
     ['not red over red', '7/3', () => marblesQuestion(BAG_352, 'rood', true), TIP_BAG],
-    ['marbles: another wrong answer', '1/3', () => marblesQuestion(BAG_352, 'rood', false), undefined],
+    [
+      'marbles: another wrong answer',
+      '1/3',
+      () => marblesQuestion(BAG_352, 'rood', false),
+      undefined,
+    ],
     ['die: no topic tip', '1/3', () => dieQuestion(event('een even getal')), undefined],
-    ['die: the outcomes over the other ones', '1', () => dieQuestion(event('een even getal')), undefined],
+    [
+      'die: the outcomes over the other ones',
+      '1',
+      () => dieQuestion(event('een even getal')),
+      undefined,
+    ],
   ])('%s, typing %s', (_label, input, make, tip) => {
     expect(stepOf(make()).check(input).tip).toBe(tip);
   });
@@ -182,8 +192,7 @@ describe('generateProbability', () => {
     });
     return { question, form: 'marbles', bag: entries, not: match[2]!.startsWith('een knikker') };
   });
-  const near = (count: number, of: number, share: number) =>
-    Math.abs(count / of - share) <= 0.05;
+  const near = (count: number, of: number, share: number) => Math.abs(count / of - share) <= 0.05;
 
   it('picks the die and the marbles 1/2 each', () => {
     expect(near(parsed.filter((item) => item.form === 'die').length, COUNT, 0.5)).toBe(true);
@@ -243,7 +252,10 @@ describe('generateProbability', () => {
       const [, , , asked, not] = question.key.split(':');
       const own = drawn.find(({ colour }) => colour === asked)!.count;
       const wanted = not === 'true' ? total - own : own;
-      expect(equals(rational(BigInt(wanted), BigInt(total)), parse(stepOf(question).check('').expected)), question.key).toBe(true);
+      expect(
+        equals(rational(BigInt(wanted), BigInt(total)), parse(stepOf(question).check('').expected)),
+        question.key,
+      ).toBe(true);
     }
   });
 });

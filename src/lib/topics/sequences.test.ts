@@ -158,7 +158,9 @@ describe('generateSequences', () => {
   function parse(question: Question): Parsed {
     const prompt = stepOf(question).prompt;
     const answer = Number(answerOf(question).num);
-    const figurate = /^(Driehoeksgetallen|Kwadraatgetallen): (.*), … Wat is het (\d+)e/u.exec(prompt);
+    const figurate = /^(Driehoeksgetallen|Kwadraatgetallen): (.*), … Wat is het (\d+)e/u.exec(
+      prompt,
+    );
     if (figurate) {
       return {
         question,
@@ -173,14 +175,22 @@ describe('generateSequences', () => {
     const next = /^(.*), … Wat is het volgende getal\?$/u.exec(prompt);
     const terms = numbers((nth ?? next)![1]!);
     const [a, b, c] = terms as [number, number, number];
-    const kind: Kind = b - a === c - b ? 'arithmetic' : b === 2 * a ? 'times2' : b === 3 * a ? 'times3' : 'half';
-    return { question, form: nth ? 'nth' : 'next', terms, kind, position: nth ? Number(nth[2]) : null, answer };
+    const kind: Kind =
+      b - a === c - b ? 'arithmetic' : b === 2 * a ? 'times2' : b === 3 * a ? 'times3' : 'half';
+    return {
+      question,
+      form: nth ? 'nth' : 'next',
+      terms,
+      kind,
+      position: nth ? Number(nth[2]) : null,
+      answer,
+    };
   }
 
   const parsed = questions.map(parse);
-  const near = (count: number, of: number, share: number) =>
-    Math.abs(count / of - share) <= 0.05;
-  const ofKinds = (...kinds: string[]) => parsed.filter((item) => kinds.includes(item.kind) && item.form === 'next');
+  const near = (count: number, of: number, share: number) => Math.abs(count / of - share) <= 0.05;
+  const ofKinds = (...kinds: string[]) =>
+    parsed.filter((item) => kinds.includes(item.kind) && item.form === 'next');
 
   it('picks the three forms equally and shows four terms', () => {
     for (const form of ['next', 'nth', 'figurate']) {

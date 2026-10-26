@@ -247,21 +247,39 @@ describe('generatePercentagePoints', () => {
   }
 
   const parsed = questions.map(parse);
-  const near = (count: number, of: number, share: number) =>
-    Math.abs(count / of - share) <= 0.05;
+  const near = (count: number, of: number, share: number) => Math.abs(count / of - share) <= 0.05;
 
   it('picks the forms, the units, the direction and the contexts equally', () => {
     const count = (test: (item: Parsed) => boolean) => parsed.filter(test).length;
-    expect(near(count((item) => item.form === 'difference'), COUNT, 0.5)).toBe(true);
+    expect(
+      near(
+        count((item) => item.form === 'difference'),
+        COUNT,
+        0.5,
+      ),
+    ).toBe(true);
     for (const form of ['difference', 'newValue']) {
       const ofForm = parsed.filter((item) => item.form === form);
-      expect(near(ofForm.filter((item) => item.unit === 'procent').length, ofForm.length, 0.5)).toBe(
-        true,
-      );
+      expect(
+        near(ofForm.filter((item) => item.unit === 'procent').length, ofForm.length, 0.5),
+      ).toBe(true);
     }
-    expect(near(count((item) => item.increase), COUNT, 0.5)).toBe(true);
+    expect(
+      near(
+        count((item) => item.increase),
+        COUNT,
+        0.5,
+      ),
+    ).toBe(true);
     for (const context of Object.keys(POINTS_RANGES)) {
-      expect(near(count((item) => item.context === context), COUNT, 1 / 3), context).toBe(true);
+      expect(
+        near(
+          count((item) => item.context === context),
+          COUNT,
+          1 / 3,
+        ),
+        context,
+      ).toBe(true);
     }
   });
 

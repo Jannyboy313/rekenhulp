@@ -1,10 +1,4 @@
-import {
-  formatInteger as f,
-  formatLiteral,
-  formatMoney,
-  formatRational,
-  MINUS,
-} from '../format';
+import { formatInteger as f, formatLiteral, formatMoney, formatRational, MINUS } from '../format';
 import { drawUntil, pick, randomInt, randomIntWhere, range, type Rng } from '../random';
 import {
   add,
@@ -154,10 +148,7 @@ export function tableQuestion(
                 `${grows} als x 2 groter wordt; per 1 is dat ${f(change)} : 2 = ${f(a)}.`,
               )
             : undefined
-          : exactTip(
-              fromInteger(firstY),
-              `Het startgetal is y bij x = 0, niet bij x = ${firstX}.`,
-            ),
+          : exactTip(fromInteger(firstY), `Het startgetal is y bij x = 0, niet bij x = ${firstX}.`),
       }),
     ],
   };

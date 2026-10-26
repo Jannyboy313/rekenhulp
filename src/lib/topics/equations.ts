@@ -29,7 +29,8 @@ function undo(b: number): string {
 function movedTip(label: string, divisor: number, right: number, b: number): Diagnose {
   const wrong = right + b;
   if (wrong % divisor !== 0) return () => undefined;
-  const action = b < 0 ? `Tel ${Math.abs(b)} aan beide kanten op` : `Haal ${b} aan beide kanten weg`;
+  const action =
+    b < 0 ? `Tel ${Math.abs(b)} aan beide kanten op` : `Haal ${b} aan beide kanten weg`;
   return exactTip(fromInteger(wrong / divisor), `${action}: ${label} = ${f(right)} ${undo(b)}.`);
 }
 

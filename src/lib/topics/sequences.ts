@@ -122,7 +122,9 @@ function drawArithmetic(rng: Rng): Question {
     const size = randomInt(rng, 2, 15);
     const difference = rng() < 0.3 ? -size : size;
     const end = start + 4 * difference;
-    return Math.min(start, end) >= -50 && Math.max(start, end) <= 100 ? { start, difference } : null;
+    return Math.min(start, end) >= -50 && Math.max(start, end) <= 100
+      ? { start, difference }
+      : null;
   });
   return arithmeticNextQuestion(start, difference);
 }

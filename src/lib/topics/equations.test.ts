@@ -120,18 +120,8 @@ describe('tips', () => {
     ],
     ['linear: not whole, no tip', '25', () => linearQuestion(3, 5, 5), undefined],
     ['linear: another wrong answer', '6', () => linearQuestion(2, 4, 3), undefined],
-    [
-      'bracket −',
-      '1',
-      () => bracketQuestion(4, -2, 5),
-      'Tel 2 aan beide kanten op: x = 3 + 2.',
-    ],
-    [
-      'bracket +',
-      '5',
-      () => bracketQuestion(4, 2, 1),
-      'Haal 2 aan beide kanten weg: x = 3 − 2.',
-    ],
+    ['bracket −', '1', () => bracketQuestion(4, -2, 5), 'Tel 2 aan beide kanten op: x = 3 + 2.'],
+    ['bracket +', '5', () => bracketQuestion(4, 2, 1), 'Haal 2 aan beide kanten weg: x = 3 − 2.'],
     [
       'both sides +',
       '7',
@@ -201,15 +191,24 @@ describe('generateEquations', () => {
     const bracket = BRACKET.exec(equation);
     if (bracket) {
       const [, a, sign, b, c] = bracket;
-      return { question, form: 'bracket', numbers: [Number(a), signed(sign, b), Number(c!.replace(MINUS, '-'))], x };
+      return {
+        question,
+        form: 'bracket',
+        numbers: [Number(a), signed(sign, b), Number(c!.replace(MINUS, '-'))],
+        x,
+      };
     }
     const [, a, sign, b, c] = LINEAR.exec(equation)!;
-    return { question, form: 'linear', numbers: [Number(a), signed(sign, b), Number(c!.replace(MINUS, '-'))], x };
+    return {
+      question,
+      form: 'linear',
+      numbers: [Number(a), signed(sign, b), Number(c!.replace(MINUS, '-'))],
+      x,
+    };
   }
 
   const parsed = questions.map(parse);
-  const near = (count: number, of: number, share: number) =>
-    Math.abs(count / of - share) <= 0.05;
+  const near = (count: number, of: number, share: number) => Math.abs(count / of - share) <= 0.05;
 
   it('picks the three forms equally', () => {
     for (const form of ['linear', 'bracket', 'both']) {
