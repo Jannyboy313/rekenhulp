@@ -516,6 +516,8 @@ text and tables.
 1. **`conversion` — Breuk, kommagetal en procent** (summary: `Omzetten via 10, 100 of 1000`)
    - Text: a fraction is a division (3/8 = 3 : 8). Make the denominator 10, 100 or 1000.
    - Worked: `3/8 = 375/1000 = 0,375`, `7/20 = 35/100 = 0,35`.
+   - Text: or via a known fraction (1/8 = 0,125); worked `3/8 = 3 × 1/8 = 3 × 0,125 = 0,375`.
+   - Text: or divide: 3 : 8 = 0,375 (30 : 8 = 3 rest 6, 60 : 8 = 7 rest 4, 40 : 8 = 5).
    - Text: procent means hundredth: × 100 to a percentage, : 100 back.
    - Worked: `0,375 × 100 = 37,5`, `37,5 : 100 = 0,375`.
    - Tip: "3/8 betekent 3 : 8, niet 3,8."
@@ -528,6 +530,8 @@ text and tables.
    - Tip: "2/3 is geen eindig kommagetal: schrijf het als breuk."
 3. **`simplify` — Vereenvoudigen en gelijknamig** (summary: `Teller en noemer met hetzelfde getal`)
    - Worked: `18/24 = 3/4` (text: teller en noemer : 6), `3/4 = 9/12` (teller en noemer × 3).
+   - Worked `In kleine stappen: : 2, dan : 3`: `18/24 = 9/12 = 3/4`, with text: in one step you
+     divide by the GGD of numerator and denominator, 6.
    - Text: to a mixed number, take out the wholes.
    - Worked `17/12 = 12/12 + 5/12 = 1 + 5/12`, with text: so 1 5/12.
    - Tip: "Vermenigvuldig of deel teller en noemer met hetzelfde getal; het verschil blijft niet
@@ -536,17 +540,25 @@ text and tables.
    - Text: make the denominators equal (the KGV), then add or subtract the numerators only.
    - Worked: `2/3 + 1/4 = 8/12 + 3/12 = 11/12`, `2/3 + 3/4 = 8/12 + 9/12 = 17/12` (text: =
      1 5/12).
+   - Text: the product of the denominators always works too, but often needs simplifying at the
+     end. Worked `1/4 + 1/6, met het KGV en met het product`: `1/4 + 1/6 = 3/12 + 2/12 = 5/12`,
+     `1/4 + 1/6 = 6/24 + 4/24 = 10/24 = 5/12`.
    - Text, mixed numbers keep their wholes; exchange one whole when the fraction is too small:
      3 1/2 − 1 3/4 = 3 2/4 − 1 3/4 = 2 6/4 − 1 3/4 = 1 3/4.
+   - Text: or make improper fractions first (3 1/2 = 7/2, 1 3/4 = 7/4); worked
+     `7/2 − 7/4 = 14/4 − 7/4 = 7/4`, with text: 7/4 = 1 3/4.
    - Tip: "Maak eerst de noemers gelijk; tel daarna alleen de tellers op."
 5. **`multiplyDivide` — Vermenigvuldigen en delen** (summary: `Delen is keer het omgekeerde`)
    - Text: teller × teller and noemer × noemer; simplify at the end.
    - Worked: `3/4 × 2/5 = 6/20 = 3/10`, `6 × 2/3 = 12/3 = 4` (text: only the numerator goes
      × 6).
    - Worked: `2/3 : 4/9 = 2/3 × 9/4 = 18/12 = 3/2`, `3/4 : 3 = 3/4 × 1/3 = 3/12 = 1/4`.
+   - Text: or make the denominators equal and divide the numerators only (4/9 fits in 6/9 as
+     often as 4 in 6); worked `2/3 : 4/9 = 6/9 : 4/9 = 6 : 4 = 3/2`.
    - Tip: "Delen door 4/9 is keer het omgekeerde: × 9/4."
 6. **`partOf` — Deel van een getal** (summary: `3/4 van 24 en terug naar het geheel`)
    - Worked `3/4 van 24`: `24 : 4 = 6`, `3 × 6 = 18`, with text: first 1/4, then 3/4.
+   - Text: or first × 3, then : 4; worked `3 × 24 : 4 = 72 : 4 = 18`.
    - Worked `3/4 is 18, het geheel`: `18 : 3 = 6`, `4 × 6 = 24`, with text: 1/4 = 6, 4/4 = 24.
    - Tip: "Is 18 zelf al 3/4, reken dan terug: eerst 1/4, dan 4/4."
 7. **`decimals` — Rekenen met kommagetallen** (summary: `Komma's onder elkaar, decimalen tellen`)
@@ -555,6 +567,7 @@ text and tables.
    - Text: multiply without commas, then give the result as many decimals as both numbers
      together.
    - Worked `0,3 × 0,4`: `3 × 4 = 12`, `0,3 × 0,4 = 0,12`.
+   - Text: or with fractions; worked `0,3 × 0,4 = 3/10 × 4/10 = 12/100 = 0,12`.
    - Text: divide by a decimal: make the divisor whole first, both × the same power of 10.
    - Worked: `2,5 : 0,05 = 250 : 5 = 50`, `0,36 : 4 = 0,09` (text: 36 : 4 = 9).
    - Tip: "De uitkomst heeft evenveel decimalen als beide getallen samen."
@@ -654,11 +667,6 @@ lines hold numbers only.
 Found in a review on 2026-10-26 against §1. Each is worked out in the set's section above, in its
 own session, only when the user asks; then it is removed here.
 
-- **Breuken & kommagetallen:** `conversion`, dividing (`3 : 8`) or via a known fraction
-  (`3/8 = 3 × 0,125`); `simplify`, in one step with the GGD or in small steps; `addSubtract`,
-  the product of the denominators, and mixed numbers via improper fractions; `multiplyDivide`,
-  dividing via equal denominators (`2/3 : 4/9 = 6/9 : 4/9 = 6 : 4`); `partOf`, first × 3, then
-  : 4; `decimals`, via fractions (`0,3 × 0,4 = 3/10 × 4/10`).
 - **Meetkunde:** `perimeterArea`, a trapezium split into a rectangle and triangles; `angles`,
   via the exterior angle (`360 : 8 = 45`, `180 − 45 = 135`); `clock`, via minutes.
 

@@ -14,6 +14,12 @@ export const FRACTIONS_LESSON: Lesson = {
           text: 'Een breuk is een deling: 3/8 = 3 : 8. Maak de noemer 10, 100 of 1000.',
         },
         { type: 'worked', lines: ['3/8 = 375/1000 = 0,375', '7/20 = 35/100 = 0,35'] },
+        { type: 'text', text: 'Of via een breuk die je kent: 1/8 = 0,125.' },
+        { type: 'worked', lines: ['3/8 = 3 × 1/8 = 3 × 0,125 = 0,375'] },
+        {
+          type: 'text',
+          text: 'Of deel echt: 3 : 8 = 0,375 (30 : 8 = 3 rest 6, 60 : 8 = 7 rest 4, 40 : 8 = 5).',
+        },
         {
           type: 'text',
           text: 'Procent betekent honderdste: × 100 geeft het percentage, : 100 gaat terug.',
@@ -60,6 +66,8 @@ export const FRACTIONS_LESSON: Lesson = {
       summary: 'Teller en noemer met hetzelfde getal',
       blocks: [
         { type: 'worked', title: 'Teller en noemer : 6', lines: ['18/24 = 3/4'] },
+        { type: 'worked', title: 'In kleine stappen: : 2, dan : 3', lines: ['18/24 = 9/12 = 3/4'] },
+        { type: 'text', text: 'In één stap deel je door de GGD van teller en noemer: 6.' },
         { type: 'worked', title: 'Teller en noemer × 3', lines: ['3/4 = 9/12'] },
         { type: 'text', text: 'Naar een gemengd getal: haal de helen eruit.' },
         { type: 'worked', lines: ['17/12 = 12/12 + 5/12 = 1 + 5/12'] },
@@ -77,7 +85,7 @@ export const FRACTIONS_LESSON: Lesson = {
       blocks: [
         {
           type: 'text',
-          text: 'Maak de noemers gelijk (de KGV) en tel daarna alleen de tellers op of trek ze af.',
+          text: 'Maak de noemers gelijk (het KGV) en tel daarna alleen de tellers op of trek ze af.',
         },
         {
           type: 'worked',
@@ -86,8 +94,23 @@ export const FRACTIONS_LESSON: Lesson = {
         { type: 'text', text: '17/12 = 1 5/12.' },
         {
           type: 'text',
+          text: 'Het product van de noemers werkt ook altijd, maar dan moet je aan het eind vaak nog vereenvoudigen.',
+        },
+        {
+          type: 'worked',
+          title: '1/4 + 1/6, met het KGV en met het product',
+          lines: ['1/4 + 1/6 = 3/12 + 2/12 = 5/12', '1/4 + 1/6 = 6/24 + 4/24 = 10/24 = 5/12'],
+        },
+        {
+          type: 'text',
           text: 'Gemengde getallen houden hun helen. Is de breuk te klein om af te trekken, wissel dan 1 geheel om: 3 1/2 − 1 3/4 = 3 2/4 − 1 3/4 = 2 6/4 − 1 3/4 = 1 3/4.',
         },
+        {
+          type: 'text',
+          text: 'Of maak er eerst onechte breuken van: 3 1/2 = 7/2 en 1 3/4 = 7/4.',
+        },
+        { type: 'worked', lines: ['7/2 − 7/4 = 14/4 − 7/4 = 7/4'] },
+        { type: 'text', text: 'En 7/4 = 1 3/4.' },
         {
           type: 'tip',
           text: 'Maak eerst de noemers gelijk; tel daarna alleen de tellers op.',
@@ -109,6 +132,11 @@ export const FRACTIONS_LESSON: Lesson = {
           type: 'worked',
           lines: ['2/3 : 4/9 = 2/3 × 9/4 = 18/12 = 3/2', '3/4 : 3 = 3/4 × 1/3 = 3/12 = 1/4'],
         },
+        {
+          type: 'text',
+          text: 'Of maak de noemers gelijk en deel alleen de tellers: 4/9 past even vaak in 6/9 als 4 in 6.',
+        },
+        { type: 'worked', lines: ['2/3 : 4/9 = 6/9 : 4/9 = 6 : 4 = 3/2'] },
         { type: 'tip', text: 'Delen door 4/9 is keer het omgekeerde: × 9/4.' },
       ],
     },
@@ -119,6 +147,8 @@ export const FRACTIONS_LESSON: Lesson = {
       blocks: [
         { type: 'worked', title: '3/4 van 24', lines: ['24 : 4 = 6', '3 × 6 = 18'] },
         { type: 'text', text: '1/4 van 24 is 6; 3/4 is 3 keer zoveel.' },
+        { type: 'text', text: 'Of eerst keer 3 en dan gedeeld door 4:' },
+        { type: 'worked', lines: ['3 × 24 : 4 = 72 : 4 = 18'] },
         { type: 'worked', title: '3/4 is 18, het geheel', lines: ['18 : 3 = 6', '4 × 6 = 24'] },
         { type: 'text', text: '3/4 is 18, dus 1/4 is 6 en 4/4 is 24.' },
         { type: 'tip', text: 'Is 18 zelf al 3/4, reken dan terug: eerst 1/4, dan 4/4.' },
@@ -140,6 +170,8 @@ export const FRACTIONS_LESSON: Lesson = {
         },
         { type: 'worked', title: '0,3 × 0,4', lines: ['3 × 4 = 12', '0,3 × 0,4 = 0,12'] },
         { type: 'text', text: '1 + 1 = 2 decimalen.' },
+        { type: 'text', text: 'Of met breuken: 0,3 is 3/10 en 0,4 is 4/10.' },
+        { type: 'worked', lines: ['0,3 × 0,4 = 3/10 × 4/10 = 12/100 = 0,12'] },
         {
           type: 'text',
           text: 'Delen door een kommagetal: maak eerst de deler heel, door beide getallen met dezelfde macht van 10 te vermenigvuldigen.',
