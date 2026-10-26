@@ -55,7 +55,8 @@ export type Topic =
   | 'formulas'
   | 'equations'
   | 'probability'
-  | 'numberSystems';
+  | 'numberSystems'
+  | 'romanNumerals';
 
 export interface CheckResult {
   correct: boolean;

@@ -31,6 +31,7 @@ import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
 import { generateNumberSystems } from './numberSystems';
+import { generateRomanNumerals } from './romanNumerals';
 import { generateScientificNotation } from './scientificNotation';
 import { generateSequences } from './sequences';
 import { generateShapeProperties } from './shapeProperties';
@@ -70,6 +71,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
+  romanNumerals: generateRomanNumerals,
   scientificNotation: generateScientificNotation,
   decimalArithmetic: generateDecimalArithmetic,
   fractionConversion: generateFractionConversion,
@@ -117,6 +119,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig, vijftallig, zestientallig)',
+  romanNumerals: 'Romeinse cijfers (tot 100 en jaartallen)',
   scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
