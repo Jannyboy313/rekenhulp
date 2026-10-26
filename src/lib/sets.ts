@@ -15,7 +15,7 @@ export const TABLES_SET: PracticeSet = {
 export const MEASUREMENT_SET: PracticeSet = {
   id: 'meten',
   name: 'Meten',
-  description: 'Eenheden, grote getallen en snelheid',
+  description: 'Eenheden, klok, grote getallen en snelheid',
   topics: [
     { topic: 'volume', weight: 1 },
     { topic: 'area', weight: 1 },
@@ -24,6 +24,10 @@ export const MEASUREMENT_SET: PracticeSet = {
     { topic: 'time', weight: 1 },
     { topic: 'numberUnits', weight: 1 },
     { topic: 'speed', weight: 1 },
+    { topic: 'calendar', weight: 1 },
+    { topic: 'dataSize', weight: 1 },
+    { topic: 'clock', weight: 1 },
+    { topic: 'measureSense', weight: 1 },
   ],
   tablesPercent: 15,
 };

@@ -171,9 +171,9 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Meten seven equally weighted topics with 15% tables', () => {
+  it('makes Meten eleven equally weighted topics with 15% tables', () => {
     expect(MEASUREMENT_SET.name).toBe('Meten');
-    expect(MEASUREMENT_SET.description).toBe('Eenheden, grote getallen en snelheid');
+    expect(MEASUREMENT_SET.description).toBe('Eenheden, klok, grote getallen en snelheid');
     expect(MEASUREMENT_SET.tablesPercent).toBe(15);
     expect(MEASUREMENT_SET.topics).toEqual([
       { topic: 'volume', weight: 1 },
@@ -183,6 +183,10 @@ describe('practice sets', () => {
       { topic: 'time', weight: 1 },
       { topic: 'numberUnits', weight: 1 },
       { topic: 'speed', weight: 1 },
+      { topic: 'calendar', weight: 1 },
+      { topic: 'dataSize', weight: 1 },
+      { topic: 'clock', weight: 1 },
+      { topic: 'measureSense', weight: 1 },
     ]);
   });
 
@@ -243,6 +247,10 @@ describe('describeSetTopicRows per set', () => {
       'Tijd (s, min, uur, dag)',
       'Grote getallen (duizend t/m quadriljoen, ton)',
       'Snelheid (afstand, tijd, km/u en m/s)',
+      'Kalender (etmaal t/m millennium)',
+      'Geheugen (kB t/m TB)',
+      'Klok (kijken en tijdsduur)',
+      'Maatgevoel (referenties, meetinstrumenten, eenheden)',
       '15% tafels',
     ]);
   });
