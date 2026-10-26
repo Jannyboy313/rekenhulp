@@ -3,6 +3,11 @@
 Spec: §5.39–§5.40, §6 (letter input, ⌫ bottom left), §3.4.1 (two Roman tips), §4.1/§4.2
 (set, quota example).
 
+**Before this plan:** the keypad-height fix (spec §6: every keypad as high as five rows) is a
+separate small fix, done and committed first. It adds `keyRows(keys, columns)` in `keys.ts`
+and sizes the keys in `Keypad.svelte` from `--rows`; the scientific keypad gets 67/72 px keys.
+Do not start Task 2 without it.
+
 TDD per task: tests first, then code, `npm test` + `npm run check`, one commit per task.
 Checkpoints: after Task 3 (infrastructure) and after Task 6 (set done).
 
@@ -41,9 +46,11 @@ Files: `src/lib/keypadInput.ts`, `src/lib/keys.ts`, tests in `keypadInput.test.t
 
 ## Task 2 — Answer kinds `baseDigits` and `roman`
 
-Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, `okSpan`,
-`keyRows`), `src/components/Keypad.svelte`, tests
-`inputModels.test.ts`, `keys.test.ts`.
+Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, `okSpan`),
+`src/components/Keypad.svelte`, tests `inputModels.test.ts`, `keys.test.ts`.
+
+Prerequisite: the separate keypad-height fix (spec §6 key heights) is done, so `Keypad`
+already sizes its keys from `keyRows(keys, columns)`. This task only adds spans.
 
 - `AnswerKind` gains `'baseDigits' | 'roman'`.
 - `KeypadStates`: `baseDigits: string; roman: string`.
@@ -52,16 +59,11 @@ Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, 
 - `KeyDef` gains `span?: number` (grid columns, default 1). A keypad sets it on its own copy:
   `{ ...KEYS.M, span: 2 }`; the catalogue `KEYS` stays without spans.
 - `okSpan(keys, columns)` counts cells as the sum of spans: `columns − (cells % columns)`
-  (roman: 9 cells → OK spans 3, its own row).
-- `keyRows(keys, columns): number`: rows including the OK row (`(cells + okSpan) / columns`).
-- Every keypad is as high as five rows (spec §6): `Keypad` always sets `--rows` from
-  `keyRows(keys, columns)` and gives `.key`
-  `height: calc((5 * 52px + 4 * 8px - (var(--rows) - 1) * 8px) / var(--rows))`, and `.tall .key`
-  the same with 56 px. Five-row keypads keep 52/56 px; scientific and roman (4 rows) get 67/72
-  px. The tray keeps its own 48 px (`.tray .key` must still win). No flag on the model.
+  (roman: 9 cells → OK spans 3, its own row). `keyRows` follows from it (roman: 4 rows, so
+  the taller keys of the height fix).
 - `Keypad.svelte`: `style:grid-column="span {span}"` on a key with a span.
 - `INPUT_MODELS.baseDigits = { ...textModel(BASE_DIGITS_KEYS, applyBaseDigitsKey, () => null,
-  (input) => input), columns: 4 }`; `INPUT_MODELS.roman = { ...textModel(ROMAN_KEYS,
+  (input) => input), columns: 4 }`; `INPUT_MODELS.roman = textModel(ROMAN_KEYS,
   applyRomanKey, () => null, (input) => input)` (3 columns, the default).
 - `QuestionView` needs no change: its `else` branch takes every text model.
 
@@ -72,20 +74,15 @@ Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, 
 | `okSpan(baseDigits keys, 4)`           | 3 |
 | `okSpan(roman keys, 3)`                | 3 (9 cells: OK in its own row) |
 | `okSpan` of existing keypads           | unchanged (regression: number 2, expression 3, scientific 1) |
-| `keyRows`                              | roman 4, baseDigits 5, number 5, scientific 4 |
+| `keyRows`                              | roman 4, baseDigits 5 |
 | every keypad incl. kladblok            | `⌫` is bottom left: the cells before it ≡ 0 mod columns, and the keys after it fit in its row |
-
-Component check (`Keypad.test.ts` or `QuestionView.test.ts`): the roman and scientific keypads
-set `--rows: 4`, the number keypad `--rows: 5`; `M` has `grid-column: span 2`. Phone check
-later by the user: the prompt does not move between a number step and a scientific or roman
-step, nor when a kladblok cell becomes active.
 | `validate('B4')`, `validate('IIII')`   | `null` |
 | `display('B4')`, `view('MCM')`         | `B4`, `[{ type: 'text', text: 'MCM' }]` |
 | `displayAnswer('roman', 'XIV')`        | `XIV` |
 | typing `B`, `4` via `apply`            | `B4`, `canSubmit` true; `''` → false |
 
-Component check (`QuestionView.test.ts`, one case): a `roman` step shows the keys `I`–`M` and
-submits `XIV` on OK.
+Component checks: the roman keypad sets `--rows: 4` and `M` has `grid-column: span 2`; a
+`roman` step (`QuestionView.test.ts`) shows the keys `I`–`M` and submits `XIV` on OK.
 
 ## Task 3 — Text step
 
