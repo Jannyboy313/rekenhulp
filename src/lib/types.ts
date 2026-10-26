@@ -24,6 +24,7 @@ export type Topic =
   | 'numberUnits'
   | 'calendar'
   | 'dataSize'
+  | 'clock'
   | 'percentages'
   | 'ratios'
   | 'percentChange'
