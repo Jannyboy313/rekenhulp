@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { INPUT_MODELS, type KeypadKind } from './inputModels';
-import { keyDefs, KEYS, okSpan } from './keys';
+import { keyDefs, keyRows, KEYS, okSpan } from './keys';
 import { NOTE_KEYS } from './scratchpad';
 
 describe('KEYS', () => {
@@ -62,5 +62,35 @@ describe('okSpan', () => {
 
   it('gives OK a row of its own when the keys fill the last row', () => {
     expect(okSpan(keyDefs('1', '2', '3'))).toBe(3);
+  });
+});
+
+describe('keyRows', () => {
+  it('counts the rows of the keys and OK', () => {
+    expect(keyRows(INPUT_MODELS.number.keys, 3)).toBe(5);
+    expect(keyRows(INPUT_MODELS.fraction.keys, 3)).toBe(5);
+    expect(keyRows(INPUT_MODELS.factorization.keys, 3)).toBe(5);
+    expect(keyRows(INPUT_MODELS.expression.keys, 4)).toBe(5);
+    expect(keyRows(INPUT_MODELS.scientific.keys, 4)).toBe(4);
+  });
+});
+
+describe('backspace position', () => {
+  const keypads: [string, readonly { key: string }[], number][] = [
+    ...(Object.keys(INPUT_MODELS) as KeypadKind[]).map(
+      (kind) =>
+        [kind, INPUT_MODELS[kind].keys, INPUT_MODELS[kind].columns ?? 3] as [
+          string,
+          readonly { key: string }[],
+          number,
+        ],
+    ),
+    ['kladblok', NOTE_KEYS, 4],
+  ];
+
+  it.each(keypads)('%s has ⌫ bottom left', (_, keys, columns) => {
+    const index = keys.findIndex(({ key }) => key === 'backspace');
+    expect(index % columns).toBe(0);
+    expect(keys.length - index).toBeLessThanOrEqual(columns);
   });
 });

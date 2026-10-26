@@ -59,3 +59,8 @@ export function keyDefs(...keys: readonly KeypadKey[]): readonly KeyDef[] {
 export function okSpan(keys: readonly KeyDef[], columns = 3): number {
   return columns - (keys.length % columns);
 }
+
+/** Rows of the keypad including the OK key; the key height follows from it (spec §6). */
+export function keyRows(keys: readonly KeyDef[], columns = 3): number {
+  return (keys.length + okSpan(keys, columns)) / columns;
+}

@@ -80,4 +80,19 @@ describe('Keypad', () => {
     expect(grid.style.getPropertyValue('--columns')).toBe('4');
     expect(screen.getByRole('button', { name: 'OK' }).style.gridColumn).toBe('span 3');
   });
+
+  it('sets the number of rows, so the keys fill the height of five rows', () => {
+    const rows = (props: { keys: typeof keys; columns?: number }) => {
+      const { container, unmount } = render(Keypad, {
+        props: { ...props, canSubmit: true, onkey: vi.fn(), onsubmit: vi.fn() },
+      });
+      const value = container
+        .querySelector<HTMLElement>('.keypad')!
+        .style.getPropertyValue('--rows');
+      unmount();
+      return value;
+    };
+    expect(rows({ keys })).toBe('5');
+    expect(rows({ keys: INPUT_MODELS.scientific.keys, columns: 4 })).toBe('4');
+  });
 });

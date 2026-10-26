@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { okSpan, type KeyDef } from '../lib/keys';
+  import { keyRows, okSpan, type KeyDef } from '../lib/keys';
   import type { KeypadKey } from '../lib/keypadInput';
   import Fraction from './Fraction.svelte';
   import { press } from './press';
@@ -32,7 +32,14 @@
   }: Props = $props();
 </script>
 
-<div class="keypad" class:tall class:disabled class:tray style:--columns={columns}>
+<div
+  class="keypad"
+  class:tall
+  class:disabled
+  class:tray
+  style:--columns={columns}
+  style:--rows={keyRows(keys, columns)}
+>
   {#each keys as { key, label, ariaLabel, icon } (key)}
     <button
       type="button"
@@ -75,9 +82,10 @@
     opacity: 0.4;
   }
 
-  /* 52 px with a kladblok on screen (spec §3.6), 56 px without. No shadow but the 1 px line. */
+  /* Every keypad is as high as five rows of 52 px keys (56 px without a kladblok, spec §3.6): a
+     keypad with fewer rows gets taller keys (67 px for 4 rows). No shadow but the 1 px line. */
   .key {
-    height: 52px;
+    height: calc((292px - (var(--rows, 5) - 1) * 8px) / var(--rows, 5));
     min-height: 0;
     border-radius: 14px;
     font-size: 24px;
@@ -86,7 +94,7 @@
   }
 
   .tall .key {
-    height: 56px;
+    height: calc((312px - (var(--rows, 5) - 1) * 8px) / var(--rows, 5));
   }
 
   .key.digit {
