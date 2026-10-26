@@ -220,7 +220,7 @@ describe('generateClock', () => {
       expect(duration % 5).toBe(0);
       expect(duration).toBeGreaterThanOrEqual(10);
       expect(duration).toBeLessThanOrEqual(95);
-      expect(start! % 60 + duration).toBeGreaterThanOrEqual(60);
+      expect((start! % 60) + duration).toBeGreaterThanOrEqual(60);
       expect(end!).toBeLessThan(1440);
       expect(question.steps[0]!.suffix).toBe('min');
     }

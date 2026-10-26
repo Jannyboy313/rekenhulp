@@ -98,11 +98,7 @@ const DENSITIES = Array.from({ length: 4901 }, (_, index) => index + 100).filter
 export type DensityVariant = 'density' | 'inhabitants' | 'area';
 
 /** A gemeente with `area` km² and `density` inhabitants per km². */
-export function densityQuestion(
-  variant: DensityVariant,
-  area: number,
-  density: number,
-): Question {
+export function densityQuestion(variant: DensityVariant, area: number, density: number): Question {
   const inhabitants = area * density;
   const variants: Record<DensityVariant, [string, number, string, string]> = {
     density: [
@@ -275,7 +271,9 @@ function randomDensity(rng: Rng): Question {
     const areaValue = pick(rng, AREAS);
     const densityValue = pick(rng, DENSITIES);
     const inhabitants = areaValue * densityValue;
-    return inhabitants >= 2000 && inhabitants <= 900_000 ? ([areaValue, densityValue] as const) : null;
+    return inhabitants >= 2000 && inhabitants <= 900_000
+      ? ([areaValue, densityValue] as const)
+      : null;
   });
   return densityQuestion(pick(rng, ['density', 'inhabitants', 'area'] as const), area, density);
 }

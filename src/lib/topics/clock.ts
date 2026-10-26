@@ -123,7 +123,8 @@ export function toWordsQuestion(minutes: number, rng: Rng): Question {
         prompt: `Hoe zeg je ${digital}?`,
         options: shuffle(rng, options),
         answer,
-        explanation: twelve === digital ? `${digital} → ${answer}` : `${digital} = ${twelve} → ${answer}`,
+        explanation:
+          twelve === digital ? `${digital} → ${answer}` : `${digital} = ${twelve} → ${answer}`,
       }),
     ],
   };
@@ -136,8 +137,7 @@ export function toWordsQuestion(minutes: number, rng: Rng): Question {
 export function elapsedExplanation(start: number, end: number): string {
   const firstHour = Math.ceil(start / 60) * 60;
   const lastHour = Math.floor(end / 60) * 60;
-  const stops =
-    firstHour > lastHour ? [start, end] : [start, firstHour, lastHour, end];
+  const stops = firstHour > lastHour ? [start, end] : [start, firstHour, lastHour, end];
   const segments: [number, number][] = [];
   for (let index = 0; index < stops.length - 1; index++) {
     const [from, to] = [stops[index]!, stops[index + 1]!];

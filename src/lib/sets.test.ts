@@ -390,12 +390,9 @@ describe('levels', () => {
   });
 
   it('lists the four Meten Verdieping topics without a tables row', () => {
-    expect(describeSetTopicRows(forLevel(MEASUREMENT_SET, 'deep'), 15).map((row) => row.name)).toEqual([
-      'Samengestelde grootheden',
-      'Rekenen met maten',
-      'Rekenen met tijd',
-      'Schatten',
-    ]);
+    expect(
+      describeSetTopicRows(forLevel(MEASUREMENT_SET, 'deep'), 15).map((row) => row.name),
+    ).toEqual(['Samengestelde grootheden', 'Rekenen met maten', 'Rekenen met tijd', 'Schatten']);
     expect(MEASUREMENT_SET.deep).toEqual([
       { topic: 'compoundUnits', weight: 1 },
       { topic: 'measureProblems', weight: 1 },

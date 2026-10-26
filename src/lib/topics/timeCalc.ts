@@ -69,7 +69,9 @@ function timeOptions(answer: number, tenMinutes: 10 | -10): string[] {
 export type ArrivalContext = 'film' | 'treinreis' | 'nachtbus';
 export type DepartureContext = 'school' | 'afspraak' | 'trein';
 
-const ARRIVAL_PROMPTS: Readonly<Record<ArrivalContext, (start: string, duration: string) => string>> = {
+const ARRIVAL_PROMPTS: Readonly<
+  Record<ArrivalContext, (start: string, duration: string) => string>
+> = {
   film: (start, duration) =>
     `De film begint om ${start} en duurt ${duration}. Hoe laat is de film afgelopen?`,
   treinreis: (start, duration) =>
@@ -159,8 +161,7 @@ export function workdayQuestion(start: number, end: number, pause: number): Ques
   const net = end - start - pause;
   const hours = rational(BigInt(net), 60n);
   const answerText = formatRational(hours);
-  const worked =
-    net % 60 === 0 ? `${net / 60} uur` : `${spanText(net)} = ${answerText} uur`;
+  const worked = net % 60 === 0 ? `${net / 60} uur` : `${spanText(net)} = ${answerText} uur`;
   return {
     key: `timeCalc:werkdag:${start}:${end}:${pause}`,
     topic: 'timeCalc',

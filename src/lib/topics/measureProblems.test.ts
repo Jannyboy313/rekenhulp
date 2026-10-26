@@ -133,7 +133,9 @@ describe('remainder', () => {
       'Een fles bevat 1,5 L. Je schenkt 4 glazen van 25 cl in. Hoeveel cl blijft er over?',
     );
     expect(fles.check('50').correct).toBe(true);
-    expect(fles.check('0').explanation).toBe(`1,5 L = 150 cl, 4 × 25 = 100 → 150 ${MINUS} 100 = 50`);
+    expect(fles.check('0').explanation).toBe(
+      `1,5 L = 150 cl, 4 × 25 = 100 → 150 ${MINUS} 100 = 50`,
+    );
 
     const meel = stepOf(remainderQuestion('meel', decimal('2'), 3, 350));
     expect(meel.prompt).toBe(

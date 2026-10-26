@@ -100,7 +100,10 @@ export function sumQuestion(
     fromInteger(0),
   );
   const expression = terms
-    .map((term, index) => `${index > 0 ? ` ${operators[index - 1]} ` : ''}${show(term.value)} ${term.unit}`)
+    .map(
+      (term, index) =>
+        `${index > 0 ? ` ${operators[index - 1]} ` : ''}${show(term.value)} ${term.unit}`,
+    )
     .join('');
   const conversions = terms
     .map((term, index) => `${show(term.value)} ${term.unit} = ${show(converted[index]!)} ${unit}`)
@@ -264,7 +267,9 @@ function randomSum(rng: Rng): Question {
   return drawUntil(() => {
     const symbols = DIMENSIONS[pick(rng, Object.keys(DIMENSIONS))]!;
     const unit = pick(rng, symbols);
-    const near = symbols.filter((symbol) => Math.abs(UNITS[symbol]!.exponent - UNITS[unit]!.exponent) <= 3);
+    const near = symbols.filter(
+      (symbol) => Math.abs(UNITS[symbol]!.exponent - UNITS[unit]!.exponent) <= 3,
+    );
     const units = [0, 1, 2].map(() => pick(rng, near));
     if (!units.includes(unit) || new Set(units).size < 2) return null;
     const terms = units.map((termUnit) => ({ value: randomTerm(rng), unit: termUnit }));
@@ -273,7 +278,10 @@ function randomSum(rng: Rng): Question {
     if (!converted.every((value) => hasAtMostDecimals(value, 2))) return null;
     let sum = converted[0]!;
     for (let index = 1; index < 3; index++) {
-      sum = operators[index - 1] === '+' ? add(sum, converted[index]!) : subtract(sum, converted[index]!);
+      sum =
+        operators[index - 1] === '+'
+          ? add(sum, converted[index]!)
+          : subtract(sum, converted[index]!);
       if (compare(sum, POSITIVE) <= 0) return null;
     }
     return compare(sum, fromInteger(10_000)) <= 0 ? sumQuestion(terms, operators, unit) : null;
@@ -303,11 +311,16 @@ function randomRemainder(rng: Rng): Question {
     const [container, portion] = {
       touw: [fromInteger(pick(rng, [5, 10, 20])), randomInt(rng, 6, 18) * 5] as const,
       fles: [pick(rng, VESSEL_LITRES), pick(rng, GLASS_CL)] as const,
-      meel: [pick(rng, [fromInteger(1), tenths(15), fromInteger(2), tenths(25)]), randomInt(rng, 2, 10) * 50] as const,
+      meel: [
+        pick(rng, [fromInteger(1), tenths(15), fromInteger(2), tenths(25)]),
+        randomInt(rng, 2, 10) * 50,
+      ] as const,
     }[context];
     const [big, small] = REMAINDER_UNITS[context];
     const rest = subtract(inUnit(container, big, small), fromInteger(pieces * portion));
-    return compare(rest, POSITIVE) > 0 ? remainderQuestion(context, container, pieces, portion) : null;
+    return compare(rest, POSITIVE) > 0
+      ? remainderQuestion(context, container, pieces, portion)
+      : null;
   });
 }
 

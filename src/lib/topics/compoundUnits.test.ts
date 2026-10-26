@@ -96,7 +96,11 @@ describe('flow', () => {
       'Een kraan geeft 12 liter per minuut. Hoeveel minuten duurt het om een bad van 180 L te vullen?',
     );
     expect(step.suffix).toBe('min');
-    expect(step.check('15')).toEqual({ correct: true, expected: '15', explanation: '180 : 12 = 15' });
+    expect(step.check('15')).toEqual({
+      correct: true,
+      expected: '15',
+      explanation: '180 : 12 = 15',
+    });
   });
 
   it('asks the volume after some minutes', () => {
@@ -141,11 +145,11 @@ describe('fuel', () => {
     expect(distance.check('600').explanation).toBe('40 × 15 = 600');
 
     const cost = stepOf(fuelQuestion('cost', 15, 16, 200));
-    expect(cost.prompt).toContain('Benzine kost €\u{a0}2 per liter. Wat kost de benzine voor 240 km?');
-    expect(cost.prefix).toBe('€');
-    expect(cost.check('32').explanation).toBe(
-      '240 : 15 = 16 L → 16 × €\u{a0}2 = €\u{a0}32',
+    expect(cost.prompt).toContain(
+      'Benzine kost €\u{a0}2 per liter. Wat kost de benzine voor 240 km?',
     );
+    expect(cost.prefix).toBe('€');
+    expect(cost.check('32').explanation).toBe('240 : 15 = 16 L → 16 × €\u{a0}2 = €\u{a0}32');
   });
 
   it('shows the answer in cents and accepts one decimal', () => {
@@ -159,7 +163,8 @@ describe('fuel', () => {
 describe('generateCompoundUnits', () => {
   const rng = createRng(12);
   const questions: Question[] = Array.from({ length: SAMPLES }, () => generateCompoundUnits(rng));
-  const kind = (name: string) => questions.filter((q) => q.key.startsWith(`compoundUnits:${name}:`));
+  const kind = (name: string) =>
+    questions.filter((q) => q.key.startsWith(`compoundUnits:${name}:`));
 
   it('uses the four forms about equally often', () => {
     const speed = [...kind('speed'), ...kind('distance')];

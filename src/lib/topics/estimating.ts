@@ -45,10 +45,12 @@ const HUMAN = rational(9n, 5n);
 
 const ESTIMATES: Readonly<Record<EstimateContext, Estimate>> = {
   flat: {
-    prompt: ([floors]) => `Een flat heeft ${show(floors!)} woonlagen. Hoe hoog is de flat ongeveer?`,
+    prompt: ([floors]) =>
+      `Een flat heeft ${show(floors!)} woonlagen. Hoe hoog is de flat ongeveer?`,
     answer: ([floors]) => multiply(floors!, fromInteger(3)),
     unit: 'm',
-    explanation: ([floors], answer) => `1 woonlaag ≈ 3 m → ${show(floors!)} × 3 = ${show(answer)} m`,
+    explanation: ([floors], answer) =>
+      `1 woonlaag ≈ 3 m → ${show(floors!)} × 3 = ${show(answer)} m`,
   },
   wandelen: {
     prompt: ([time]) => `Je wandelt ${hours(time!)}. Hoe ver kom je ongeveer?`,
@@ -114,15 +116,11 @@ const tenths = (count: number) => rational(BigInt(count), 10n);
 
 export function generateEstimating(rng: Rng): Question {
   const number = (...values: readonly (number | Rational)[]) =>
-    pick(rng, values.map((value) => (typeof value === 'number' ? fromInteger(value) : value)));
-  const context = pick(rng, [
-    'flat',
-    'wandelen',
-    'fietsen',
-    'stappen',
-    'water',
-    'mensen',
-  ] as const);
+    pick(
+      rng,
+      values.map((value) => (typeof value === 'number' ? fromInteger(value) : value)),
+    );
+  const context = pick(rng, ['flat', 'wandelen', 'fietsen', 'stappen', 'water', 'mensen'] as const);
   const numbers = {
     flat: [fromInteger(randomInt(rng, 4, 20))],
     wandelen: [number(tenths(5), 1, tenths(15), 2, tenths(25), 3, 4)],

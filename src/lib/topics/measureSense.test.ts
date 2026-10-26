@@ -119,12 +119,7 @@ describe('instruments', () => {
 });
 
 describe('orderingOptions', () => {
-  const lengths = [
-    length('5,2', 'mm'),
-    length('76', 'cm'),
-    length('2', 'm'),
-    length('104', 'dm'),
-  ];
+  const lengths = [length('5,2', 'mm'), length('76', 'cm'), length('2', 'm'), length('104', 'dm')];
 
   it('contains the right order and the order of the bare numbers', () => {
     const options = orderingOptions(lengths, 'up', createRng(1));
@@ -166,7 +161,12 @@ describe('orderingOptions', () => {
 
 describe('orderingQuestion', () => {
   it('explains with all lengths in cm, in the right order', () => {
-    const lengths = [length('5,2', 'mm'), length('76', 'cm'), length('2', 'm'), length('104', 'dm')];
+    const lengths = [
+      length('5,2', 'mm'),
+      length('76', 'cm'),
+      length('2', 'm'),
+      length('104', 'dm'),
+    ];
     expect(stepOf(orderingQuestion(lengths, 'up', createRng(1))).check('').explanation).toBe(
       'in cm: 0,52 – 76 – 200 – 1040',
     );
@@ -261,5 +261,4 @@ describe('generateMeasureSense', () => {
       );
     });
   });
-
 });
