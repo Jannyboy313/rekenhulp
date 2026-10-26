@@ -45,7 +45,8 @@ export type Topic =
   | 'statistics'
   | 'percentagePoints'
   | 'sequences'
-  | 'formulas';
+  | 'formulas'
+  | 'equations';
 
 export interface CheckResult {
   correct: boolean;
@@ -59,7 +60,7 @@ export interface CheckResult {
 export interface Step {
   kind: AnswerKind;
   prompt: string;
-  /** Fixed unit shown before the input: '€', or '1 :' for a scale. */
+  /** Fixed unit shown before the input: '€', '1 :' for a scale or 'x =' for an equation. */
   prefix?: string;
   /** Fixed unit shown after the input, e.g. 'cm³' or '%'. */
   suffix?: string;
