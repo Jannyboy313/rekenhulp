@@ -25,6 +25,7 @@ export type Topic =
   | 'calendar'
   | 'dataSize'
   | 'clock'
+  | 'measureSense'
   | 'percentages'
   | 'ratios'
   | 'percentChange'

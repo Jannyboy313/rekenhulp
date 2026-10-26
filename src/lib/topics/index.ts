@@ -9,6 +9,7 @@ import { generateEquations } from './equations';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
 import { generateFractionConversion } from './fractionConversion';
+import { generateMeasureSense } from './measureSense';
 import {
   generateArea,
   generateLength,
@@ -62,6 +63,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   calendar: generateCalendar,
   dataSize: generateDataSize,
   clock: generateClock,
+  measureSense: generateMeasureSense,
   percentages: generatePercentages,
   ratios: generateRatios,
   percentChange: generatePercentChange,
@@ -117,6 +119,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   calendar: 'Kalender (etmaal t/m millennium)',
   dataSize: 'Geheugen (kB t/m TB)',
   clock: 'Klok (kijken en tijdsduur)',
+  measureSense: 'Maatgevoel (referenties, meetinstrumenten, eenheden)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',
