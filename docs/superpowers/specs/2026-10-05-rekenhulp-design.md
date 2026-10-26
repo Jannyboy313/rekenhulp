@@ -1958,7 +1958,10 @@ The keypad is custom. The system keyboard is never opened.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
   a superscript. The feedback and the results show the given answer the same way.
 - `OK` is disabled only while the input is empty. It is a primary-coloured key that fills the rest
-  of the last row. Operator and auxiliary keys have a darker key colour than the digits.
+  of the last row.
+- `⌫` is always bottom left: the first key of the last row, on every keypad and on the kladblok
+  tray (§3.6). A new keypad keeps it there; when its keys do not fill the rows above, a key
+  spans the rest of its row (the `M` of the roman keypad), never an empty cell. Operator and auxiliary keys have a darker key colour than the digits.
 - The digit keys are 52 px high (56 px on screens without a kladblok); the kladblok keypad has
   48 px keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right.
 - Ja/Nee keeps the layout of a keypad step: the buttons sit at the bottom and the prompt stays at
@@ -2032,15 +2035,15 @@ The keypad is custom. The system keyboard is never opened.
     ```
 
   - **roman**: the symbols in order of value, in 2 columns; at most 15 characters (the longest
-    answer, `MDCCCLXXXVIII`, has 13). OK fills the last row, so the keypad has five rows, the
-    same height as the others and the kladblok tray; the keys are wider:
+    answer, `MDCCCLXXXVIII`, has 13). Five rows, the same height as the others and the
+    kladblok tray; the keys are wider. `M` spans its row, so `⌫` stays bottom left:
 
     ```
     I  V
     X  L
     C  D
-    M  ⌫
-    OK───
+    M─────
+    ⌫  OK
     ```
 - Units are shown next to the input field, and the user never types them. `€`, `1 :` (the
   find-the-scale form of §5.24) and `x =` (§5.37) are fixed prefixes (`€ 45`, `1 : 25 000`,
@@ -2265,15 +2268,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-Talstelsels (§5.39–§5.40), confirmed by the user: question sentences instead of a subscript
-notation, one baseDigits keypad for every base, Roman values up to 100 plus years, the two Roman
-tips, a roman keypad of five rows (2 columns). Still open:
-
-1. The value ranges per base (§5.39): base 2 up to 63, base 5 up to 124, base 16 two digits with
-   a letter.
-2. Roman numerals also get question sentences (`Schrijf MCMXCIV als gewoon getal.`), like the
-   number systems.
-3. Equal weights (1 and 1), although `numberSystems` has three bases.
+None at the moment.
 
 ## 12. Roadmap (not in v1)
 
