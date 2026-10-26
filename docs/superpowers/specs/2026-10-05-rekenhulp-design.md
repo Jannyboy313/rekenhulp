@@ -595,7 +595,7 @@ topic answers with a number unless stated otherwise.
 - Divisors: 2 to 15 without 10, like the tables: `{2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15}`,
   each equally likely.
 - The number of digits is drawn uniformly: 3 to 5 digits (`[100, 99 999]`), but only 3 or 4
-  digits (`[100, 9999]`) for 7, 13 and 14, which have no digit rule.
+  digits (`[100, 9999]`) for 7, 13 and 14, which have no simple digit rule.
 - 50% of the numbers are divisible.
 - Non-divisible numbers are close calls, so that guessing does not work. Their remainder modulo
   the divisor comes from this table; where there are two groups, each is picked with equal

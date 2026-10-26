@@ -70,7 +70,7 @@ export const NUMBERS_LESSON: Lesson = {
       blocks: [
         {
           type: 'text',
-          text: 'Voor 7 en 13 is er geen cijferregel. Haal er grote veelvouden af die je kent (7 × 300 = 2100, 7 × 80 = 560) tot er een kleine rest over is.',
+          text: 'Voor 7 en 13 is er geen cijferregel zoals bij 3 of 9. Haal er grote veelvouden af die je kent (7 × 300 = 2100, 7 × 80 = 560) tot er een kleine rest over is.',
         },
         {
           type: 'worked',

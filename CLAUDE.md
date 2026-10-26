@@ -32,7 +32,8 @@ fixed order, content only when the user asks for it (iterate its spec §7 first)
 other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not used
 yet.
 
-To add a lesson: write its topics in the lesstof spec §7 first, then add `lib/lessons/<set>.ts`
+To add a lesson: write its topics in the lesstof spec §7 first, with a second method wherever
+one exists (lesstof spec §1, missing ones in §7.8), then add `lib/lessons/<set>.ts`
 (a `Lesson` with the set's id) and append it to `LESSONS` in `lib/lessons/index.ts`.
 `validate.test.ts` checks structure,
 notation and that every `worked` line is a true equality chain. Keep lesson code separate from

@@ -8,8 +8,12 @@
 
 ## 1. Goal
 
-A cheat sheet per practice set, to refresh a method before practising, aimed at the LKT and the
-RWT. It is read on demand, never part of a session.
+Study material per practice set, to understand and refresh the methods before practising, aimed
+at the LKT and the RWT. It is read on demand, never part of a session.
+
+**Several methods.** The reader is a PABO student who will teach children that calculate in
+different ways, so a topic shows **more than one method** wherever a common second method exists
+(§7).
 
 - One lesson per practice set, named like the set (Getalbegrip → lesson Getalbegrip).
 - A lesson consists of **lesson topics**. The user opens one topic to read; nothing walks
@@ -19,7 +23,8 @@ RWT. It is read on demand, never part of a session.
 
 - No persistence of any kind: no "read" marks, no last-opened topic (main spec §1).
 - No exercises, interaction, images or network inside a lesson.
-- No didactics (main spec §12.3): the lesstof explains arithmetic methods only.
+- No didactics (main spec §12.3): the lesstof shows calculation methods, not how to teach them:
+  no teaching models or terms, no typical pupils' errors.
 - No link from a session or the feedback panel to a lesson (for now).
 
 ## 2. Build order
@@ -121,6 +126,12 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
 Added per set in its own session (§2). Worked lines below are pure equality chains (§6); words,
 `√` and "GGD van" go in text blocks or the worked block's title.
 
+Several methods (§1): a topic shows at least two methods when a common second method exists, the
+second preferably on the same numbers so the reader can compare them. Facts, definitions and
+properties need only one. The first method is the one of the practice explanation (main spec
+§5); where a set below says its methods match the practice explanations, that is the first
+method. §7.8 lists the second methods still missing.
+
 ### 7.1 Getallen & delers (`getallen`)
 
 Eight topics, ordered so each builds on the previous one (divisibility before primes, primes
@@ -140,8 +151,8 @@ the practice topics (main spec §5.2–§5.7).
    - Text example: `1246` is even, but cijfersom `1 + 2 + 4 + 6 = 13` → not by 3 → not by 6.
    - Tip: `12 = 2 × 6` does not work: 2 and 6 share 2. `18` is divisible by 2 and by 6, not by 12.
 3. **`chunking` — Deelbaarheid door 7 en 13** (summary: `Happen in veelvouden`)
-   - Text: there is no digit rule; take off big multiples you know (`7 × 300`, `7 × 80`) until a
-     small remainder is left.
+   - Text: there is no digit rule like that of 3 or 9; take off big multiples you know
+     (`7 × 300`, `7 × 80`) until a small remainder is left.
    - Worked `2716 en 7`: `2716 = 2100 + 560 + 56`, `2716 : 7 = 300 + 80 + 8 = 388`.
    - Text: `2718 = 2100 + 560 + 56 + 2` → remainder 2, not divisible.
    - Worked `1859 en 13`: `1859 = 1300 + 520 + 39`, `1859 : 13 = 100 + 40 + 3 = 143`.
@@ -607,6 +618,30 @@ lines hold numbers only.
    - Text: the two shortest sides together must be longer than the longest: 2, 3 en 6 cm no;
      3, 4 en 6 cm yes.
    - Tip: "De twee kortste zijden samen moeten langer zijn dan de langste."
+
+### 7.8 Second methods still missing
+
+Found in a review on 2026-10-26 against §1. Each is worked out in the set's section above, in its
+own session, only when the user asks; then it is removed here.
+
+- **Getallen & delers:** `chunking`, the rule for 7: strike the last digit and subtract it twice
+  (`2716 → 271 − 12 = 259 → 25 − 18 = 7`, so divisible).
+- **Meten:** `time`, via fractions of an hour (`1/4 uur = 15 min`).
+- **Verhoudingen:** a ratio table as second route in `percentages` (how many percent),
+  `percentChange` (new as a percentage of old: `92 : 80 = 115/100`), `perUnit`
+  (`1,5 kg → 0,5 kg → 0,1 kg → 0,4 kg`), `scale` and `ratioProblems`; `priceChange`, korting in
+  one step (`75%` of 60).
+- **Bewerkingen:** `compensation`, the same sum also in steps (`398 + 247 = 398 + 200 + 47`).
+- **Getalbegrip:** `mentalOperations`, splitting both numbers next to stepping on;
+  `negativeNumbers`, as debts; `remainder`, repeated subtraction of big multiples; `roots`,
+  estimating between two squares.
+- **Breuken & kommagetallen:** `conversion`, dividing (`3 : 8`) or via a known fraction
+  (`3/8 = 3 × 0,125`); `simplify`, in one step with the GGD or in small steps; `addSubtract`,
+  the product of the denominators, and mixed numbers via improper fractions; `multiplyDivide`,
+  dividing via equal denominators (`2/3 : 4/9 = 6/9 : 4/9 = 6 : 4`); `partOf`, first × 3, then
+  : 4; `decimals`, via fractions (`0,3 × 0,4 = 3/10 × 4/10`).
+- **Meetkunde:** `perimeterArea`, a trapezium split into a rectangle and triangles; `angles`,
+  via the exterior angle (`360 : 8 = 45`, `180 − 45 = 135`); `clock`, via minutes.
 
 ## 8. Open assumptions
 
