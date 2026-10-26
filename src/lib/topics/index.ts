@@ -2,6 +2,7 @@ import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
+import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
@@ -64,6 +65,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   dataSize: generateDataSize,
   clock: generateClock,
   measureSense: generateMeasureSense,
+  compoundUnits: generateCompoundUnits,
   percentages: generatePercentages,
   ratios: generateRatios,
   percentChange: generatePercentChange,
@@ -120,6 +122,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   dataSize: 'Geheugen (kB t/m TB)',
   clock: 'Klok (kijken en tijdsduur)',
   measureSense: 'Maatgevoel (referenties, meetinstrumenten, eenheden)',
+  compoundUnits: 'Samengestelde grootheden (snelheid, dichtheid, debiet, verbruik)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',
