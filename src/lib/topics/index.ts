@@ -107,7 +107,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   mass: 'Gewicht (mg t/m ton)',
   time: 'Tijd (s, min, uur, dag)',
   speed: 'Snelheid (afstand, tijd, km/u en m/s)',
-  numberUnits: 'Grote getallen (duizend t/m quadriljoen)',
+  numberUnits: 'Grote getallen (duizend t/m quadriljoen, ton)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',

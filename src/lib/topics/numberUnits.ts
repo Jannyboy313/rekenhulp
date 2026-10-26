@@ -1,7 +1,24 @@
-import { formatInteger, formatPowerOfTen, formatRational, UNKNOWN_EXPONENT } from '../format';
-import { pick, randomInt, type Rng } from '../random';
+import {
+  formatEuro,
+  formatInteger,
+  formatPowerOfTen,
+  formatRational,
+  UNKNOWN_EXPONENT,
+} from '../format';
+import { drawUntil, pick, randomInt, type Rng } from '../random';
 import { SLOT } from '../slot';
-import { divide, equals, fromInteger, multiply, powerOfTen, type Rational } from '../rational';
+import {
+  divide,
+  equals,
+  fromInteger,
+  hasAtMostDecimals,
+  isBetween,
+  multiply,
+  ONE,
+  powerOfTen,
+  rational,
+  type Rational,
+} from '../rational';
 import { numberStep } from '../steps';
 import type { Diagnose } from '../tips';
 import type { Question } from '../types';
@@ -40,11 +57,21 @@ const BARE_NAME_SHARE = 0.4;
 /** Power → name prompts start at 10³: the topic skips tien and honderd. */
 export const MIN_POWER = 3;
 
-type NumberUnitForm = 'nameToPower' | 'nameToName' | 'powerToName';
-const FORMS: readonly NumberUnitForm[] = ['nameToPower', 'nameToName', 'powerToName'];
+type NumberUnitForm = 'nameToPower' | 'nameToName' | 'powerToName' | 'nameToNumber' | 'money';
+const FORMS: readonly NumberUnitForm[] = [
+  'nameToPower',
+  'nameToName',
+  'powerToName',
+  'nameToNumber',
+  'money',
+];
 
 export function generateNumberUnits(rng: Rng): Question {
   switch (pick(rng, FORMS)) {
+    case 'nameToNumber':
+      return nameToNumber(rng);
+    case 'money':
+      return money(rng);
     case 'nameToPower':
       return nameToPower(rng);
     case 'nameToName': {
@@ -54,6 +81,96 @@ export function generateNumberUnits(rng: Rng): Question {
     case 'powerToName':
       return powerToName(rng);
   }
+}
+
+/** Only the names that are written out in full (RWT A.1 goes up to a miljard). */
+const FULL_NAMES: readonly ScaleUnit[] = NUMBER_UNITS.filter(({ symbol }) =>
+  ['miljoen', 'miljard'].includes(symbol),
+);
+
+/** `10,6 miljoen = ?` or `6 500 000 = ? miljoen` */
+export function nameToNumberQuestion(symbol: string, toNumber: boolean, value: Rational): Question {
+  const unit = NUMBER_UNITS.find((candidate) => candidate.symbol === symbol)!;
+  const factor = powerOfTen(unit.exponent);
+  const [shown, factorText] = [formatRational(value), formatRational(factor)];
+  const full = formatRational(multiply(value, factor));
+  const fact = `1 ${symbol} = ${factorText}`;
+  return {
+    key: `numberUnits:number:${toNumber ? 'toNumber' : 'toName'}:${symbol}:${shown}`,
+    topic: 'numberUnits',
+    steps: [
+      toNumber
+        ? numberStep({
+            prompt: `${shown} ${symbol} = ${SLOT}`,
+            answer: multiply(value, factor),
+            explanation: `${fact} → ${shown} × ${factorText} = ${full}`,
+          })
+        : numberStep({
+            prompt: `${full} = ${SLOT} ${symbol}`,
+            answer: value,
+            suffix: symbol,
+            explanation: `${fact} → ${full} : ${factorText} = ${shown}`,
+          }),
+    ],
+  };
+}
+
+/** The value has 1 to 3 significant digits, lies in [1, 999] and has at most 2 decimals. */
+function nameToNumber(rng: Rng): Question {
+  const unit = pick(rng, FULL_NAMES);
+  const value = drawUntil(() => {
+    const candidate = multiply(fromInteger(randomMantissa(rng)), powerOfTen(randomInt(rng, -2, 2)));
+    return isBetween(candidate, ONE, fromInteger(999)) && hasAtMostDecimals(candidate, 2)
+      ? candidate
+      : null;
+  });
+  return nameToNumberQuestion(unit.symbol, rng() < 0.5, value);
+}
+
+const TON = fromInteger(100_000);
+
+type MoneyContext = 'huis' | 'winst';
+
+/** `Een huis kost 3,5 ton. Hoeveel euro is dat?` or `Een huis kost € 350 000. Hoeveel ton?` */
+export function moneyQuestion(context: MoneyContext, toEuro: boolean, ton: Rational): Question {
+  const [lead, tail] =
+    context === 'huis' ? ['Een huis kost ', ''] : ['Een bedrijf maakt ', ' winst'];
+  const euros = multiply(ton, TON);
+  const [shownTon, shownEuros, tonText] = [
+    formatRational(ton),
+    formatRational(euros),
+    formatRational(TON),
+  ];
+  const fact = `1 ton = ${formatEuro(TON)}`;
+  return {
+    key: `numberUnits:money:${context}:${toEuro ? 'toEuro' : 'toTon'}:${shownTon}`,
+    topic: 'numberUnits',
+    steps: [
+      toEuro
+        ? numberStep({
+            prompt: `${lead}${shownTon} ton${tail}. Hoeveel euro is dat?`,
+            answer: euros,
+            prefix: '€',
+            explanation: `${fact} → ${shownTon} × ${tonText} = ${shownEuros}`,
+          })
+        : numberStep({
+            prompt: `${lead}${formatEuro(euros)}${tail}. Hoeveel ton is dat?`,
+            answer: ton,
+            suffix: 'ton',
+            explanation: `${fact} → ${shownEuros} : ${tonText} = ${shownTon}`,
+          }),
+    ],
+  };
+}
+
+/** A huis costs 2 to 8 ton in halves, a winst is 0,5 to 9,9 ton in tenths. */
+function money(rng: Rng): Question {
+  const context: MoneyContext = rng() < 0.5 ? 'huis' : 'winst';
+  const ton =
+    context === 'huis'
+      ? rational(BigInt(randomInt(rng, 4, 16)), 2n)
+      : rational(BigInt(randomInt(rng, 5, 99)), 10n);
+  return moneyQuestion(context, rng() < 0.5, ton);
 }
 
 /** An integer in [1, 999] with 1 to 3 significant digits: 7, 250 or 300 (spec §5.14). */

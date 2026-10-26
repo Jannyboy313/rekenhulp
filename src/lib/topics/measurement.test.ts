@@ -343,15 +343,15 @@ describe('conversion tips', () => {
   });
 
   it('explains the new units', () => {
-    expect(conversionQuestion('volume', 'kuub', 'L', n('3'), n('3000')).steps[0]!.check('').explanation).toBe(
-      '1 kuub = 1000 L → 3 × 1000 = 3000',
-    );
-    expect(conversionQuestion('volume', 'kuub', 'm³', n('3'), n('3')).steps[0]!.check('').explanation).toBe(
-      '1 kuub = 1 m³',
-    );
-    expect(conversionQuestion('area', 'ca', 'are', n('500'), n('5')).steps[0]!.check('').explanation).toBe(
-      '1 are = 100 ca → 500 : 100 = 5',
-    );
+    expect(
+      conversionQuestion('volume', 'kuub', 'L', n('3'), n('3000')).steps[0]!.check('').explanation,
+    ).toBe('1 kuub = 1000 L → 3 × 1000 = 3000');
+    expect(
+      conversionQuestion('volume', 'kuub', 'm³', n('3'), n('3')).steps[0]!.check('').explanation,
+    ).toBe('1 kuub = 1 m³');
+    expect(
+      conversionQuestion('area', 'ca', 'are', n('500'), n('5')).steps[0]!.check('').explanation,
+    ).toBe('1 are = 100 ca → 500 : 100 = 5');
   });
 
   it('counts kuub and cc as cubic units', () => {

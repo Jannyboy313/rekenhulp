@@ -241,7 +241,7 @@ describe('describeSetTopicRows per set', () => {
       'Lengte (mm t/m km)',
       'Gewicht (mg t/m ton)',
       'Tijd (s, min, uur, dag)',
-      'Grote getallen (duizend t/m quadriljoen)',
+      'Grote getallen (duizend t/m quadriljoen, ton)',
       'Snelheid (afstand, tijd, km/u en m/s)',
       '15% tafels',
     ]);

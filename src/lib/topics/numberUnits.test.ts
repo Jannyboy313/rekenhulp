@@ -4,8 +4,10 @@ import { createRng } from '../random';
 import { SLOT } from '../slot';
 import {
   compare,
+  decimalPlaces,
   equals,
   fromInteger,
+  isInteger,
   multiply,
   parseDutchNumber,
   powerOfTen,
@@ -16,11 +18,13 @@ import { isNiceValue } from './measurement';
 import {
   generateNumberUnits,
   MIN_POWER,
+  moneyQuestion,
+  nameToNumberQuestion,
   nameToPowerTip,
   NUMBER_LIMITS,
   NUMBER_UNITS,
 } from './numberUnits';
-import { stepOf } from './testHelpers';
+import { decimal, stepOf } from './testHelpers';
 
 const SAMPLES = 3000;
 
@@ -43,6 +47,9 @@ const exponentOf = new Map(NUMBER_UNITS.map((unit) => [unit.symbol, unit.exponen
 const nameToPower = questions.filter((q) => q.key.startsWith('numberUnits:power:'));
 const powerToName = questions.filter((q) => q.key.startsWith('numberUnits:fromPower:'));
 const nameToName = questions.filter((q) => q.key.includes('>'));
+const nameToNumber = questions.filter((q) => q.key.startsWith('numberUnits:number:'));
+const money = questions.filter((q) => q.key.startsWith('numberUnits:money:'));
+const shortNames = [nameToPower, powerToName, nameToName].flat();
 
 describe('NUMBER_UNITS', () => {
   it('follows the Dutch long scale from duizend to quadriljoen', () => {
@@ -71,17 +78,17 @@ describe('generateNumberUnits', () => {
     }
   });
 
-  it('uses the three forms about equally often', () => {
-    expect(nameToPower.length + powerToName.length + nameToName.length).toBe(SAMPLES);
-    for (const form of [nameToPower, powerToName, nameToName]) {
-      expect(form.length / SAMPLES).toBeGreaterThan(0.28);
-      expect(form.length / SAMPLES).toBeLessThan(0.39);
+  it('uses the five forms about equally often', () => {
+    expect(shortNames.length + nameToNumber.length + money.length).toBe(SAMPLES);
+    for (const form of [nameToPower, powerToName, nameToName, nameToNumber, money]) {
+      expect(form.length / SAMPLES).toBeGreaterThan(0.16);
+      expect(form.length / SAMPLES).toBeLessThan(0.24);
     }
   });
 
-  it('keeps every number in a prompt and every answer at most 100 000', () => {
+  it('keeps every number in a prompt and every answer of the short names at most 100 000', () => {
     const limit = fromInteger(100_000);
-    for (const question of questions) {
+    for (const question of shortNames) {
       // Superscript digits are not matched by \d, so 10⁹ yields just "10".
       const numbers = typed(stepOf(question).prompt).match(/\d+(,\d+)?/g) ?? [];
       for (const text of [...numbers, typed(expectedOf(question))]) {
@@ -97,7 +104,7 @@ describe('generateNumberUnits', () => {
 });
 
 // Rare keys (e.g. mantissa 1) are not in the 3000-sample set: look them up in a larger pool.
-const pool = sample(99, 60_000);
+const pool = sample(99, 200_000);
 
 function find(key: string): Question {
   const question = pool.find((candidate) => candidate.key === key);
@@ -214,6 +221,128 @@ describe('name ↔ name', () => {
       expect(Math.abs(exponentOf.get(from!)! - exponentOf.get(to!)!)).toBe(3);
       expect(stepOf(question).suffix).toBe(to);
     }
+  });
+});
+
+/** Builds the question a key names, so the rare values need no huge sample. */
+function build(key: string): Question {
+  const parts = key.split(':');
+  const value = decimal(parts.at(-1)!);
+  const question =
+    parts[1] === 'number'
+      ? nameToNumberQuestion(parts[3]!, parts[2] === 'toNumber', value)
+      : moneyQuestion(parts[2] as 'huis' | 'winst', parts[3] === 'toEuro', value);
+  expect(question.key).toBe(key);
+  return question;
+}
+
+describe('name ↔ number', () => {
+  const find = build;
+  const explanationOf = (key: string) => stepOf(build(key)).check('').explanation!;
+
+  it('writes a number with its name in full and back', () => {
+    const toNumber = find('numberUnits:number:toNumber:miljoen:10,6');
+    expect(stepOf(toNumber).prompt).toBe('10,6 miljoen = ?');
+    expect(stepOf(toNumber).suffix).toBeUndefined();
+    expect(expectedOf(toNumber)).toBe(`10${GROUP_SEPARATOR}600${GROUP_SEPARATOR}000`);
+    expect(stepOf(toNumber).check('10600000').correct).toBe(true);
+    expect(explanationOf('numberUnits:number:toNumber:miljoen:10,6')).toBe(
+      `1 miljoen = 1${GROUP_SEPARATOR}000${GROUP_SEPARATOR}000 → 10,6 × 1${GROUP_SEPARATOR}000${GROUP_SEPARATOR}000 = 10${GROUP_SEPARATOR}600${GROUP_SEPARATOR}000`,
+    );
+
+    const toName = find('numberUnits:number:toName:miljoen:6,5');
+    expect(stepOf(toName).prompt).toBe(`6${GROUP_SEPARATOR}500${GROUP_SEPARATOR}000 = ? miljoen`);
+    expect(stepOf(toName).suffix).toBe('miljoen');
+    expect(expectedOf(toName)).toBe('6,5');
+    expect(explanationOf('numberUnits:number:toName:miljoen:6,5')).toBe(
+      `1 miljoen = 1${GROUP_SEPARATOR}000${GROUP_SEPARATOR}000 → 6${GROUP_SEPARATOR}500${GROUP_SEPARATOR}000 : 1${GROUP_SEPARATOR}000${GROUP_SEPARATOR}000 = 6,5`,
+    );
+  });
+
+  it('accepts a miljard in full', () => {
+    const question = find('numberUnits:number:toNumber:miljard:2,75');
+    expect(stepOf(question).check('2750000000').correct).toBe(true);
+  });
+
+  it('gives the factor-of-ten tip for a wrong number of zeros', () => {
+    const step = stepOf(find('numberUnits:number:toNumber:miljoen:10,6'));
+    const result = step.check('1060000');
+    expect(result.correct).toBe(false);
+    expect(result.tip).toBeTruthy();
+  });
+
+  it('uses miljoen and miljard with values in [1, 999] of at most 2 decimals', () => {
+    const units = new Set<string>();
+    for (const question of nameToNumber) {
+      const [, , direction, unit, value] = question.key.split(':');
+      units.add(unit!);
+      expect(['toNumber', 'toName']).toContain(direction);
+      const parsed = parseDutchNumber(value!)!;
+      expect(compare(parsed, fromInteger(1))).toBeGreaterThanOrEqual(0);
+      expect(compare(parsed, fromInteger(999))).toBeLessThanOrEqual(0);
+      expect(decimalPlaces(parsed)!).toBeLessThanOrEqual(2);
+      expect(
+        value!.replace(',', '').replace(/^0+/, '').replace(/0+$/, '').length,
+      ).toBeLessThanOrEqual(3);
+      expect(isInteger(multiply(parsed, powerOfTen(exponentOf.get(unit!)!)))).toBe(true);
+    }
+    expect([...units].sort()).toEqual(['miljard', 'miljoen']);
+  });
+});
+
+describe('money (ton)', () => {
+  const find = build;
+  const explanationOf = (key: string) => stepOf(build(key)).check('').explanation!;
+
+  it('converts ton to euro and back', () => {
+    const euro = find('numberUnits:money:huis:toEuro:3,5');
+    expect(stepOf(euro).prompt).toBe('Een huis kost 3,5 ton. Hoeveel euro is dat?');
+    expect(stepOf(euro).prefix).toBe('€');
+    expect(stepOf(euro).check('350000').correct).toBe(true);
+    expect(explanationOf('numberUnits:money:huis:toEuro:3,5')).toBe(
+      `1 ton = €\u{a0}100${GROUP_SEPARATOR}000 → 3,5 × 100${GROUP_SEPARATOR}000 = 350${GROUP_SEPARATOR}000`,
+    );
+
+    const ton = find('numberUnits:money:huis:toTon:4,5');
+    expect(stepOf(ton).prompt).toBe(
+      `Een huis kost €\u{a0}450${GROUP_SEPARATOR}000. Hoeveel ton is dat?`,
+    );
+    expect(stepOf(ton).suffix).toBe('ton');
+    expect(stepOf(ton).check('4,5').correct).toBe(true);
+    expect(explanationOf('numberUnits:money:huis:toTon:4,5')).toBe(
+      `1 ton = €\u{a0}100${GROUP_SEPARATOR}000 → 450${GROUP_SEPARATOR}000 : 100${GROUP_SEPARATOR}000 = 4,5`,
+    );
+  });
+
+  it('words the winst context', () => {
+    expect(stepOf(find('numberUnits:money:winst:toEuro:1,2')).prompt).toBe(
+      'Een bedrijf maakt 1,2 ton winst. Hoeveel euro is dat?',
+    );
+    expect(stepOf(find('numberUnits:money:winst:toTon:1,2')).prompt).toBe(
+      `Een bedrijf maakt €\u{a0}120${GROUP_SEPARATOR}000 winst. Hoeveel ton is dat?`,
+    );
+  });
+
+  it('keeps a huis in halves from 2 to 8 ton and a winst in tenths from 0,5 to 9,9', () => {
+    const seen = { huis: new Set<string>(), winst: new Set<string>() };
+    for (const question of money) {
+      const [, , context, , ton] = question.key.split(':');
+      const value = parseDutchNumber(ton!)!;
+      if (context === 'huis') {
+        expect(isInteger(multiply(value, fromInteger(2)))).toBe(true);
+        expect(compare(value, fromInteger(2))).toBeGreaterThanOrEqual(0);
+        expect(compare(value, fromInteger(8))).toBeLessThanOrEqual(0);
+        seen.huis.add(ton!);
+      } else {
+        expect(context).toBe('winst');
+        expect(isInteger(multiply(value, fromInteger(10)))).toBe(true);
+        expect(compare(value, rational(1n, 2n))).toBeGreaterThanOrEqual(0);
+        expect(compare(value, rational(99n, 10n))).toBeLessThanOrEqual(0);
+        seen.winst.add(ton!);
+      }
+    }
+    expect(seen.huis.size).toBeGreaterThan(5);
+    expect(seen.winst.size).toBeGreaterThan(20);
   });
 });
 
