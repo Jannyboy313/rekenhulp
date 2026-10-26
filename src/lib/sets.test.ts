@@ -11,6 +11,7 @@ import {
   OPERATIONS_SET,
   PRACTICE_SETS,
   PROPORTIONS_SET,
+  RELATIONS_SET,
   SESSION_SIZES,
   splitTopicLabel,
   TABLES_SET,
@@ -72,6 +73,22 @@ describe('practice sets', () => {
       'getalbegrip',
       'breuken',
       'meetkunde',
+      'verbanden',
+    ]);
+  });
+
+  it('makes Verbanden & statistiek six equally weighted topics with 15% tables', () => {
+    expect(RELATIONS_SET.id).toBe('verbanden');
+    expect(RELATIONS_SET.name).toBe('Verbanden & statistiek');
+    expect(RELATIONS_SET.description).toBe('Statistiek, rijen, formules, vergelijkingen en kans');
+    expect(RELATIONS_SET.tablesPercent).toBe(15);
+    expect(RELATIONS_SET.topics).toEqual([
+      { topic: 'statistics', weight: 1 },
+      { topic: 'percentagePoints', weight: 1 },
+      { topic: 'sequences', weight: 1 },
+      { topic: 'formulas', weight: 1 },
+      { topic: 'equations', weight: 1 },
+      { topic: 'probability', weight: 1 },
     ]);
   });
 
@@ -260,6 +277,18 @@ describe('describeSetTopicRows per set', () => {
       'Omzetten tussen breuk, kommagetal en procent',
       'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
       'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
+      '15% tafels',
+    ]);
+  });
+
+  it('describes the Verbanden & statistiek set', () => {
+    expect(rowLabels(RELATIONS_SET)).toEqual([
+      'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
+      'Procentpunten (procentpunt of procent)',
+      'Rijen (volgende getal, n-de getal, driehoeksgetallen)',
+      'Formules (invullen, startgetal en hellingsgetal)',
+      'Vergelijkingen (x oplossen)',
+      'Kans (dobbelsteen, knikkers)',
       '15% tafels',
     ]);
   });

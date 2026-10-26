@@ -112,6 +112,21 @@ export const GEOMETRY_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+export const RELATIONS_SET: PracticeSet = {
+  id: 'verbanden',
+  name: 'Verbanden & statistiek',
+  description: 'Statistiek, rijen, formules, vergelijkingen en kans',
+  topics: [
+    { topic: 'statistics', weight: 1 },
+    { topic: 'percentagePoints', weight: 1 },
+    { topic: 'sequences', weight: 1 },
+    { topic: 'formulas', weight: 1 },
+    { topic: 'equations', weight: 1 },
+    { topic: 'probability', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
 export const PRACTICE_SETS: readonly PracticeSet[] = [
   TABLES_SET,
@@ -122,6 +137,7 @@ export const PRACTICE_SETS: readonly PracticeSet[] = [
   NUMBER_SENSE_SET,
   FRACTIONS_SET,
   GEOMETRY_SET,
+  RELATIONS_SET,
 ];
 
 /** Only the Tafels set lets the user choose which tables to practise (spec §3.2). */

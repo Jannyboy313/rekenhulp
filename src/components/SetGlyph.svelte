@@ -18,6 +18,7 @@
     'getalbegrip',
     'breuken',
     'meetkunde',
+    'verbanden',
   ];
 </script>
 
@@ -79,6 +80,10 @@
     {:else if id === 'meetkunde'}
       <path d="M5 5v18h18z" class="sv fill" stroke-width="2" />
       <path d="M5 15h8v8" class="sa nf" stroke-width="2.4" />
+    {:else if id === 'verbanden'}
+      <rect x="4" y="16" width="5.5" height="8" rx="1.2" class="fv" />
+      <rect x="11.2" y="11" width="5.5" height="13" rx="1.2" class="fa" />
+      <rect x="18.5" y="4.5" width="5.5" height="19.5" rx="1.2" class="fb" />
     {/if}
   </svg>
 {:else}
