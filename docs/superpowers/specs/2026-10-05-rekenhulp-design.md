@@ -1984,15 +1984,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-Levels (§12.2), to settle before the framework step:
-
-- **Names:** "Opfrisser" and "Verdieping" are working names. The code uses `quick` and `deep`
-  regardless.
-- **Default count for Verdieping:** assumed the same as Opfrisser (15, same options). An
-  exercise takes longer, so 10 may fit better.
-- **Level in the play header and results:** assumed not shown; the user chose it seconds ago.
-- **Disabled option:** assumed the Verdieping segment is greyed out with no extra hint text.
-- **First set for Verdieping:** decided when the framework is done (roadmap step 3).
+None at the moment.
 
 ## 12. Roadmap (not in v1)
 
@@ -2084,10 +2076,13 @@ Built in steps, each its own session and only when the user says so:
    - Setup screen (§3.2): a **Niveau** segmented control (radio group, 2 equal segments,
      **Opfrisser** and **Verdieping**) above the count, in the style of the count control. Not
      shown for Tafels. The default is Opfrisser. The choice is kept in memory like the count;
-     **Opnieuw** reuses it.
-   - The Verdieping segment is greyed out and disabled while a set has no Verdieping. After
-     this step that is every set.
-   - Model: `Level = 'quick' | 'deep'`. A set keeps its current topics, weights and tables share
+     **Opnieuw** reuses it. The count control is the same at both levels (default 15): the user
+     picks a smaller count for Verdieping when they want.
+   - The Verdieping segment is greyed out and disabled while a set has no Verdieping, with no
+     hint text. After this step that is every set.
+   - The level is shown only on the setup screen, not on the play screen (§3.3) or the results
+     (§3.5).
+   - Model: `Level = 'quick' | 'deep'` (Opfrisser and Verdieping). A set keeps its current topics, weights and tables share
      as the quick level and gets an optional `deep` config with its own topics and weights. A set
      without `deep` disables the segment. The deep config has no tables share: Verdieping mixes
      in no tables.
@@ -2097,7 +2092,7 @@ Built in steps, each its own session and only when the user says so:
      labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
 3. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
    light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
-   Order to be decided (§11).
+   No fixed order: the user picks the next set.
 
 The lesstof (lesstof spec) is not split by level.
 

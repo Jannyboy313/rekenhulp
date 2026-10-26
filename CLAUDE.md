@@ -51,7 +51,7 @@ says so:
 | **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                                           | text answer kind with letter keys    |
 | **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`              | check the longest prompts on a phone |
 | v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set                     | level choice on setup, `deep` config |
-| v3: Verdieping per set (§12.2 step 3), one set at a time; not Tafels                                              | —                                    |
+| v3: Verdieping per set (§12.2 step 3), one set at a time in no fixed order (the user picks); not Tafels           | —                                    |
 | v3: multiple choice (§12.3)                                                                                       | multiple-choice answer kind          |
 
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
