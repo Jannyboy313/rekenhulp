@@ -1911,6 +1911,8 @@ Base 2, 5 or 16, each equally likely, and a direction, each 50%:
     (each letter digit is named first: `A = 10, F = 15: …`)
   - from decimal: `11 = 8 + 2 + 1 = 1 × 8 + 0 × 4 + 1 × 2 + 1 × 1 → 1011`,
     `73 = 2 × 25 + 4 × 5 + 3 × 1 → 243`, `180 = 11 × 16 + 4 × 1 en B = 11 → B4`
+  - with only one non-zero digit, the middle part (and the binary sum) is left out:
+    `1 × 8 + 0 × 4 + 0 × 2 + 0 × 1 = 8`, `32 = 1 × 32 + 0 × 16 + … + 0 × 1 → 100000`
 - The de-duplication key is the direction, the base and the value.
 
 ### 5.40 Roman numerals (`romanNumerals`)
