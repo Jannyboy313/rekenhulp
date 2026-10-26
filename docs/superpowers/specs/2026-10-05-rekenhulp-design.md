@@ -2560,8 +2560,8 @@ Built in steps, each its own session and only when the user says so:
      `deep?: readonly TopicWeight[]` with its own topics and weights. A set without `deep`
      disables the segment. The deep config has no tables share: Verdieping mixes
      in no tables.
-   - `buildSession` takes the level and picks the config; the quota algorithm (§4.2) is
-     unchanged. "Wat zit erin" (§3.2) shows the topics of the selected level.
+   - The session is built from the set at the chosen level: for Verdieping its `deep` topics
+     and no tables share; `buildSession` and the quota algorithm (§4.2) are unchanged. "Wat zit erin" (§3.2) shows the topics of the selected level.
    - Verdieping topics are their own `Topic` ids and generators (`lib/topics/`), with their own
      labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
 3. **Multiple choice** — the multiple-choice answer kind (§12.5), framework only, right after
