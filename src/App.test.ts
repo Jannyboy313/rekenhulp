@@ -18,6 +18,7 @@ import {
   OPERATIONS_SET,
   PRACTICE_SETS,
   PROPORTIONS_SET,
+  RELATIONS_SET,
 } from './lib/sets';
 
 async function click(name: string | RegExp) {
@@ -265,6 +266,7 @@ describe('App', () => {
         expect.stringContaining(NUMBER_SENSE_SET.name),
         expect.stringContaining(FRACTIONS_SET.name),
         expect.stringContaining(GEOMETRY_SET.name),
+        expect.stringContaining(RELATIONS_SET.name),
       ]);
     });
   });

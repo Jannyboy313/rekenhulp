@@ -7,6 +7,7 @@ import {
   NUMBERS_SET,
   OPERATIONS_SET,
   PROPORTIONS_SET,
+  RELATIONS_SET,
   TABLES_SET,
 } from '../sets';
 import { FIXTURE_LESSON } from './fixture';
@@ -88,6 +89,15 @@ describe('lessonFor', () => {
       'symmetry',
       'quadrilaterals',
       'triangles',
+    ]);
+    expect(lessonFor(RELATIONS_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'mean',
+      'median',
+      'percentagePoints',
+      'sequences',
+      'formulas',
+      'equations',
+      'probability',
     ]);
   });
 });

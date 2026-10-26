@@ -6,6 +6,7 @@ import { NUMBERS_LESSON } from './getallen';
 import { GEOMETRY_LESSON } from './meetkunde';
 import { MEASUREMENT_LESSON } from './meten';
 import type { Lesson } from './types';
+import { RELATIONS_LESSON } from './verbanden';
 import { PROPORTIONS_LESSON } from './verhoudingen';
 
 /** One lesson per practice set, added set by set (lesstof spec §2). */
@@ -17,6 +18,7 @@ export const LESSONS: readonly Lesson[] = [
   NUMBER_SENSE_LESSON,
   FRACTIONS_LESSON,
   GEOMETRY_LESSON,
+  RELATIONS_LESSON,
 ];
 
 export function lessonFor(set: PracticeSet, lessons = LESSONS): Lesson | undefined {
