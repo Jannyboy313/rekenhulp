@@ -29,36 +29,42 @@ export interface ScaleUnit {
   exponent: number;
 }
 
-/** Base unit ml (= cm³): capacity and cubic units share one scale. */
+/** Base unit ml (= cm³): capacity and cubic units share one scale. cc = cm³, kuub = m³. */
 export const VOLUME_UNITS: readonly ScaleUnit[] = [
   { symbol: 'mm³', exponent: -3 },
   { symbol: 'ml', exponent: 0 },
   { symbol: 'cm³', exponent: 0 },
+  { symbol: 'cc', exponent: 0 },
   { symbol: 'cl', exponent: 1 },
   { symbol: 'dl', exponent: 2 },
   { symbol: 'L', exponent: 3 },
   { symbol: 'dm³', exponent: 3 },
   { symbol: 'hl', exponent: 5 },
+  { symbol: 'kl', exponent: 6 },
   { symbol: 'm³', exponent: 6 },
+  { symbol: 'kuub', exponent: 6 },
 ];
 
-/** Base unit m². are = dam², ha = hm². */
+/** Base unit m². ca = m², are = dam², ha = hm². */
 export const AREA_UNITS: readonly ScaleUnit[] = [
   { symbol: 'mm²', exponent: -6 },
   { symbol: 'cm²', exponent: -4 },
   { symbol: 'dm²', exponent: -2 },
   { symbol: 'm²', exponent: 0 },
+  { symbol: 'ca', exponent: 0 },
   { symbol: 'are', exponent: 2 },
   { symbol: 'ha', exponent: 4 },
   { symbol: 'km²', exponent: 6 },
 ];
 
-/** Base unit m. No dam/hm (spec §5.10). */
+/** Base unit m. */
 export const LENGTH_UNITS: readonly ScaleUnit[] = [
   { symbol: 'mm', exponent: -3 },
   { symbol: 'cm', exponent: -2 },
   { symbol: 'dm', exponent: -1 },
   { symbol: 'm', exponent: 0 },
+  { symbol: 'dam', exponent: 1 },
+  { symbol: 'hm', exponent: 2 },
   { symbol: 'km', exponent: 3 },
 ];
 
@@ -93,14 +99,36 @@ interface ScaleConversion {
   answer: Rational;
 }
 
-/** Ordered pairs of different units at most `maxShift` powers of 10 apart. */
+/** Pairs of units with factor 1 that occur; the other equal-size pairs (cc and ml) do not. */
+const FACTOR_ONE_LINKS: readonly (readonly [string, string])[] = [
+  ['ml', 'cm³'],
+  ['cc', 'cm³'],
+  ['L', 'dm³'],
+  ['kl', 'm³'],
+  ['kuub', 'm³'],
+  ['ca', 'm²'],
+];
+
+function isFactorOneLink(a: string, b: string): boolean {
+  return FACTOR_ONE_LINKS.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+}
+
+/**
+ * Ordered pairs of different units at most `maxShift` powers of 10 apart. A pair of equal size
+ * is kept only when it is a link (`ml` and `cm³`).
+ */
 export function conversionPairs(
   units: readonly ScaleUnit[],
   maxShift: number = METRIC_LIMITS.maxShift,
 ): [ScaleUnit, ScaleUnit][] {
   return units.flatMap((from) =>
     units
-      .filter((to) => to !== from && Math.abs(from.exponent - to.exponent) <= maxShift)
+      .filter(
+        (to) =>
+          to !== from &&
+          Math.abs(from.exponent - to.exponent) <= maxShift &&
+          (from.exponent !== to.exponent || isFactorOneLink(from.symbol, to.symbol)),
+      )
       .map((to): [ScaleUnit, ScaleUnit] => [from, to]),
   );
 }
@@ -189,10 +217,12 @@ function swappedConversionTip(value: Rational, answer: Rational): Diagnose {
   };
 }
 
+const isCubic = (symbol: string) => symbol.endsWith('³') || symbol === 'cc' || symbol === 'kuub';
+
 /** Area always; volume only between cubic units, because L, dl, … are no cubes of a length. */
 function lengthFactorDimensions(topic: Topic, from: string, to: string): 2 | 3 | null {
   if (topic === 'area') return 2;
-  if (topic === 'volume' && from.endsWith('³') && to.endsWith('³')) return 3;
+  if (topic === 'volume' && isCubic(from) && isCubic(to)) return 3;
   return null;
 }
 

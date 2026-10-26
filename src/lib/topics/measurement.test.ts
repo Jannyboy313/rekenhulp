@@ -75,9 +75,22 @@ function sample(generate: Generator, seed: number, count = SAMPLES): Question[] 
 
 describe('unit scales', () => {
   it('lists the units from the spec', () => {
-    expect(symbols(VOLUME_UNITS)).toEqual(['mm³', 'ml', 'cm³', 'cl', 'dl', 'L', 'dm³', 'hl', 'm³']);
-    expect(symbols(AREA_UNITS)).toEqual(['mm²', 'cm²', 'dm²', 'm²', 'are', 'ha', 'km²']);
-    expect(symbols(LENGTH_UNITS)).toEqual(['mm', 'cm', 'dm', 'm', 'km']);
+    expect(symbols(VOLUME_UNITS)).toEqual([
+      'mm³',
+      'ml',
+      'cm³',
+      'cc',
+      'cl',
+      'dl',
+      'L',
+      'dm³',
+      'hl',
+      'kl',
+      'm³',
+      'kuub',
+    ]);
+    expect(symbols(AREA_UNITS)).toEqual(['mm²', 'cm²', 'dm²', 'm²', 'ca', 'are', 'ha', 'km²']);
+    expect(symbols(LENGTH_UNITS)).toEqual(['mm', 'cm', 'dm', 'm', 'dam', 'hm', 'km']);
     expect(symbols(MASS_UNITS)).toEqual(['mg', 'g', 'kg', 'ton']);
   });
 
@@ -92,17 +105,17 @@ describe('unit scales', () => {
   });
 
   it('steps area by 100, length by 10 up to m, and mass by 1000', () => {
-    expect(AREA_UNITS.map((unit) => unit.exponent)).toEqual([-6, -4, -2, 0, 2, 4, 6]);
-    expect(LENGTH_UNITS.map((unit) => unit.exponent)).toEqual([-3, -2, -1, 0, 3]);
+    expect(AREA_UNITS.map((unit) => unit.exponent)).toEqual([-6, -4, -2, 0, 0, 2, 4, 6]);
+    expect(LENGTH_UNITS.map((unit) => unit.exponent)).toEqual([-3, -2, -1, 0, 1, 2, 3]);
     expect(MASS_UNITS.map((unit) => unit.exponent)).toEqual([-3, 0, 3, 6]);
   });
 });
 
 describe('conversionPairs', () => {
   it.each([
-    ['volume', VOLUME_UNITS, 68],
-    ['area', AREA_UNITS, 30],
-    ['length', LENGTH_UNITS, 20],
+    ['volume', VOLUME_UNITS, 120],
+    ['area', AREA_UNITS, 44],
+    ['length', LENGTH_UNITS, 42],
     ['mass', MASS_UNITS, 10],
   ] as const)('lists the ordered pairs within a factor 10⁶ for %s', (_name, units, count) => {
     const pairs = conversionPairs(units);
@@ -120,6 +133,21 @@ describe('conversionPairs', () => {
     expect(names(VOLUME_UNITS)).toContain('cm³>m³');
     expect(names(MASS_UNITS)).not.toContain('ton>mg');
     expect(names(MASS_UNITS)).toContain('ton>g');
+  });
+
+  it('keeps pairs with factor 1 only when they are a link', () => {
+    const volume = conversionPairs(VOLUME_UNITS).map(([from, to]) => `${from.symbol}>${to.symbol}`);
+    for (const link of ['cc>cm³', 'cm³>cc', 'kuub>m³', 'kl>m³', 'L>dm³', 'ml>cm³']) {
+      expect(volume).toContain(link);
+    }
+    for (const other of ['cc>ml', 'ml>cc', 'kuub>kl', 'kl>kuub', 'mm³>kuub']) {
+      expect(volume).not.toContain(other);
+    }
+    const area = conversionPairs(AREA_UNITS).map(([from, to]) => `${from.symbol}>${to.symbol}`);
+    expect(area).toContain('ca>m²');
+    expect(area).toContain('m²>ca');
+    const length = conversionPairs(LENGTH_UNITS).map(([from, to]) => `${from.symbol}>${to.symbol}`);
+    for (const pair of ['dam>hm', 'hm>km', 'mm>hm']) expect(length).toContain(pair);
   });
 
   it('accepts a smaller maximum shift', () => {
@@ -311,6 +339,33 @@ describe('conversion tips', () => {
     // A litre is no cube of a length unit: 35 is just a factor 100 off.
     expect(step('volume', 'L', 'cm³', '3,5', '3500').check('35').tip).toBe(
       'Je antwoord is 100 keer te klein. Let op de komma en het aantal nullen.',
+    );
+  });
+
+  it('explains the new units', () => {
+    expect(conversionQuestion('volume', 'kuub', 'L', n('3'), n('3000')).steps[0]!.check('').explanation).toBe(
+      '1 kuub = 1000 L → 3 × 1000 = 3000',
+    );
+    expect(conversionQuestion('volume', 'kuub', 'm³', n('3'), n('3')).steps[0]!.check('').explanation).toBe(
+      '1 kuub = 1 m³',
+    );
+    expect(conversionQuestion('area', 'ca', 'are', n('500'), n('5')).steps[0]!.check('').explanation).toBe(
+      '1 are = 100 ca → 500 : 100 = 5',
+    );
+  });
+
+  it('counts kuub and cc as cubic units', () => {
+    const tip = 'Bij kubieke eenheden is elke stap ×1000 (10 × 10 × 10), niet ×10.';
+    expect(step('volume', 'kuub', 'cm³', '2', '2000000').check('200').tip).toBe(tip);
+    expect(step('volume', 'cc', 'mm³', '2', '2000').check('20').tip).toBe(tip);
+  });
+
+  it('names × and : swapped for kl', () => {
+    expect(step('volume', 'kl', 'L', '3', '3000').check('0,003').tip).toBe(
+      'Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met 1000.',
+    );
+    expect(step('volume', 'kl', 'hl', '3', '30').check('0,3').tip).toBe(
+      'Naar een kleinere eenheid wordt het getal groter: vermenigvuldig met 10.',
     );
   });
 

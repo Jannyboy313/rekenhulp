@@ -236,8 +236,8 @@ describe('describeSetTopicRows per set', () => {
 
   it('describes the Meten set', () => {
     expect(rowLabels(MEASUREMENT_SET)).toEqual([
-      'Inhoud (ml t/m hl, mm³ t/m m³)',
-      'Oppervlakte (mm² t/m km², are, ha)',
+      'Inhoud (ml t/m kl, mm³ t/m m³, cc, kuub)',
+      'Oppervlakte (mm² t/m km², ca, are, ha)',
       'Lengte (mm t/m km)',
       'Gewicht (mg t/m ton)',
       'Tijd (s, min, uur, dag)',

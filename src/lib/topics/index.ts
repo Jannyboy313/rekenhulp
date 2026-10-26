@@ -101,8 +101,8 @@ export const GENERATORS: Record<Topic, Generator> = {
 /** Dutch labels shown on the setup screen. */
 export const TOPIC_LABELS: Record<Topic, string> = {
   tables: 'Tafels van 2 t/m 15 (zonder 10)',
-  volume: 'Inhoud (ml t/m hl, mm³ t/m m³)',
-  area: 'Oppervlakte (mm² t/m km², are, ha)',
+  volume: 'Inhoud (ml t/m kl, mm³ t/m m³, cc, kuub)',
+  area: 'Oppervlakte (mm² t/m km², ca, are, ha)',
   length: 'Lengte (mm t/m km)',
   mass: 'Gewicht (mg t/m ton)',
   time: 'Tijd (s, min, uur, dag)',
