@@ -670,6 +670,218 @@ lines hold numbers only.
      3, 4 en 6 cm yes.
    - Tip: "De twee kortste zijden samen moeten langer zijn dan de langste."
 
+### 7.8 Verbanden & statistiek (`verbanden`)
+
+Seven topics in the order of the practice topics (main spec §5.33–§5.38), statistics split into
+the mean and the other measures. The first methods are the explanations of those sections, the
+tips repeat their tip texts (§3.4.1). Letters cannot be parsed, so formulas and equations with
+`x` go in text and tables; worked lines hold the arithmetic and the check.
+
+1. **`mean` — Gemiddelde** (summary: `Alles optellen, delen door het aantal`)
+   - Text: add all values, divide by how many there are.
+   - Worked `Cijfers 8, 9, 6, 9, 8`: `(8 + 9 + 6 + 9 + 8) : 5 = 40 : 5 = 8`.
+   - Text, via a guess: pick a round guess, write each value as its difference from the guess,
+     and share the total difference out.
+   - Worked `Cijfers 8, 9, 6, 9, 8, vanaf 7`: `7 + (1 + 2 − 1 + 2 + 1) : 5 = 7 + 5 : 5 = 8`.
+   - Worked `Gemiddeld een 7 bij 4 cijfers, je hebt 6, 8 en 5`: `4 × 7 = 28`,
+     `28 − 6 − 8 − 5 = 9`, with text: the total must be 28.
+   - Worked `Hetzelfde, vanaf 7`: `7 − (−1 + 1 − 2) = 7 + 2 = 9`, with text: 6, 8 and 5 are
+     together 2 below 7, so the last one must be 2 above it.
+   - Tip: "Deel de som nog door het aantal getallen."
+2. **`median` — Mediaan, modus en spreidingsbreedte** (summary: `Eerst op volgorde`)
+   - Table `Maat | Wat`: `mediaan | het middelste getal op volgorde`,
+     `modus | het getal dat het vaakst voorkomt`,
+     `spreidingsbreedte | hoogste − laagste`.
+   - Table `Getallen | Op volgorde | Mediaan`:
+     `4, −2, 3, 0, 5, 1, −4 | −4, −2, 0, 1, 3, 4, 5 | 1`,
+     `8, 6, 10, 7, 5, 9 | 5, 6, 7, 8, 9, 10 | 7,5`.
+   - Worked `Twee middelste getallen 7 en 8`: `(7 + 8) : 2 = 7,5`, with text: an even number of
+     values has two middle ones; the mediaan is their mean.
+   - Text, without sorting everything: strike the lowest and the highest, again and again, until
+     one or two are left.
+   - Text: modus of 2, 0, 3, 1, 2 is 2 (2 keer).
+   - Worked `Spreidingsbreedte van −4 °C tot 5 °C`: `5 − (−4) = 5 + 4 = 9`.
+   - Tip: "Zet de getallen eerst op volgorde; de mediaan is het middelste getal."
+3. **`percentagePoints` — Procentpunten** (summary: `Verschil tussen twee percentages`)
+   - Text: the difference of two percentages is in procentpunten; the change as a percentage of
+     the old percentage is in procent.
+   - Worked `De rente gaat van 4% naar 5%`: `5 − 4 = 1`, `1 : 4 = 25/100`, with text:
+     1 procentpunt, 25% stijging.
+   - Worked `De rente is 4% en stijgt met 25%`: `4 : 4 = 1`, `4 + 1 = 5`, with text: 25% of 4 is
+     1 procentpunt, so 5%.
+   - Worked `Hetzelfde, in één keer`: `4 × 5/4 = 5`, with text: you get 125% of 4, that is 5/4.
+   - Table `Van | Naar | Procentpunt | Procent`: `4% | 5% | 1 | 25% stijging`,
+     `8% | 6% | 2 | 25% daling`, `50% | 75% | 25 | 50% stijging`.
+   - Tip: "Procentpunten is het verschil tussen de percentages: 5 − 4 = 1."
+4. **`sequences` — Rijen** (summary: `Het volgende en het n-de getal`)
+   - Text: a rekenkundige rij adds the same number each time, a meetkundige rij multiplies by the
+     same number.
+   - Worked: `15 + 4 = 19` (3, 7, 11, 15), `24 × 2 = 48` (3, 6, 12, 24), `20 : 2 = 10`
+     (160, 80, 40, 20).
+   - Worked `20e getal van 3, 7, 11, 15`: `3 + 19 × 4 = 3 + 76 = 79`, with text: from the 1st to
+     the 20th are 19 steps.
+   - Text, via the 0th term: the number before the first is 3 − 4 = −1, so the 20th is −1 plus
+     20 steps; worked `−1 + 20 × 4 = −1 + 80 = 79`.
+   - Table `n | Driehoeksgetal | Kwadraatgetal` for 1 to 8.
+   - Worked `8e driehoeksgetal`: `1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 = 8 × 9 : 2 = 36`;
+     `15e kwadraatgetal`: `15 × 15 = 225`.
+   - Tip: "Van het 1e naar het 20e getal zijn 19 stappen, geen 20."
+5. **`formulas` — Formules** (summary: `Invullen, hellingsgetal en startgetal`)
+   - Text: substitute the number, then follow the order of operations; `3x` means `3 × x`.
+   - Worked `Taxi: 4 + 2,50 × aantal km, 12 km`: `4 + 2,50 × 12 = 4 + 30 = 34`.
+   - Worked `y = 3x − 4 bij x = −2`: `3 × (−2) − 4 = −6 − 4 = −10`.
+   - Text: in the table of a formula `y = ax + b` y changes by the same amount at each step of x;
+     the hellingsgetal is that change per 1, the startgetal is y at x = 0.
+   - Table `x | y`: `2 | 11`, `4 | 17`, `6 | 23`, `8 | 29`.
+   - Worked `Hellingsgetal`: `(17 − 11) : (4 − 2) = 6 : 2 = 3`.
+   - Worked `Startgetal`: `11 − 2 × 3 = 11 − 6 = 5`, with text: from x = 2 back to x = 0 is
+     2 steps of 3; the formula is y = 3x + 5.
+   - Text: or extend the table backwards: x = 0 is one x-step of 2 before x = 2, so y goes
+     6 down: 11 − 6 = 5.
+   - Tip: "Het startgetal is y bij x = 0, niet bij de eerste x van de tabel."
+6. **`equations` — Vergelijkingen** (summary: `Aan beide kanten hetzelfde doen`)
+   - Text: the balance: do the same on both sides until x is alone.
+   - Table `Stap | Vergelijking`: `begin | 3x + 5 = 20`, `− 5 | 3x = 15`, `: 3 | x = 5`.
+   - Worked: `20 − 5 = 15`, `15 : 3 = 5`, and the check `3 × 5 + 5 = 15 + 5 = 20`.
+   - Text, by working backwards: x goes × 3 and + 5 to 20; undo from the end: 20 − 5 = 15,
+     15 : 3 = 5 (the Heuristieken lesson, terugrekenen).
+   - Table `Stap | Vergelijking` with brackets: `begin | 4(x − 2) = 12`, `: 4 | x − 2 = 3`,
+     `+ 2 | x = 5`; worked `12 : 4 = 3`, `3 + 2 = 5`.
+   - Text, or first remove the brackets: 4x − 8 = 12, 4x = 20; worked `12 + 8 = 20`,
+     `20 : 4 = 5`.
+   - Table `Stap | Vergelijking`, x on both sides: `begin | 5x + 3 = 2x + 18`,
+     `− 2x | 3x + 3 = 18`, `− 3 | 3x = 15`, `: 3 | x = 5`; worked check
+     `5 × 5 + 3 = 28 = 2 × 5 + 18`.
+   - Tip: "Doe aan beide kanten hetzelfde: haal 5 weg, dan 3x = 20 − 5."
+7. **`probability` — Kans** (summary: `Gunstig gedeeld door mogelijk`)
+   - Text: with equally likely outcomes the kans is the number of outcomes you want divided by
+     all outcomes; it lies between 0 and 1.
+   - Worked `Even getal met een dobbelsteen`: `3/6 = 1/2`, with text: 2, 4 and 6 out of 6.
+   - Table `Gebeurtenis | Kans`, the die events of main spec §5.38.
+   - Worked `3 rode, 5 blauwe en 2 groene knikkers, kans op blauw`:
+     `5 : (3 + 5 + 2) = 5 : 10 = 1/2`.
+   - Worked `Kans op niet rood`: `(5 + 2) : 10 = 7/10`.
+   - Worked `Kans op niet rood, via rood`: `1 − 3/10 = 7/10`, with text: rood and niet rood
+     together are certain, kans 1.
+   - Tip: "Deel door het totaal aantal knikkers: 3 + 5 + 2 = 10."
+
+### 7.9 Talstelsels (`talstelsels`)
+
+Three topics: to a plain number, from a plain number, Roman numerals. The first methods are the
+explanations of main spec §5.39–§5.40. Digits of another base and Roman numerals cannot be
+parsed: they go in titles, text and tables; worked lines hold their decimal values.
+
+1. **`toDecimal` — Naar een gewoon getal** (summary: `Cijfer keer plaatswaarde`)
+   - Text: like the tientallig stelsel, but every place to the left is × the grondtal instead of
+     × 10. Base b uses the digits 0 to b − 1; zestientallig uses A to F for 10 to 15.
+   - Table `Stelsel | Plaatswaarden, van rechts`: `tientallig | 1, 10, 100, 1000`,
+     `tweetallig | 1, 2, 4, 8, 16, 32`, `vijftallig | 1, 5, 25, 125`,
+     `zestientallig | 1, 16, 256`.
+   - Table `Cijfer | Waarde`: A 10 to F 15.
+   - Worked `Tweetallig 1011`: `1 × 8 + 0 × 4 + 1 × 2 + 1 × 1 = 8 + 2 + 1 = 11`;
+     `Vijftallig 243`: `2 × 25 + 4 × 5 + 3 × 1 = 50 + 20 + 3 = 73`;
+     `Zestientallig B4, B = 11`: `11 × 16 + 4 × 1 = 176 + 4 = 180`.
+   - Text, from left to right: multiply by the grondtal and add the next digit.
+   - Worked `Tweetallig 1011, van links naar rechts`:
+     `((1 × 2 + 0) × 2 + 1) × 2 + 1 = (2 × 2 + 1) × 2 + 1 = 5 × 2 + 1 = 11`;
+     `Vijftallig 243, van links naar rechts`: `(2 × 5 + 4) × 5 + 3 = 14 × 5 + 3 = 73`.
+   - Tip: "Begin rechts met plaatswaarde 1; elke plaats naar links is keer het grondtal."
+2. **`fromDecimal` — Vanuit een gewoon getal** (summary: `De grootste plaatswaarde eerst`)
+   - Text: take the largest place value that fits, as often as it fits, and go on with the rest;
+     a place where nothing fits gets a 0.
+   - Worked `11 tweetallig`: `11 = 8 + 2 + 1 = 1 × 8 + 0 × 4 + 1 × 2 + 1 × 1`, with text: 1011.
+   - Worked `73 vijftallig`: `73 = 2 × 25 + 23 = 2 × 25 + 4 × 5 + 3`, with text: 243.
+   - Worked `180 zestientallig`: `180 = 11 × 16 + 4`, with text: 11 = B, so B4.
+   - Text, by dividing: divide by the grondtal again and again; the remainders, read from the
+     last to the first, are the digits.
+   - Worked `73 vijftallig, door te delen`: `73 = 14 × 5 + 3`, `14 = 2 × 5 + 4`, with text:
+     2 : 5 = 0 rest 2; the remainders from bottom to top give 243.
+   - Tip: "Een plaats waar niets in past krijgt een 0: 8 is tweetallig 1000."
+3. **`romanNumerals` — Romeinse cijfers** (summary: `Zeven tekens en de aftrekregel`)
+   - Table `Teken | Waarde`: I 1, V 5, X 10, L 50, C 100, D 500, M 1000.
+   - Text: write per decimal place from high to low; at most three equal symbols in a row. A
+     smaller symbol before a larger one is subtracted, only in these six pairs:
+   - Table `Paar | Waarde`: IV 4, IX 9, XL 40, XC 90, CD 400, CM 900.
+   - Worked `MCMXCIV = M + CM + XC + IV`: `1000 + 900 + 90 + 4 = 1994`.
+   - Text, symbol by symbol: read from the left; subtract a symbol when the next one is larger,
+     otherwise add it.
+   - Worked `MCMXCIV, teken voor teken`: `1000 − 100 + 1000 − 10 + 100 − 1 + 5 = 1994`.
+   - Worked `2024 met Romeinse cijfers`: `2024 = 2000 + 20 + 4`, with text: MM + XX + IV =
+     MMXXIV.
+   - Tip: "Een kleiner teken vóór een groter teken trek je af: IV = 4, niet 6."
+
+### 7.10 Heuristieken (`heuristieken`)
+
+Five topics, one per heuristic of main spec §5.41–§5.44, with Vereenvoudigen split into sums and
+counting, and figure patterns. The first methods are the explanations of those sections, the
+tips repeat or generalise their tip texts (§3.4.1). Worked lines hold numbers only (no `€`).
+
+1. **`systematicCounting` — Systematisch tellen** (summary: `Combinaties, handdrukken en volgordes`)
+   - Text: when every choice goes with every other choice, multiply.
+   - Table `Broek | Combinaties`, the systematic list: `broek 1 | trui 1, 2, 3 of 4`, the same
+     for broek 2 and 3, with text: 3 rows of 4.
+   - Worked `3 broeken en 4 truien`: `3 × 4 = 12`; `menu met 3, 4 en 2 gerechten`:
+     `3 × 4 × 2 = 24`.
+   - Worked `6 gasten geven elkaar een hand`: `6 × 5 : 2 = 30 : 2 = 15`, with text: every guest
+     shakes 5 hands, but so every handshake counts twice.
+   - Worked `Hetzelfde, alleen nieuwe handdrukken`: `5 + 4 + 3 + 2 + 1 = 15`, with text: the 1st
+     guest shakes 5 hands, the 2nd 4 new ones, and so on.
+   - Worked `4 kinderen in een rij`: `4 × 3 × 2 × 1 = 24`; `podium uit 6 kinderen`:
+     `6 × 5 × 4 = 120`.
+   - Table `Rij van 3 kinderen`, the systematic list: ABC, ACB, BAC, BCA, CAB, CBA, with text:
+     6 = 3 × 2 × 1.
+   - Tip: "Past elke keuze bij elke andere keuze, vermenigvuldig dan: 3 × 4, niet 3 + 4."
+2. **`workingBackwards` — Terugrekenen** (summary: `Van het eind naar het begin`)
+   - Text: start at the end, undo every operation in reverse order.
+   - Table `Bewerking | Terug`: `keer 3 | delen door 3`, `delen door 2 | keer 2`,
+     `7 erbij | 7 eraf`, `de helft uitgeven | keer 2`, `een kwart uitgeven | : 3 × 4`.
+   - Worked `Keer 3, plus 7, gedeeld door 2 geeft 14`: `14 × 2 = 28`, `28 − 7 = 21`,
+     `21 : 3 = 7`, and the check `(7 × 3 + 7) : 2 = 28 : 2 = 14`.
+   - Text, by trying (slim proberen): try a number and adjust.
+   - Worked `Hetzelfde, proberen`: `(5 × 3 + 7) : 2 = 22 : 2 = 11`, with text: too small, try a
+     larger number; then the check line with 7.
+   - Worked `De helft aan kleren, € 6 aan een lunch, € 9 over`: `9 + 6 = 15`, `15 × 2 = 30`.
+   - Worked `Eerst € 6, dan de helft van wat je over hebt, € 9 over`: `9 × 2 = 18`,
+     `18 + 6 = 24`, with text: the order matters.
+   - Worked `Een derde aan kleren, dan € 5 aan een lunch, € 15 over`: `15 + 5 = 20`,
+     `20 : 2 × 3 = 30`, with text: after spending een derde, € 20 is 2/3 of what you had.
+   - Tip: "Werk van achter naar voren en doe telkens het omgekeerde: × wordt :, + wordt −."
+3. **`guessAndCheck` — Slim proberen** (summary: `Gok, controleer en verbeter`)
+   - Text: make a guess, see how far off it is, and work out what one change does.
+   - Table `Kippen | Konijnen | Poten`, trying step by step: `10 | 0 | 20`, `8 | 2 | 24`,
+     `6 | 4 | 28`.
+   - Worked `10 koppen en 28 poten, eerst allemaal kippen`: `10 × 2 = 20`, `28 − 20 = 8`,
+     `8 : 2 = 4`, with text: every konijn has 2 legs more, so 4 konijnen and 6 kippen; check
+     `6 × 2 + 4 × 4 = 12 + 16 = 28`.
+   - Worked `Samen 50, verschil 14`: `50 : 2 = 25`, `14 : 2 = 7`, `25 + 7 = 32`, `25 − 7 = 18`,
+     with text: start at two equal numbers, move each half the difference.
+   - Worked `Hetzelfde, eerst het verschil eraf`: `(50 − 14) : 2 = 36 : 2 = 18`,
+     `18 + 14 = 32`.
+   - Tip: "Lees wat gevraagd is: de konijnen of de kippen, het grootste of het kleinste getal."
+4. **`simplifySums` — Vereenvoudigen: optellen en tellen** (summary: `Eerst een klein geval`)
+   - Text: try the same question with small numbers, see the pattern, then use it.
+   - Worked `1 + 2 + 3 + 4, in paren`: `1 + 4 + 2 + 3 = 2 × 5 = 10`.
+   - Worked `1 tot en met 40, in paren`: `20 × 41 = 820`, with text: 1 + 40, 2 + 39, … are 20
+     pairs of 41.
+   - Worked `1 tot en met 40, via het gemiddelde`: `(1 + 40) : 2 × 40 = 20,5 × 40 = 820`.
+   - Worked `Van 37 tot en met 82`: `82 − 37 + 1 = 46`, with text: small case, 3 tot en met 5 is
+     3 numbers, not 5 − 3 = 2.
+   - Worked `Hetzelfde, door weg te laten`: `82 − 36 = 46`, with text: 1 to 82, without 1 to 36.
+   - Worked `Deelbaar door 7 tot en met 100`: `14 × 7 = 98`, `15 × 7 = 105`, with text: 105 is
+     too big, so 14.
+   - Worked `Pad van 40 m, om de 5 m een paaltje`: `40 : 5 = 8`, `8 + 1 = 9`, with text: small
+     case, 10 m has 2 pieces and 3 paaltjes.
+   - Tip: "Tel het begin en het eind allebei mee: van 37 tot en met 82 zijn 82 − 37 + 1 getallen."
+5. **`figurePatterns` — Vereenvoudigen: figuurpatronen** (summary: `Hoeveel komt er per figuur bij`)
+   - Table `Figuur | Lucifers` (vierkantjes): `1 | 4`, `2 | 7`, `3 | 10`, `20 | 61`.
+   - Worked `Figuur 20`: `4 + 19 × 3 = 4 + 57 = 61`, with text: 3 more per figure, 19 steps.
+   - Text, via figuur 0: the figure before figuur 1 would have 4 − 3 = 1 lucifer; worked
+     `1 + 20 × 3 = 1 + 60 = 61`.
+   - Worked `Welke figuur heeft 61 lucifers`: `(61 − 4) : 3 + 1 = 57 : 3 + 1 = 20`.
+   - Table `Patroon | Erbij per figuur | Figuur 1`: `vierkantjes van lucifers | 3 | 4`,
+     `driehoekjes van lucifers | 2 | 3`, `tafels met stoelen | 2 | 4`.
+   - Tip: "Van figuur 1 naar figuur 20 zijn 19 stappen, geen 20."
+
 ## 8. Open assumptions
 
 - **Block types:** `text`, `worked`, `table` and `tip` are assumed to be enough. A bullet list
