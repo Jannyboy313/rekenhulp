@@ -165,6 +165,9 @@ the practice topics (main spec §5.2–§5.7).
    - Text: the largest number that divides both; at most the smaller number.
    - Worked `84 en 126`: `84 = 2² × 3 × 7`, `126 = 2 × 3² × 7`, `2 × 3 × 7 = 42`, with text:
      take the primes in both, each with its lowest power.
+   - Worked `24, 36, 60 en 90`: `24 = 2³ × 3`, `36 = 2² × 3²`, `60 = 2² × 3 × 5`,
+     `90 = 2 × 3² × 5`, `2 × 3 = 6`, with text: with more numbers a prime counts only if it is in
+     all of them; 5 is not in 24 and 36, so it drops out.
    - Text, difference method: the GGD also divides the difference. `126 − 84 = 42` and 42
      divides 84, so GGD = 42. Otherwise repeat with the smaller number and the difference:
      120 and 72 → 48; 72 and 48 → 24; 24 divides 48, so GGD = 24.
@@ -176,6 +179,9 @@ the practice topics (main spec §5.2–§5.7).
    - Worked `12 en 18, met priemfactoren`: `12 = 2² × 3`, `18 = 2 × 3²`, `2² × 3² = 36`, with
      text: every prime that occurs, with its highest power.
    - Worked `12 en 18, via de GGD`: `12 × 18 : 6 = 216 : 6 = 36`.
+   - Worked `24, 36, 60 en 90` (the GGD example): the four factorizations and
+     `2³ × 3² × 5 = 8 × 9 × 5 = 360`, with text: every prime that occurs in any of them, with its
+     highest power, so 5 counts too; via de GGD only works for two numbers.
    - Table `GGD | KGV`: `deler van allebei | veelvoud van allebei`, `hoogstens het kleinste getal
      | minstens het grootste getal`, `laagste macht van gedeelde priemen | hoogste macht van alle
      priemen`.

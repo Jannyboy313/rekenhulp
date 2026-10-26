@@ -188,6 +188,15 @@ export const NUMBERS_LESSON: Lesson = {
           lines: ['84 = 2² × 3 × 7', '126 = 2 × 3² × 7', '2 × 3 × 7 = 42'],
         },
         {
+          type: 'worked',
+          title: '24, 36, 60 en 90',
+          lines: ['24 = 2³ × 3', '36 = 2² × 3²', '60 = 2² × 3 × 5', '90 = 2 × 3² × 5', '2 × 3 = 6'],
+        },
+        {
+          type: 'text',
+          text: 'Bij meer getallen telt een priemgetal alleen mee als het in álle getallen zit. 2 en 3 zitten in alle vier, elk minstens één keer. 5 zit niet in 24 en 36, dus valt weg.',
+        },
+        {
           type: 'text',
           text: 'Sneller: de GGD deelt ook het verschil. 126 − 84 = 42 en 42 deelt 84, dus GGD = 42. Deelt het verschil niet, herhaal dan met het kleinste getal en het verschil: 120 en 72 → verschil 48; 72 en 48 → verschil 24; 24 deelt 48, dus GGD = 24.',
         },
@@ -223,6 +232,21 @@ export const NUMBERS_LESSON: Lesson = {
           type: 'worked',
           title: '12 en 18, via de GGD',
           lines: ['12 × 18 : 6 = 216 : 6 = 36'],
+        },
+        {
+          type: 'worked',
+          title: '24, 36, 60 en 90',
+          lines: [
+            '24 = 2³ × 3',
+            '36 = 2² × 3²',
+            '60 = 2² × 3 × 5',
+            '90 = 2 × 3² × 5',
+            '2³ × 3² × 5 = 8 × 9 × 5 = 360',
+          ],
+        },
+        {
+          type: 'text',
+          text: 'Elk priemgetal dat in één of meer getallen zit telt mee, dus 5 ook: 2 tot de derde (24), 3 tot de tweede (36 en 90), 5 één keer. Via de GGD werkt alleen bij twee getallen.',
         },
         {
           type: 'table',
