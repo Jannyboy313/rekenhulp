@@ -16,9 +16,9 @@ not all of it:
 - expressions: §7; a new set: its entry in §12.1, open assumptions in §11
 - lesstof (study material per set): its own spec, `docs/superpowers/specs/2026-10-25-lesstof-design.md`
   (framework §3–§6, content per set §7); the main spec only holds its entry points
-- RWT scope (v4, §12.5–§12.6): the official Cito handreiking, `docs/references/cito-rwt-handreiking.pdf`
-  (eindtermen in ch. 6). PDF only; reading it needs a PDF tool (`pdftoppm`), which is not
-  installed here
+- RWT scope (v4, §12.5–§12.6): `docs/references/cito-rwt-handreiking.md`, an excerpt of the
+  official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF next to it is
+  leading
 
 ## Status
 
@@ -59,7 +59,7 @@ framework comes first; after it the user picks the next v3 step. v4 comes after 
 | v4: RWT coverage without calculator (§12.5)                                                             | —                                    |
 | v4: multiple choice (§12.5)                                                                             | multiple-choice answer kind          |
 
-Between versions, once it is available: check the sets against the toetsmatrijs (§12.6).
+Between versions: check the sets against the toetsmatrijs (§12.6).
 
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
 §12.7).

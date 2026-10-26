@@ -2461,10 +2461,9 @@ is not tied to a version.
 ### 12.1 v2 — PABO mental arithmetic and basic knowledge (done)
 
 v2 covers the PABO tests: the RWT (landelijke reken- en wiskundetoets, year 1, replaced the
-Wiscat in 2024; source: Cito handreiking, `docs/references/cito-rwt-handreiking.pdf`) and the
-LKT (landelijke kennistoets, year 3). Both test these domains: whole
-numbers; ratios, percentages, fractions and decimals; measurement and geometry; relations and
-statistics. The LKT adds number systems, figurate numbers and problem solving with heuristics.
+Wiscat in 2024; source: Cito handreiking, excerpt in `docs/references/cito-rwt-handreiking.md`)
+and the LKT (landelijke kennistoets, year 3). Both test these domains: whole numbers; ratios,
+percentages, fractions and decimals; measurement and geometry; relations and statistics. The LKT adds number systems, figurate numbers and problem solving with heuristics.
 v2 only covers what can be practised as mental arithmetic or basic knowledge with a typed
 answer. Prompts describe figures in words; there are no pictures.
 
@@ -2590,7 +2589,7 @@ Comes after v3.
 - **RWT coverage**: close the gaps between the sets and the RWT, within mental arithmetic and
   basic knowledge. The calculator part stays out of scope (§12.7). The gaps are listed in its
   own spec iteration, against the eindtermen in ch. 6 of the Cito handreiking
-  (`docs/references/cito-rwt-handreiking.pdf`).
+  (`docs/references/cito-rwt-handreiking.md`).
 - **Multiple choice**: a multiple-choice answer kind. It serves:
   - mathematical language and concepts, such as absolute versus relative, and mean versus
     median
@@ -2599,9 +2598,11 @@ Comes after v3.
 
 ### 12.6 Check against the toetsmatrijs
 
-Once the toetsmatrijs is available, check the sets (topics, ranges, weights) against it and
-record the gaps. Not tied to a version: it is done between versions, and each later version
-checks its scope against it.
+Check the sets (topics, ranges, weights) against the toetsmatrijs and record the gaps. The
+toetsmatrijs is in the Cito handreiking (`docs/references/cito-rwt-handreiking.md`): the
+distribution per domain and part in §3.3 (table 1), the eindtermen with H/NH per eindterm in
+ch. 6. Not tied to a version: it is done between versions, and each later version checks its
+scope against it.
 
 ### 12.7 Out of scope until further notice
 
