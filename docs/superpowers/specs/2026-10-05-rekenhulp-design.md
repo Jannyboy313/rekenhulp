@@ -1848,7 +1848,8 @@ probability:
   - `3x + 5 = 20 → 3x = 20 − 5 = 15 → x = 15 : 3 = 5`
   - `3x + 20 = 5 → 3x = 5 − 20 = −15 → x = −15 : 3 = −5`
   - `4(x − 2) = 12 → x − 2 = 12 : 4 = 3 → x = 3 + 2 = 5`
-  - `5x + 3 = 2x + 18 → 3x + 3 = 18 → 3x = 15 → x = 5`
+  - `5x + 3 = 2x + 18 → 3x + 3 = 18 → 3x = 18 − 3 = 15 → x = 15 : 3 = 5`; when one `x`
+    is left, the division is left out: `3x + 3 = 2x + 18 → x + 3 = 18 → x = 18 − 3 = 15`
 - The de-duplication key is the equation.
 
 ### 5.38 Probability (`probability`)
@@ -1869,9 +1870,10 @@ There are two forms, each picked with equal probability:
 - The answer is a fraction step in simplest form, decimal allowed (§6): `1/2` and `0,5` are
   correct, `3/6` is not. Non-terminating answers (`1/3`) can only be typed as a fraction; the
   existing tips of §3.4.1 cover `0,33` and `3/6`.
-- Explanations: `3 van de 6 uitkomsten zijn even (2, 4, 6) → 3/6 = 1/2`; `5 van de 3 + 5 + 2 =
-  10 knikkers zijn blauw → 5/10 = 1/2`; `7 van de 10 knikkers zijn niet rood → 7/10`. The
-  `→ …` simplification is left out when the fraction is already in simplest form.
+- Explanations: `3 van de 6 uitkomsten: 2, 4, 6 → 3/6 = 1/2`, `1 van de 6 uitkomsten: 6 → 1/6`;
+  `5 van de 3 + 5 + 2 = 10 knikkers zijn blauw → 5/10 = 1/2` (one marble: `1 van de … is
+  rood`); `7 van de 3 + 5 + 2 = 10 knikkers zijn niet rood → 7/10`. The `= …` simplification is
+  left out when the fraction is already in simplest form.
 - The de-duplication key is the form and the event or the counts.
 
 ## 6. Input (keypad)
