@@ -28,6 +28,7 @@ import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
 import { generateScientificNotation } from './scientificNotation';
+import { generateSequences } from './sequences';
 import { generateShapeProperties } from './shapeProperties';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSolids } from './solids';
@@ -76,6 +77,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
+  sequences: generateSequences,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -118,4 +120,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',
+  sequences: 'Rijen (volgende getal, n-de getal, driehoeksgetallen)',
 };

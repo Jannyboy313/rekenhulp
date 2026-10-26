@@ -43,7 +43,8 @@ export type Topic =
   | 'symmetry'
   | 'shapeProperties'
   | 'statistics'
-  | 'percentagePoints';
+  | 'percentagePoints'
+  | 'sequences';
 
 export interface CheckResult {
   correct: boolean;
