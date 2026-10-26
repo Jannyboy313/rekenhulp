@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import { stubMatchMedia } from './components/testMatchMedia';
 import { FIXTURE_LESSON } from './lib/lessons/fixture';
+import { DEEP_FIXTURE_SET } from './lib/setFixture';
 import { createUpdates } from './lib/update';
 import {
   choosesTables,
@@ -272,6 +273,45 @@ describe('App', () => {
         expect.stringContaining(NUMBER_SYSTEMS_SET.name),
         expect.stringContaining(HEURISTICS_SET.name),
       ]);
+    });
+  });
+
+  describe('level', () => {
+    const isDeep = () => /^(KGV|GGD) van/.test(document.querySelector('.prompt')!.textContent!);
+    const checked = (name: string) =>
+      screen.getByRole('radio', { name }).getAttribute('aria-checked') === 'true';
+
+    it('starts on Opfrisser and builds Verdieping, also after Opnieuw', async () => {
+      render(App, { props: { sets: [DEEP_FIXTURE_SET] } });
+      await click(/^Fixture/);
+      await click(/^Start/);
+      expect(isDeep()).toBe(false);
+
+      await click('Stoppen');
+      await click('Menu');
+      await click(/^Fixture/);
+      await fireEvent.click(screen.getByRole('radio', { name: 'Verdieping' }));
+      await click(/^Start/);
+      expect(isDeep()).toBe(true);
+      await click('Stoppen');
+      await click('Opnieuw');
+      expect(isDeep()).toBe(true);
+    });
+
+    it('opens every set on Opfrisser again, after Terug and after Menu', async () => {
+      render(App, { props: { sets: [DEEP_FIXTURE_SET] } });
+      await click(/^Fixture/);
+      await fireEvent.click(screen.getByRole('radio', { name: 'Verdieping' }));
+      await click('Terug');
+      await click(/^Fixture/);
+      expect(checked('Opfrisser')).toBe(true);
+
+      await fireEvent.click(screen.getByRole('radio', { name: 'Verdieping' }));
+      await click(/^Start/);
+      await click('Stoppen');
+      await click('Menu');
+      await click(/^Fixture/);
+      expect(checked('Opfrisser')).toBe(true);
     });
   });
 });

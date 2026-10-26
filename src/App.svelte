@@ -13,9 +13,9 @@
   import { createRng, randomSeed } from './lib/random';
   import { summarize, type QuestionRecord, type SessionSummary } from './lib/results';
   import { buildSession, generatorsFor } from './lib/session';
-  import { DEFAULT_SESSION_SIZE, PRACTICE_SETS } from './lib/sets';
+  import { DEFAULT_SESSION_SIZE, forLevel, PRACTICE_SETS } from './lib/sets';
   import { TABLE_FACTORS } from './lib/topics/tables';
-  import type { PracticeSet, Question } from './lib/types';
+  import type { Level, PracticeSet, Question } from './lib/types';
   import { shouldPrompt, type UpdateState, type Updates } from './lib/update';
   import UpdateDialog from './components/UpdateDialog.svelte';
 
@@ -38,11 +38,13 @@
   interface Props {
     /** Tests pass a fixture; the app uses the registry. */
     lessons?: readonly Lesson[];
+    /** Tests pass a fixture set with a Verdieping; the app uses the registry. */
+    sets?: readonly PracticeSet[];
     /** Fed by the service worker in `main.ts`; without it the app never asks to update. */
     updates?: Updates;
   }
 
-  let { lessons: allLessons = LESSONS, updates }: Props = $props();
+  let { lessons: allLessons = LESSONS, sets = PRACTICE_SETS, updates }: Props = $props();
 
   let updateState = $state<UpdateState>({ available: false, dismissed: false });
   $effect(() => updates?.subscribe((state) => (updateState = state)));
@@ -52,6 +54,8 @@
   let tab = $state<OverviewTab>('practice');
   let size = $state(DEFAULT_SESSION_SIZE);
   let tables = $state([...TABLE_FACTORS]);
+  // Unlike the count, every set opens on Opfrisser (spec §12.2); Opnieuw reuses the level.
+  let level = $state<Level>('quick');
 
   // A system back never closes the app from another screen (spec §3).
   const backGuard = createBackGuard(history);
@@ -74,6 +78,11 @@
     screen = { name: 'sets' };
   }
 
+  function showSetup(set: PracticeSet) {
+    level = 'quick';
+    screen = { name: 'setup', set };
+  }
+
   function openLesson(set: PracticeSet, lesson: Lesson, returnTo: Screen) {
     screen = { name: 'lessonTopics', set, lesson, returnTo };
   }
@@ -85,7 +94,12 @@
   }
 
   function startSession(set: PracticeSet) {
-    const questions = buildSession(set, size, createRng(randomSeed()), generatorsFor(set, tables));
+    const questions = buildSession(
+      forLevel(set, level),
+      size,
+      createRng(randomSeed()),
+      generatorsFor(set, tables),
+    );
     screen = { name: 'playing', set, questions };
   }
 
@@ -99,11 +113,11 @@
 {#if screen.name === 'sets'}
   <SetOverview {tab} ontab={(next) => (tab = next)}>
     {#snippet practice()}
-      <PracticeSetList sets={PRACTICE_SETS} onselect={(set) => (screen = { name: 'setup', set })} />
+      <PracticeSetList {sets} onselect={showSetup} />
     {/snippet}
     {#snippet lessons()}
       <LessonSetList
-        sets={PRACTICE_SETS}
+        {sets}
         lessons={allLessons}
         onopen={(set, lesson) => openLesson(set, lesson, { name: 'sets' })}
       />
@@ -121,7 +135,14 @@
   <LessonView topic={screen.topic} onback={lessonBack} />
 {:else if screen.name === 'setup'}
   {@const set = screen.set}
-  <SetupScreen {set} bind:size bind:tables onstart={() => startSession(set)} onback={showSets} />
+  <SetupScreen
+    {set}
+    bind:size
+    bind:level
+    bind:tables
+    onstart={() => startSession(set)}
+    onback={showSets}
+  />
 {:else if screen.name === 'playing'}
   {@const set = screen.set}
   {@const questions = screen.questions}
