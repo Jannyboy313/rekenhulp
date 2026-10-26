@@ -178,7 +178,8 @@ Larger counts are deliberate longer sessions.
   keypad down. The thresholds were checked on a phone (2026-10-22).
 - A prompt without a slot (word problems, "Vereenvoudig in één stap: …", "Ontbind … in
   priemfactoren") is question text: always 22/30 px bold, centred, wrapping, never truncated.
-  A Ja/Nee question is 34/42 px.
+  A Ja/Nee question is 34/42 px. A multiple-choice prompt (§6) follows the same two rules: a
+  sum with a slot, or question text.
 - When a long question meets a short screen, the prompt area shrinks (minimum 96 px) and
   scrolls; the keypad and the feedback panel stay whole.
 
@@ -188,7 +189,9 @@ Larger counts are deliberate longer sessions.
   (`402 cm²`; screen readers hear "Goed: jouw antwoord is 402 cm²"); the keypad is dimmed and
   disabled. When the prompt has a slot (§8), the entered answer, as shown in the field, replaces
   it in the correct colour. A bar under the field runs for 600 ms, then the app goes on to the
-  next exercise automatically. With reduced motion, the bar is static.
+  next exercise automatically. With reduced motion, the bar is static. A choice step (Ja/Nee,
+  multiple choice) has no answer field: the chosen button turns green and the others are
+  dimmed, with the bar under the buttons. A slot in the prompt shows the chosen option.
 - **Wrong:** the keypad is replaced by a panel with ✕ and "Niet goed", two tiles "Jouw antwoord"
   and "Goed antwoord" (both with the unit; the given answer is not struck through), an optional
   tip (§3.4.1) and an optional explanation (e.g. `91 = 7 × 13`), each in its own block with the
@@ -361,8 +364,9 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `simplifyProblem`, paaltjes | the number of pieces `k` | "Er staat ook een paaltje aan het begin: 8 stukken hebben 9 paaltjes." |
 | `simplifyProblem`, figure value | `first + n × step` (`4 + 20 × 3`) | "Van figuur 1 naar figuur 20 zijn 19 stappen, geen 20." (tafels: "Van 1 naar 15 tafels zijn 14 stappen, geen 15.") |
 
-Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewrites get no tips: their explanation (§5.4,
-§5.6) or rewrite message (§5.11) already names the mistake.
+Ja/Nee steps (prime, divisibility, symmetry, shapeProperties), multiple-choice steps (§6) and
+property rewrites get no tips: their explanation (§5.4, §5.6) or rewrite message (§5.11)
+already names the mistake.
 
 ### 3.5 Results
 
@@ -397,7 +401,7 @@ in the place of OK.
   example in split screen) and that cell gets hidden, the answer field becomes active again, so
   keys never go to a hidden cell; a cell that stays visible stays active. The thresholds
   come from a height estimate (56 px per row) and were checked on a phone (2026-10-22).
-- **When shown:** for every step that is not Ja/Nee, unless the question is a table exercise
+- **When shown:** for every step that is not Ja/Nee or multiple choice, unless the question is a table exercise
   (topic `tables`, including the tables mixed into other sets). Tables are practised from
   memory.
 - **Focus:** tapping a cell makes it active; tapping the answer field, or a fraction slot in
@@ -2138,6 +2142,7 @@ The keypad is custom. The system keyboard is never opened.
 | scientific         | `0–9`, `,`, `−`, `×`, `^`, `⌫`, `OK`, in 4 columns              |
 | baseDigits         | `0–9`, `A–F`, `⌫`, `OK`, in 4 columns                           |
 | roman              | `I V X L C D M`, `⌫`, `OK`, in 3 columns, taller keys           |
+| choice             | four option buttons, one per row; a tap submits at once, no `OK` |
 
 - Every answer kind has its own input model: keys, key reducer, validation and display.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
@@ -2234,6 +2239,20 @@ The keypad is custom. The system keyboard is never opened.
     ⌫  M───
     OK─────
     ```
+- **Multiple-choice input** (`choice`, §12.5; added in v3 as a framework, before any topic uses
+  it):
+  - Always exactly four options, each a short text (a number, a fraction, a word or a short
+    phrase), rendered like the prompt (stacked fractions, §8). The texts are unique and one of
+    them is the answer.
+  - The generator sets the order: shuffled with its rng, or a natural order such as ascending
+    when the options are numbers. A repeat (§3.4) keeps the order.
+  - The buttons are full width, one per row, and fill the height of a keypad without a
+    kladblok: (312 − 3 × 8) / 4 = 72 px each. So the prompt sits where it does above a
+    keypad, as with Ja/Nee. No letters A–D.
+  - Like Ja/Nee: a tap is the answer, acting on release (`click`); there is no kladblok (§3.6)
+    and no tip (§3.4.1). A choice step has no prefix or suffix: a unit is part of the option
+    text.
+  - The input is the chosen text; the feedback and the results show it as it is.
 - Units are shown next to the input field, and the user never types them. `€`, `1 :` (the
   find-the-scale form of §5.24) and `x =` (§5.37) are fixed prefixes (`€ 45`, `1 : 25 000`,
   `x = 5`); other units (`%`,
@@ -2590,7 +2609,9 @@ the next step: a set (§12.2 step 4), mixed categories or the practice test.
 
 ### 12.5 v3 — multiple choice and the RWT gaps
 
-**Multiple choice** (§12.2 step 3): a multiple-choice answer kind. It serves:
+**Multiple choice** (§12.2 step 3): a multiple-choice answer kind, `choice` (§6). The step
+builds the framework only, tested with test-only steps; the sets add the questions in their
+own step (§12.2 step 4). It serves:
 
 - mathematical language and concepts, such as absolute versus relative, and mean versus median
 - estimating (`welk antwoord ligt het dichtst bij`)
