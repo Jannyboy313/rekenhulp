@@ -17,6 +17,11 @@ export const NUMBER_SENSE_LESSON: Lesson = {
             '15\u{202f}213 − 470 = 15\u{202f}213 − 400 − 70 = 14\u{202f}813 − 70 = 14\u{202f}743',
           ],
         },
+        { type: 'text', text: 'Of splits beide getallen en tel de delen apart op.' },
+        {
+          type: 'worked',
+          lines: ['6347 + 2800 = 6000 + 2000 + 347 + 800 = 8000 + 1147 = 9147'],
+        },
         {
           type: 'text',
           text: 'Vermenigvuldigen: eerst de tafel, dan de nullen erachter. Delen: streep eerst evenveel nullen weg.',
@@ -45,6 +50,15 @@ export const NUMBER_SENSE_LESSON: Lesson = {
           type: 'text',
           text: '28 busjes en 6 leerlingen over; die 6 moeten ook mee, dus 29 busjes.',
         },
+        {
+          type: 'text',
+          text: 'De 28 vind je ook door grote veelvouden van 8 eraf te halen: eerst 20 × 8, dan 8 × 8.',
+        },
+        {
+          type: 'worked',
+          lines: ['230 − 20 × 8 = 230 − 160 = 70', '70 − 8 × 8 = 70 − 64 = 6'],
+        },
+        { type: 'text', text: '20 + 8 = 28 keer, rest 6.' },
         { type: 'worked', title: '200 eieren, dozen van 12', lines: ['200 = 16 × 12 + 8'] },
         {
           type: 'table',
@@ -66,6 +80,10 @@ export const NUMBER_SENSE_LESSON: Lesson = {
         { type: 'text', text: 'Ga je door nul heen, splits dan bij nul.' },
         { type: 'worked', lines: ['3 − 8 = 3 − 3 − 5 = −5', '−7 + 12 = −7 + 7 + 5 = 5'] },
         { type: 'worked', lines: ['−4 − (−6) = −4 + 6 = 2', '5 + (−8) = 5 − 8 = −3'] },
+        {
+          type: 'text',
+          text: 'Of denk aan geld: heb je €\u{a0}3 en geef je €\u{a0}8 uit, dan heb je €\u{a0}5 schuld: 3 − 8 = −5. Een schuld van €\u{a0}6 wegnemen is €\u{a0}6 erbij: −4 − (−6) = −4 + 6.',
+        },
         {
           type: 'table',
           head: ['× of : met', 'Uitkomst'],
@@ -199,6 +217,11 @@ export const NUMBER_SENSE_LESSON: Lesson = {
           head: ['n', 'n³'],
           rows: [2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => [`${n}`, `${n ** 3}`]),
         },
+        {
+          type: 'text',
+          text: 'Of schat: 343 ligt tussen 6³ = 216 en 8³ = 512. Van 6, 7 en 8 geeft alleen 7³ een getal dat op 3 eindigt, dus ∛343 = 7.',
+        },
+        { type: 'worked', lines: ['7 × 7 × 7 = 49 × 7 = 343'] },
         {
           type: 'text',
           text: 'Een wortel van een geschaald kwadraat: √0,49 = 0,7 (de helft van de decimalen) en √6400 = 80 (de helft van de nullen).',

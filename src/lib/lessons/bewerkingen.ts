@@ -108,6 +108,21 @@ export const OPERATIONS_LESSON: Lesson = {
           type: 'text',
           text: 'Bij 5003 − 3000 trek je 2 te veel af, dus tel je 2 weer op.',
         },
+        { type: 'text', text: 'Dezelfde sommen kun je ook zonder afronden maken.' },
+        {
+          type: 'worked',
+          title: '398 + 247, in stappen',
+          lines: ['398 + 247 = 398 + 200 + 47 = 598 + 47 = 645'],
+        },
+        {
+          type: 'worked',
+          title: '5003 − 2998, door aan te vullen',
+          lines: ['2998 + 2 = 3000', '3000 + 2003 = 5003', '2 + 2003 = 2005'],
+        },
+        {
+          type: 'text',
+          text: 'Liggen de getallen dicht bij elkaar, vul dan aan van het kleinste naar het grootste.',
+        },
         { type: 'tip', text: '398 = 400 − 2, dus compenseer met − 2, niet met + 2.' },
       ],
     },

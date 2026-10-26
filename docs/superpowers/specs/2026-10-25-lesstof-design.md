@@ -407,6 +407,10 @@ the explanations of §5.8, §5.9 and §5.11.
    - Worked: `398 + 247 = 400 + 247 − 2 = 647 − 2 = 645`,
      `5003 − 2998 = 5003 − 3000 + 2 = 2003 + 2 = 2005`, with text: you took off 2 too much, so
      add 2 back.
+   - The same sums without rounding: worked `398 + 247, in stappen`:
+     `398 + 247 = 398 + 200 + 47 = 598 + 47 = 645`; worked `5003 − 2998, door aan te vullen`:
+     `2998 + 2 = 3000`, `3000 + 2003 = 5003`, `2 + 2003 = 2005`, with text: numbers close
+     together, fill up from the smaller to the larger.
    - Tip: "398 = 400 − 2, dus compenseer met − 2, niet met + 2."
 5. **`complement` — Aanvullen tot 100 en 1000** (summary: `Wat mist er nog`)
    - Text: count up from the smaller number to the round one.
@@ -434,12 +438,16 @@ exponents only appear in text and tables.
    - Text: add or subtract in steps, the largest part first.
    - Worked: `6347 + 2800 = 6347 + 2000 + 800 = 8347 + 800 = 9147`,
      `15 213 − 470 = 15 213 − 400 − 70 = 14 813 − 70 = 14 743`.
+   - Text: or split both numbers; worked
+     `6347 + 2800 = 6000 + 2000 + 347 + 800 = 8000 + 1147 = 9147`.
    - Text: multiply: the table fact, then the zeros. Divide: strike equal zeros first.
    - Worked: `28 × 500 = 28 × 5 × 100 = 140 × 100 = 14 000`, `7200 : 80 = 720 : 8 = 90`.
    - Tip: "Streep bij delen evenveel nullen weg in beide getallen."
 2. **`remainder` — Delen met rest** (summary: `Naar boven, naar beneden of de rest`)
    - Worked `230 leerlingen, busjes van 8`: `230 = 28 × 8 + 6`, with text: 28 rest 6, the last 6
      need a bus too → 29.
+   - Text: find the 28 by taking off big multiples of 8; worked
+     `230 − 20 × 8 = 230 − 160 = 70`, `70 − 8 × 8 = 70 − 64 = 6`, with text: 20 + 8 = 28, rest 6.
    - Worked `200 eieren, dozen van 12`: `200 = 16 × 12 + 8`.
    - Table `Vraag | Antwoord`: `Hoeveel busjes nodig? | naar boven: 29`,
      `Hoeveel volle dozen? | naar beneden: 16`, `Hoeveel eieren over? | de rest: 8`.
@@ -448,6 +456,8 @@ exponents only appear in text and tables.
    - Text: crossing zero, split at zero.
    - Worked: `3 − 8 = 3 − 3 − 5 = −5`, `−7 + 12 = −7 + 7 + 5 = 5`.
    - Worked: `−4 − (−6) = −4 + 6 = 2`, `5 + (−8) = 5 − 8 = −3`.
+   - Text, as money: € 3 and spend € 8 → € 5 debt, 3 − 8 = −5; taking away a debt of € 6 is
+     € 6 more, −4 − (−6) = −4 + 6.
    - Table `× of : met | Uitkomst`: `twee positieve getallen | positief`,
      `twee negatieve getallen | positief`, `één negatief getal | negatief`.
    - Worked: `−6 × 4 = −24`, `−24 : (−3) = 8`.
@@ -480,6 +490,8 @@ exponents only appear in text and tables.
 7. **`roots` — Wortels** (summary: `Derdemachtswortels en geschaalde wortels`)
    - Text: `∛64 = 4`, because 4 × 4 × 4 = 64.
    - Table `n | n³` for 2 to 10.
+   - Text, estimating: 343 lies between `6³ = 216` and `8³ = 512`; of 6, 7 and 8 only 7³ ends
+     in 3, so ∛343 = 7. Worked `7 × 7 × 7 = 49 × 7 = 343`.
    - Text: a root of a scaled square: √0,49 = 0,7 (half the decimals), √6400 = 80 (half the
      zeros).
    - Worked: `0,7 × 0,7 = 0,49`, `80 × 80 = 6400`, `120 × 120 = 14 400`.
@@ -642,10 +654,6 @@ lines hold numbers only.
 Found in a review on 2026-10-26 against §1. Each is worked out in the set's section above, in its
 own session, only when the user asks; then it is removed here.
 
-- **Bewerkingen:** `compensation`, the same sum also in steps (`398 + 247 = 398 + 200 + 47`).
-- **Getalbegrip:** `mentalOperations`, splitting both numbers next to stepping on;
-  `negativeNumbers`, as debts; `remainder`, repeated subtraction of big multiples; `roots`,
-  estimating between two squares.
 - **Breuken & kommagetallen:** `conversion`, dividing (`3 : 8`) or via a known fraction
   (`3/8 = 3 × 0,125`); `simplify`, in one step with the GGD or in small steps; `addSubtract`,
   the product of the denominators, and mixed numbers via improper fractions; `multiplyDivide`,
