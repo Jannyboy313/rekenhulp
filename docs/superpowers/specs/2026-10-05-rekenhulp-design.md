@@ -2808,18 +2808,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-Meten v3 (§5.10, §5.14, §5.45–§5.52):
-
-1. `timeCalc` writes half of the durations over an hour as `2 uur en 25 minuten`, the only mixed
-   notation in the app (§5.51).
-2. `clock` says `:20` and `:40` with `half` (`tien voor half 9`, `tien over half 9`), never
-   `twintig over 8`; digital times have no leading zero (`0:05`, §5.47).
-3. Ordering in `measureSense` uses four lengths in `mm`–`m`, not five as in the Cito example,
-   so the options stay short (§5.48).
-4. Meten Opfrisser grows to 11 topics, all weight 1: in a session of 15 most topics get one
-   exercise, the conversion topics included (§4.2).
-5. Fit in `measureProblems` only has whole counts; no `volle glazen` with rounding down
-   (§5.50).
+None at the moment.
 
 ## 12. Roadmap (not in v1)
 
