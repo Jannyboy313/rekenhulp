@@ -1952,7 +1952,7 @@ The keypad is custom. The system keyboard is never opened.
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
 | scientific         | `0–9`, `,`, `−`, `×`, `^`, `⌫`, `OK`, in 4 columns              |
 | baseDigits         | `0–9`, `A–F`, `⌫`, `OK`, in 4 columns                           |
-| roman              | `I V X L C D M`, `⌫`, `OK`                                      |
+| roman              | `I V X L C D M`, `⌫`, `OK`, in 2 columns                        |
 
 - Every answer kind has its own input model: keys, key reducer, validation and display.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
@@ -2031,14 +2031,16 @@ The keypad is custom. The system keyboard is never opened.
     ⌫  OK─────
     ```
 
-  - **roman**: the symbols in order of value, in 3 columns and 3 rows; at most 15 characters
-    (the longest answer, `MDCCCLXXXVIII`, has 13). Like the scientific keypad it is lower than
-    the others, so the prompt sits lower and the keypad grows while a kladblok cell is active:
+  - **roman**: the symbols in order of value, in 2 columns; at most 15 characters (the longest
+    answer, `MDCCCLXXXVIII`, has 13). OK fills the last row, so the keypad has five rows, the
+    same height as the others and the kladblok tray; the keys are wider:
 
     ```
-    I  V  X
-    L  C  D
-    M  ⌫  OK
+    I  V
+    X  L
+    C  D
+    M  ⌫
+    OK───
     ```
 - Units are shown next to the input field, and the user never types them. `€`, `1 :` (the
   find-the-scale form of §5.24) and `x =` (§5.37) are fixed prefixes (`€ 45`, `1 : 25 000`,
@@ -2265,14 +2267,13 @@ is in git.
 
 Talstelsels (§5.39–§5.40), confirmed by the user: question sentences instead of a subscript
 notation, one baseDigits keypad for every base, Roman values up to 100 plus years, the two Roman
-tips. Still open:
+tips, a roman keypad of five rows (2 columns). Still open:
 
 1. The value ranges per base (§5.39): base 2 up to 63, base 5 up to 124, base 16 two digits with
    a letter.
 2. Roman numerals also get question sentences (`Schrijf MCMXCIV als gewoon getal.`), like the
    number systems.
 3. Equal weights (1 and 1), although `numberSystems` has three bases.
-4. The roman keypad of 3 rows (§6), lower than the others like the scientific keypad.
 
 ## 12. Roadmap (not in v1)
 
