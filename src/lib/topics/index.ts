@@ -10,6 +10,7 @@ import { generateEquations } from './equations';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
 import { generateFractionConversion } from './fractionConversion';
+import { generateMeasureProblems } from './measureProblems';
 import { generateMeasureSense } from './measureSense';
 import {
   generateArea,
@@ -66,6 +67,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   clock: generateClock,
   measureSense: generateMeasureSense,
   compoundUnits: generateCompoundUnits,
+  measureProblems: generateMeasureProblems,
   percentages: generatePercentages,
   ratios: generateRatios,
   percentChange: generatePercentChange,
@@ -123,6 +125,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   clock: 'Klok (kijken en tijdsduur)',
   measureSense: 'Maatgevoel (referenties, meetinstrumenten, eenheden)',
   compoundUnits: 'Samengestelde grootheden (snelheid, dichtheid, debiet, verbruik)',
+  measureProblems: 'Rekenen met maten (omrekenen in contexten)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',

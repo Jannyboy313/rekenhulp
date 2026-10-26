@@ -27,6 +27,7 @@ export type Topic =
   | 'clock'
   | 'measureSense'
   | 'compoundUnits'
+  | 'measureProblems'
   | 'percentages'
   | 'ratios'
   | 'percentChange'
