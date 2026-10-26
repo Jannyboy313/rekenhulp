@@ -52,6 +52,7 @@ import { generateGuessAndCheck } from './guessAndCheck';
 import { generateSystematicCounting } from './systematicCounting';
 import { generateWorkingBackwards } from './workingBackwards';
 import { generateTables } from './tables';
+import { generateTimeCalc } from './timeCalc';
 
 export const GENERATORS: Record<Topic, Generator> = {
   tables: generateTables,
@@ -68,6 +69,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   measureSense: generateMeasureSense,
   compoundUnits: generateCompoundUnits,
   measureProblems: generateMeasureProblems,
+  timeCalc: generateTimeCalc,
   percentages: generatePercentages,
   ratios: generateRatios,
   percentChange: generatePercentChange,
@@ -126,6 +128,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   measureSense: 'Maatgevoel (referenties, meetinstrumenten, eenheden)',
   compoundUnits: 'Samengestelde grootheden (snelheid, dichtheid, debiet, verbruik)',
   measureProblems: 'Rekenen met maten (omrekenen in contexten)',
+  timeCalc: 'Rekenen met tijd (aankomst, vertrek, duur)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',

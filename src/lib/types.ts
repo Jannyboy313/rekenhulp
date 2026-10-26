@@ -28,6 +28,7 @@ export type Topic =
   | 'measureSense'
   | 'compoundUnits'
   | 'measureProblems'
+  | 'timeCalc'
   | 'percentages'
   | 'ratios'
   | 'percentChange'
