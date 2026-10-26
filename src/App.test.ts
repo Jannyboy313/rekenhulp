@@ -12,6 +12,7 @@ import {
   describeSetTopicRows,
   FRACTIONS_SET,
   GEOMETRY_SET,
+  HEURISTICS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBER_SYSTEMS_SET,
@@ -269,6 +270,7 @@ describe('App', () => {
         expect.stringContaining(GEOMETRY_SET.name),
         expect.stringContaining(RELATIONS_SET.name),
         expect.stringContaining(NUMBER_SYSTEMS_SET.name),
+        expect.stringContaining(HEURISTICS_SET.name),
       ]);
     });
   });

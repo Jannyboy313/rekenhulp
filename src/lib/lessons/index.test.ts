@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   FRACTIONS_SET,
   GEOMETRY_SET,
+  HEURISTICS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBER_SYSTEMS_SET,
@@ -104,6 +105,13 @@ describe('lessonFor', () => {
       'toDecimal',
       'fromDecimal',
       'romanNumerals',
+    ]);
+    expect(lessonFor(HEURISTICS_SET)?.topics.map((topic) => topic.id)).toEqual([
+      'systematicCounting',
+      'workingBackwards',
+      'guessAndCheck',
+      'simplifySums',
+      'figurePatterns',
     ]);
   });
 });

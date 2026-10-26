@@ -3,6 +3,7 @@ import { OPERATIONS_LESSON } from './bewerkingen';
 import { FRACTIONS_LESSON } from './breuken';
 import { NUMBER_SENSE_LESSON } from './getalbegrip';
 import { NUMBERS_LESSON } from './getallen';
+import { HEURISTICS_LESSON } from './heuristieken';
 import { GEOMETRY_LESSON } from './meetkunde';
 import { MEASUREMENT_LESSON } from './meten';
 import { NUMBER_SYSTEMS_LESSON } from './talstelsels';
@@ -21,6 +22,7 @@ export const LESSONS: readonly Lesson[] = [
   GEOMETRY_LESSON,
   RELATIONS_LESSON,
   NUMBER_SYSTEMS_LESSON,
+  HEURISTICS_LESSON,
 ];
 
 export function lessonFor(set: PracticeSet, lessons = LESSONS): Lesson | undefined {
