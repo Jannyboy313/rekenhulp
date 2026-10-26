@@ -2461,7 +2461,8 @@ is not tied to a version.
 ### 12.1 v2 — PABO mental arithmetic and basic knowledge (done)
 
 v2 covers the PABO tests: the RWT (landelijke reken- en wiskundetoets, year 1, replaced the
-Wiscat in 2024) and the LKT (landelijke kennistoets, year 3). Both test these domains: whole
+Wiscat in 2024; source: Cito handreiking, `docs/references/cito-rwt-handreiking.pdf`) and the
+LKT (landelijke kennistoets, year 3). Both test these domains: whole
 numbers; ratios, percentages, fractions and decimals; measurement and geometry; relations and
 statistics. The LKT adds number systems, figurate numbers and problem solving with heuristics.
 v2 only covers what can be practised as mental arithmetic or basic knowledge with a typed
@@ -2588,7 +2589,8 @@ Comes after v3.
 
 - **RWT coverage**: close the gaps between the sets and the RWT, within mental arithmetic and
   basic knowledge. The calculator part stays out of scope (§12.7). The gaps are listed in its
-  own spec iteration.
+  own spec iteration, against the eindtermen in ch. 6 of the Cito handreiking
+  (`docs/references/cito-rwt-handreiking.pdf`).
 - **Multiple choice**: a multiple-choice answer kind. It serves:
   - mathematical language and concepts, such as absolute versus relative, and mean versus
     median

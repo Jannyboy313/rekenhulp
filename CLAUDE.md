@@ -16,6 +16,9 @@ not all of it:
 - expressions: §7; a new set: its entry in §12.1, open assumptions in §11
 - lesstof (study material per set): its own spec, `docs/superpowers/specs/2026-10-25-lesstof-design.md`
   (framework §3–§6, content per set §7); the main spec only holds its entry points
+- RWT scope (v4, §12.5–§12.6): the official Cito handreiking, `docs/references/cito-rwt-handreiking.pdf`
+  (eindtermen in ch. 6). PDF only; reading it needs a PDF tool (`pdftoppm`), which is not
+  installed here
 
 ## Status
 
