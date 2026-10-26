@@ -2431,13 +2431,13 @@ three forms, each picked with equal probability:
   `[20, 240]` minutes, asked in minutes) and `werkdag` (`Je werkt van 8:30 tot 17:15 en hebt
   45 minuten pauze. Hoeveel uur werk je?`, start and end multiples of 15 minutes, pause from
   `{30, 45, 60}`, the answer in hours, a multiple of 0,25 in `[4, 9]`, suffix `uur`).
-- Explanations, via the next full hour:
+- Explanations: whole hours first, then the minutes via the full hour when they pass one:
   - arrival: `145 min = 2 uur en 25 min → 19:45 + 2 uur = 21:45 → 21:45 + 15 min = 22:00 →
-    22:00 + 10 min = 22:10`
-  - departure: `8:50 − 35 min → 8:50 − 30 min = 8:20 → 8:20 − 5 min = 8:15` (over a full hour:
-    `9:10 − 25 min → 9:10 − 10 min = 9:00 → 9:00 − 15 min = 8:45`)
+    22:00 + 10 min = 22:10` (a duration written as hours and minutes skips the first step)
+  - departure: `8:50 − 35 min = 8:15`, and over a full hour
+    `9:10 − 25 min → 9:10 − 10 min = 9:00 → 9:00 − 15 min = 8:45`
   - duration: `9:47 → 10:00 is 13 min, 10:00 → 11:00 is 60 min, 11:00 → 11:22 is 22 min →
-    13 + 60 + 22 = 95`; werkdag: `8:30 → 17:15 is 8 uur en 45 min → min 45 min pauze = 8 uur`
+    13 + 60 + 22 = 95` (several whole hours are one part: `10:00 → 13:00 is 180 min`); werkdag: `8:30 → 17:15 is 8 uur en 45 min → min 45 min pauze = 8 uur`
 
 ### 5.52 Estimating (`estimating`)
 
