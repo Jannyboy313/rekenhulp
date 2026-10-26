@@ -327,6 +327,8 @@ answers and the explanation, in the feedback and on the results screen. Rules:
 | `formulas`, startgetal | the first y of the table | "Het startgetal is y bij x = 0, niet bij x = 2." |
 | `equations` | the solution with the sign of the moved term flipped (`(20 + 5) : 3`, whole) | "Haal 5 aan beide kanten weg: 3x = 20 − 5." (for `− 5`: "Tel 5 aan beide kanten op: 3x = 20 + 5."; brackets: "… x = 3 + 2.") |
 | `probability`, marbles | the colour divided by the other marbles (`5/5`) | "Deel door het totaal aantal knikkers: 3 + 5 + 2 = 10." |
+| `romanNumerals`, from decimal | the value written without subtractive pairs (`MDCCCCLXXXXIIII`) | "De waarde klopt, maar gebruik de aftrekregel: 900 = CM, 90 = XC en 4 = IV." (every subtractive pair of the answer) |
+| `romanNumerals`, to decimal | the sum of all symbols (`XIV` → 16) | "Een kleiner teken vóór een groter teken trek je af: IV = 4, niet 6." (the first subtractive pair of the numeral) |
 
 Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewrites get no tips: their explanation (§5.4,
 §5.6) or rewrite message (§5.11) already names the mistake.
@@ -537,6 +539,7 @@ Examples with `n = 15`:
   random.
 - **Verbanden & statistiek:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3
   is chosen at random.
+- **Talstelsels:** `r = 13` over 2 topics, so 7 + 6. The topic with 7 is chosen at random.
 
 ## 5. Topics
 
@@ -1876,6 +1879,64 @@ There are two forms, each picked with equal probability:
   left out when the fraction is already in simplest form.
 - The de-duplication key is the form and the event or the counts.
 
+### Talstelsels (§5.39–§5.40)
+
+The set Talstelsels (v2, LKT). Its card (§3.1) reads "Tweetallig, vijftallig, zestientallig en
+Romeinse cijfers". Every prompt is question text (§3.3): a sentence without a slot. An answer
+that is a plain number is a `number` step; an answer in another number system is typed with a
+letter keypad, `baseDigits` or `roman` (§6).
+
+### 5.39 Number systems (`numberSystems`)
+
+Base 2, 5 or 16, each equally likely, and a direction, each 50%:
+
+| Direction     | Example                                              | Answer | Kind         |
+|---------------|------------------------------------------------------|--------|--------------|
+| To decimal    | `Schrijf het tweetallige getal 1011 als gewoon getal.` | 11   | `number`     |
+| From decimal  | `Schrijf 11 in het tweetallig stelsel.`               | 1011   | `baseDigits` |
+| To decimal    | `Schrijf het vijftallige getal 243 als gewoon getal.` | 73     | `number`     |
+| From decimal  | `Schrijf 180 in het zestientallig stelsel.`           | B4     | `baseDigits` |
+
+- Names: `tweetallig`/`tweetallige`, `vijftallig`/`vijftallige`, `zestientallig`/
+  `zestientallige`.
+- Values: base 2 in `[5, 63]` (3–6 digits), base 5 in `[6, 124]` (2–3 digits), base 16 in
+  `[26, 255]` (2 digits) with at least one letter `A`–`F` among its digits.
+- Digits above 9 are the capitals `A`–`F`.
+- A `baseDigits` answer is correct when it equals the expected digits after leading zeros are
+  removed (`01011` is correct for `1011`). A digit that does not exist in the base (`2` in a
+  tweetallig answer) is simply wrong. No tips: the explanation shows the place values.
+- Explanations, by place value; terms with digit 0 are left out of the middle part:
+  - to decimal: `1 × 8 + 0 × 4 + 1 × 2 + 1 × 1 = 8 + 2 + 1 = 11`,
+    `2 × 25 + 4 × 5 + 3 × 1 = 50 + 20 + 3 = 73`, `B = 11: 11 × 16 + 4 × 1 = 176 + 4 = 180`
+    (each letter digit is named first: `A = 10, F = 15: …`)
+  - from decimal: `11 = 8 + 2 + 1 = 1 × 8 + 0 × 4 + 1 × 2 + 1 × 1 → 1011`,
+    `73 = 2 × 25 + 4 × 5 + 3 × 1 → 243`, `180 = 11 × 16 + 4 × 1 en B = 11 → B4`
+- The de-duplication key is the direction, the base and the value.
+
+### 5.40 Roman numerals (`romanNumerals`)
+
+A direction, each 50%:
+
+| Direction     | Example                              | Answer  | Kind     |
+|---------------|--------------------------------------|---------|----------|
+| To decimal    | `Schrijf MCMXCIV als gewoon getal.`  | 1994    | `number` |
+| From decimal  | `Schrijf 1994 met Romeinse cijfers.` | MCMXCIV | `roman`  |
+
+- Symbols `I V X L C D M` (1, 5, 10, 50, 100, 500, 1000) with the subtractive pairs `IV`, `IX`,
+  `XL`, `XC`, `CD` and `CM`; at most three equal symbols in a row. Every number has one
+  canonical numeral, per decimal place from high to low.
+- Values: 50% in `[1, 100]`, 50% a year in `[1000, 2030]`. The numeral always contains at least
+  one subtractive pair (redraw otherwise).
+- A `roman` answer is correct only when it is the canonical numeral. Any string of the symbols
+  is valid input; there is no inline error.
+- Explanations, per group (the symbols of one decimal place):
+  - to decimal: `MCMXCIV = M + CM + XC + IV = 1000 + 900 + 90 + 4 = 1994`; one group: `IX = 9`
+  - from decimal: `1994 = 1000 + 900 + 90 + 4 = M + CM + XC + IV → MCMXCIV`; one group:
+    `9 = IX`
+- Tips (§3.4.1): from decimal, an input of symbols in non-increasing order (no subtractive pair)
+  whose sum equals the answer; to decimal, the sum of all symbols of the numeral.
+- The de-duplication key is the direction and the value.
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -1888,6 +1949,8 @@ The keypad is custom. The system keyboard is never opened.
 | expression         | `0–9`, `+ − × :`, `( )`, `⌫`, `OK`, in 4 columns               |
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
 | scientific         | `0–9`, `,`, `−`, `×`, `^`, `⌫`, `OK`, in 4 columns              |
+| baseDigits         | `0–9`, `A–F`, `⌫`, `OK`, in 4 columns                           |
+| roman              | `I V X L C D M`, `⌫`, `OK`                                      |
 
 - Every answer kind has its own input model: keys, key reducer, validation and display.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
@@ -1907,8 +1970,8 @@ The keypad is custom. The system keyboard is never opened.
   digits. `2^2×3×7` is shown as `2² × 3 × 7`.
 - **Expression input** (only the rewrite step of §5.11 uses it): integers, `+ − × :` and
   parentheses. The rewrites never need a decimal comma, a power or a negative number, so these
-  keys are left out, and `−` is always the operator. It, the scientific keypad and the kladblok
-  keypad (§3.6) are the only keypads with 4 columns; all other keypads keep 3. Five rows, the same height as the other
+  keys are left out, and `−` is always the operator. It, the scientific, baseDigits and kladblok
+  keypads (§3.6) are the only keypads with 4 columns; all other keypads keep 3. Five rows, the same height as the other
   keypads:
 
   ```
@@ -1951,6 +2014,30 @@ The keypad is custom. The system keyboard is never opened.
   gives "Ongeldige notatie" and does not count as the attempt. A plain number (`4500000`) is
   valid input; it is judged wrong with a tip when its value is right (§5.19). Parsing is a small
   dedicated parser next to `parseFactorization`, not `lib/expr`.
+- **Letter input** (added with Talstelsels, §5.39–§5.40): two keypads whose keys are only
+  appended, so every input is valid and there is no inline error. `⌫` deletes the last
+  character. The input is shown as typed (`B4`, `MCMXCIV`).
+  - **baseDigits**: one keypad for every base, the digits in their usual place and `A`–`F` in
+    a fourth column and the bottom row; at most 8 characters. Five rows, the same height as the
+    other keypads:
+
+    ```
+    7  8  9  A
+    4  5  6  B
+    1  2  3  C
+    0  D  E  F
+    ⌫  OK─────
+    ```
+
+  - **roman**: the symbols in order of value, in 3 columns and 3 rows; at most 15 characters
+    (the longest answer, `MDCCCLXXXVIII`, has 13). Like the scientific keypad it is lower than
+    the others, so the prompt sits lower and the keypad grows while a kladblok cell is active:
+
+    ```
+    I  V  X
+    L  C  D
+    M  ⌫  OK
+    ```
 - Units are shown next to the input field, and the user never types them. `€`, `1 :` (the
   find-the-scale form of §5.24) and `x =` (§5.37) are fixed prefixes (`€ 45`, `1 : 25 000`,
   `x = 5`); other units (`%`,
@@ -2174,7 +2261,16 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-None at the moment.
+Talstelsels (§5.39–§5.40), confirmed by the user: question sentences instead of a subscript
+notation, one baseDigits keypad for every base, Roman values up to 100 plus years, the two Roman
+tips. Still open:
+
+1. The value ranges per base (§5.39): base 2 up to 63, base 5 up to 124, base 16 two digits with
+   a letter.
+2. Roman numerals also get question sentences (`Schrijf MCMXCIV als gewoon getal.`), like the
+   number systems.
+3. Equal weights (1 and 1), although `numberSystems` has three bases.
+4. The roman keypad of 3 rows (§6), lower than the others like the scientific keypad.
 
 ## 12. Roadmap (not in v1)
 
@@ -2232,10 +2328,11 @@ in each set's own spec iteration.
      with brackets, and with `x` on both sides.
    - `probability`: simple probabilities as a fraction (one die, marbles).
    - Infrastructure: none; uses the `x =` prefix, the `€` prefix and the unit suffix.
-7. **Talstelsels** (new set; LKT)
+7. **Talstelsels** (new set; LKT) — specified in §5.39–§5.40
    - `numberSystems`: binary, base 5 and hexadecimal ↔ decimal.
    - `romanNumerals`: Roman numerals ↔ decimal.
-   - Infrastructure: a text answer kind with letter keys (`A`–`F`, `I V X L C D M`).
+   - Infrastructure: two letter answer kinds, `baseDigits` (`0`–`9`, `A`–`F`) and `roman`
+     (`I V X L C D M`) (§6).
 8. **Heuristieken** (new set; LKT)
    - Short generated puzzles with a number as the answer. The explanation names the
      heuristic.
