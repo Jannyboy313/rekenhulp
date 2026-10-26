@@ -1,6 +1,7 @@
 import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
 import { generateCalendar } from './calendar';
+import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
 import { generateEquations } from './equations';
@@ -58,6 +59,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   speed: generateSpeed,
   numberUnits: generateNumberUnits,
   calendar: generateCalendar,
+  dataSize: generateDataSize,
   percentages: generatePercentages,
   ratios: generateRatios,
   percentChange: generatePercentChange,
@@ -111,6 +113,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   speed: 'Snelheid (afstand, tijd, km/u en m/s)',
   numberUnits: 'Grote getallen (duizend t/m quadriljoen, ton)',
   calendar: 'Kalender (etmaal t/m millennium)',
+  dataSize: 'Geheugen (kB t/m TB)',
   percentages: 'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
   ratios: 'Verhoudingen (ontbrekend getal, herschalen, verdelen)',
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',

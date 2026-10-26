@@ -23,6 +23,7 @@ export type Topic =
   | 'speed'
   | 'numberUnits'
   | 'calendar'
+  | 'dataSize'
   | 'percentages'
   | 'ratios'
   | 'percentChange'
