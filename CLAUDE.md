@@ -32,7 +32,9 @@ Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `an
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
 (§12.2 step 2: Niveau on setup, `deep` topics via `forLevel`; no set has a Verdieping yet, so
-it is tested with `lib/setFixture.ts`).
+it is tested with `lib/setFixture.ts`), and the multiple-choice framework (§12.2 step 3, §6:
+answer kind `choice`, `choiceStep` with four options; no topic uses it yet, so it is tested
+with steps built in the tests).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -49,13 +51,11 @@ notation and that every `worked` line is a true equality chain. Keep lesson code
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 
-Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The
-multiple-choice framework comes first; after it the user picks the next v3 step. There is no
-v4.
+Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The user picks the
+next v3 step. There is no v4.
 
 | Step                                                                                                       | New infrastructure                   |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| v3: multiple choice (§12.2 step 3, §12.5), framework only                                                  | multiple-choice answer kind          |
 | v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.5), the user picks the order; not Tafels            | —                                    |
 | v3: mixed categories (§12.3), form decided in its spec iteration                                           | sessions across sets                 |
 | v3: practice test (§12.4), after mixed categories                                                          | test session                         |
@@ -69,9 +69,10 @@ To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators 
 `lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in
 `SetGlyph.svelte` (multicolour, violet/amber/blue tokens; without one the list shows a letter).
 Write the unknown of a prompt as `${SLOT}` (`lib/slot.ts`), never as a literal `?`: a literal `?`
-is a question mark, and `slot.sweep.test.ts` checks every generator. A new `AnswerKind`
-also needs a `KeypadStates` entry and an `INPUT_MODELS` entry in `lib/inputModels.ts`, and a
-reducer in `lib/keypadInput.ts`. A new set shows up greyed out on the Lesstof tab by itself; it
+is a question mark, and `slot.sweep.test.ts` checks every generator. A new keypad
+`AnswerKind` also needs a `KeypadStates` entry and an `INPUT_MODELS` entry in
+`lib/inputModels.ts`, and a reducer in `lib/keypadInput.ts`; the button kinds (`boolean`,
+`choice`) have no keypad and are excluded from `KeypadKind`. A new set shows up greyed out on the Lesstof tab by itself; it
 needs no lesson.
 
 ## Workflow
@@ -189,7 +190,7 @@ src/
     types.ts            Question, Step, AnswerKind, CheckResult, Topic, PracticeSet
     random.ts           seedable RNG; every generator takes an rng argument; drawUntil redraws
                         until all rules of an exercise hold
-    steps.ts            step factories (number, fraction, simplest fraction, boolean,
+    steps.ts            step factories (number, fraction, simplest fraction, boolean, choice,
                         factorization, rewrite, scientific, text), answer checking, and parsing of
                         factorization and scientific input (number and fraction parsing is in
                         rational.ts)

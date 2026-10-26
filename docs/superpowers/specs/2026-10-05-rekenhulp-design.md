@@ -2583,8 +2583,8 @@ Built in steps, each its own session and only when the user says so:
      and no tables share); `buildSession` and the quota algorithm (§4.2) are unchanged.
    - Verdieping topics are their own `Topic` ids and generators (`lib/topics/`), with their own
      labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
-3. **Multiple choice** — the multiple-choice answer kind (§12.5), framework only, right after
-   the levels framework so every set step can use it.
+3. **Multiple choice** (done) — the multiple-choice answer kind `choice` (§6, §12.5),
+   framework only, right after the levels framework so every set step can use it.
 4. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
    light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
    The step also closes the set's RWT gaps (§12.5), at both levels. No fixed order: the user
