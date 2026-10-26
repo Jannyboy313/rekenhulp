@@ -35,6 +35,7 @@ import { generateRomanNumerals } from './romanNumerals';
 import { generateScientificNotation } from './scientificNotation';
 import { generateSequences } from './sequences';
 import { generateShapeProperties } from './shapeProperties';
+import { generateSimplifyProblem } from './simplifyProblem';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
@@ -94,6 +95,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   systematicCounting: generateSystematicCounting,
   workingBackwards: generateWorkingBackwards,
   guessAndCheck: generateGuessAndCheck,
+  simplifyProblem: generateSimplifyProblem,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -145,4 +147,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   systematicCounting: 'Systematisch tellen (combinaties, handdrukken, volgordes)',
   workingBackwards: 'Terugrekenen (ik denk aan een getal, geld over)',
   guessAndCheck: 'Slim proberen (kippen en konijnen, som en verschil)',
+  simplifyProblem: 'Vereenvoudigen (Gauss, tellen, figuurpatronen)',
 };
