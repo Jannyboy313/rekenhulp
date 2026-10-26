@@ -58,7 +58,8 @@ export type Topic =
   | 'numberSystems'
   | 'romanNumerals'
   | 'systematicCounting'
-  | 'workingBackwards';
+  | 'workingBackwards'
+  | 'guessAndCheck';
 
 export interface CheckResult {
   correct: boolean;
