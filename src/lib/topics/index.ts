@@ -2,6 +2,7 @@ import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
+import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
 import { generateFractionConversion } from './fractionConversion';
 import {
@@ -78,6 +79,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
   sequences: generateSequences,
+  formulas: generateFormulas,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -121,4 +123,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',
   sequences: 'Rijen (volgende getal, n-de getal, driehoeksgetallen)',
+  formulas: 'Formules (invullen, startgetal en hellingsgetal)',
 };

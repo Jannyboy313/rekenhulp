@@ -44,7 +44,8 @@ export type Topic =
   | 'shapeProperties'
   | 'statistics'
   | 'percentagePoints'
-  | 'sequences';
+  | 'sequences'
+  | 'formulas';
 
 export interface CheckResult {
   correct: boolean;
