@@ -16,6 +16,8 @@
   import { DEFAULT_SESSION_SIZE, PRACTICE_SETS } from './lib/sets';
   import { TABLE_FACTORS } from './lib/topics/tables';
   import type { PracticeSet, Question } from './lib/types';
+  import { shouldPrompt, type UpdateState, type Updates } from './lib/update';
+  import UpdateDialog from './components/UpdateDialog.svelte';
 
   // Terug returns to `returnTo`, so any screen can link to a lesson (lesstof spec §3).
   type LessonTopicsScreen = {
@@ -36,9 +38,14 @@
   interface Props {
     /** Tests pass a fixture; the app uses the registry. */
     lessons?: readonly Lesson[];
+    /** Fed by the service worker in `main.ts`; without it the app never asks to update. */
+    updates?: Updates;
   }
 
-  let { lessons: allLessons = LESSONS }: Props = $props();
+  let { lessons: allLessons = LESSONS, updates }: Props = $props();
+
+  let updateState = $state<UpdateState>({ available: false, dismissed: false });
+  $effect(() => updates?.subscribe((state) => (updateState = state)));
 
   let screen = $state.raw<Screen>({ name: 'sets' });
   // Kept in memory only while the app is open (spec §3.1, §3.2: nothing is persisted).
@@ -133,4 +140,8 @@
     onrestart={() => startSession(set)}
     onmenu={showSets}
   />
+{/if}
+
+{#if updates && shouldPrompt(updateState, screen.name)}
+  <UpdateDialog oninstall={updates.install} onlater={updates.dismiss} />
 {/if}

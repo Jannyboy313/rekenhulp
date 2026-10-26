@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
+import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import { stubMatchMedia } from './components/testMatchMedia';
 import { FIXTURE_LESSON } from './lib/lessons/fixture';
+import { createUpdates } from './lib/update';
 import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
@@ -158,6 +160,58 @@ describe('App', () => {
     }
     await click(/^Start/);
     expect(screen.getByText(`1 / ${DEFAULT_SESSION_SIZE}`)).toBeTruthy();
+  });
+
+  describe('update prompt', () => {
+    const asked = 'Er is een nieuwe versie beschikbaar. Nu installeren?';
+
+    it('shows on the overview and setup only, and waits for an allowed screen', async () => {
+      const updates = createUpdates(vi.fn());
+      render(App, { updates });
+      await click(/Tafels/);
+      await click(/^Start/);
+      updates.needRefresh();
+      await tick();
+      expect(screen.queryByText(asked)).toBeNull();
+
+      await click('Stoppen');
+      expect(screen.queryByText(asked)).toBeNull();
+      await click('Menu');
+      expect(screen.getByText(asked)).toBeTruthy();
+
+      await click('Later');
+      await click(/Tafels/);
+      expect(screen.queryByText(asked)).toBeNull();
+    });
+
+    it('does not show during a lesson, and installs on Installeren', async () => {
+      const install = vi.fn();
+      const updates = createUpdates(install);
+      render(App, { lessons: [FIXTURE_LESSON], updates });
+      await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+      await click(/^Tafels/);
+      await click(/^Halveren/);
+      updates.needRefresh();
+      await tick();
+      expect(screen.queryByText(asked)).toBeNull();
+
+      await click('Terug');
+      await click('Terug');
+      await click('Installeren');
+      expect(install).toHaveBeenCalledTimes(1);
+    });
+
+    it('offers a postponed update again on resume', async () => {
+      const updates = createUpdates(vi.fn());
+      render(App, { updates });
+      updates.needRefresh();
+      await tick();
+      await click('Later');
+      expect(screen.queryByText(asked)).toBeNull();
+      updates.resume();
+      await tick();
+      expect(screen.getByText(asked)).toBeTruthy();
+    });
   });
 
   describe('lesstof', () => {

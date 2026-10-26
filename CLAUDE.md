@@ -109,6 +109,10 @@ only the real choices, update and commit the spec, then implement directly with 
   Import only the latin file in `app.css`, not the package's `index.css`: that pulls in every
   subset and bloats the precache.
 
+- Updates use `registerType: 'prompt'` (spec §2): `dist/sw.js` may only call `skipWaiting` from the
+  `SKIP_WAITING` message handler, never on install. `lib/update.ts` holds the state; `main.ts`
+  feeds it, `App.svelte` shows `UpdateDialog` on `sets` and `setup` only.
+
 ## Stack
 
 - Svelte 5 (runes) + TypeScript (strict) + Vite — no SvelteKit
@@ -201,6 +205,7 @@ src/
                         repeats (insertRepeat)
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
     wakeLock.ts         keeps the screen on while PlayScreen is mounted
+    update.ts           update prompt state (waiting version, Later) and shouldPrompt (screens)
     tips.ts             Diagnose type, firstTip, moneyTip (cents-rounding exception),
                         powerOfTenShift, factor-of-ten tip (fallback of number, fraction and
                         scientific steps)

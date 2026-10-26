@@ -7,7 +7,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 const isTest = process.env.VITEST !== undefined;
 
 const pwa = VitePWA({
-  registerType: 'autoUpdate',
+  registerType: 'prompt',
   injectRegister: 'auto',
   pwaAssets: { config: true, overrideManifestIcons: true, includeHtmlHeadLinks: true },
   manifest: {
