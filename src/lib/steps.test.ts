@@ -16,6 +16,7 @@ import {
   scientificStep,
   scientificValue,
   simplestFractionStep,
+  textStep,
   YES,
 } from './steps';
 
@@ -655,5 +656,53 @@ describe('scientificStep', () => {
       expected: '4,5 × 10⁶',
       explanation: 'uitleg',
     });
+  });
+});
+
+describe('textStep', () => {
+  const stripZeros = (input: string) => input.replace(/^0+(?=.)/, '');
+  const binary = textStep({
+    kind: 'baseDigits',
+    prompt: 'Schrijf 11 in het tweetallig stelsel.',
+    answer: '1011',
+    normalize: stripZeros,
+  });
+
+  it.each<[string, boolean]>([
+    ['1011', true],
+    ['01011', true],
+    ['1012', false],
+  ])('checks %s against 1011', (input, correct) => {
+    const result = binary.check(input);
+    expect(result.correct).toBe(correct);
+    expect(result.expected).toBe('1011');
+    expect(result.tip).toBeUndefined();
+  });
+
+  it('keeps the kind and the prompt', () => {
+    expect(binary.kind).toBe('baseDigits');
+    expect(binary.prompt).toBe('Schrijf 11 in het tweetallig stelsel.');
+  });
+
+  it('gives the tip of a wrong answer, and does not call it for a correct one', () => {
+    const calls: string[] = [];
+    const roman = textStep({
+      kind: 'roman',
+      prompt: 'Schrijf 4 met Romeinse cijfers.',
+      answer: 'IV',
+      tip: (input) => {
+        calls.push(input);
+        return input === 'IIII' ? 't' : undefined;
+      },
+    });
+    expect(roman.check('IIII')).toMatchObject({ correct: false, expected: 'IV', tip: 't' });
+    expect(roman.check('VI').tip).toBeUndefined();
+    expect(roman.check('IV').correct).toBe(true);
+    expect(calls).toEqual(['IIII', 'VI']);
+  });
+
+  it('passes the explanation through', () => {
+    const step = textStep({ kind: 'roman', prompt: 'p', answer: 'IX', explanation: '9 = IX' });
+    expect(step.check('X').explanation).toBe('9 = IX');
   });
 });

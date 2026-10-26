@@ -455,3 +455,39 @@ function notationTip(
   }
   return undefined;
 }
+
+interface TextStepOptions {
+  kind: 'baseDigits' | 'roman';
+  prompt: string;
+  /** The canonical answer, shown as the correct answer. */
+  answer: string;
+  /** Applied to the input before comparing, e.g. removing leading zeros. */
+  normalize?: (input: string) => string;
+  /** Names the likely mistake of a wrong answer (spec §3.4.1). */
+  tip?: (input: string) => string | undefined;
+  explanation?: string;
+}
+
+/** A typed text answer (digits in another base, Roman numerals), compared as a string. */
+export function textStep({
+  kind,
+  prompt,
+  answer,
+  normalize = (input) => input,
+  tip,
+  explanation,
+}: TextStepOptions): Step {
+  return {
+    kind,
+    prompt,
+    check: (input) => {
+      const correct = normalize(input) === answer;
+      return {
+        correct,
+        expected: answer,
+        tip: correct ? undefined : tip?.(input),
+        explanation,
+      };
+    },
+  };
+}
