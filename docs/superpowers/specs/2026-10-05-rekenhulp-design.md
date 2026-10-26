@@ -2329,7 +2329,7 @@ in each set's own spec iteration.
      with brackets, and with `x` on both sides.
    - `probability`: simple probabilities as a fraction (one die, marbles).
    - Infrastructure: none; uses the `x =` prefix, the `€` prefix and the unit suffix.
-7. **Talstelsels** (new set; LKT) — specified in §5.39–§5.40
+7. **Talstelsels** (new set; LKT) — done, specified in §5.39–§5.40
    - `numberSystems`: binary, base 5 and hexadecimal ↔ decimal.
    - `romanNumerals`: Roman numerals ↔ decimal.
    - Infrastructure: two letter answer kinds, `baseDigits` (`0`–`9`, `A`–`F`) and `roman`

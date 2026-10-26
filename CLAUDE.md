@@ -23,7 +23,8 @@ Done: the sets Tafels, Meten (v1 + v2: `speed`), Verhoudingen (v1 + v2: `percent
 `ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip,
 Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
 `symmetry`, `shapeProperties`) and Verbanden & statistiek (`statistics`, `percentagePoints`,
-`sequences`, `formulas`, `equations`, `probability`), plus stacked fractions, the kladblok (§3.6), repeat until correct
+`sequences`, `formulas`, `equations`, `probability`) and Talstelsels (`numberSystems`,
+`romanNumerals`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
@@ -46,13 +47,12 @@ props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.s
 Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
 says so:
 
-| Set                                                                                                               | New infrastructure                   |
-| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **Talstelsels** (LKT): `numberSystems`, `romanNumerals`                                                           | text answer kind with letter keys    |
-| **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`              | check the longest prompts on a phone |
-| v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set                     | level choice on setup, `deep` config |
-| v3: Verdieping per set (§12.2 step 3), one set at a time in no fixed order (the user picks); not Tafels           | —                                    |
-| v3: multiple choice (§12.3)                                                                                       | multiple-choice answer kind          |
+| Set                                                                                                     | New infrastructure                   |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`    | check the longest prompts on a phone |
+| v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set           | level choice on setup, `deep` config |
+| v3: Verdieping per set (§12.2 step 3), one set at a time in no fixed order (the user picks); not Tafels | —                                    |
+| v3: multiple choice (§12.3)                                                                             | multiple-choice answer kind          |
 
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
 §12.4).
@@ -178,13 +178,14 @@ src/
     random.ts           seedable RNG; every generator takes an rng argument; drawUntil redraws
                         until all rules of an exercise hold
     steps.ts            step factories (number, fraction, simplest fraction, boolean,
-                        factorization, rewrite, scientific), answer checking, and parsing of
+                        factorization, rewrite, scientific, text), answer checking, and parsing of
                         factorization and scientific input (number and fraction parsing is in
                         rational.ts)
     keypadInput.ts      pure key → input reducers per answer kind
     keys.ts             key catalogue (label, aria label) and keyDefs; keypads list key names
                         one grid row per line. A new key: widen KeypadKey (in keypadInput.ts),
-                        add it to KEYS, handle it in the reducers that should accept it
+                        add it to KEYS, handle it in the reducers that should accept it. A keypad
+                        sets `span` on its own copy of a key; keyRows sizes the keys (spec §6)
     inputModels.ts      per answer kind: keys, columns, typing state, reducer, validate,
                         display, view
     scratchpad.ts       kladblok: cell count, keys, typing, when shown
