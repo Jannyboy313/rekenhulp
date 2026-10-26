@@ -19,6 +19,7 @@
     'breuken',
     'meetkunde',
     'verbanden',
+    'talstelsels',
   ];
 </script>
 
@@ -84,6 +85,10 @@
       <rect x="4" y="16" width="5.5" height="8" rx="1.2" class="fv" />
       <rect x="11.2" y="11" width="5.5" height="13" rx="1.2" class="fa" />
       <rect x="18.5" y="4.5" width="5.5" height="19.5" rx="1.2" class="fb" />
+    {:else if id === 'talstelsels'}
+      <path d="M4 4l9 11M13 4l-9 11" class="sa nf" stroke-width="2.6" />
+      <text x="15" y="15" font-size="10" class="fv txt">1 0</text>
+      <rect x="4" y="21" width="20" height="2.4" rx="1.2" class="fb" />
     {/if}
   </svg>
 {:else}

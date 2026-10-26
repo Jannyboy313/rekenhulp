@@ -127,6 +127,17 @@ export const RELATIONS_SET: PracticeSet = {
   tablesPercent: 15,
 };
 
+export const NUMBER_SYSTEMS_SET: PracticeSet = {
+  id: 'talstelsels',
+  name: 'Talstelsels',
+  description: 'Tweetallig, vijftallig, zestientallig en Romeinse cijfers',
+  topics: [
+    { topic: 'numberSystems', weight: 1 },
+    { topic: 'romanNumerals', weight: 1 },
+  ],
+  tablesPercent: 15,
+};
+
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
 export const PRACTICE_SETS: readonly PracticeSet[] = [
   TABLES_SET,
@@ -138,6 +149,7 @@ export const PRACTICE_SETS: readonly PracticeSet[] = [
   FRACTIONS_SET,
   GEOMETRY_SET,
   RELATIONS_SET,
+  NUMBER_SYSTEMS_SET,
 ];
 
 /** Only the Tafels set lets the user choose which tables to practise (spec §3.2). */

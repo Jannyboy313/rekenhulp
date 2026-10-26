@@ -14,6 +14,7 @@ import {
   GEOMETRY_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
+  NUMBER_SYSTEMS_SET,
   NUMBERS_SET,
   OPERATIONS_SET,
   PROPORTIONS_SET,
@@ -352,5 +353,35 @@ describe('insertRepeat', () => {
   it('does not modify the queue', () => {
     insertRepeat(queue, 1, 'x', createRng(1));
     expect(queue).toEqual(['a', 'b', 'c', 'd', 'e']);
+  });
+});
+
+describe('buildSession for Talstelsels', () => {
+  function counts(size: number) {
+    const perTopic = new Map<string, number>();
+    for (const { topic } of buildSession(NUMBER_SYSTEMS_SET, size, createRng(3))) {
+      perTopic.set(topic, (perTopic.get(topic) ?? 0) + 1);
+    }
+    return perTopic;
+  }
+
+  it('mixes 2 tables with 7 + 6 exercises at n = 15 (spec §4.2)', () => {
+    const perTopic = counts(15);
+    expect(perTopic.get('tables')).toBe(2);
+    const topics = [perTopic.get('numberSystems'), perTopic.get('romanNumerals')];
+    expect(topics.sort()).toEqual([6, 7]);
+  });
+
+  it('has no tables at n = 5, with 3 + 2 exercises', () => {
+    const perTopic = counts(5);
+    expect(perTopic.get('tables')).toBeUndefined();
+    const topics = [perTopic.get('numberSystems'), perTopic.get('romanNumerals')];
+    expect(topics.sort()).toEqual([2, 3]);
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(NUMBER_SYSTEMS_SET, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
   });
 });

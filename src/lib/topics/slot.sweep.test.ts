@@ -71,3 +71,13 @@ describe('slot sweep: which prompts carry the unknown', () => {
     expect(evaluation).toBeGreaterThan(0);
   });
 });
+
+describe.each(['numberSystems', 'romanNumerals'] as const)('no slot: %s', (topic) => {
+  it('is question text without a slot', () => {
+    for (let seed = 1; seed <= SEEDS; seed++) {
+      for (const step of GENERATORS[topic](createRng(seed)).steps) {
+        expect(hasSlot(step.prompt)).toBe(false);
+      }
+    }
+  });
+});

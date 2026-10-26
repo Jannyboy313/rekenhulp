@@ -7,6 +7,7 @@ import {
   GEOMETRY_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
+  NUMBER_SYSTEMS_SET,
   NUMBERS_SET,
   OPERATIONS_SET,
   PRACTICE_SETS,
@@ -74,6 +75,7 @@ describe('practice sets', () => {
       'breuken',
       'meetkunde',
       'verbanden',
+      'talstelsels',
     ]);
   });
 
@@ -312,6 +314,30 @@ describe('describeSetTopicRows per set', () => {
       'Procentuele verandering (stijging en daling, btw, oude prijs)',
       'Schaal (kaart en tekening, schaal bepalen)',
       'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
+      '15% tafels',
+    ]);
+  });
+});
+
+describe('Talstelsels set', () => {
+  it('is the last practice set, two equally weighted topics with 15% tables', () => {
+    expect(PRACTICE_SETS.at(-1)).toBe(NUMBER_SYSTEMS_SET);
+    expect(NUMBER_SYSTEMS_SET.id).toBe('talstelsels');
+    expect(NUMBER_SYSTEMS_SET.name).toBe('Talstelsels');
+    expect(NUMBER_SYSTEMS_SET.description).toBe(
+      'Tweetallig, vijftallig, zestientallig en Romeinse cijfers',
+    );
+    expect(NUMBER_SYSTEMS_SET.tablesPercent).toBe(15);
+    expect(NUMBER_SYSTEMS_SET.topics).toEqual([
+      { topic: 'numberSystems', weight: 1 },
+      { topic: 'romanNumerals', weight: 1 },
+    ]);
+  });
+
+  it('describes its topics and the tables share', () => {
+    expect(rowLabels(NUMBER_SYSTEMS_SET, 15)).toEqual([
+      'Talstelsels (tweetallig, vijftallig, zestientallig)',
+      'Romeinse cijfers (tot 100 en jaartallen)',
       '15% tafels',
     ]);
   });
