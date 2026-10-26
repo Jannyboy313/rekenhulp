@@ -30,9 +30,7 @@ Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `an
 Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
-content checks, back guard). Lessons done: every set except Tafels, Verbanden & statistiek, Talstelsels and Heuristieken
-(`lib/lessons/<set>.ts`); their rows are disabled. Verbanden, Talstelsels and Heuristieken have
-their topics in lesstof spec §7.8–§7.10. The
+content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
 lesstof is developed separately from the practice sets and is not part of the roadmap below: no
 fixed order, content only when the user asks for it (iterate its spec §7 first). Linking from
 other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not used
