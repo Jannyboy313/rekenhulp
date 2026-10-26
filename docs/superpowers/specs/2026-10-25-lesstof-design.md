@@ -155,6 +155,10 @@ the practice topics (main spec §5.2–§5.7).
      (`7 × 300`, `7 × 80`) until a small remainder is left.
    - Worked `2716 en 7`: `2716 = 2100 + 560 + 56`, `2716 : 7 = 300 + 80 + 8 = 388`.
    - Text: `2718 = 2100 + 560 + 56 + 2` → remainder 2, not divisible.
+   - Text, the rule for 7: strike the last digit and subtract it twice from the rest; repeat
+     until you see it.
+   - Worked `2716 en 7, met de regel`: `271 − 2 × 6 = 271 − 12 = 259`,
+     `25 − 2 × 9 = 25 − 18 = 7`.
    - Worked `1859 en 13`: `1859 = 1300 + 520 + 39`, `1859 : 13 = 100 + 40 + 3 = 143`.
 4. **`primes` — Priemgetallen** (summary: `Precies twee delers`)
    - Text: a prime has exactly two divisors, 1 and itself. 1 is not a prime; 2 is the only even
@@ -624,8 +628,6 @@ lines hold numbers only.
 Found in a review on 2026-10-26 against §1. Each is worked out in the set's section above, in its
 own session, only when the user asks; then it is removed here.
 
-- **Getallen & delers:** `chunking`, the rule for 7: strike the last digit and subtract it twice
-  (`2716 → 271 − 12 = 259 → 25 − 18 = 7`, so divisible).
 - **Meten:** `time`, via fractions of an hour (`1/4 uur = 15 min`).
 - **Verhoudingen:** a ratio table as second route in `percentages` (how many percent),
   `percentChange` (new as a percentage of old: `92 : 80 = 115/100`), `perUnit`

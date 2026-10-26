@@ -82,6 +82,15 @@ export const NUMBERS_LESSON: Lesson = {
           text: '2718 = 2100 + 560 + 56 + 2: rest 2, dus 2718 is niet deelbaar door 7.',
         },
         {
+          type: 'text',
+          text: 'Of met de regel voor 7: streep het laatste cijfer weg en trek het twee keer af van wat overblijft. Herhaal tot je het ziet; is dat deelbaar door 7, dan het getal ook.',
+        },
+        {
+          type: 'worked',
+          title: '2716 en 7, met de regel',
+          lines: ['271 − 2 × 6 = 271 − 12 = 259', '25 − 2 × 9 = 25 − 18 = 7'],
+        },
+        {
           type: 'worked',
           title: '1859 en 13',
           lines: ['1859 = 1300 + 520 + 39', '1859 : 13 = 100 + 40 + 3 = 143'],
