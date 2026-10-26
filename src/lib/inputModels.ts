@@ -243,7 +243,7 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
   ),
 };
 
-/** A given answer as it was shown while typing; Ja, Nee and a chosen option are shown as they are. */
+/** A given answer as it was shown while typing; Ja, Nee and an option are shown as they are. */
 export function displayAnswer(kind: AnswerKind, input: string): string {
   return kind === 'boolean' || kind === 'choice' ? input : INPUT_MODELS[kind].display(input);
 }

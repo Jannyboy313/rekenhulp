@@ -165,6 +165,28 @@ describe('Feedback', () => {
     expect(tileValues()).toEqual(['Ja', '13']);
   });
 
+  it('shows a chosen option as it is, with the explanation and no tip', () => {
+    renderFeedback({
+      prompt: 'Welk antwoord ligt het dichtst bij 49 × 81?',
+      kind: 'choice',
+      input: '400',
+      result: { correct: false, expected: '4000', explanation: '49 × 81 ≈ 50 × 80 = 4000' },
+    });
+    expect(document.querySelector('.prompt')?.classList.contains('text')).toBe(true);
+    expect(tileValues()).toEqual(['400', '4000']);
+    expect(blockLabels()).toEqual(['Uitleg']);
+  });
+
+  it('stacks a chosen fraction option', () => {
+    const { container } = renderFeedback({
+      prompt: 'Welke breuk is het grootst?',
+      kind: 'choice',
+      input: '2/3',
+      result: { correct: false, expected: '3/4' },
+    });
+    expect(container.querySelectorAll('.tile .fraction')).toHaveLength(2);
+  });
+
   it.each([
     [`3 × 4 = ${SLOT}`, 'large'],
     [`KGV van 1\u{202f}234 en 5\u{202f}678 = ${SLOT}`, 'medium'],

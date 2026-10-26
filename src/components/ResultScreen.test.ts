@@ -5,7 +5,7 @@ import { summarize, type QuestionRecord } from '../lib/results';
 import { TABLES_SET } from '../lib/sets';
 import { fromInteger } from '../lib/rational';
 import { SLOT } from '../lib/slot';
-import { factorizationStep, numberStep } from '../lib/steps';
+import { choiceStep, factorizationStep, numberStep } from '../lib/steps';
 import type { Question, Step } from '../lib/types';
 import ResultScreen from './ResultScreen.svelte';
 
@@ -51,6 +51,16 @@ describe('ResultScreen', () => {
     });
     expect(screen.getByText('Totale tijd').nextElementSibling?.textContent).toBe('1:05');
     expect(screen.getByText('Gemiddeld per som').nextElementSibling?.textContent).toBe('3,0 s');
+  });
+
+  it('shows a wrong multiple-choice answer with both option texts', () => {
+    const estimate = choiceStep({
+      prompt: 'Welk antwoord ligt het dichtst bij 49 × 81?',
+      options: ['40', '400', '4000', '40 000'],
+      answer: '4000',
+    });
+    renderResults([recordOf(estimate, '400')]);
+    expect(tileValues(document.querySelector('.error-card')!)).toEqual(['400', '4000']);
   });
 
   it('lists the wrong steps under "Fouten · n", one card each with two tiles', () => {

@@ -6,7 +6,7 @@ import { fromInteger, rational } from '../lib/rational';
 import { isCorrect, type QuestionRecord } from '../lib/results';
 import { TABLES_SET } from '../lib/sets';
 import { SLOT } from '../lib/slot';
-import { booleanStep, numberStep } from '../lib/steps';
+import { booleanStep, choiceStep, numberStep } from '../lib/steps';
 import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
 import PlayScreen from './PlayScreen.svelte';
@@ -211,6 +211,30 @@ describe('PlayScreen', () => {
     await press('Nee');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     expect(onfinish).toHaveBeenCalledOnce();
+  });
+
+  it('repeats a wrong multiple-choice question with the same options in the same order', async () => {
+    const options = ['40', '400', '4000', '40 000'];
+    const estimate: Question = {
+      key: 'estimate',
+      topic: 'statistics',
+      steps: [
+        choiceStep({
+          prompt: 'Welk antwoord ligt het dichtst bij 49 × 81?',
+          options,
+          answer: '4000',
+        }),
+      ],
+    };
+    const shown = () =>
+      [...document.querySelectorAll('.option')].map((button) => button.textContent?.trim());
+    render(PlayScreen, { props: { set: TABLES_SET, questions: [estimate], onfinish: vi.fn() } });
+    expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+    await press('400');
+    expect(screen.getByText('Niet goed')).toBeTruthy();
+    await press('Verder');
+    expect(screen.getByText('Herhaling')).toBeTruthy();
+    expect(shown()).toEqual(options);
   });
 
   it('keeps the kladblok across the steps of a question and clears it at the next', async () => {
