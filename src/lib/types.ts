@@ -42,7 +42,8 @@ export type Topic =
   | 'angles'
   | 'symmetry'
   | 'shapeProperties'
-  | 'statistics';
+  | 'statistics'
+  | 'percentagePoints';
 
 export interface CheckResult {
   correct: boolean;

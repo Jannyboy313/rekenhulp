@@ -17,6 +17,7 @@ import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
+import { generatePercentagePoints } from './percentagePoints';
 import { generatePercentChange } from './percentChange';
 import { generatePerimeterArea } from './perimeterArea';
 import { generatePowersRoots } from './powersRoots';
@@ -74,6 +75,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   symmetry: generateSymmetry,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
+  percentagePoints: generatePercentagePoints,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -115,4 +117,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
+  percentagePoints: 'Procentpunten (procentpunt of procent)',
 };
