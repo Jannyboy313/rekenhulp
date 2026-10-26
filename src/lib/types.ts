@@ -54,7 +54,8 @@ export type Topic =
   | 'sequences'
   | 'formulas'
   | 'equations'
-  | 'probability';
+  | 'probability'
+  | 'numberSystems';
 
 export interface CheckResult {
   correct: boolean;
