@@ -1952,16 +1952,17 @@ The keypad is custom. The system keyboard is never opened.
 | factorization      | `0–9`, `×`, `^`, `⌫`, `OK`                                      |
 | scientific         | `0–9`, `,`, `−`, `×`, `^`, `⌫`, `OK`, in 4 columns              |
 | baseDigits         | `0–9`, `A–F`, `⌫`, `OK`, in 4 columns                           |
-| roman              | `I V X L C D M`, `⌫`, `OK`, in 2 columns                        |
+| roman              | `I V X L C D M`, `⌫`, `OK`, in 3 columns, taller keys           |
 
 - Every answer kind has its own input model: keys, key reducer, validation and display.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
   a superscript. The feedback and the results show the given answer the same way.
 - `OK` is disabled only while the input is empty. It is a primary-coloured key that fills the rest
   of the last row.
-- `⌫` is always bottom left: the first key of the last row, on every keypad and on the kladblok
-  tray (§3.6). A new keypad keeps it there; when its keys do not fill the rows above, a key
-  spans the rest of its row (the `M` of the roman keypad), never an empty cell. Operator and auxiliary keys have a darker key colour than the digits.
+- `⌫` is always bottom left: the left key of the bottom row of keys, with OK beside it or in a
+  row of its own below it (roman), on every keypad and on the kladblok tray (§3.6). A new
+  keypad keeps it there; when its keys do not fill a row, a key spans the rest of that row (the
+  `M` of the roman keypad), never an empty cell. Operator and auxiliary keys have a darker key colour than the digits.
 - The digit keys are 52 px high (56 px on screens without a kladblok); the kladblok keypad has
   48 px keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right.
 - Ja/Nee keeps the layout of a keypad step: the buttons sit at the bottom and the prompt stays at
@@ -2034,16 +2035,17 @@ The keypad is custom. The system keyboard is never opened.
     ⌫  OK─────
     ```
 
-  - **roman**: the symbols in order of value, in 2 columns; at most 15 characters (the longest
-    answer, `MDCCCLXXXVIII`, has 13). Five rows, the same height as the others and the
-    kladblok tray; the keys are wider. `M` spans its row, so `⌫` stays bottom left:
+  - **roman**: the symbols in order of value, in 3 columns and 4 rows; at most 15 characters
+    (the longest answer, `MDCCCLXXXVIII`, has 13). `M` spans two columns next to `⌫`, and OK
+    fills the last row. The keypad keeps the height of a five-row keypad (5 × 52 + 4 × 8 =
+    292 px, 312 px without a kladblok), so its keys are taller (67 px, 72 px without a
+    kladblok) and nothing moves when the kladblok tray takes over:
 
     ```
-    I  V
-    X  L
-    C  D
-    M─────
-    ⌫  OK
+    I  V  X
+    L  C  D
+    ⌫  M───
+    OK─────
     ```
 - Units are shown next to the input field, and the user never types them. `€`, `1 :` (the
   find-the-scale form of §5.24) and `x =` (§5.37) are fixed prefixes (`€ 45`, `1 : 25 000`,

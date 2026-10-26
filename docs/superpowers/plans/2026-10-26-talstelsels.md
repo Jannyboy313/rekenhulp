@@ -41,31 +41,42 @@ Files: `src/lib/keypadInput.ts`, `src/lib/keys.ts`, tests in `keypadInput.test.t
 
 ## Task 2 — Answer kinds `baseDigits` and `roman`
 
-Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, `okSpan`),
-`src/components/Keypad.svelte`, tests `inputModels.test.ts`, `keys.test.ts`.
+Files: `src/lib/types.ts`, `src/lib/inputModels.ts`, `src/lib/keys.ts` (`span`, `okSpan`,
+`keyRows`), `src/components/Keypad.svelte`, `src/components/KeypadAnswer.svelte`, tests
+`inputModels.test.ts`, `keys.test.ts`.
 
 - `AnswerKind` gains `'baseDigits' | 'roman'`.
 - `KeypadStates`: `baseDigits: string; roman: string`.
 - `BASE_DIGITS_KEYS` (4 columns, rows as spec §6: `7 8 9 A / 4 5 6 B / 1 2 3 C / 0 D E F / ⌫`),
-  `ROMAN_KEYS` (2 columns: `I V / X L / C D / M (span 2) / ⌫`; OK beside ⌫ in row 5).
+  `ROMAN_KEYS` (3 columns: `I V X / L C D / ⌫ M(span 2)`; OK fills row 4).
 - `KeyDef` gains `span?: number` (grid columns, default 1). A keypad sets it on its own copy:
   `{ ...KEYS.M, span: 2 }`; the catalogue `KEYS` stays without spans.
-- `okSpan(keys, columns)` counts cells as the sum of spans: `columns − (cells % columns)`.
+- `okSpan(keys, columns)` counts cells as the sum of spans: `columns − (cells % columns)`
+  (roman: 9 cells → OK spans 3, its own row).
+- `keyRows(keys, columns): number`: rows including the OK row (`(cells + okSpan) / columns`).
+- `InputModel.fullHeight?: true`, set on `roman` only: the keypad keeps the height of five rows
+  (spec §6). `KeypadAnswer` passes it to `Keypad`, which sets `--rows` and gives `.full .key`
+  `height: calc((5 * 52px + 4 * 8px - (var(--rows) - 1) * 8px) / var(--rows))` (56 px in the
+  `.tall` variant). The scientific keypad is unchanged (4 rows, lower, spec §6).
 - `Keypad.svelte`: `style:grid-column="span {span}"` on a key with a span.
 - `INPUT_MODELS.baseDigits = { ...textModel(BASE_DIGITS_KEYS, applyBaseDigitsKey, () => null,
-  (input) => input), columns: 4 }`; `INPUT_MODELS.roman = { ...textModel(ROMAN_KEYS, applyRomanKey,
-  () => null, (input) => input), columns: 2 }`.
+  (input) => input), columns: 4 }`; `INPUT_MODELS.roman = { ...textModel(ROMAN_KEYS,
+  applyRomanKey, () => null, (input) => input), fullHeight: true }` (3 columns, the default).
 - `QuestionView` needs no change: its `else` branch takes every text model.
 
 | Test                                   | Expected |
 |----------------------------------------|----------|
 | labels of `baseDigits`                 | `7 8 9 A 4 5 6 B 1 2 3 C 0 D E F ⌫` |
-| labels of `roman`                      | `I V X L C D M ⌫` |
+| labels of `roman`                      | `I V X L C D ⌫ M` |
 | `okSpan(baseDigits keys, 4)`           | 3 |
-| `okSpan(roman keys, 2)`                | 1 (9 cells: OK beside ⌫) |
+| `okSpan(roman keys, 3)`                | 3 (9 cells: OK in its own row) |
 | `okSpan` of existing keypads           | unchanged (regression: number 2, expression 3, scientific 1) |
-| every keypad incl. kladblok            | `⌫` is the first key of the last row: index of `backspace` = cells before it ≡ 0 mod columns |
-| `INPUT_MODELS.roman.columns`           | 2 |
+| `keyRows`                              | roman 4, baseDigits 5, number 5, scientific 4 |
+| every keypad incl. kladblok            | `⌫` is bottom left: the cells before it ≡ 0 mod columns, and the keys after it fit in its row |
+| `INPUT_MODELS.roman.fullHeight`        | `true`; absent on every other model |
+
+Component check (`Keypad.test.ts` or `QuestionView.test.ts`): with `fullHeight` the keypad
+sets `--rows: 4`; `M` has `grid-column: span 2`.
 | `validate('B4')`, `validate('IIII')`   | `null` |
 | `display('B4')`, `view('MCM')`         | `B4`, `[{ type: 'text', text: 'MCM' }]` |
 | `displayAnswer('roman', 'XIV')`        | `XIV` |
