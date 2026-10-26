@@ -22,6 +22,7 @@ export type Topic =
   | 'time'
   | 'speed'
   | 'numberUnits'
+  | 'calendar'
   | 'percentages'
   | 'ratios'
   | 'percentChange'
