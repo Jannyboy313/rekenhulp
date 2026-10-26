@@ -262,6 +262,8 @@ hold numbers only; the units go in the title.
    - Table `Deel van een uur | Minuten`: `0,1 | 6`, `0,2 | 12`, `1/4 = 0,25 | 15`, `1/3 | 20`,
      `1/2 = 0,5 | 30`, `3/4 = 0,75 | 45`.
    - Worked `2,25 uur naar min`: `2,25 × 60 = 2 × 60 + 0,25 × 60 = 120 + 15 = 135`.
+   - Worked `2,25 uur naar min, met breuken`: `2,25 = 2 + 1/4`, `1/4 × 60 = 60 : 4 = 15`,
+     `2 × 60 + 15 = 135`, with text: 0,25 uur is a quarter, 1/4 of 60 min.
    - Worked `150 min naar uur`: `150 : 60 = 2,5`, with text: 150 min = 120 + 30 min, so 2 hours
      and half an hour.
    - Worked `3,5 dag naar uur`: `3,5 × 24 = 72 + 12 = 84`.
@@ -628,7 +630,6 @@ lines hold numbers only.
 Found in a review on 2026-10-26 against §1. Each is worked out in the set's section above, in its
 own session, only when the user asks; then it is removed here.
 
-- **Meten:** `time`, via fractions of an hour (`1/4 uur = 15 min`).
 - **Verhoudingen:** a ratio table as second route in `percentages` (how many percent),
   `percentChange` (new as a percentage of old: `92 : 80 = 115/100`), `perUnit`
   (`1,5 kg → 0,5 kg → 0,1 kg → 0,4 kg`), `scale` and `ratioProblems`; `priceChange`, korting in

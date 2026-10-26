@@ -165,6 +165,15 @@ export const MEASUREMENT_LESSON: Lesson = {
           title: '2,25 uur naar min',
           lines: ['2,25 × 60 = 2 × 60 + 0,25 × 60 = 120 + 15 = 135'],
         },
+        {
+          type: 'worked',
+          title: '2,25 uur naar min, met breuken',
+          lines: ['2,25 = 2 + 1/4', '1/4 × 60 = 60 : 4 = 15', '2 × 60 + 15 = 135'],
+        },
+        {
+          type: 'text',
+          text: '0,25 uur is een kwartier: 1/4 van 60 min.',
+        },
         { type: 'worked', title: '150 min naar uur', lines: ['150 : 60 = 2,5'] },
         {
           type: 'text',
