@@ -123,6 +123,25 @@
         <div class="advance"><div class="advance-fill"></div></div>
       {/if}
     </div>
+  {:else if step.kind === 'choice'}
+    <!-- Multiple choice works like Ja/Nee: a tap on an option is the answer (spec §6). -->
+    <div class="options">
+      {#each step.options ?? [] as option (option)}
+        <button
+          type="button"
+          class="choice option"
+          class:good={correctInput === option}
+          class:dim={locked && correctInput !== option}
+          disabled={locked}
+          onclick={() => answer(option)}
+        >
+          <MathText text={option} />
+        </button>
+      {/each}
+      {#if locked}
+        <div class="advance"><div class="advance-fill"></div></div>
+      {/if}
+    </div>
   {:else if step.kind === 'fraction'}
     <!-- A separate branch per typing state: a union of models cannot infer KeypadAnswer's S. -->
     <KeypadAnswer
@@ -226,6 +245,23 @@
     box-shadow: var(--shadow-card);
     font-size: 22px;
     font-weight: 700;
+  }
+
+  /* Four options fill the height of a keypad without a kladblok: 4 × 72 + 3 × 8 = 312 px, with
+     the keypad's padding (spec §6). */
+  .options {
+    display: grid;
+    gap: 8px;
+    padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+  }
+
+  .choice.option {
+    height: 72px;
+    padding: 0 16px;
+    border-radius: 14px;
+    font-size: 20px;
+    line-height: 24px;
+    text-align: center;
   }
 
   .choice:active:not(:disabled) {

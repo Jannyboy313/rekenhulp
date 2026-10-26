@@ -154,6 +154,7 @@ describe('scratchpad', () => {
     expect(showsScratchpad('tables', 'number')).toBe(false);
     expect(showsScratchpad('prime', 'boolean')).toBe(false);
     expect(showsScratchpad('divisibility', 'boolean')).toBe(false);
+    expect(showsScratchpad('statistics', 'choice')).toBe(false);
   });
 });
 

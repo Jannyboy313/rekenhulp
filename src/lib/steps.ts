@@ -206,6 +206,27 @@ export function booleanStep({ prompt, answer, explanation }: BooleanStepOptions)
   };
 }
 
+interface ChoiceStepOptions {
+  prompt: string;
+  /** In display order: the generator shuffles them or uses a natural order (spec §6). */
+  options: readonly string[];
+  answer: string;
+  explanation?: string;
+}
+
+/** Multiple choice: the tapped option is the input; four unique options, one of them the answer. */
+export function choiceStep({ prompt, options, answer, explanation }: ChoiceStepOptions): Step {
+  if (options.length !== 4 || new Set(options).size !== 4 || !options.includes(answer)) {
+    throw new Error(`Invalid choice step: ${options.join(' | ')} (answer ${answer})`);
+  }
+  return {
+    kind: 'choice',
+    prompt,
+    options,
+    check: (input) => ({ correct: input === answer, expected: answer, explanation }),
+  };
+}
+
 interface Factor {
   base: bigint;
   exponent: bigint;

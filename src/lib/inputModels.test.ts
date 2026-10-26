@@ -195,6 +195,7 @@ describe('displayAnswer', () => {
     expect(displayAnswer('fraction', '-3/4')).toBe('−3/4');
     expect(displayAnswer('factorization', '2^2×21')).toBe('2² × 21');
     expect(displayAnswer('boolean', 'Ja')).toBe('Ja');
+    expect(displayAnswer('choice', '3/4')).toBe('3/4');
     expect(displayAnswer('expression', '7×(13+87)')).toBe('7 × (13 + 87)');
     expect(displayAnswer('scientific', '10^6')).toBe('10⁶');
   });

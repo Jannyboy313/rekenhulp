@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fromInteger, rational } from '../lib/rational';
 import {
   booleanStep,
+  choiceStep,
   factorizationStep,
   fractionStep,
   numberStep,
@@ -350,6 +351,77 @@ describe('QuestionView', () => {
     expect(ja.classList.contains('dim')).toBe(true);
     expect(ja.disabled && nee.disabled).toBe(true);
     expect(document.querySelector('.advance')).not.toBeNull();
+  });
+
+  describe('multiple choice', () => {
+    const estimate = choiceStep({
+      prompt: 'Welk antwoord ligt het dichtst bij 49 × 81?',
+      options: ['40', '400', '4000', '40 000'],
+      answer: '4000',
+    });
+
+    function options(): HTMLButtonElement[] {
+      return [...document.querySelectorAll<HTMLButtonElement>('.option')];
+    }
+
+    it('shows the four options in order as question text, without keypad or kladblok', () => {
+      render(QuestionView, { props: { step: estimate, onanswer: vi.fn() } });
+      expect(options().map((button) => button.textContent?.trim())).toEqual([
+        '40',
+        '400',
+        '4000',
+        '40 000',
+      ]);
+      expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
+      expect(screen.queryByLabelText('Jouw antwoord')).toBeNull();
+      expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+      expect(document.querySelector('.prompt')?.classList.contains('text')).toBe(true);
+    });
+
+    it('shows a fraction option stacked', () => {
+      const fractions = choiceStep({
+        prompt: 'Welke breuk is het grootst?',
+        options: ['1/2', '2/3', '3/4', '3/5'],
+        answer: '3/4',
+      });
+      render(QuestionView, { props: { step: fractions, onanswer: vi.fn() } });
+      expect(options()[2]?.querySelector('.fraction')).not.toBeNull();
+    });
+
+    it('answers with a single tap, once', async () => {
+      const onanswer = vi.fn();
+      render(QuestionView, { props: { step: estimate, onanswer } });
+      await fireEvent.click(options()[1]!);
+      expect(onanswer).toHaveBeenCalledWith(
+        '400',
+        expect.objectContaining({ correct: false, expected: '4000' }),
+      );
+      await fireEvent.click(options()[2]!);
+      expect(onanswer).toHaveBeenCalledOnce();
+    });
+
+    it('turns the chosen option green after a correct answer and dims the others', async () => {
+      const onanswer = vi.fn();
+      render(QuestionView, { props: { step: estimate, onanswer } });
+      await fireEvent.click(options()[2]!);
+      expect(onanswer).toHaveBeenCalledWith('4000', expect.objectContaining({ correct: true }));
+      const [a, b, chosen, d] = options();
+      expect(chosen?.classList.contains('good')).toBe(true);
+      expect([a, b, d].every((button) => button?.classList.contains('dim'))).toBe(true);
+      expect(options().every((button) => button.disabled)).toBe(true);
+      expect(document.querySelector('.advance')).not.toBeNull();
+    });
+
+    it('fills the slot of a sum with the chosen option', async () => {
+      const sum = choiceStep({
+        prompt: `49 × 81 ≈ ${SLOT}`,
+        options: ['40', '400', '4000', '40 000'],
+        answer: '4000',
+      });
+      render(QuestionView, { props: { step: sum, onanswer: vi.fn() } });
+      await fireEvent.click(options()[2]!);
+      expect(document.querySelector('.prompt .slot.tone-good')?.textContent).toBe('4000');
+    });
   });
 
   describe('kladblok', () => {

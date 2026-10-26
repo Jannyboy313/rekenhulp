@@ -97,9 +97,9 @@ export function applyNoteKey(
   return notes.map((note, i) => (i === index ? applyNote(note, key) : note));
 }
 
-/** Tables are practised from memory, and Ja/Nee steps have no keypad (spec §3.6). */
+/** Tables are practised from memory, and Ja/Nee and choice steps have no keypad (spec §3.6). */
 export function showsScratchpad(topic: Topic, kind: AnswerKind): boolean {
-  return topic !== 'tables' && kind !== 'boolean';
+  return topic !== 'tables' && kind !== 'boolean' && kind !== 'choice';
 }
 
 /** How KeypadAnswer hands the keypad to the kladblok. */

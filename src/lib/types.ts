@@ -9,7 +9,8 @@ export type AnswerKind =
   | 'factorization'
   | 'scientific'
   | 'baseDigits'
-  | 'roman';
+  | 'roman'
+  | 'choice';
 
 /** Topics of the implemented sets. Each new set adds its topics (spec §4.1). */
 export type Topic =
@@ -78,6 +79,8 @@ export interface Step {
   prefix?: string;
   /** Fixed unit shown after the input, e.g. 'cm³' or '%'. */
   suffix?: string;
+  /** The four options of a choice step, in display order (spec §6). */
+  options?: readonly string[];
   check(input: string): CheckResult;
 }
 

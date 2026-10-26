@@ -55,8 +55,8 @@ export interface InputModel<S> {
   select?(state: S, slot: FractionSlot): S;
 }
 
-/** Ja/Nee has no keypad: QuestionView shows two buttons instead. */
-export type KeypadKind = Exclude<AnswerKind, 'boolean'>;
+/** Ja/Nee and multiple choice have no keypad: QuestionView shows buttons instead. */
+export type KeypadKind = Exclude<AnswerKind, 'boolean' | 'choice'>;
 
 /** Typing state per keypad kind. A new keypad kind must add its entry here. */
 interface KeypadStates {
@@ -243,7 +243,7 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
   ),
 };
 
-/** A given answer as it was shown while typing; Ja and Nee are shown as they are. */
+/** A given answer as it was shown while typing; Ja, Nee and a chosen option are shown as they are. */
 export function displayAnswer(kind: AnswerKind, input: string): string {
-  return kind === 'boolean' ? input : INPUT_MODELS[kind].display(input);
+  return kind === 'boolean' || kind === 'choice' ? input : INPUT_MODELS[kind].display(input);
 }

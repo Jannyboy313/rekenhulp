@@ -3,6 +3,7 @@ import { parse } from './expr/parser';
 import { fromInteger, rational } from './rational';
 import {
   booleanStep,
+  choiceStep,
   factorizationStep,
   fractionStep,
   isNormalised,
@@ -327,6 +328,46 @@ describe('booleanStep', () => {
     expect(booleanStep({ prompt: 'Is 13 een priemgetal?', answer: true }).check(NO).expected).toBe(
       'Ja',
     );
+  });
+});
+
+describe('choiceStep', () => {
+  const options = ['40', '400', '4000', '40 000'];
+  const step = choiceStep({
+    prompt: 'Welk antwoord ligt het dichtst bij 49 × 81?',
+    options,
+    answer: '4000',
+    explanation: '49 × 81 ≈ 50 × 80 = 4000',
+  });
+
+  it('is a choice step with its options in the given order and no unit', () => {
+    expect(step.kind).toBe('choice');
+    expect(step.options).toEqual(options);
+    expect(step.prefix).toBeUndefined();
+    expect(step.suffix).toBeUndefined();
+  });
+
+  it('accepts only the answer, without a tip', () => {
+    expect(step.check('4000')).toEqual({
+      correct: true,
+      expected: '4000',
+      explanation: '49 × 81 ≈ 50 × 80 = 4000',
+    });
+    expect(step.check('400')).toEqual({
+      correct: false,
+      expected: '4000',
+      explanation: '49 × 81 ≈ 50 × 80 = 4000',
+    });
+    expect(step.check('4 000').correct).toBe(false);
+  });
+
+  it.each([
+    ['3 options', ['1', '2', '3'], '1'],
+    ['5 options', ['1', '2', '3', '4', '5'], '1'],
+    ['a duplicate option', ['1', '2', '3', '3'], '1'],
+    ['an answer that is not an option', ['1', '2', '3', '4'], '5'],
+  ])('throws for %s', (_, options, answer) => {
+    expect(() => choiceStep({ prompt: 'Welke?', options, answer })).toThrow();
   });
 });
 
