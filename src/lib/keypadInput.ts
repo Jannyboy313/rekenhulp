@@ -1,7 +1,22 @@
 type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+/** The letters of the Talstelsels keypads; C and D are shared by both (spec §6). */
+export type LetterKey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'I' | 'V' | 'X' | 'L' | 'M';
 /** '=' and ' ' (the spatie) are kladblok keys only; the answer reducers ignore them. */
 export type KeypadKey =
-  DigitKey | ',' | '-' | '+' | '×' | ':' | '^' | '(' | ')' | '/' | '=' | ' ' | 'backspace';
+  | DigitKey
+  | LetterKey
+  | ','
+  | '-'
+  | '+'
+  | '×'
+  | ':'
+  | '^'
+  | '('
+  | ')'
+  | '/'
+  | '='
+  | ' '
+  | 'backspace';
 
 /** Maximum number of digits and comma; the sign is not counted. */
 export const MAX_INPUT_LENGTH = 12;
@@ -196,3 +211,28 @@ export function applyScientificKey(value: string, key: KeypadKey): string {
     }
   }
 }
+
+/** Digits of a number in base 2, 5 or 16: 8 covers 11111111 (255) and the longest exercise. */
+export const MAX_BASE_DIGITS_LENGTH = 8;
+
+/** The longest numeral below 4000 is MMMDCCCLXXXVIII (15 characters). */
+export const MAX_ROMAN_LENGTH = 15;
+
+function appendOnly(allowed: ReadonlySet<KeypadKey>, max: number) {
+  return (value: string, key: KeypadKey): string => {
+    if (key === 'backspace') return value.slice(0, -1);
+    return allowed.has(key) && value.length < max ? value + key : value;
+  };
+}
+
+const BASE_DIGIT_KEYS: ReadonlySet<KeypadKey> = new Set<KeypadKey>([
+  ...'0123456789ABCDEF',
+] as KeypadKey[]);
+
+const ROMAN_KEYS: ReadonlySet<KeypadKey> = new Set<KeypadKey>(['I', 'V', 'X', 'L', 'C', 'D', 'M']);
+
+/** Digits of a number in another base (spec §6): 0–9 and A–F, appended only. */
+export const applyBaseDigitsKey = appendOnly(BASE_DIGIT_KEYS, MAX_BASE_DIGITS_LENGTH);
+
+/** Roman numerals (spec §6): I V X L C D M, appended only. */
+export const applyRomanKey = appendOnly(ROMAN_KEYS, MAX_ROMAN_LENGTH);

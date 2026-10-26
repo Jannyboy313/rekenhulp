@@ -156,3 +156,9 @@ describe('scratchpad', () => {
     expect(showsScratchpad('divisibility', 'boolean')).toBe(false);
   });
 });
+
+describe('scratchpad letter keys', () => {
+  it('ignores letters', () => {
+    expect(typeNote(['1', 'A', 'M'])).toBe('1');
+  });
+});

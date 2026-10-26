@@ -36,6 +36,17 @@ export const KEYS: { readonly [K in KeypadKey]: KeyDef & { key: K } } = {
   '/': { key: '/', label: 'breuk', icon: 'fraction' },
   '=': { key: '=', label: '=', ariaLabel: 'is' },
   ' ': { key: ' ', label: '␣', ariaLabel: 'spatie', icon: 'space' },
+  A: digit('A'),
+  B: digit('B'),
+  C: digit('C'),
+  D: digit('D'),
+  E: digit('E'),
+  F: digit('F'),
+  I: digit('I'),
+  V: digit('V'),
+  X: digit('X'),
+  L: digit('L'),
+  M: digit('M'),
   backspace: { key: 'backspace', label: '⌫', ariaLabel: 'wissen' },
 };
 

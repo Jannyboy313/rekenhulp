@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
+  applyBaseDigitsKey,
   applyFactorizationKey,
   applyFractionKey,
   applyKey,
   applyExpressionKey,
+  applyRomanKey,
   applyScientificKey,
   EMPTY_FRACTION_INPUT,
+  MAX_BASE_DIGITS_LENGTH,
+  MAX_ROMAN_LENGTH,
   MAX_EXPRESSION_LENGTH,
   fractionInputToString,
   MAX_FACTORIZATION_LENGTH,
@@ -301,5 +305,49 @@ describe('applyScientificKey', () => {
     const full = '1'.repeat(MAX_SCIENTIFIC_LENGTH);
     expect(applyScientificKey(full, '1')).toBe(full);
     expect(applyScientificKey(full, 'backspace')).toBe(full.slice(0, -1));
+  });
+});
+
+describe('applyBaseDigitsKey', () => {
+  it.each<[string, string, KeypadKey, string]>([
+    ['starts with a letter', '', 'B', 'B'],
+    ['appends a digit', 'B', '4', 'B4'],
+    ['allows a leading zero', '', '0', '0'],
+    ['deletes the last character', 'B4', 'backspace', 'B'],
+    ['ignores backspace on an empty value', '', 'backspace', ''],
+    ['ignores a key above the maximum', '1'.repeat(MAX_BASE_DIGITS_LENGTH), '1', '1'.repeat(8)],
+    ['ignores I', '1', 'I', '1'],
+    ['ignores the comma', '1', ',', '1'],
+    ['ignores the minus', '1', '-', '1'],
+    ['ignores the breuk key', '1', '/', '1'],
+    ['ignores ^', '1', '^', '1'],
+    ['ignores =', '1', '=', '1'],
+    ['ignores the spatie', '1', ' ', '1'],
+  ])('%s', (_, value, key, expected) => {
+    expect(applyBaseDigitsKey(value, key)).toBe(expected);
+  });
+});
+
+describe('applyRomanKey', () => {
+  it.each<[string, string, KeypadKey, string]>([
+    ['appends a symbol', 'MCM', 'X', 'MCMX'],
+    ['ignores A on an empty value', '', 'A', ''],
+    ['ignores a digit', '', '7', ''],
+    ['ignores the comma', '', ',', ''],
+    ['ignores a key above the maximum', 'I'.repeat(MAX_ROMAN_LENGTH), 'I', 'I'.repeat(15)],
+    ['deletes the last character', 'IV', 'backspace', 'I'],
+  ])('%s', (_, value, key, expected) => {
+    expect(applyRomanKey(value, key)).toBe(expected);
+  });
+});
+
+describe('letter keys in the other reducers', () => {
+  it.each<KeypadKey>(['A', 'M'])('ignores %s', (key) => {
+    expect(applyKey('12', key)).toBe('12');
+    expect(applyFactorizationKey('12', key)).toBe('12');
+    expect(applyExpressionKey('12', key)).toBe('12');
+    expect(applyScientificKey('12', key)).toBe('12');
+    const fraction = applyFractionKey(EMPTY_FRACTION_INPUT, key);
+    expect(fraction).toEqual(EMPTY_FRACTION_INPUT);
   });
 });

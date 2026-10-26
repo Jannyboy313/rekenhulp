@@ -20,6 +20,12 @@ describe('KEYS', () => {
     });
     expect(KEYS.backspace).toEqual({ key: 'backspace', label: '⌫', ariaLabel: 'wissen' });
   });
+
+  it('labels every letter with itself', () => {
+    for (const letter of ['A', 'B', 'C', 'D', 'E', 'F', 'I', 'V', 'X', 'L', 'M'] as const) {
+      expect(KEYS[letter]).toEqual({ key: letter, label: letter });
+    }
+  });
 });
 
 describe('keyDefs', () => {
