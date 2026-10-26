@@ -2545,17 +2545,20 @@ Built in steps, each its own session and only when the user says so:
 1. **Docs** — this section, §1 and the roadmap in `CLAUDE.md` (done).
 2. **Framework** — no new exercises:
    - Setup screen (§3.2): a **Niveau** segmented control (radio group, 2 equal segments,
-     **Opfrisser** and **Verdieping**) above the count, in the style of the count control. Not
-     shown for Tafels. The default is Opfrisser. The choice is kept in memory like the count;
-     **Opnieuw** reuses it. The count control is the same at both levels (default 15): the user
-     picks a smaller count for Verdieping when they want.
-   - The Verdieping segment is greyed out and disabled while a set has no Verdieping, with no
-     hint text. After this step that is every set.
+     **Opfrisser** and **Verdieping**) below the count, in the style of the count control. Not
+     shown for Tafels. Every time a set's setup opens from the overview, the level is
+     Opfrisser: unlike the count, the choice is not carried over to another set. **Opnieuw**
+     reuses it. The count control is the same at both levels (default 15): the user picks a
+     smaller count for Verdieping when they want.
+   - The Verdieping segment is greyed out and disabled (`disabled`; the arrow keys skip it)
+     while a set has no Verdieping, with no hint text. After this step that is every set; the
+     framework is tested with a fixture set that has a `deep` config.
    - The level is shown only on the setup screen, not on the play screen (§3.3) or the results
      (§3.5).
-   - Model: `Level = 'quick' | 'deep'` (Opfrisser and Verdieping). A set keeps its current topics, weights and tables share
-     as the quick level and gets an optional `deep` config with its own topics and weights. A set
-     without `deep` disables the segment. The deep config has no tables share: Verdieping mixes
+   - Model: `Level = 'quick' | 'deep'` (Opfrisser and Verdieping). A set keeps its current
+     topics, weights and tables share as the quick level and gets an optional
+     `deep?: readonly TopicWeight[]` with its own topics and weights. A set without `deep`
+     disables the segment. The deep config has no tables share: Verdieping mixes
      in no tables.
    - `buildSession` takes the level and picks the config; the quota algorithm (§4.2) is
      unchanged. "Wat zit erin" (§3.2) shows the topics of the selected level.
