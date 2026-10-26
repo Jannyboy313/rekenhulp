@@ -103,7 +103,8 @@ The app is a state machine in `App.svelte` with four states:
 (lesstof spec §3).
 
 - "Terug" moves from `setup` back to `sets`.
-- "Opnieuw" moves from `results` back to `playing`, with the same set, count and table choice.
+- "Opnieuw" moves from `results` back to `playing`, with the same set, count, level and table
+  choice.
 - "Menu" moves from `results` to `sets`.
 - The system back action (Android back button or gesture, iOS swipe back) never closes the app
   from another screen. On `setup` and `results` it moves to `sets`, like Terug and Menu. On
@@ -132,7 +133,8 @@ The app is a state machine in `App.svelte` with four states:
   the topic name on the left and its detail on the right, both taken from `TOPIC_LABELS`: the
   label `Naam (detail)` is split at the first ` (`; a label without parentheses has no detail.
   For every set except Tafels, the list includes "15% tafels", except when the selected session
-  size is below 10 (§4.2).
+  size is below 10 (§4.2). It shows the topics of the selected level; Verdieping has no tables
+  row (§12.2).
 - **Table choice (Tafels only):** instead of the topic list, Tafels shows the heading "Kies
   tafels" with two small buttons **Alle** and **Geen**, and a grid of 13 toggles, one per table
   (2–9, 11–15, §5.1), five per row. By default all tables are selected. Alle selects all,
@@ -140,14 +142,21 @@ The app is a state machine in `App.svelte` with four states:
   the Tafels set; the 15% tables in the other sets always use all tables. The heading reads
   "Welke tafels?" (no count), and the toggles are pills with `aria-pressed`.
 - **Count:** 5, 10, 15, 25 or 50 exercises, shown as one segmented control (a radio group of 5
-  equal segments). The default is 15.
+  equal segments). The default is 15, at both levels: the user picks a smaller count for
+  Verdieping when they want.
+- **Level (not for Tafels):** below the count, the heading **Niveau** and a segmented control
+  in the same style (a radio group of 2 equal segments, **Opfrisser** and **Verdieping**).
+  Every time a set's setup opens from the overview, the level is Opfrisser: unlike the count,
+  the choice is not carried over to another set. While a set has no Verdieping (§12.2), its
+  segment is greyed out and `disabled`, with no hint text; the arrow keys skip it. The level is
+  shown only here, not on the play screen (§3.3) or the results (§3.5).
 - A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count
-  (the number in a lighter yellow). There is no caption above it.- The chosen count and table choice are kept in memory only while the app stays open; nothing is
-  persisted. **Opnieuw** reuses both.
+  (the number in a lighter yellow). There is no caption above it.
+- The chosen count and table choice are kept in memory only while the app stays open; nothing is
+  persisted. **Opnieuw** reuses them and the level.
 
 Note: the 3-minute target of Opfrisser corresponds to roughly 15 exercises (~12 s each).
-Larger counts are deliberate longer sessions. The level choice (Opfrisser/Verdieping) is added
-to this screen in v3 (§12.2).
+Larger counts are deliberate longer sessions.
 
 ### 3.3 Playing
 
@@ -369,7 +378,8 @@ Ja/Nee steps (prime, divisibility, symmetry, shapeProperties) and property rewri
   correct answer and the tip and explanation; a correct step of a two-step exercise is left
   out. These are the first-attempt mistakes, also when a repeat was correct. Without mistakes:
   "Alles goed!"
-- Buttons **Opnieuw** (new session with the same set, count and table choice) and **Menu**
+- Buttons **Opnieuw** (new session with the same set, count, level and table choice) and
+  **Menu**
 
 ### 3.6 Kladblok (scratchpad)
 
@@ -2543,25 +2553,15 @@ stays mental arithmetic with the kladblok (§1, §12.7). Tafels has no levels: t
 Built in steps, each its own session and only when the user says so:
 
 1. **Docs** — this section, §1 and the roadmap in `CLAUDE.md` (done).
-2. **Framework** — no new exercises:
-   - Setup screen (§3.2): a **Niveau** segmented control (radio group, 2 equal segments,
-     **Opfrisser** and **Verdieping**) below the count, in the style of the count control. Not
-     shown for Tafels. Every time a set's setup opens from the overview, the level is
-     Opfrisser: unlike the count, the choice is not carried over to another set. **Opnieuw**
-     reuses it. The count control is the same at both levels (default 15): the user picks a
-     smaller count for Verdieping when they want.
-   - The Verdieping segment is greyed out and disabled (`disabled`; the arrow keys skip it)
-     while a set has no Verdieping, with no hint text. After this step that is every set; the
-     framework is tested with a fixture set that has a `deep` config.
-   - The level is shown only on the setup screen, not on the play screen (§3.3) or the results
-     (§3.5).
+2. **Framework** (done) — no new exercises. The level choice is in §3.2; until a set gets its
+   step 4, its Verdieping is disabled, and the framework is tested with a fixture set
+   (`lib/setFixture.ts`).
    - Model: `Level = 'quick' | 'deep'` (Opfrisser and Verdieping). A set keeps its current
      topics, weights and tables share as the quick level and gets an optional
      `deep?: readonly TopicWeight[]` with its own topics and weights. A set without `deep`
-     disables the segment. The deep config has no tables share: Verdieping mixes
-     in no tables.
-   - The session is built from the set at the chosen level: for Verdieping its `deep` topics
-     and no tables share; `buildSession` and the quota algorithm (§4.2) are unchanged. "Wat zit erin" (§3.2) shows the topics of the selected level.
+     disables the segment; Tafels never has one. Verdieping mixes in no tables.
+   - `forLevel(set, level)` gives the set at the chosen level (for Verdieping its `deep` topics
+     and no tables share); `buildSession` and the quota algorithm (§4.2) are unchanged.
    - Verdieping topics are their own `Topic` ids and generators (`lib/topics/`), with their own
      labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
 3. **Multiple choice** — the multiple-choice answer kind (§12.5), framework only, right after

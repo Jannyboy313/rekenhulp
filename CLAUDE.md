@@ -30,7 +30,9 @@ Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `an
 `romanNumerals`) and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`,
 `simplifyProblem`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
-Inter, glyphs, correct state with auto-advance, wrong-answer panel).
+Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
+(§12.2 step 2: Niveau on setup, `deep` topics via `forLevel`; no set has a Verdieping yet, so
+it is tested with `lib/setFixture.ts`).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -47,13 +49,12 @@ notation and that every `worked` line is a true equality chain. Keep lesson code
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 
-Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The levels
-framework comes first, then the multiple-choice framework; after them the user picks the next v3
-step. There is no v4.
+Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The
+multiple-choice framework comes first; after it the user picks the next v3 step. There is no
+v4.
 
 | Step                                                                                                       | New infrastructure                   |
 | ---------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set              | level choice on setup, `deep` config |
 | v3: multiple choice (§12.2 step 3, §12.5), framework only                                                  | multiple-choice answer kind          |
 | v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.5), the user picks the order; not Tafels            | —                                    |
 | v3: mixed categories (§12.3), form decided in its spec iteration                                           | sessions across sets                 |
@@ -207,7 +208,9 @@ src/
     promptSize.ts       prompt font size step from the displayed length
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary
-    sets.ts             practice sets (config): topics + weights + tables share
+    sets.ts             practice sets (config): topics + weights + tables share, optional `deep`
+                        (Verdieping); hasDeep, forLevel
+    setFixture.ts       test-only set with a Verdieping
     session.ts          quotas, shuffle, de-duplication, table choice (generatorsFor),
                         repeats (insertRepeat)
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
