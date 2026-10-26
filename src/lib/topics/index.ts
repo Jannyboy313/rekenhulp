@@ -23,6 +23,7 @@ import { generatePercentagePoints } from './percentagePoints';
 import { generatePercentChange } from './percentChange';
 import { generatePerimeterArea } from './perimeterArea';
 import { generatePowersRoots } from './powersRoots';
+import { generateProbability } from './probability';
 import { generateProperties } from './properties';
 import { generatePythagoras } from './pythagoras';
 import { generateRatioProblems } from './ratioProblems';
@@ -82,6 +83,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   sequences: generateSequences,
   formulas: generateFormulas,
   equations: generateEquations,
+  probability: generateProbability,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -127,4 +129,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   sequences: 'Rijen (volgende getal, n-de getal, driehoeksgetallen)',
   formulas: 'Formules (invullen, startgetal en hellingsgetal)',
   equations: 'Vergelijkingen (x oplossen)',
+  probability: 'Kans (dobbelsteen, knikkers)',
 };

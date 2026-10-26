@@ -46,7 +46,8 @@ export type Topic =
   | 'percentagePoints'
   | 'sequences'
   | 'formulas'
-  | 'equations';
+  | 'equations'
+  | 'probability';
 
 export interface CheckResult {
   correct: boolean;
