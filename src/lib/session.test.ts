@@ -9,7 +9,9 @@ import {
   MAX_UNIQUE_ATTEMPTS,
   tablesCount,
 } from './session';
+import { DEEP_FIXTURE_SET } from './setFixture';
 import {
+  forLevel,
   FRACTIONS_SET,
   GEOMETRY_SET,
   HEURISTICS_SET,
@@ -408,5 +410,22 @@ describe('buildSession for Heuristieken', () => {
     const questions = buildSession(HEURISTICS_SET, size, createRng(size));
     expect(questions).toHaveLength(size);
     expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
+describe('buildSession for Verdieping', () => {
+  const deep = forLevel(DEEP_FIXTURE_SET, 'deep');
+  const counts = (size: number) => {
+    const topics = buildSession(deep, size, createRng(size)).map((q) => q.topic);
+    const count = (topic: string) => topics.filter((t) => t === topic).length;
+    return { lcm: count('lcm'), gcd: count('gcd'), total: topics.length };
+  };
+
+  it('splits 15 by the weights 2 : 1, with no tables', () => {
+    expect(counts(15)).toEqual({ lcm: 10, gcd: 5, total: 15 });
+  });
+
+  it('splits 5 by largest remainder', () => {
+    expect(counts(5)).toEqual({ lcm: 3, gcd: 2, total: 5 });
   });
 });

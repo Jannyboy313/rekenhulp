@@ -1,5 +1,5 @@
 import { TOPIC_LABELS } from './topics';
-import type { PracticeSet } from './types';
+import type { Level, PracticeSet } from './types';
 
 export const SESSION_SIZES: readonly number[] = [5, 10, 15, 25, 50];
 export const DEFAULT_SESSION_SIZE = 15;
@@ -169,6 +169,17 @@ export const PRACTICE_SETS: readonly PracticeSet[] = [
 /** Only the Tafels set lets the user choose which tables to practise (spec §3.2). */
 export function choosesTables(set: PracticeSet): boolean {
   return set.tablesPercent === 100;
+}
+
+/** Tafels has no levels: its table choice already sets what is practised (spec §12.2). */
+export function hasDeep(set: PracticeSet): boolean {
+  return !choosesTables(set) && (set.deep?.length ?? 0) > 0;
+}
+
+/** The set at a level: Verdieping has its own topics and no tables share (spec §12.2). */
+export function forLevel(set: PracticeSet, level: Level): PracticeSet {
+  if (level === 'quick' || !set.deep || !hasDeep(set)) return set;
+  return { ...set, topics: set.deep, tablesPercent: 0 };
 }
 
 /** Sessions below this size get no mixed-in table exercises (spec §4.2). */

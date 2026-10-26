@@ -105,4 +105,9 @@ export interface PracticeSet {
   topics: readonly TopicWeight[];
   /** Integer percentage of table exercises: 100 for Tafels, 15 for the other sets. */
   tablesPercent: number;
+  /** Verdieping topics (spec §12.2); without them the set has Opfrisser only. */
+  deep?: readonly TopicWeight[];
 }
+
+/** Opfrisser and Verdieping (spec §12.2). */
+export type Level = 'quick' | 'deep';

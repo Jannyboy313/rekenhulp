@@ -3,8 +3,10 @@ import {
   choosesTables,
   DEFAULT_SESSION_SIZE,
   describeSetTopicRows,
+  forLevel,
   FRACTIONS_SET,
   GEOMETRY_SET,
+  hasDeep,
   HEURISTICS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
@@ -18,8 +20,9 @@ import {
   splitTopicLabel,
   TABLES_SET,
 } from './sets';
+import { DEEP_FIXTURE_SET } from './setFixture';
 import { TOPIC_LABELS } from './topics';
-import type { PracticeSet } from './types';
+import type { Level, PracticeSet } from './types';
 
 describe('splitTopicLabel', () => {
   it.each([
@@ -369,5 +372,39 @@ describe('Heuristieken set', () => {
       'Vereenvoudigen (Gauss, tellen, figuurpatronen)',
       '15% tafels',
     ]);
+  });
+});
+
+describe('levels', () => {
+  it('gives no real set a Verdieping yet (spec §12.2 step 2)', () => {
+    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([]);
+  });
+
+  it('knows the fixture has a Verdieping, but not an empty one or one for Tafels', () => {
+    expect(hasDeep(DEEP_FIXTURE_SET)).toBe(true);
+    expect(hasDeep({ ...DEEP_FIXTURE_SET, deep: [] })).toBe(false);
+    expect(hasDeep({ ...TABLES_SET, deep: [{ topic: 'lcm', weight: 1 }] })).toBe(false);
+  });
+
+  it('returns the set itself for Opfrisser and for a set without Verdieping', () => {
+    expect(forLevel(DEEP_FIXTURE_SET, 'quick')).toBe(DEEP_FIXTURE_SET);
+    expect(forLevel(NUMBERS_SET, 'deep')).toBe(NUMBERS_SET);
+    const empty = { ...DEEP_FIXTURE_SET, deep: [] };
+    expect(forLevel(empty, 'deep')).toBe(empty);
+  });
+
+  it('swaps in the Verdieping topics without a tables share', () => {
+    const deep = forLevel(DEEP_FIXTURE_SET, 'deep');
+    expect(deep.id).toBe(DEEP_FIXTURE_SET.id);
+    expect(deep.name).toBe(DEEP_FIXTURE_SET.name);
+    expect(deep.topics).toEqual(DEEP_FIXTURE_SET.deep);
+    expect(deep.tablesPercent).toBe(0);
+  });
+
+  it('lists the topics of the chosen level', () => {
+    const names = (level: Level) =>
+      describeSetTopicRows(forLevel(DEEP_FIXTURE_SET, level), 15).map((row) => row.name);
+    expect(names('quick')).toEqual(['Priemgetal of niet', '15% tafels']);
+    expect(names('deep')).toEqual(['KGV', 'GGD']);
   });
 });
