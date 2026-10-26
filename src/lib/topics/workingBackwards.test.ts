@@ -217,8 +217,14 @@ describe('generateWorkingBackwards', () => {
       parts[part as keyof typeof parts]++;
       if (first === 'true') partFirst++;
       const prompt = stepOf(question).prompt;
-      expect(PART_ITEMS.some((item) => prompt.includes(`uit aan ${item}.`)), prompt).toBe(true);
-      expect(AMOUNT_ITEMS.some((item) => prompt.includes(`uit aan ${item}.`)), prompt).toBe(true);
+      expect(
+        PART_ITEMS.some((item) => prompt.includes(`uit aan ${item}.`)),
+        prompt,
+      ).toBe(true);
+      expect(
+        AMOUNT_ITEMS.some((item) => prompt.includes(`uit aan ${item}.`)),
+        prompt,
+      ).toBe(true);
       const rest = moneyRest(start, expenses(part as Expenses['part'], amount, first === 'true'));
       expect(rest, question.key).not.toBeNull();
       expect(rest!, question.key).toBeGreaterThanOrEqual(1);

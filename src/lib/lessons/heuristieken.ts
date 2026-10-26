@@ -236,7 +236,10 @@ export const HEURISTICS_LESSON: Lesson = {
           ],
         },
         { type: 'worked', title: 'Figuur 20', lines: ['4 + 19 × 3 = 4 + 57 = 61'] },
-        { type: 'text', text: 'Elke figuur heeft 3 lucifers meer; van figuur 1 naar 20 zijn 19 stappen.' },
+        {
+          type: 'text',
+          text: 'Elke figuur heeft 3 lucifers meer; van figuur 1 naar 20 zijn 19 stappen.',
+        },
         {
           type: 'text',
           text: 'Of via figuur 0: de figuur vóór figuur 1 zou 4 − 3 = 1 lucifer hebben.',

@@ -227,10 +227,20 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
   },
   // Every input is valid: the keys only append, so there is no inline error.
   baseDigits: {
-    ...textModel(BASE_DIGITS_KEYS, applyBaseDigitsKey, () => null, (input) => input),
+    ...textModel(
+      BASE_DIGITS_KEYS,
+      applyBaseDigitsKey,
+      () => null,
+      (input) => input,
+    ),
     columns: 4,
   },
-  roman: textModel(ROMAN_KEYS, applyRomanKey, () => null, (input) => input),
+  roman: textModel(
+    ROMAN_KEYS,
+    applyRomanKey,
+    () => null,
+    (input) => input,
+  ),
 };
 
 /** A given answer as it was shown while typing; Ja and Nee are shown as they are. */

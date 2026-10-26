@@ -184,7 +184,10 @@ describe('generateSystematicCounting', () => {
         case 'menu':
           expect(numbers, question.key).toHaveLength(3);
           for (const count of numbers) expect(within(count, 2, 6), question.key).toBe(true);
-          expect(numbers.reduce((a, b) => a * b), question.key).toBeLessThanOrEqual(120);
+          expect(
+            numbers.reduce((a, b) => a * b),
+            question.key,
+          ).toBeLessThanOrEqual(120);
           break;
         case 'handen':
         case 'competitie':

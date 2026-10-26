@@ -1,12 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
 import type { Question } from '../types';
-import {
-  additiveValue,
-  generateRomanNumerals,
-  romanGroups,
-  toRoman,
-} from './romanNumerals';
+import { additiveValue, generateRomanNumerals, romanGroups, toRoman } from './romanNumerals';
 import { stepOf } from './testHelpers';
 
 const SAMPLES = 1000;

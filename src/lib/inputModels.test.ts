@@ -202,9 +202,25 @@ describe('displayAnswer', () => {
 
 describe('letter input models', () => {
   it('lays out the baseDigits keypad in 4 columns', () => {
-    expect(labels('baseDigits')).toEqual(
-      ['7', '8', '9', 'A', '4', '5', '6', 'B', '1', '2', '3', 'C', '0', 'D', 'E', 'F', '⌫'],
-    );
+    expect(labels('baseDigits')).toEqual([
+      '7',
+      '8',
+      '9',
+      'A',
+      '4',
+      '5',
+      '6',
+      'B',
+      '1',
+      '2',
+      '3',
+      'C',
+      '0',
+      'D',
+      'E',
+      'F',
+      '⌫',
+    ]);
     expect(INPUT_MODELS.baseDigits.columns).toBe(4);
   });
 

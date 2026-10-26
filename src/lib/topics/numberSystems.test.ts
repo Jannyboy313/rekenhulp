@@ -115,9 +115,7 @@ describe('generateNumberSystems', () => {
     expect(stepOf(find('to', 2, 8)).check('').explanation).toBe(
       '1 × 8 + 0 × 4 + 0 × 2 + 0 × 1 = 8',
     );
-    expect(stepOf(find('to', 16, 160)).check('').explanation).toBe(
-      'A = 10: 10 × 16 + 0 × 1 = 160',
-    );
+    expect(stepOf(find('to', 16, 160)).check('').explanation).toBe('A = 10: 10 × 16 + 0 × 1 = 160');
     expect(stepOf(find('from', 2, 32)).check('').explanation).toBe(
       '32 = 1 × 32 + 0 × 16 + 0 × 8 + 0 × 4 + 0 × 2 + 0 × 1 → 100000',
     );

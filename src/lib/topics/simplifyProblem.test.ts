@@ -182,12 +182,8 @@ describe('question text', () => {
     expect(divisibleQuestion(100, 7).key).toBe('simplifyProblem:divisible:100:7');
     expect(inclusiveCountQuestion(37, 82).key).toBe('simplifyProblem:inclusive:37:82');
     expect(fencePostQuestion(5, 8).key).toBe('simplifyProblem:posts:5:8');
-    expect(figureQuestion('tafels', 15, true).key).toBe(
-      'simplifyProblem:figure:tafels:15:reverse',
-    );
-    expect(figureQuestion('tafels', 15, false).key).toBe(
-      'simplifyProblem:figure:tafels:15:value',
-    );
+    expect(figureQuestion('tafels', 15, true).key).toBe('simplifyProblem:figure:tafels:15:reverse');
+    expect(figureQuestion('tafels', 15, false).key).toBe('simplifyProblem:figure:tafels:15:value');
   });
 });
 
