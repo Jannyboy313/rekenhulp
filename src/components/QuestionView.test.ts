@@ -555,3 +555,23 @@ describe('QuestionView', () => {
     });
   });
 });
+
+describe('QuestionView letter input', () => {
+  const roman: Step = {
+    kind: 'roman',
+    prompt: 'Schrijf 14 met Romeinse cijfers.',
+    check: (input) => ({ correct: input === 'XIV', expected: 'XIV' }),
+  };
+
+  it('types a Roman numeral with the symbol keys and submits it on OK', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step: roman, onanswer } });
+    for (const symbol of ['I', 'V', 'X', 'L', 'C', 'D', 'M']) {
+      expect(screen.getByRole('button', { name: symbol })).toBeTruthy();
+    }
+    await press('X', 'I', 'V');
+    expect(answerText()).toBe('XIV');
+    await press('OK');
+    expect(onanswer).toHaveBeenCalledOnce();
+  });
+});

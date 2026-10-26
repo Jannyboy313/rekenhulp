@@ -6,10 +6,12 @@ import {
   formatScientificInput,
 } from './format';
 import {
+  applyBaseDigitsKey,
   applyExpressionKey,
   applyFactorizationKey,
   applyFractionKey,
   applyKey,
+  applyRomanKey,
   applyScientificKey,
   EMPTY_FRACTION_INPUT,
   fractionInputToString,
@@ -18,7 +20,7 @@ import {
   type FractionSlot,
   type KeypadKey,
 } from './keypadInput';
-import { keyDefs, type KeyDef } from './keys';
+import { keyDefs, KEYS, type KeyDef } from './keys';
 import { parseAnswer, parseFactorization, parseScientific } from './steps';
 import type { AnswerKind } from './types';
 
@@ -63,6 +65,8 @@ interface KeypadStates {
   expression: string;
   factorization: string;
   scientific: string;
+  baseDigits: string;
+  roman: string;
 }
 
 export const INVALID_NUMBER = 'Ongeldig getal';
@@ -123,6 +127,27 @@ const SCIENTIFIC_KEYS = keyDefs(
   '1', '2', '3', '-',
   'backspace', '0', ',',
 );
+
+/** Digits in a fourth column and the bottom row for A–F (spec §6); OK fills the last row. */
+// prettier-ignore
+const BASE_DIGITS_KEYS = keyDefs(
+  '7', '8', '9', 'A',
+  '4', '5', '6', 'B',
+  '1', '2', '3', 'C',
+  '0', 'D', 'E', 'F',
+  'backspace',
+);
+
+/** Four rows of three columns: M spans two next to ⌫, and OK fills the last row (spec §6). */
+// prettier-ignore
+const ROMAN_KEYS: readonly KeyDef[] = [
+  ...keyDefs(
+    'I', 'V', 'X',
+    'L', 'C', 'D',
+    'backspace',
+  ),
+  { ...KEYS.M, span: 2 },
+];
 
 /** A model whose typing state is the input string itself. */
 function textModel(
@@ -200,6 +225,12 @@ export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates
     ),
     columns: 4,
   },
+  // Every input is valid: the keys only append, so there is no inline error.
+  baseDigits: {
+    ...textModel(BASE_DIGITS_KEYS, applyBaseDigitsKey, () => null, (input) => input),
+    columns: 4,
+  },
+  roman: textModel(ROMAN_KEYS, applyRomanKey, () => null, (input) => input),
 };
 
 /** A given answer as it was shown while typing; Ja and Nee are shown as they are. */

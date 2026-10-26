@@ -6,6 +6,8 @@ export interface KeyDef {
   ariaLabel?: string;
   /** Drawn instead of the label: a stacked fraction (breuk), x with a raised n (^), an open box. */
   icon?: 'fraction' | 'power' | 'space';
+  /** Grid columns the key spans, 1 when absent; set by a keypad on its own copy, not in KEYS. */
+  span?: number;
 }
 
 const digit = <K extends KeypadKey>(key: K) => ({ key, label: key });
@@ -57,10 +59,14 @@ export function keyDefs(...keys: readonly KeypadKey[]): readonly KeyDef[] {
 
 /** Columns that OK spans, so that it fills the last row of the keypad. */
 export function okSpan(keys: readonly KeyDef[], columns = 3): number {
-  return columns - (keys.length % columns);
+  return columns - (cells(keys) % columns);
 }
 
 /** Rows of the keypad including the OK key; the key height follows from it (spec §6). */
 export function keyRows(keys: readonly KeyDef[], columns = 3): number {
-  return (keys.length + okSpan(keys, columns)) / columns;
+  return (cells(keys) + okSpan(keys, columns)) / columns;
+}
+
+function cells(keys: readonly KeyDef[]): number {
+  return keys.reduce((sum, { span = 1 }) => sum + span, 0);
 }

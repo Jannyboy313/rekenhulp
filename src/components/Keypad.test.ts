@@ -96,3 +96,17 @@ describe('Keypad', () => {
     expect(rows({ keys: INPUT_MODELS.scientific.keys, columns: 4 })).toBe('4');
   });
 });
+
+describe('Keypad with a spanning key', () => {
+  it('sets 4 rows for the roman keypad and lets M span 2 columns', () => {
+    const { container } = render(Keypad, {
+      props: { keys: INPUT_MODELS.roman.keys, canSubmit: true, onkey: vi.fn(), onsubmit: vi.fn() },
+    });
+    expect(container.querySelector<HTMLElement>('.keypad')!.style.getPropertyValue('--rows')).toBe(
+      '4',
+    );
+    expect(screen.getByRole('button', { name: 'M' }).style.gridColumn).toBe('span 2');
+    expect(screen.getByRole('button', { name: 'I' }).style.gridColumn).toBe('');
+    expect(screen.getByRole('button', { name: 'OK' }).style.gridColumn).toBe('span 3');
+  });
+});

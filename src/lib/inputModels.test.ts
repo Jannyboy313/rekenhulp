@@ -199,3 +199,36 @@ describe('displayAnswer', () => {
     expect(displayAnswer('scientific', '10^6')).toBe('10⁶');
   });
 });
+
+describe('letter input models', () => {
+  it('lays out the baseDigits keypad in 4 columns', () => {
+    expect(labels('baseDigits')).toEqual(
+      ['7', '8', '9', 'A', '4', '5', '6', 'B', '1', '2', '3', 'C', '0', 'D', 'E', 'F', '⌫'],
+    );
+    expect(INPUT_MODELS.baseDigits.columns).toBe(4);
+  });
+
+  it('lays out the roman keypad in 3 columns with M over two', () => {
+    expect(labels('roman')).toEqual(['I', 'V', 'X', 'L', 'C', 'D', '⌫', 'M']);
+    expect(INPUT_MODELS.roman.columns).toBeUndefined();
+    expect(INPUT_MODELS.roman.keys.at(-1)?.span).toBe(2);
+    expect(INPUT_MODELS.roman.keys.filter(({ span }) => span !== undefined)).toHaveLength(1);
+  });
+
+  it('accepts every input and shows it as typed', () => {
+    expect(INPUT_MODELS.baseDigits.validate('B4')).toBeNull();
+    expect(INPUT_MODELS.roman.validate('IIII')).toBeNull();
+    expect(INPUT_MODELS.baseDigits.display('B4')).toBe('B4');
+    expect(INPUT_MODELS.roman.view('MCM')).toEqual([{ type: 'text', text: 'MCM' }]);
+    expect(INPUT_MODELS.roman.view('')).toEqual([]);
+    expect(displayAnswer('roman', 'XIV')).toBe('XIV');
+  });
+
+  it('types letters and enables OK for any non-empty input', () => {
+    const model = INPUT_MODELS.baseDigits;
+    const typed = model.apply(model.apply(model.empty, 'B'), '4');
+    expect(typed).toBe('B4');
+    expect(model.canSubmit(typed)).toBe(true);
+    expect(model.canSubmit('')).toBe(false);
+  });
+});

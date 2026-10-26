@@ -2,7 +2,14 @@ import type { Rng } from './random';
 
 /** How a step is answered (spec §6). */
 export type AnswerKind =
-  'number' | 'fraction' | 'boolean' | 'expression' | 'factorization' | 'scientific';
+  | 'number'
+  | 'fraction'
+  | 'boolean'
+  | 'expression'
+  | 'factorization'
+  | 'scientific'
+  | 'baseDigits'
+  | 'roman';
 
 /** Topics of the implemented sets. Each new set adds its topics (spec §4.1). */
 export type Topic =

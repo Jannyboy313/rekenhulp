@@ -40,11 +40,12 @@
   style:--columns={columns}
   style:--rows={keyRows(keys, columns)}
 >
-  {#each keys as { key, label, ariaLabel, icon } (key)}
+  {#each keys as { key, label, ariaLabel, icon, span } (key)}
     <button
       type="button"
       class="key"
       class:digit={/^\d$/.test(key)}
+      style:grid-column={span === undefined ? undefined : `span ${span}`}
       aria-label={ariaLabel ?? label}
       {disabled}
       use:press={() => onkey(key)}

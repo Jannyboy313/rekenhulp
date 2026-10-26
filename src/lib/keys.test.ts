@@ -94,3 +94,16 @@ describe('backspace position', () => {
     expect(keys.length - index).toBeLessThanOrEqual(columns);
   });
 });
+
+describe('keys with a span', () => {
+  it('counts a spanning key as its columns', () => {
+    expect(okSpan(INPUT_MODELS.baseDigits.keys, 4)).toBe(3);
+    expect(okSpan(INPUT_MODELS.roman.keys, 3)).toBe(3);
+    expect(keyRows(INPUT_MODELS.baseDigits.keys, 4)).toBe(5);
+    expect(keyRows(INPUT_MODELS.roman.keys, 3)).toBe(4);
+  });
+
+  it('keeps the catalogue free of spans', () => {
+    for (const def of Object.values(KEYS)) expect(def.span).toBeUndefined();
+  });
+});
