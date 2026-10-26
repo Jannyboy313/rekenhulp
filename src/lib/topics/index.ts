@@ -42,6 +42,7 @@ import { generateSquares } from './squares';
 import { generateStatistics } from './statistics';
 import { generateSymmetry } from './symmetry';
 import { generateSystematicCounting } from './systematicCounting';
+import { generateWorkingBackwards } from './workingBackwards';
 import { generateTables } from './tables';
 
 export const GENERATORS: Record<Topic, Generator> = {
@@ -90,6 +91,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   equations: generateEquations,
   probability: generateProbability,
   systematicCounting: generateSystematicCounting,
+  workingBackwards: generateWorkingBackwards,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -139,4 +141,5 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   equations: 'Vergelijkingen (x oplossen)',
   probability: 'Kans (dobbelsteen, knikkers)',
   systematicCounting: 'Systematisch tellen (combinaties, handdrukken, volgordes)',
+  workingBackwards: 'Terugrekenen (ik denk aan een getal, geld over)',
 };

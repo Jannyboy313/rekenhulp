@@ -57,7 +57,8 @@ export type Topic =
   | 'probability'
   | 'numberSystems'
   | 'romanNumerals'
-  | 'systematicCounting';
+  | 'systematicCounting'
+  | 'workingBackwards';
 
 export interface CheckResult {
   correct: boolean;
