@@ -32,8 +32,8 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- The v1 topics and the completed v2 sets in §4 are implemented. The rest of v2 and v3 are on
-  the roadmap (§12), and the architecture must make adding them cheap.
+- The v1 topics and all v2 sets in §4 are implemented. v3 is on the roadmap (§12), and the
+  architecture must make adding it cheap.
 
 ## 2. Platform & stack
 
@@ -2510,7 +2510,7 @@ in each set's own spec iteration.
    - `romanNumerals`: Roman numerals ↔ decimal.
    - Infrastructure: two letter answer kinds, `baseDigits` (`0`–`9`, `A`–`F`) and `roman`
      (`I V X L C D M`) (§6).
-8. **Heuristieken** (new set; LKT) — specified in §5.41–§5.44
+8. **Heuristieken** (new set; LKT) — done, specified in §5.41–§5.44
    - Short generated puzzles with a number as the answer. The explanation names the
      heuristic.
    - `systematicCounting`: combinations, handshakes and orderings.

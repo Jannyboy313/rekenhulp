@@ -23,14 +23,15 @@ Done: the sets Tafels, Meten (v1 + v2: `speed`), Verhoudingen (v1 + v2: `percent
 `ratioProblems`), Getallen & delers, Bewerkingen, Getalbegrip,
 Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
 `symmetry`, `shapeProperties`) and Verbanden & statistiek (`statistics`, `percentagePoints`,
-`sequences`, `formulas`, `equations`, `probability`) and Talstelsels (`numberSystems`,
-`romanNumerals`), plus stacked fractions, the kladblok (§3.6), repeat until correct
+`sequences`, `formulas`, `equations`, `probability`), Talstelsels (`numberSystems`,
+`romanNumerals`) and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`,
+`simplifyProblem`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
-content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); the Tafels row is
-disabled. The
+content checks, back guard). Lessons done: every set except Tafels and Heuristieken (`lib/lessons/<set>.ts`); their rows
+are disabled. The
 lesstof is developed separately from the practice sets and is not part of the roadmap below: no
 fixed order, content only when the user asks for it (iterate its spec §7 first). Linking from
 other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not used
@@ -44,12 +45,10 @@ notation and that every `worked` line is a true equality chain. Keep lesson code
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 
-Next sets, in this order (topics and reasons in spec §12.1), one at a time and only when the user
-says so:
+Next steps, in this order (spec §12.2–§12.3), one at a time and only when the user says so:
 
-| Set                                                                                                     | New infrastructure                   |
+| Step                                                                                                    | New infrastructure                   |
 | ------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| **Heuristieken** (LKT): `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`    | check the longest prompts on a phone |
 | v3: levels Opfrisser/Verdieping (§12.2), step 2: framework, Verdieping disabled for every set           | level choice on setup, `deep` config |
 | v3: Verdieping per set (§12.2 step 3), one set at a time in no fixed order (the user picks); not Tafels | —                                    |
 | v3: multiple choice (§12.3)                                                                             | multiple-choice answer kind          |
