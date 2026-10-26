@@ -166,6 +166,18 @@ describe('SetupScreen level', () => {
     expect(rowNames()).toEqual(['KGV', 'GGD']);
   });
 
+  it('enables Verdieping for Meten and lists its four topics', async () => {
+    renderSetup(MEASUREMENT_SET);
+    expect(levelRadio('Verdieping').disabled).toBe(false);
+    await fireEvent.click(levelRadio('Verdieping'));
+    expect(rowNames()).toEqual([
+      'Samengestelde grootheden',
+      'Rekenen met maten',
+      'Rekenen met tijd',
+      'Schatten',
+    ]);
+  });
+
   it('moves to Verdieping with the arrow keys and focuses it', async () => {
     renderSetup(DEEP_FIXTURE_SET);
     await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });

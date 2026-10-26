@@ -419,6 +419,26 @@ describe('buildSession for Heuristieken', () => {
   });
 });
 
+describe('buildSession for Meten Verdieping', () => {
+  const deep = forLevel(MEASUREMENT_SET, 'deep');
+
+  it('has no tables and splits 15 over the four topics as 4 + 4 + 4 + 3 (spec §4.2)', () => {
+    const questions = buildSession(deep, 15, createRng(3));
+    const counts = new Map<string, number>();
+    for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    expect(counts.has('tables')).toBe(false);
+    expect(deep.topics.map(({ topic }) => counts.get(topic) ?? 0).sort((a, b) => a - b)).toEqual([
+      3, 4, 4, 4,
+    ]);
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(deep, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
 describe('buildSession for Verdieping', () => {
   const deep = forLevel(DEEP_FIXTURE_SET, 'deep');
   const counts = (size: number) => {

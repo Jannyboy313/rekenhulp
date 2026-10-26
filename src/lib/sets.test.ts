@@ -384,8 +384,24 @@ describe('Heuristieken set', () => {
 });
 
 describe('levels', () => {
-  it('gives no real set a Verdieping yet (spec §12.2 step 2)', () => {
-    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([]);
+  it('gives Meten the only real Verdieping so far (spec §12.2 step 4)', () => {
+    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([MEASUREMENT_SET]);
+    expect(hasDeep(MEASUREMENT_SET)).toBe(true);
+  });
+
+  it('lists the four Meten Verdieping topics without a tables row', () => {
+    expect(describeSetTopicRows(forLevel(MEASUREMENT_SET, 'deep'), 15).map((row) => row.name)).toEqual([
+      'Samengestelde grootheden',
+      'Rekenen met maten',
+      'Rekenen met tijd',
+      'Schatten',
+    ]);
+    expect(MEASUREMENT_SET.deep).toEqual([
+      { topic: 'compoundUnits', weight: 1 },
+      { topic: 'measureProblems', weight: 1 },
+      { topic: 'timeCalc', weight: 1 },
+      { topic: 'estimating', weight: 1 },
+    ]);
   });
 
   it('knows the fixture has a Verdieping, but not an empty one or one for Tafels', () => {

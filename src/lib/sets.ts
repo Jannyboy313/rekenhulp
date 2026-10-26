@@ -30,6 +30,12 @@ export const MEASUREMENT_SET: PracticeSet = {
     { topic: 'measureSense', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'compoundUnits', weight: 1 },
+    { topic: 'measureProblems', weight: 1 },
+    { topic: 'timeCalc', weight: 1 },
+    { topic: 'estimating', weight: 1 },
+  ],
 };
 
 /** Five equally weighted topics: the v1 pair plus the v2 additions (spec §4.1). */
