@@ -2933,8 +2933,16 @@ iteration.
 ### 12.4 v3 — practice test (oefentoets)
 
 Comes after mixed categories (§12.3), whose mixing it reuses. A session in the style of a PABO
-test. Its form (composition, count, level, feedback during or after the test) is decided in its
-own spec iteration. The non-goals of §1 hold: no stored results or history.
+test. Its form (composition, count, level, the pass mark) is decided in its own spec iteration.
+The non-goals of §1 hold: no stored results or history.
+
+Feedback is given only after the test, unlike a practice session (§3.4):
+
+- No repeat of wrong answers, and no sign during the test that an answer was wrong (no correct or
+  wrong state, no wrong-answer panel, no tips).
+- The mistakes are shown only on the results screen.
+- The results screen says whether the user passes or fails, and on which topics they still need to
+  practise.
 
 Within v3, after the levels and multiple-choice frameworks (§12.2 steps 2–3), the user picks
 the next step: a set (§12.2 step 4), mixed categories or the practice test.
