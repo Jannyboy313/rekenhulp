@@ -19,6 +19,8 @@ not all of it:
 - RWT scope (gaps in §12.5, check in §12.6): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
   next to it is leading
+- ideas (feature ideas that are not specced or planned): `docs/ideas.md`; add new ideas there,
+  not to the spec
 
 ## Status
 
