@@ -1,12 +1,12 @@
 import { formatInteger as f, MINUS } from '../format';
-import { randomInt, type Rng } from '../random';
+import { pick, randomInt, type Rng } from '../random';
 import { fromInteger } from '../rational';
 import { numberStep } from '../steps';
 import { exactTip, type Diagnose } from '../tips';
 import type { Question } from '../types';
 
 // Guess and check (spec §5.43).
-export type KindsContext = 'boerderij' | 'stalling';
+export type KindsContext = 'boerderij' | 'stalling' | 'weide' | 'garage';
 
 export interface Kind {
   singular: string;
@@ -24,6 +24,14 @@ export const KINDS: Readonly<Record<KindsContext, readonly [Kind, Kind]>> = {
   stalling: [
     { singular: 'fiets', plural: 'fietsen', per: 2 },
     { singular: 'driewieler', plural: 'driewielers', per: 3 },
+  ],
+  weide: [
+    { singular: 'eend', plural: 'eenden', per: 2 },
+    { singular: 'schaap', plural: 'schapen', per: 4 },
+  ],
+  garage: [
+    { singular: 'motor', plural: 'motoren', per: 2 },
+    { singular: 'auto', plural: "auto's", per: 4 },
   ],
 };
 
@@ -43,6 +51,22 @@ const CONTEXTS = {
     guess: (total: number) => `stel dat alle ${total} fietsen zijn`,
     part: ['wiel', 'wielen'],
     each: 'elke driewieler',
+  },
+  weide: {
+    prompt: (total: number, parts: number) =>
+      `Op een weide lopen eenden en schapen. Samen hebben ze ${total} koppen en ${parts} poten.`,
+    question: (plural: string) => `Hoeveel ${plural} zijn er?`,
+    guess: (total: number) => `stel dat alle ${total} dieren eenden zijn`,
+    part: ['poot', 'poten'],
+    each: 'elk schaap',
+  },
+  garage: {
+    prompt: (total: number, parts: number) =>
+      `In een garage staan motoren en auto's, samen ${total} stuks met ${parts} wielen.`,
+    question: (plural: string) => `Hoeveel ${plural} staan er?`,
+    guess: (total: number) => `stel dat alle ${total} voertuigen motoren zijn`,
+    part: ['wiel', 'wielen'],
+    each: 'elke auto',
   },
 } as const;
 
@@ -133,7 +157,7 @@ export function sumDifferenceQuestion(
 }
 
 function drawTwoKinds(rng: Rng): Question {
-  const context: KindsContext = rng() < 0.5 ? 'boerderij' : 'stalling';
+  const context = pick(rng, Object.keys(KINDS) as KindsContext[]);
   const total = randomInt(rng, 5, 20);
   const second = randomInt(rng, 1, total - 1);
   return twoKindsQuestion(context, total - second, second, rng() < 0.5);
@@ -141,7 +165,7 @@ function drawTwoKinds(rng: Rng): Question {
 
 function drawSumDifference(rng: Rng): Question {
   const askLarger = rng() < 0.5;
-  const sum = 2 * randomInt(rng, 5, 50);
+  const sum = 2 * randomInt(rng, 5, 100);
   const smaller = randomInt(rng, 1, sum / 2 - 1);
   return sumDifferenceQuestion(sum - smaller, smaller, askLarger);
 }

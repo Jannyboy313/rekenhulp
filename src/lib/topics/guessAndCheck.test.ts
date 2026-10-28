@@ -19,6 +19,14 @@ describe('KINDS', () => {
       ['fietsen', 2],
       ['driewielers', 3],
     ]);
+    expect(KINDS.weide.map((kind) => [kind.plural, kind.per])).toEqual([
+      ['eenden', 2],
+      ['schapen', 4],
+    ]);
+    expect(KINDS.garage.map((kind) => [kind.plural, kind.per])).toEqual([
+      ['motoren', 2],
+      ["auto's", 4],
+    ]);
   });
 });
 
@@ -37,6 +45,20 @@ describe('question text', () => {
       'Op een boerderij lopen kippen en konijnen. Samen hebben ze 10 koppen en 28 poten. Hoeveel kippen zijn er?',
       '6',
       'Slim proberen: stel dat alle 10 dieren kippen zijn: 10 × 2 = 20 poten → 28 − 20 = 8 poten te weinig → elk konijn heeft 2 poten meer: 8 : 2 = 4 konijnen → 10 − 4 = 6 kippen',
+    ],
+    [
+      'weide 6, 4, schapen',
+      () => twoKindsQuestion('weide', 6, 4, true),
+      'Op een weide lopen eenden en schapen. Samen hebben ze 10 koppen en 28 poten. Hoeveel schapen zijn er?',
+      '4',
+      'Slim proberen: stel dat alle 10 dieren eenden zijn: 10 × 2 = 20 poten → 28 − 20 = 8 poten te weinig → elk schaap heeft 2 poten meer: 8 : 2 = 4 schapen',
+    ],
+    [
+      "garage 7, 5, auto's",
+      () => twoKindsQuestion('garage', 7, 5, true),
+      "In een garage staan motoren en auto's, samen 12 stuks met 34 wielen. Hoeveel auto's staan er?",
+      '5',
+      "Slim proberen: stel dat alle 12 voertuigen motoren zijn: 12 × 2 = 24 wielen → 34 − 24 = 10 wielen te weinig → elke auto heeft 2 wielen meer: 10 : 2 = 5 auto's",
     ],
     [
       'stalling 7, 5, driewielers',
@@ -175,20 +197,23 @@ describe('generateGuessAndCheck', () => {
   });
 
   it('draws two kinds of spec §5.43', () => {
-    let boerderij = 0;
+    const contexts = new Map<string, number>();
     let second = 0;
     for (const question of kinds) {
-      const [, , context, firstText, secondText, asked] = question.key.split(':');
+      const [, , context = '', firstText, secondText, asked] = question.key.split(':');
       const first = Number(firstText);
       const other = Number(secondText);
-      if (context === 'boerderij') boerderij++;
+      contexts.set(context, (contexts.get(context) ?? 0) + 1);
       if (asked === 'second') second++;
       expect(first, question.key).toBeGreaterThanOrEqual(1);
       expect(other, question.key).toBeGreaterThanOrEqual(1);
       expect(first + other, question.key).toBeGreaterThanOrEqual(5);
       expect(first + other, question.key).toBeLessThanOrEqual(20);
     }
-    expect(near(boerderij, kinds.length, 0.5)).toBe(true);
+    expect([...contexts.keys()].sort()).toEqual(Object.keys(KINDS).sort());
+    for (const [context, count] of contexts) {
+      expect(near(count, kinds.length, 0.25), context).toBe(true);
+    }
     expect(near(second, kinds.length, 0.5)).toBe(true);
   });
 
@@ -201,7 +226,7 @@ describe('generateGuessAndCheck', () => {
       if (asked === 'larger') larger++;
       expect((a + b) % 2, question.key).toBe(0);
       expect(a + b, question.key).toBeGreaterThanOrEqual(10);
-      expect(a + b, question.key).toBeLessThanOrEqual(100);
+      expect(a + b, question.key).toBeLessThanOrEqual(200);
       expect(a - b, question.key).toBeGreaterThanOrEqual(2);
       expect(b, question.key).toBeGreaterThanOrEqual(1);
     }

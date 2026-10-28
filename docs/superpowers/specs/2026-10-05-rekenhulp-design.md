@@ -2088,9 +2088,13 @@ There are two forms, each picked with equal probability:
 | Two kinds        | `In een stalling staan fietsen en driewielers, samen 12 stuks met 29 wielen. Hoeveel driewielers staan er?`   | 5  |
 | Sum and difference | `Twee getallen zijn samen 50 en verschillen 14. Wat is het grootste getal?`                            | 32     |
 
-- **Two kinds:** kippen (2 poten) and konijnen (4), or fietsen (2 wielen) and driewielers (3),
-  50% each. The total is in `[5, 20]`, each kind at least 1. Asks either kind, 50% each.
-- **Sum and difference:** two whole numbers with an even sum in `[10, 100]` and a difference of
+- **Two kinds:** kippen (2 poten) and konijnen (4) on a boerderij, eenden (2 poten) and schapen
+  (4) on a weide, fietsen (2 wielen) and driewielers (3) in a stalling, or motoren (2 wielen)
+  and auto's (4) in a garage, 25% each. The total is in `[5, 20]`, each kind at least 1. Asks
+  either kind, 50% each. The weide and garage texts mirror the boerderij and stalling ones
+  (`Op een weide lopen eenden en schapen. Samen hebben ze 10 koppen en 28 poten.`, `In een
+  garage staan motoren en auto's, samen 12 stuks met 34 wielen.`).
+- **Sum and difference:** two whole numbers with an even sum in `[10, 200]` and a difference of
   at least 2, the smaller at least 1. Asks `het grootste` or `het kleinste getal`, 50% each.
 - Explanations, by a first guess and its correction:
   - `Slim proberen: stel dat alle 10 dieren kippen zijn: 10 × 2 = 20 poten → 28 − 20 = 8 poten
@@ -2125,12 +2129,16 @@ There are three forms, each picked with equal probability:
   - tot en met: `a ∈ [11, 99]`, `b − a ∈ [10, 150]`; the answer is `b − a + 1`
   - paaltjes: spacing `s ∈ {2, 4, 5, 10, 20, 25}` meter, `k ∈ [3, 20]` pieces, the path
     `s × k ≤ 500` meter; the answer is `k + 1`
-- **Figures:** three patterns, each equally likely, described by their first three figures:
+- **Figures:** five patterns, each equally likely, described by their first three figures. The
+  lucifer patterns are rows of regular polygons that share a side, so a k-gon has `k` lucifers
+  in figure 1 and adds `k − 1` per figure:
 
   | Pattern                     | Values        | Rule      |
   |-----------------------------|---------------|-----------|
   | vierkantjes van lucifers    | 4, 7, 10      | `3n + 1`  |
   | driehoekjes van lucifers    | 3, 5, 7       | `2n + 1`  |
+  | vijfhoekjes van lucifers    | 5, 9, 13      | `4n + 1`  |
+  | zeshoekjes van lucifers     | 6, 11, 16     | `5n + 1`  |
   | tafels met stoelen          | 4, 6, 8       | `2n + 2`  |
 
   `n ∈ {10, 12, 15, 20, 25, 30, 50, 100}`. Asks the value of figure `n`, or the figure with a

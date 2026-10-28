@@ -20,7 +20,7 @@ export const DIVISIBLE_LIMITS: readonly number[] = [50, 100, 200];
 export const POST_SPACINGS: readonly number[] = [2, 4, 5, 10, 20, 25];
 export const FIGURE_NUMBERS: readonly number[] = [10, 12, 15, 20, 25, 30, 50, 100];
 
-export type Pattern = 'vierkantjes' | 'driehoekjes' | 'tafels';
+export type Pattern = 'vierkantjes' | 'driehoekjes' | 'vijfhoekjes' | 'zeshoekjes' | 'tafels';
 export interface PatternRule {
   /** The value of figure 1. */
   first: number;
@@ -30,6 +30,8 @@ export interface PatternRule {
 export const PATTERNS: Readonly<Record<Pattern, PatternRule>> = {
   vierkantjes: { first: 4, step: 3 },
   driehoekjes: { first: 3, step: 2 },
+  vijfhoekjes: { first: 5, step: 4 },
+  zeshoekjes: { first: 6, step: 5 },
   tafels: { first: 4, step: 2 },
 };
 
@@ -150,6 +152,8 @@ function lucifersText(shape: string, rule: PatternRule): PatternText {
 const PATTERN_TEXTS: Readonly<Record<Pattern, PatternText>> = {
   vierkantjes: lucifersText('Vierkantjes', PATTERNS.vierkantjes),
   driehoekjes: lucifersText('Driehoekjes', PATTERNS.driehoekjes),
+  vijfhoekjes: lucifersText('Vijfhoekjes', PATTERNS.vijfhoekjes),
+  zeshoekjes: lucifersText('Zeshoekjes', PATTERNS.zeshoekjes),
   tafels: {
     intro:
       'Tafels staan in een rij tegen elkaar. Aan 1 tafel passen 4 stoelen, aan 2 tafels 6 en aan 3 tafels 8.',
@@ -213,7 +217,7 @@ export function generateSimplifyProblem(rng: Rng): Question {
       return drawCounting(rng);
     case 'figure':
       return figureQuestion(
-        pick(rng, ['vierkantjes', 'driehoekjes', 'tafels'] as const),
+        pick(rng, Object.keys(PATTERNS) as Pattern[]),
         pick(rng, FIGURE_NUMBERS),
         rng() < 0.5,
       );

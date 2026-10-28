@@ -34,6 +34,8 @@ describe('constants', () => {
     expect(PATTERNS).toEqual({
       vierkantjes: { first: 4, step: 3 },
       driehoekjes: { first: 3, step: 2 },
+      vijfhoekjes: { first: 5, step: 4 },
+      zeshoekjes: { first: 6, step: 5 },
       tafels: { first: 4, step: 2 },
     });
   });
@@ -131,6 +133,20 @@ describe('question text', () => {
       `${TRIANGLES} Hoeveel lucifers heeft figuur 20?`,
       '41',
       'Vereenvoudigen: elke figuur heeft 2 lucifers meer; van figuur 1 naar figuur 20 zijn 19 stappen → 3 + 19 × 2 = 41',
+    ],
+    [
+      'vijfhoekjes 20',
+      () => figureQuestion('vijfhoekjes', 20, false),
+      'Vijfhoekjes van lucifers op een rij: figuur 1 heeft 5 lucifers, figuur 2 heeft 9 en figuur 3 heeft 13. Hoeveel lucifers heeft figuur 20?',
+      '81',
+      'Vereenvoudigen: elke figuur heeft 4 lucifers meer; van figuur 1 naar figuur 20 zijn 19 stappen → 5 + 19 × 4 = 81',
+    ],
+    [
+      'zeshoekjes 20, reverse',
+      () => figureQuestion('zeshoekjes', 20, true),
+      'Zeshoekjes van lucifers op een rij: figuur 1 heeft 6 lucifers, figuur 2 heeft 11 en figuur 3 heeft 16. Welke figuur heeft 101 lucifers?',
+      '20',
+      'Vereenvoudigen: 101 − 6 = 95 lucifers meer dan figuur 1 → 95 : 5 = 19 stappen → figuur 1 + 19 = figuur 20',
     ],
     [
       'tafels 15',
@@ -286,7 +302,7 @@ describe('generateSimplifyProblem', () => {
     const figures = ofKind('figure');
     for (const pattern of Object.keys(PATTERNS)) {
       const count = figures.filter((item) => item.rest[0] === pattern).length;
-      expect(near(count, figures.length, 1 / 3), pattern).toBe(true);
+      expect(near(count, figures.length, 1 / 5), pattern).toBe(true);
     }
     const reverse = figures.filter((item) => item.rest[2] === 'reverse').length;
     expect(near(reverse, figures.length, 0.5)).toBe(true);
