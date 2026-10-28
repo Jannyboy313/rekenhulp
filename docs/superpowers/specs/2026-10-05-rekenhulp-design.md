@@ -1947,8 +1947,9 @@ There are two forms, each picked with equal probability:
 
 ### Talstelsels (§5.39–§5.40)
 
-The set Talstelsels (v2, LKT). Its card (§3.1) reads "Tweetallig, vijftallig, zestientallig en
-Romeinse cijfers". Every prompt is question text (§3.3): a sentence without a slot. An answer
+The set Talstelsels (v2, LKT). Its card (§3.1) reads "Tweetallig (binair), vijftallig, zestientallig
+(hexadecimaal) en Romeinse cijfers", and the topic label "Talstelsels (tweetallig/binair, vijftallig,
+zestientallig/hexadecimaal)". Every prompt is question text (§3.3): a sentence without a slot. An answer
 that is a plain number is a `number` step; an answer in another number system is typed with a
 letter keypad, `baseDigits` or `roman` (§6).
 

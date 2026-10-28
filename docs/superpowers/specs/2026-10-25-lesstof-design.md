@@ -775,8 +775,8 @@ parsed: they go in titles, text and tables; worked lines hold their decimal valu
    - Text: like the tientallig stelsel, but every place to the left is × the grondtal instead of
      × 10. Base b uses the digits 0 to b − 1; zestientallig uses A to F for 10 to 15.
    - Table `Stelsel | Plaatswaarden, van rechts`: `tientallig | 1, 10, 100, 1000`,
-     `tweetallig | 1, 2, 4, 8, 16, 32`, `vijftallig | 1, 5, 25, 125`,
-     `zestientallig | 1, 16, 256`.
+     `tweetallig (binair) | 1, 2, 4, 8, 16, 32`, `vijftallig | 1, 5, 25, 125`,
+     `zestientallig (hexadecimaal) | 1, 16, 256`.
    - Table `Cijfer | Waarde`: A 10 to F 15.
    - Worked `Tweetallig 1011`: `1 × 8 + 0 × 4 + 1 × 2 + 1 × 1 = 8 + 2 + 1 = 11`;
      `Vijftallig 243`: `2 × 25 + 4 × 5 + 3 × 1 = 50 + 20 + 3 = 73`;

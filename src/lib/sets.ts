@@ -140,7 +140,7 @@ export const RELATIONS_SET: PracticeSet = {
 export const NUMBER_SYSTEMS_SET: PracticeSet = {
   id: 'talstelsels',
   name: 'Talstelsels',
-  description: 'Tweetallig, vijftallig, zestientallig en Romeinse cijfers',
+  description: 'Tweetallig (binair), vijftallig, zestientallig (hexadecimaal) en Romeinse cijfers',
   topics: [
     { topic: 'numberSystems', weight: 1 },
     { topic: 'romanNumerals', weight: 1 },

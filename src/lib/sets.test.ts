@@ -337,7 +337,7 @@ describe('Talstelsels set', () => {
     expect(NUMBER_SYSTEMS_SET.id).toBe('talstelsels');
     expect(NUMBER_SYSTEMS_SET.name).toBe('Talstelsels');
     expect(NUMBER_SYSTEMS_SET.description).toBe(
-      'Tweetallig, vijftallig, zestientallig en Romeinse cijfers',
+      'Tweetallig (binair), vijftallig, zestientallig (hexadecimaal) en Romeinse cijfers',
     );
     expect(NUMBER_SYSTEMS_SET.tablesPercent).toBe(15);
     expect(NUMBER_SYSTEMS_SET.topics).toEqual([
@@ -348,7 +348,7 @@ describe('Talstelsels set', () => {
 
   it('describes its topics and the tables share', () => {
     expect(rowLabels(NUMBER_SYSTEMS_SET, 15)).toEqual([
-      'Talstelsels (tweetallig, vijftallig, zestientallig)',
+      'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',
       'Romeinse cijfers (tot 100 en jaartallen)',
       '15% tafels',
     ]);

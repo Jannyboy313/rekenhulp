@@ -18,9 +18,9 @@ export const NUMBER_SYSTEMS_LESSON: Lesson = {
           head: ['Stelsel', 'Plaatswaarden, van rechts'],
           rows: [
             ['tientallig', '1, 10, 100, 1000'],
-            ['tweetallig', '1, 2, 4, 8, 16, 32'],
+            ['tweetallig (binair)', '1, 2, 4, 8, 16, 32'],
             ['vijftallig', '1, 5, 25, 125'],
-            ['zestientallig', '1, 16, 256'],
+            ['zestientallig (hexadecimaal)', '1, 16, 256'],
           ],
         },
         {

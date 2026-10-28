@@ -150,7 +150,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
-  numberSystems: 'Talstelsels (tweetallig, vijftallig, zestientallig)',
+  numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',
   romanNumerals: 'Romeinse cijfers (tot 100 en jaartallen)',
   scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
