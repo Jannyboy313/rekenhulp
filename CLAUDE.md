@@ -19,6 +19,9 @@ not all of it:
 - RWT scope (gaps in §12.5, check in §12.6): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
   next to it is leading
+- LKT scope (year-3 kennistoets, not yet in the spec): `docs/references/lkt-kennisbasis-concept.md`,
+  an excerpt of the concept kennisbasis of 10voordeleraar ("Qua eigen vaardigheid" items only); the
+  version is unconfirmed and no gap check against the sets has been done yet
 - ideas (feature ideas that are not specced or planned): `docs/ideas.md`; add new ideas there,
   not to the spec
 
