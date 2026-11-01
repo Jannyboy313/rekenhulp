@@ -52,6 +52,7 @@ import { generateRatioReasoning } from './ratioReasoning';
 import { generateRatios } from './ratios';
 import { generateRemainders } from './remainders';
 import { generateRounding } from './rounding';
+import { generateRoundingReasoning } from './roundingReasoning';
 import { generateScale } from './scale';
 import { generateNumberSystems } from './numberSystems';
 import { generateRomanNumerals } from './romanNumerals';
@@ -122,6 +123,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   numberOrder: generateNumberOrder,
   arithmeticWords: generateArithmeticWords,
   negativeContexts: generateNegativeContexts,
+  roundingReasoning: generateRoundingReasoning,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
@@ -199,6 +201,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   numberOrder: 'Ordenen (negatief, kommagetal, getallenlijn)',
   arithmeticWords: 'Rekentaal (som, verschil, product, bijna, ruim)',
   negativeContexts: 'Negatief in context (rood staan, tekort, NAP)',
+  roundingReasoning: 'Afronden redeneren (grenzen, contant betalen)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',

@@ -63,6 +63,7 @@ export type Topic =
   | 'numberOrder'
   | 'arithmeticWords'
   | 'negativeContexts'
+  | 'roundingReasoning'
   | 'rounding'
   | 'powersRoots'
   | 'scientificNotation'
