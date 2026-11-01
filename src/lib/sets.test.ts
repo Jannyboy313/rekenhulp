@@ -113,7 +113,7 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Breuken & kommagetallen four equally weighted topics with 15% tables', () => {
+  it('makes Breuken & kommagetallen five equally weighted topics with 15% tables', () => {
     expect(FRACTIONS_SET.name).toBe('Breuken & kommagetallen');
     expect(FRACTIONS_SET.tablesPercent).toBe(15);
     expect(FRACTIONS_SET.topics).toEqual([
@@ -121,6 +121,7 @@ describe('practice sets', () => {
       { topic: 'fractionArithmetic', weight: 1 },
       { topic: 'decimalArithmetic', weight: 1 },
       { topic: 'decimalNames', weight: 1 },
+      { topic: 'compareFractions', weight: 1 },
     ]);
   });
 
@@ -296,6 +297,7 @@ describe('describeSetTopicRows per set', () => {
       'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
       'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
       'Kommagetallen in woorden (tiende t/m miljardste)',
+      'Vergelijken (breuken en kommagetallen)',
       '15% tafels',
     ]);
   });

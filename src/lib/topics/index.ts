@@ -3,6 +3,7 @@ import { generateAngles } from './angles';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
+import { generateCompareFractions } from './compareFractions';
 import { generateCompareRatios } from './compareRatios';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
@@ -125,6 +126,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   decimalArithmetic: generateDecimalArithmetic,
   fractionConversion: generateFractionConversion,
   decimalNames: generateDecimalNames,
+  compareFractions: generateCompareFractions,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
@@ -200,6 +202,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
   decimalNames: 'Kommagetallen in woorden (tiende t/m miljardste)',
+  compareFractions: 'Vergelijken (breuken en kommagetallen)',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
