@@ -2918,7 +2918,7 @@ equally likely:
 
 | Form        | Example                                                                                    | Answer | Suffix     |
 |-------------|--------------------------------------------------------------------------------------------|--------|------------|
-| Money       | `Je hebt € 312 op je rekening en betaalt € 774. Hoeveel sta je in het rood?`               | 462    | `€` prefix |
+| Money       | `Je hebt € 318 op je rekening en betaalt € 774. Hoeveel sta je in het rood?`               | 456    | `€` prefix |
 | Height      | `Een polder ligt op −4 m NAP, een duin op 23 m NAP. Hoeveel meter hoger ligt het duin?`    | 27     | `m`        |
 | Temperature | `'s Ochtends is het −3 °C. Het wordt 9 graden warmer en 's avonds weer 11 graden kouder. Hoeveel graden is het dan?` | −5 | `°C` |
 
@@ -2938,8 +2938,10 @@ equally likely:
     the start or the end is below 0. No suffix.
 - **Temperature:** start `[−10, 10]`, two changes `[2, 15]` (`warmer` or `kouder`, not both the
   same), each value in `[−15, 20]`; at least one change crosses 0.
-- Explanations: `774 − 312 = 462 → € 462 in het rood`, `−145 + 400 = 255`, `849 − 387 = 462`;
-  `23 − (−4) = 23 + 4 = 27`, `−2 + 7 = 5`; `−3 + 9 = 6 → 6 − 11 = −5` (crossing zero as §5.16).
+- Explanations: `774 − 318 = 456 → € 456 in het rood`, `−145 + 400 = −145 + 145 + 255 = 255`,
+  `849 − 387 = 462`; `23 − (−4) = 23 + 4 = 27`, `−2 + 7 = −2 + 2 + 5 = 5`;
+  `−3 + 9 = −3 + 3 + 6 = 6 → 6 − 11 = 6 − 6 − 5 = −5`. A step that crosses zero is split at
+  zero as in §5.16; a step that does not is written as the sum itself.
 
 ### 5.70 Rounding reasoning (`roundingReasoning`)
 
@@ -2961,7 +2963,7 @@ Verdieping (RWT A.3, B.2). Label: `Afronden redeneren (grenzen, contant betalen)
 - **Cash** (Dutch cash rounding to 5 cents): cents ending in 1 or 2 go down to 0, 3 to 7 go to
   5, 8 or 9 go up to 10. The amount is in `[1, 50]` and does not end in 0 or 5. Two variants,
   50/50: what you pay, or the change from a note of `€ 5`, `€ 10`, `€ 20` or `€ 50` above the
-  amount (`Je betaalt met € 10. Hoeveel krijg je terug?`, `€ 7,93 → € 7,95 → 10 − 7,95 =
+  amount (`Je betaalt contant met € 10. Hoeveel krijg je terug?`, `€ 7,93 → € 7,95 → 10 − 7,95 =
   2,05`).
 - Explanations: `4449 wordt 4400, 4450 wordt 4500 → 4450`, `4549 wordt 4500, 4550 wordt 4600 →
   4549`; `3,64 wordt 3,6, 3,65 wordt 3,7 → 3,65`; `€ 7,93: 3 cent wordt 5 cent → € 7,95`.
@@ -2974,8 +2976,10 @@ Verdieping (RWT A.3), all multiple choice. Label: `Schatten (uitkomst ongeveer)`
 - `×` or `:` (50/50). Generated backwards: first the rounded operands, each 1 significant digit
   (`6000 : 30`, `400 × 0,5`); a rounded dividend may have 2 significant digits and is a
   multiple of the rounded divisor. Then each operand is moved by 3% to 10% to a number that is
-  not round: a whole number with 3 or 4 significant digits, or (in 30% of the exercises, one
-  operand) a decimal with 2 or 3 significant digits in `[0,1; 99]`. The estimate `c` (the
+  not round: a whole number with at least 2 digits whose last digit is not 0 (3 or 4 digits
+  from a rounded operand of 100 up, 2 digits below), or (in 30% of the exercises, one operand) a
+  decimal with 2 or 3 significant digits in `[0,1; 99]`. Rounded whole operands are in
+  `[10, 900]`, the dividend at most 9900 and the estimate at most 10 000. The estimate `c` (the
   calculation with the rounded operands) and the exact value differ by at most a factor 1,4.
 - Options as §5.52: `c × {0,1; 1; 10; 100}` or `c × {0,01; 0,1; 1; 10}` (50/50), in ascending
   order; a set with an option of more than 2 decimals is not used.
@@ -3128,11 +3132,12 @@ each equally likely:
   (volwassenen, kinderen, the rest senioren), `boeken` (romans, strips, the rest
   informatieboeken).
 - **Part of rest:** `N ∈ [12, 240]`, two fractions; asked is what is left over or (50/50) the
-  second part. Contexts: `geld` (€, a multiple of 5), `taart` (stukken), `snoepjes`.
+  second part. Contexts: `geld` (€, a multiple of 5), `taart` (stukken, `N ≤ 48`), `snoepjes`.
 - **Whole:** `p/q` and the part `p × m`, `m ∈ [2, 12]`, answer `q × m`. Contexts: `klas`
-  (jongens, kinderen), `boek` (bladzijden gelezen), `tank` (liter, `vol`).
-- **Which part:** a whole `N ∈ [12, 60]` and one part; asked is the other part as a fraction in
-  lowest terms (`q ≤ 12`). Contexts as Whole.
+  (jongens, kinderen; the class has 20 to 36 children), `boek` (bladzijden gelezen), `tank`
+  (liter, `vol`).
+- **Which part:** a whole `N ∈ [12, 60]` (a `klas` at most 36) and one part; asked is the other
+  part as a fraction in lowest terms (`q ≤ 12`). Contexts as Whole.
 - Explanations: `3/8 van 32 = 12, 1/4 van 32 = 8 → 32 − 12 − 8 = 12`; `1/3 van 60 = 20 → 40 over
   → 1/4 van 40 = 10 → 40 − 10 = 30`; `2/5 = 12 → 1/5 = 6 → 5/5 = 30`; `30 − 12 = 18 meisjes →
   18/30 = 3/5`.
@@ -3174,7 +3179,7 @@ Three forms, each equally likely; answer kind fraction, any equal value (expecte
 
 - **Middle**, three variants, each equally likely: two proper fractions with `q ∈ [2, 12]` and a
   middle with denominator at most 48 (`1/4` and `1/3`); two decimals with 1 or 2 decimals in
-  `[0, 20]` at least 0,05 apart (`2,7` and `3,05` → `2,875`); a fraction and a decimal
+  `[0, 20]`, at least 0,05 and at most 1 apart (`2,7` and `3,05` → `2,875`); a fraction and a decimal
   (`0,6` and `3/4` → `27/40` or `0,675`).
 - **Jumps:** the count whole in `[4, 30]`; a decimal jump from `{0,05; 0,1; 0,15; 0,2; 0,25; 0,3;
   0,4; 0,5; 0,75}` with a start of 1 decimal in `[0, 10]`, or (30%) a fraction jump `1/q`,
