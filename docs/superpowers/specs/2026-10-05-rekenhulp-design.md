@@ -2548,11 +2548,12 @@ There are two forms, each picked with equal probability:
   | school    | `Er zijn 24 leerlingen ziek.`, `Er zitten 12 meisjes in de klas.`, `De school heeft 18 leraren.` | `10% van de leerlingen is ziek.`, `De helft van de klas is meisje.`, `1 op de 3 leerlingen fietst.` |
   | winkel    | `De jas is € 20 goedkoper.`, `Er zijn 150 jassen verkocht.`, `De jas kost nu € 60.` | `De jas is 25% goedkoper.`, `1 op de 4 klanten koopt een jas.`, `Een derde van de jassen is verkocht.` |
 
-  The numbers in a template are drawn from small sets (`[2, 9]` × 10 for counts, `{5, 10, 20, 25}`
-  for percentages, `{2, 3, 4, 5, 10}` for `n`); the options are in random order.
+  The numbers in a template are drawn from small sets (`[2, 9]` × 10 for counts, `[20, 90]` × 100
+  for the population of the dorp, `{5, 10, 20, 25}` for percentages, `{2, 3, 4, 5, 10}` for `n`);
+  the options are in random order.
 - **1 op de n:** `n ∈ {4, 5, 10, 20, 25}`. Options in random order: the answer `100/n %`, the
   ratio trap `1 : n` (that is 1 of `n + 1`), `n%` and the fraction `1/(n − 1)` (written stacked,
-  §8).
+  §8). For `n = 10` the trap `n%` equals the answer and is replaced by `1%`.
 - Explanations: `Relatief: een deel van het geheel (procent, breuk, 1 op de n).`,
   `Absoluut: een aantal of bedrag.`; `1 op de 4 = 1/4 = 25%; 1 : 4 is 1 op de 5`.
 
@@ -2566,7 +2567,7 @@ are four forms, each picked with equal probability:
 | Stacked change   | `Een jas kost € 80. Je krijgt 25% korting en op de nieuwe prijs nog 10%. Wat betaal je?`                   | 54     | `€` prefix |
 | Total percentage | `Eerst 20% korting en op de nieuwe prijs nog 10% korting. Hoeveel procent korting is dat samen?`            | 28     | `%`        |
 | Extra content    | `Een actiefles shampoo bevat 20% extra: 360 ml. Hoeveel ml zit er in een gewone fles?`                     | 300    | `ml`       |
-| Permille growth  | `Een provincie heeft 550 000 inwoners en groeit in een jaar met 2‰. Met hoeveel inwoners groeit ze?`        | 1100   | `inwoners` |
+| Permille growth  | `Een gemeente heeft 550 000 inwoners en groeit in een jaar met 2‰. Met hoeveel inwoners groeit ze?`        | 1100   | `inwoners` |
 
 - **Stacked change:** the price is a nice whole in `[20, 400]`. Two variants, 70/30:
   - two discounts, `p₁, p₂ ∈ {10, 20, 25, 50}`
@@ -2582,7 +2583,8 @@ are four forms, each picked with equal probability:
 - **Permille growth:** the population is a nice whole in `[10 000, 900 000]`,
   `p ∈ {1, 2, 3, 4, 5, 8}`, the growth `population × p : 1000` an integer. Two variants, 50/50:
   the growth, or the population after a year (`Hoeveel inwoners heeft ze na een jaar?`).
-- Explanations: `25% van 80 = 20 → 60 → 10% van 60 = 6 → 54`; total
+- Explanations: `25% van 80 = 20 → 60 → 10% van 60 = 6 → 54`, up and down with the steps
+  written out, `20% van 80 = 16 → 80 + 16 = 96 → 20% van 96 = 19,2 → 96 − 19,2 = 76,8`; total
   `stel 100 → 20% korting: 80 → 10% van 80 = 8: 72 → 100 − 72 = 28%`; extra
   `120% = 360 → 10% = 30 → 100% = 300`; permille `1‰ = 550 000 : 1000 = 550 → 2‰ = 1100`.
 
@@ -2682,7 +2684,7 @@ each 50%, three contexts each, each equally likely:
 
 - KGV: `a ≠ b ∈ [4, 30]`, `lcm ≤ 120` (groepjes `[2, 12]`, `lcm ≤ 60`; in 30% three sizes), and
   in 75% `gcd(a, b) > 1`, as §5.2.
-- GGD: as §5.3 without coprime pairs and with `p, q ≥ 2`; planken `a, b ≤ 200`, fruit
+- GGD: as §5.3 without coprime pairs and with `p, q ≥ 2`; planken `a, b ∈ [50, 200]`, fruit
   `a, b ≤ 100`, tegels `a, b` multiples of 10 in `[100, 900]` with `g ≥ 20`.
 - Explanation: the concept, then the §5.2/§5.3 explanation: `Weer samen = KGV. 12 = 2² × 3 en
   18 = 2 × 3² → KGV = 2² × 3² = 36`, `Zo lang mogelijk = GGD. 84 = 2² × 3 × 7 en 126 = 2 × 3² × 7
