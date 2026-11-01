@@ -44,7 +44,11 @@ describe('missingDigit: missing digit form', () => {
       expect(digits.length).toBeLessThanOrEqual(5);
       expect(slot).toBeGreaterThanOrEqual(1);
       expect(digits.lastIndexOf(null)).toBe(slot);
-      const fits = fittingDigits(digits.map((d) => d ?? 0), slot, divisor);
+      const fits = fittingDigits(
+        digits.map((d) => d ?? 0),
+        slot,
+        divisor,
+      );
       expect(fits.length).toBeGreaterThanOrEqual(1);
       expect(fits.length).toBeLessThan(10);
       const answer = Number(typed(answerOf(question)));
@@ -57,7 +61,9 @@ describe('missingDigit: missing digit form', () => {
         expect(step.prompt).toBe(base);
       } else {
         expect(['smallest', 'largest']).toContain(pickKind);
-        expect(step.prompt).toBe(`${base} Geef het ${pickKind === 'smallest' ? 'kleinste' : 'grootste'}.`);
+        expect(step.prompt).toBe(
+          `${base} Geef het ${pickKind === 'smallest' ? 'kleinste' : 'grootste'}.`,
+        );
         expect(answer).toBe(pickKind === 'smallest' ? Math.min(...fits) : Math.max(...fits));
       }
       picks.add(pickKind!);
@@ -66,7 +72,11 @@ describe('missingDigit: missing digit form', () => {
   });
 
   it('uses every divisor, digit count and slot position', () => {
-    const seen = { divisors: new Set<string>(), lengths: new Set<number>(), slots: new Set<number>() };
+    const seen = {
+      divisors: new Set<string>(),
+      lengths: new Set<number>(),
+      slots: new Set<number>(),
+    };
     for (const question of rows) {
       const [, , masked, divisor] = question.key.split(':');
       seen.divisors.add(divisor!);
@@ -142,7 +152,9 @@ describe('missingDigit: smallest and largest form', () => {
         );
       }
       expect(step.check(String(answer)).correct).toBe(true);
-      expect(answerOf(question)).toEqual(fromInteger(rangeAnswer(kind as 'smallest', bound, divisor)));
+      expect(answerOf(question)).toEqual(
+        fromInteger(rangeAnswer(kind as 'smallest', bound, divisor)),
+      );
     }
     expect([...kinds].sort()).toEqual(['above', 'largest', 'smallest']);
   });

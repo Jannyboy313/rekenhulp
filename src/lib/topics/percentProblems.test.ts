@@ -204,7 +204,9 @@ describe('generatePercentProblems', () => {
   });
 
   it('has a stable key and no slot', () => {
-    expect(generatePercentProblems(createRng(5)).key).toBe(generatePercentProblems(createRng(5)).key);
+    expect(generatePercentProblems(createRng(5)).key).toBe(
+      generatePercentProblems(createRng(5)).key,
+    );
     for (const { steps } of questions) expect(hasSlot(steps[0]!.prompt)).toBe(false);
   });
 });

@@ -59,7 +59,9 @@ describe('spec examples', () => {
   });
 
   it('middle of 2,7 and 3,05 is 2,875, shown in ascending order', () => {
-    const step = stepOf(middleQuestion(decimalShown(decimal('3,05')), decimalShown(decimal('2,7'))));
+    const step = stepOf(
+      middleQuestion(decimalShown(decimal('3,05')), decimalShown(decimal('2,7'))),
+    );
     expect(step.prompt).toBe('Welk getal ligt precies midden tussen 2,7 en 3,05?');
     expect(step.check('2,875')).toMatchObject({
       correct: true,
@@ -202,7 +204,11 @@ describe('generateBetweenNumbers', () => {
           expect(compare(y, fromInteger(1))).toBeLessThan(0);
         }
       }
-      expect([...variants].sort()).toEqual(['decimal+decimal', 'decimal+fraction', 'fraction+fraction']);
+      expect([...variants].sort()).toEqual([
+        'decimal+decimal',
+        'decimal+fraction',
+        'fraction+fraction',
+      ]);
     });
   });
 
@@ -216,9 +222,10 @@ describe('generateBetweenNumbers', () => {
       for (const question of questions) {
         const step = stepOf(question);
         expect(step.kind).toBe('number');
-        const match = /^Je springt op de getallenlijn van (.+) naar (.+) in sprongen van (\S+)\. Hoeveel sprongen zijn dat\?$/.exec(
-          step.prompt,
-        )!;
+        const match =
+          /^Je springt op de getallenlijn van (.+) naar (.+) in sprongen van (\S+)\. Hoeveel sprongen zijn dat\?$/.exec(
+            step.prompt,
+          )!;
         const [start, end, jump] = [parse(match[1]!), parse(match[2]!), parse(match[3]!)];
         const count = divide(subtract(end, start), jump);
         expect(count.den).toBe(1n);
@@ -258,10 +265,17 @@ describe('generateBetweenNumbers', () => {
       const pieces = new Set<number>();
       for (const question of questions) {
         const step = stepOf(question);
-        const match = /^De getallenlijn van (\d+) tot (\d+) is in (\d+) gelijke stukjes verdeeld\. Welk getal staat bij het (\d+)e streepje na (\d+)\?$/.exec(
-          step.prompt,
-        )!;
-        const [from, to, n, k, after] = match.slice(1).map(Number) as [number, number, number, number, number];
+        const match =
+          /^De getallenlijn van (\d+) tot (\d+) is in (\d+) gelijke stukjes verdeeld\. Welk getal staat bij het (\d+)e streepje na (\d+)\?$/.exec(
+            step.prompt,
+          )!;
+        const [from, to, n, k, after] = match.slice(1).map(Number) as [
+          number,
+          number,
+          number,
+          number,
+          number,
+        ];
         expect(to).toBe(from + 1);
         expect(after).toBe(from);
         wholes.add(from);

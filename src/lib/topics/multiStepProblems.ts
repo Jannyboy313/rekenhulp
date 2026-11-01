@@ -114,10 +114,15 @@ function division(rng: Rng, divisors?: readonly number[]): [number, number] {
   }) as [number, number];
 }
 
-const ROUND_UP_PROMPTS: Record<(typeof ROUND_UP_CONTEXTS)[number], (n: number, m: number) => string> = {
-  busjes: (n, m) => `${n} kinderen gaan met busjes van ${m} plaatsen. Hoeveel busjes zijn er nodig?`,
+const ROUND_UP_PROMPTS: Record<
+  (typeof ROUND_UP_CONTEXTS)[number],
+  (n: number, m: number) => string
+> = {
+  busjes: (n, m) =>
+    `${n} kinderen gaan met busjes van ${m} plaatsen. Hoeveel busjes zijn er nodig?`,
   dozen: (n, m) => `Je hebt ${n} eieren en doet ze in dozen van ${m}. Hoeveel dozen heb je nodig?`,
-  tafels: (n, m) => `${n} gasten gaan zitten aan tafels met ${m} stoelen. Hoeveel tafels zijn er nodig?`,
+  tafels: (n, m) =>
+    `${n} gasten gaan zitten aan tafels met ${m} stoelen. Hoeveel tafels zijn er nodig?`,
 };
 
 function roundUp(rng: Rng, context: (typeof ROUND_UP_CONTEXTS)[number]): Built {
@@ -139,8 +144,10 @@ const ROUND_DOWN_PROMPTS: Record<
 > = {
   kaartjes: (n, m) =>
     `Je hebt ${formatEuro(fromInteger(n))} en een kaartje kost ${formatEuro(fromInteger(m))}. Hoeveel kaartjes kun je kopen?`,
-  zakjes: (n, m) => `${n} snoepjes worden verdeeld over zakjes van ${m}. Hoeveel volle zakjes kun je maken?`,
-  stukken: (n, m) => `Van een plank van ${n} cm zaag je stukken van ${m} cm. Hoeveel stukken kun je zagen?`,
+  zakjes: (n, m) =>
+    `${n} snoepjes worden verdeeld over zakjes van ${m}. Hoeveel volle zakjes kun je maken?`,
+  stukken: (n, m) =>
+    `Van een plank van ${n} cm zaag je stukken van ${m} cm. Hoeveel stukken kun je zagen?`,
 };
 
 function roundDown(rng: Rng, context: (typeof ROUND_DOWN_CONTEXTS)[number]): Built {

@@ -22,7 +22,9 @@ const NEGATIVE_BASE_SHARE = 0.2;
 const MAX_SCIENTIFIC_EXPONENT = 15;
 const MAX_TIMES = 10 ** 7;
 /** Positive pairs of §5.18 with bases 2 to 9 and a value of at most 1000. */
-const SUM_POWERS = POSITIVE_POWERS.filter(([base, exponent]) => base <= 9 && base ** exponent <= 1000);
+const SUM_POWERS = POSITIVE_POWERS.filter(
+  ([base, exponent]) => base <= 9 && base ** exponent <= 1000,
+);
 
 /** `2³ × 2⁴ = 2ⁿ. n = ?`, `2⁶ : 2² = 2ⁿ. n = ?` or `(3²)³ = 3ⁿ. n = ?` */
 export function powerRuleQuestion(kind: RuleKind, a: number, m: number, n: number): Question {
@@ -118,8 +120,7 @@ export function scientificProductQuestion(c1: number, m: number, c2: number, n: 
 
 function quotientExplanation(c1: number, m: number, c2: number, n: number, result: string): string {
   return (
-    `${c1} : ${c2} = ${c1 / c2} en ${tenPower(m)} : ${tenPower(n)} = ${tenPower(m - n)} → ` +
-    result
+    `${c1} : ${c2} = ${c1 / c2} en ${tenPower(m)} : ${tenPower(n)} = ${tenPower(m - n)} → ` + result
   );
 }
 
@@ -210,7 +211,10 @@ function scientificForm(rng: Rng): Question {
     return scientificProductQuestion(c1, m, c2, n);
   }
   const c1 = randomInt(rng, 2, 9);
-  const c2 = pick(rng, range(1, c1).filter((divisor) => c1 % divisor === 0));
+  const c2 = pick(
+    rng,
+    range(1, c1).filter((divisor) => c1 % divisor === 0),
+  );
   const { m, n } = drawUntil(() => {
     const n = randomInt(rng, 2, 8);
     const m = randomInt(rng, n + 1, 9);

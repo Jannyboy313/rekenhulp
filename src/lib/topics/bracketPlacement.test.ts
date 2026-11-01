@@ -6,11 +6,7 @@ import { evaluationSteps } from '../expr/reduce';
 import { createRng } from '../random';
 import { fromInteger } from '../rational';
 import { plain } from '../slot';
-import {
-  bracketStep,
-  drawBracketExercise,
-  generateBracketPlacement,
-} from './bracketPlacement';
+import { bracketStep, drawBracketExercise, generateBracketPlacement } from './bracketPlacement';
 
 const SAMPLES = 3000;
 const OPERATORS = ['+', '−', '×', ':'];
@@ -58,7 +54,8 @@ describe('drawBracketExercise (spec §5.63)', () => {
       }
       // Every division, also as a sub-expression, is exact: no intermediate result has decimals.
       for (const text of [placed, flat]) {
-        for (const step of evaluationSteps(parse(text)!)) expect(formatExpr(step)).not.toContain(',');
+        for (const step of evaluationSteps(parse(text)!))
+          expect(formatExpr(step)).not.toContain(',');
       }
     }
     expect(Math.max(...exercises.map((e) => e.target))).toBeGreaterThan(60);

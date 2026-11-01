@@ -142,7 +142,10 @@ describe('generateMultiStepProblems', () => {
       expect(share).toBeLessThan(0.39);
     }
     for (const context of [...OPERATIONS_CONTEXTS, ...ROUND_UP_CONTEXTS, ...ROUND_DOWN_CONTEXTS]) {
-      expect(drawn.some((p) => p.context === context), context).toBe(true);
+      expect(
+        drawn.some((p) => p.context === context),
+        context,
+      ).toBe(true);
     }
   });
 

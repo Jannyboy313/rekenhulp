@@ -51,7 +51,9 @@ describe('spec examples', () => {
   });
 
   it('0,75 × 2/3 = 0,5, also as 1/2', () => {
-    const step = stepOf(mixedQuestion('multiply', multiplyExpression(decimal('0,75'), frac(2, 3), true)));
+    const step = stepOf(
+      mixedQuestion('multiply', multiplyExpression(decimal('0,75'), frac(2, 3), true)),
+    );
     expect(step.prompt).toBe('0,75 × 2/3 = ?');
     expect(step.check('0,5')).toMatchObject({
       correct: true,
@@ -63,13 +65,17 @@ describe('spec examples', () => {
   });
 
   it('keeps the order of the factors in the prompt and the explanation', () => {
-    const step = stepOf(mixedQuestion('multiply', multiplyExpression(decimal('0,75'), frac(2, 3), false)));
+    const step = stepOf(
+      mixedQuestion('multiply', multiplyExpression(decimal('0,75'), frac(2, 3), false)),
+    );
     expect(step.prompt).toBe('2/3 × 0,75 = ?');
     expect(step.check('0,5').explanation).toBe('0,75 = 3/4 → 2/3 × 3/4 = 6/12 = 1/2 = 0,5');
   });
 
   it('writes an improper product as a mixed number', () => {
-    const step = stepOf(mixedQuestion('multiply', multiplyExpression(decimal('1,5'), frac(5, 7), true)));
+    const step = stepOf(
+      mixedQuestion('multiply', multiplyExpression(decimal('1,5'), frac(5, 7), true)),
+    );
     expect(step.check('').expected).toBe('1 1/14');
     expect(step.check('1 1/14').correct).toBe(true);
     expect(step.check('15/14').correct).toBe(true);
@@ -164,7 +170,11 @@ describe('generateMixedNotation', () => {
       for (const question of questions) {
         const step = stepOf(question);
         const match = /^(\d) (\d+)\/(\d+) : ([\d,]+) = \?$/.exec(step.prompt)!;
-        const [whole, p, q] = [match[1], match[2], match[3]].map(Number) as [number, number, number];
+        const [whole, p, q] = [match[1], match[2], match[3]].map(Number) as [
+          number,
+          number,
+          number,
+        ];
         divisors.add(match[4]!);
         wholes.add(whole);
         denominators.add(q);

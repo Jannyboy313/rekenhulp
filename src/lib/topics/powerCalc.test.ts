@@ -131,7 +131,9 @@ describe('generatePowerCalc', () => {
   const questions: Question[] = Array.from({ length: SAMPLES }, () => generatePowerCalc(rng));
   const parts = (question: Question) => question.key.split(':');
   const of = (form: string, variant?: string) =>
-    questions.filter((q) => parts(q)[1] === form && (variant === undefined || parts(q)[2] === variant));
+    questions.filter(
+      (q) => parts(q)[1] === form && (variant === undefined || parts(q)[2] === variant),
+    );
   const numbers = (question: Question, from: number) =>
     parts(question)
       .slice(from)
@@ -224,7 +226,10 @@ describe('generatePowerCalc', () => {
       const negativeCount = [a, b].filter((base) => base < 0).length;
       expect(negativeCount).toBeLessThanOrEqual(1);
       negatives += negativeCount;
-      for (const [base, exponent] of [[a, m], [b, n]] as const) {
+      for (const [base, exponent] of [
+        [a, m],
+        [b, n],
+      ] as const) {
         const pairs = base < 0 ? NEGATIVE_POWERS : positive;
         expect(pairs.some(([x, e]) => x === Math.abs(base) && e === exponent)).toBe(true);
       }
@@ -260,7 +265,9 @@ describe('generatePowerCalc', () => {
       );
       expect(m + n + shift).toBeLessThanOrEqual(15);
     }
-    expect(of('scientific', 'product').some((q) => numbers(q, 3)[0]! * numbers(q, 3)[2]! >= 10)).toBe(true);
+    expect(
+      of('scientific', 'product').some((q) => numbers(q, 3)[0]! * numbers(q, 3)[2]! >= 10),
+    ).toBe(true);
   });
 
   it('scientific quotient and times: c1 a multiple of c2, c1 in 2-9, m > n, times at most 10⁷', () => {

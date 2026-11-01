@@ -124,7 +124,11 @@ function generateRange(rng: Rng): Question {
   const divisor = pick(rng, RANGE_DIVISORS);
   const digits = randomInt(rng, 3, 4);
   const bound =
-    kind === 'above' ? pick(rng, BOUNDS) : kind === 'smallest' ? 10 ** (digits - 1) : 10 ** digits - 1;
+    kind === 'above'
+      ? pick(rng, BOUNDS)
+      : kind === 'smallest'
+        ? 10 ** (digits - 1)
+        : 10 ** digits - 1;
   return {
     key: `missingDigit:range:${kind}:${bound}:${divisor}`,
     topic: 'missingDigit',

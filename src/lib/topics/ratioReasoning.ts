@@ -223,7 +223,10 @@ function randomRescale(rng: Rng): Question {
         value % (firstCount / common) === 0 &&
         value >= minPerPerson * firstCount &&
         value <= maxPerPerson * firstCount &&
-        hasAtMostDecimals(rational(BigInt((value / (firstCount / common)) * (secondCount / common)), 1000n), 2),
+        hasAtMostDecimals(
+          rational(BigInt((value / (firstCount / common)) * (secondCount / common)), 1000n),
+          2,
+        ),
     );
     return amounts.length > 0 ? ([firstCount, pick(rng, amounts), secondCount] as const) : null;
   });

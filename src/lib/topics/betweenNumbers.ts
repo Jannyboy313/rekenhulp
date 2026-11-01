@@ -1,9 +1,4 @@
-import {
-  formatFraction,
-  formatInteger,
-  formatMixedNumber,
-  formatRational,
-} from '../format';
+import { formatFraction, formatInteger, formatMixedNumber, formatRational } from '../format';
 import { gcd, lcm } from '../primes';
 import { drawUntil, pick, randomInt, range, type Rng } from '../random';
 import {
@@ -39,15 +34,15 @@ export const MIN_GAP = rational(1n, 20n);
 export const MAX_DECIMAL_GAP = rational(1n);
 
 /** `p/q` with the numerator written over the common denominator `den`. */
-const over = (value: Rational, den: bigint) => `${formatInteger((value.num * den) / value.den)}/${den}`;
+const over = (value: Rational, den: bigint) =>
+  `${formatInteger((value.num * den) / value.den)}/${den}`;
 
 /** `1/4 = 6/24 en 1/3 = 8/24 → midden 7/24`, with a decimal first written as a fraction. */
 function fractionRoute(low: Shown, high: Shown, middle: Rational, expected: string): string {
   const den = 2n * BigInt(lcm(Number(low.value.den), Number(high.value.den)));
   const asFraction = (shown: Shown) =>
     shown.fraction ? '' : `${shown.text} = ${formatFraction(shown.value)} → `;
-  const shown = (value: Shown) =>
-    `${formatFraction(value.value)} = ${over(value.value, den)}`;
+  const shown = (value: Shown) => `${formatFraction(value.value)} = ${over(value.value, den)}`;
   const result = formatFraction(middle);
   return `${asFraction(low)}${asFraction(high)}${shown(low)} en ${shown(high)} → midden ${result}${result === expected ? '' : ` = ${expected}`}`;
 }
@@ -86,9 +81,17 @@ export function middleQuestion(first: Shown, second: Shown): Question {
   };
 }
 
-export const JUMP_DECIMALS = ['0,05', '0,1', '0,15', '0,2', '0,25', '0,3', '0,4', '0,5', '0,75'].map(
-  decimal,
-);
+export const JUMP_DECIMALS = [
+  '0,05',
+  '0,1',
+  '0,15',
+  '0,2',
+  '0,25',
+  '0,3',
+  '0,4',
+  '0,5',
+  '0,75',
+].map(decimal);
 export const JUMP_DENOMINATORS = [2, 3, 4, 5, 8];
 
 /** `Je springt op de getallenlijn van 1,2 naar 3 in sprongen van 0,15. Hoeveel sprongen zijn dat?` */

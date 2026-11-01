@@ -1,13 +1,6 @@
 import { formatInteger, formatRational, MINUS } from '../format';
 import { drawUntil, pick, randomInt, type Rng } from '../random';
-import {
-  add,
-  fromInteger,
-  multiply,
-  rational,
-  subtract,
-  type Rational,
-} from '../rational';
+import { add, fromInteger, multiply, rational, subtract, type Rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
 

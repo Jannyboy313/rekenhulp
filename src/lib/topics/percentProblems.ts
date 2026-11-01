@@ -59,9 +59,7 @@ export function stackedQuestion(
   return {
     key: `percentProblems:stacked:${variant}:${price}:${first}:${discounts ? second : first}`,
     topic: 'percentProblems',
-    steps: [
-      numberStep({ prompt, answer, prefix: '€', expected: money(answer), explanation }),
-    ],
+    steps: [numberStep({ prompt, answer, prefix: '€', expected: money(answer), explanation })],
   };
 }
 
@@ -139,7 +137,9 @@ export function permilleGrowthQuestion(
   const growth = (population * permille) / 1000;
   const answer = variant === 'growth' ? growth : population + growth;
   const question =
-    variant === 'growth' ? 'Met hoeveel inwoners groeit ze?' : 'Hoeveel inwoners heeft ze na een jaar?';
+    variant === 'growth'
+      ? 'Met hoeveel inwoners groeit ze?'
+      : 'Hoeveel inwoners heeft ze na een jaar?';
   const calculation = `1‰ = ${formatInteger(population)} : 1000 = ${onePermille} → ${permille}‰ = ${formatInteger(growth)}`;
   return {
     key: `percentProblems:permille:${variant}:${population}:${permille}`,

@@ -164,10 +164,13 @@ export function buildDeepExercise(rng: Rng, strategy: Strategy): DeepExercise {
 
 /** One of four strategies, each equally likely (spec §5.66). */
 export function generateSmartCalculationDeep(rng: Rng): Question {
-  const { prompt, key, answer, explanation, money: isMoney } = buildDeepExercise(
-    rng,
-    pick(rng, STRATEGIES),
-  );
+  const {
+    prompt,
+    key,
+    answer,
+    explanation,
+    money: isMoney,
+  } = buildDeepExercise(rng, pick(rng, STRATEGIES));
   return {
     key,
     topic: 'smartCalculationDeep',

@@ -21,7 +21,12 @@ const SAMPLES = 3000;
 
 const ask = (operator: '×' | ':', moved: string[], rounded: string[], seed = 5) =>
   stepOf(
-    estimateCalcQuestion(operator, moved.map(decimal) as [Rational, Rational], rounded.map(decimal) as [Rational, Rational], createRng(seed)),
+    estimateCalcQuestion(
+      operator,
+      moved.map(decimal) as [Rational, Rational],
+      rounded.map(decimal) as [Rational, Rational],
+      createRng(seed),
+    ),
   );
 
 describe('estimateCalcQuestion', () => {
@@ -42,9 +47,7 @@ describe('estimateCalcQuestion', () => {
     for (let seed = 1; seed <= 60; seed++) {
       seen.add(ask(':', ['6189', '31'], ['6000', '30'], seed).options!.join(' | '));
     }
-    expect(seen).toEqual(
-      new Set(['2 | 20 | 200 | 2000', `20 | 200 | 2000 | 20${S}000`]),
-    );
+    expect(seen).toEqual(new Set(['2 | 20 | 200 | 2000', `20 | 200 | 2000 | 20${S}000`]));
   });
 
   it('multiplies with a decimal operand', () => {
@@ -129,7 +132,8 @@ describe('generateEstimateCalc', () => {
       expect(compare(estimate, answer)).toBe(0);
       expect(compare(estimate, decimal('10000'))).toBeLessThanOrEqual(0);
       const exact = calc(operands[0], operands[1]);
-      const ratio = compare(exact, estimate) >= 0 ? divide(exact, estimate) : divide(estimate, exact);
+      const ratio =
+        compare(exact, estimate) >= 0 ? divide(exact, estimate) : divide(estimate, exact);
       expect(compare(ratio, decimal('1,4'))).toBeLessThanOrEqual(0);
     }
   });

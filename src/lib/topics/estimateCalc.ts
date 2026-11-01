@@ -109,10 +109,7 @@ const DECIMALS = [1, 2, 3, 4, 5, 6, 7, 8, 9].flatMap((digit) =>
   ),
 );
 /** The rounded quotient: 2 to 9, 10 to 90 and 100 to 900. */
-const QUOTIENTS = [
-  ...range(2, 9),
-  ...range(1, 9).flatMap((digit) => [digit * 10, digit * 100]),
-];
+const QUOTIENTS = [...range(2, 9), ...range(1, 9).flatMap((digit) => [digit * 10, digit * 100])];
 
 /** One estimate question (spec §5.71): `×` or `:`, 50/50. */
 export function generateEstimateCalc(rng: Rng): Question {

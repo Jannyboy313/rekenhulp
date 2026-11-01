@@ -136,9 +136,9 @@ describe('divisors', () => {
       const prompt = stepOf(question).prompt;
       const match = /^a = (.+) en b = (.+)\. (KGV|GGD) van a en b = \?$/.exec(prompt)!;
       expect(match, prompt).not.toBeNull();
-      expect([parseFactorization(match[1]!), parseFactorization(match[2]!)].sort((x, y) => x - y)).toEqual(
-        [a, b],
-      );
+      expect(
+        [parseFactorization(match[1]!), parseFactorization(match[2]!)].sort((x, y) => x - y),
+      ).toEqual([a, b]);
       expect(match[3]).toBe(kind.toUpperCase());
       if (kind === 'kgv') {
         expect(lcm(a, b)).toBeLessThanOrEqual(2000);

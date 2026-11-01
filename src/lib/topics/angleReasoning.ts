@@ -148,7 +148,10 @@ function drawRatio(rng: Rng): Question {
 
 function drawRatioForm(rng: Rng): Question {
   return rng() < ISOSCELES_SHARE
-    ? isoscelesRatioQuestion(pick(rng, ISOSCELES_FACTORS), pick(rng, ['tophoek', 'basishoek'] as const))
+    ? isoscelesRatioQuestion(
+        pick(rng, ISOSCELES_FACTORS),
+        pick(rng, ['tophoek', 'basishoek'] as const),
+      )
     : drawRatio(rng);
 }
 

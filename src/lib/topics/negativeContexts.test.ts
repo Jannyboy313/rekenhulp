@@ -95,14 +95,18 @@ describe('height', () => {
       'Een lift staat op verdieping −2 en gaat 7 verdiepingen omhoog. Op welke verdieping stopt hij?',
     );
     expect(up.suffix).toBeUndefined();
-    expect(up.check('5')).toEqual({ correct: true, expected: '5',
+    expect(up.check('5')).toEqual({
+      correct: true,
+      expected: '5',
       explanation: '−2 + 7 = −2 + 2 + 5 = 5',
     });
     const down = stepOf(liftQuestion(3, -6));
     expect(down.prompt).toBe(
       'Een lift staat op verdieping 3 en gaat 6 verdiepingen omlaag. Op welke verdieping stopt hij?',
     );
-    expect(down.check('−3')).toMatchObject({ correct: true, explanation: '3 − 6 = 3 − 3 − 3 = −3',
+    expect(down.check('−3')).toMatchObject({
+      correct: true,
+      explanation: '3 − 6 = 3 − 3 − 3 = −3',
     });
   });
 });
@@ -134,10 +138,14 @@ describe('temperature', () => {
 
 describe('generateNegativeContexts', () => {
   const rng = createRng(53);
-  const questions: Question[] = Array.from({ length: SAMPLES }, () => generateNegativeContexts(rng));
+  const questions: Question[] = Array.from({ length: SAMPLES }, () =>
+    generateNegativeContexts(rng),
+  );
   const parts = (question: Question) => question.key.split(':');
   const where = (form: string, variant?: string) =>
-    questions.filter((q) => parts(q)[1] === form && (variant === undefined || parts(q)[2] === variant));
+    questions.filter(
+      (q) => parts(q)[1] === form && (variant === undefined || parts(q)[2] === variant),
+    );
   const nums = (question: Question, from: number) =>
     parts(question)
       .slice(from)

@@ -1,7 +1,16 @@
 import { formatEuro, formatFraction, formatInteger } from '../format';
 import { gcd } from '../primes';
 import { drawUntil, pick, randomInt, range, type Rng } from '../random';
-import { compare, fromInteger, isInteger, multiply, ONE, rational, subtract, add } from '../rational';
+import {
+  compare,
+  fromInteger,
+  isInteger,
+  multiply,
+  ONE,
+  rational,
+  subtract,
+  add,
+} from '../rational';
 import type { Rational } from '../rational';
 import { numberStep, simplestFractionStep } from '../steps';
 import type { Question } from '../types';
@@ -49,7 +58,12 @@ export const REST_CONTEXTS: Readonly<Record<string, RestContext>> = {
 };
 
 /** The rest after two parts of a whole, e.g. 32 with 3/8 and 1/4: 12. */
-export function restQuestion(context: string, total: number, first: Rational, second: Rational): Question {
+export function restQuestion(
+  context: string,
+  total: number,
+  first: Rational,
+  second: Rational,
+): Question {
   const { prompt, suffix } = REST_CONTEXTS[context]!;
   const [a, b] = [of(first, total), of(second, total)];
   const answer = subtract(subtract(whole(total), a), b);
@@ -207,8 +221,7 @@ export const WHICH_PART_CONTEXTS: Readonly<Record<string, WhichPartContext>> = {
     maxTotal: 60,
   },
   tank: {
-    prompt: (n, a) =>
-      `In een tank van ${n} liter zit ${a} liter. Welk deel van de tank is leeg?`,
+    prompt: (n, a) => `In een tank van ${n} liter zit ${a} liter. Welk deel van de tank is leeg?`,
     other: 'liter',
     maxTotal: 60,
   },
@@ -255,9 +268,7 @@ function randomPartOfRest(rng: Rng): Question {
     const second = pick(rng, FRACTIONS);
     const totals = range(12, maxTotal).filter(
       (n) =>
-        n % multipleOf === 0 &&
-        isWhole(first, n) &&
-        isWhole(second, n - Number(of(first, n).num)),
+        n % multipleOf === 0 && isWhole(first, n) && isWhole(second, n - Number(of(first, n).num)),
     );
     return totals.length === 0 ? null : ([pick(rng, totals), first, second] as const);
   });

@@ -37,8 +37,12 @@ describe('wholeBoundsQuestion', () => {
   });
 
   it('works for tientallen and duizendtallen, with grouped large numbers', () => {
-    expect(stepOf(wholeBoundsQuestion('tientallen', 120, 'kleinste')).check('').expected).toBe('115');
-    expect(stepOf(wholeBoundsQuestion('tientallen', 120, 'grootste')).check('').expected).toBe('124');
+    expect(stepOf(wholeBoundsQuestion('tientallen', 120, 'kleinste')).check('').expected).toBe(
+      '115',
+    );
+    expect(stepOf(wholeBoundsQuestion('tientallen', 120, 'grootste')).check('').expected).toBe(
+      '124',
+    );
     const thousands = stepOf(wholeBoundsQuestion('duizendtallen', 45000, 'grootste'));
     expect(thousands.prompt).toContain(`duizendtallen 45${S}000.`);
     expect(thousands.check('').expected).toBe(`45${S}499`);
@@ -84,9 +88,7 @@ describe('cashQuestion', () => {
     const down = stepOf(cashQuestion(791));
     expect(down.check('').expected).toBe('7,90');
     expect(down.check('7,9').correct).toBe(true);
-    expect(down.check('').explanation).toBe(
-      `€${NBSP}7,91: 1 cent wordt 0 cent → €${NBSP}7,90`,
-    );
+    expect(down.check('').explanation).toBe(`€${NBSP}7,91: 1 cent wordt 0 cent → €${NBSP}7,90`);
     const up = stepOf(cashQuestion(798));
     expect(up.check('').expected).toBe('8');
     expect(up.check('').explanation).toBe(`€${NBSP}7,98: 8 cent wordt 10 cent → €${NBSP}8`);
@@ -147,7 +149,14 @@ describe('generateRoundingReasoning', () => {
   it('whole bounds: 2 or 3 significant digits in [100, 99 000], a multiple of the place', () => {
     const units = { tientallen: 10, honderdtallen: 100, duizendtallen: 1000 } as const;
     for (const question of whole) {
-      const [, , , side, place, text] = parts(question) as [string, string, string, string, keyof typeof units, string];
+      const [, , , side, place, text] = parts(question) as [
+        string,
+        string,
+        string,
+        string,
+        keyof typeof units,
+        string,
+      ];
       const value = Number(text);
       expect(value).toBeGreaterThanOrEqual(100);
       expect(value).toBeLessThanOrEqual(99000);
@@ -155,7 +164,9 @@ describe('generateRoundingReasoning', () => {
       expect(significant(value)).toBeGreaterThanOrEqual(2);
       expect(significant(value)).toBeLessThanOrEqual(3);
       const answer = Number(answerOf(question).num);
-      expect(answer).toBe(side === 'kleinste' ? value - units[place] / 2 : value + units[place] / 2 - 1);
+      expect(answer).toBe(
+        side === 'kleinste' ? value - units[place] / 2 : value + units[place] / 2 - 1,
+      );
     }
   });
 

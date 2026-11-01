@@ -91,7 +91,14 @@ interface Puzzle {
 function puzzles(sets: readonly (readonly number[])[]): Puzzle[] {
   return sets.flatMap((divisors) =>
     range(1, Math.min(...divisors) - 1)
-      .map((r) => ({ divisors, r, bounds: boundsFor(divisors.reduce((a, b) => lcm(a, b)), r) }))
+      .map((r) => ({
+        divisors,
+        r,
+        bounds: boundsFor(
+          divisors.reduce((a, b) => lcm(a, b)),
+          r,
+        ),
+      }))
       .filter(({ bounds }) => bounds.length > 0),
   );
 }

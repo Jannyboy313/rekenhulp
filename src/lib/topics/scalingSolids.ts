@@ -21,9 +21,7 @@ function factorSum(measure: Measure, k: number): string {
 
 /** `inhoud: 3 × 3 × 3 = 27 keer`; for a length `omtrek: 3 keer`. */
 function factorLine(measure: Measure, k: number): string {
-  return measure === 'omtrek'
-    ? `omtrek: ${k} keer`
-    : `${measure}: ${factorSum(measure, k)} keer`;
+  return measure === 'omtrek' ? `omtrek: ${k} keer` : `${measure}: ${factorSum(measure, k)} keer`;
 }
 
 function scalingQuestion(key: string, step: Parameters<typeof numberStep>[0]): Question {
@@ -95,7 +93,11 @@ export function modelQuestion(k: number, area: Rational): Question {
 }
 
 /** `De inhoud van een kubus wordt 8 keer zo groot. Hoeveel keer zo lang worden de ribben?` */
-export function backQuestion(figure: Figure, measure: 'oppervlakte' | 'inhoud', k: number): Question {
+export function backQuestion(
+  figure: Figure,
+  measure: 'oppervlakte' | 'inhoud',
+  k: number,
+): Question {
   const factor = k ** DIMENSION[measure];
   const product = Array(DIMENSION[measure]).fill(k).join(' × ');
   return scalingQuestion(`back:${figure}:${measure}:${k}`, {

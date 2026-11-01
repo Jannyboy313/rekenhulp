@@ -104,12 +104,7 @@ export function statementQuestion(
 /** `"1 op de 4" betekent hetzelfde als …` The trap `n%` is replaced at n = 10, where it is right. */
 export function oneInQuestion(n: number, rng: Rng): Question {
   const answer = `${100 / n}%`;
-  const options = shuffle(rng, [
-    answer,
-    `1 : ${n}`,
-    n === 10 ? '1%' : `${n}%`,
-    `1/${n - 1}`,
-  ]);
+  const options = shuffle(rng, [answer, `1 : ${n}`, n === 10 ? '1%' : `${n}%`, `1/${n - 1}`]);
   return {
     key: `proportionConcepts:oneIn:${n}`,
     topic: 'proportionConcepts',

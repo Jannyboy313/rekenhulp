@@ -93,11 +93,15 @@ describe('generateProportionConcepts', () => {
     const forms = new Set(questions.map(({ key }) => key.split(':')[1]));
     expect([...forms].sort()).toEqual(['oneIn', 'statement']);
     const contexts = new Set(
-      questions.filter(({ key }) => key.includes(':statement:')).map(({ key }) => key.split(':')[3]),
+      questions
+        .filter(({ key }) => key.includes(':statement:'))
+        .map(({ key }) => key.split(':')[3]),
     );
     expect([...contexts].sort()).toEqual(['dorp', 'school', 'winkel']);
     const asked = new Set(
-      questions.filter(({ key }) => key.includes(':statement:')).map(({ key }) => key.split(':')[2]),
+      questions
+        .filter(({ key }) => key.includes(':statement:'))
+        .map(({ key }) => key.split(':')[2]),
     );
     expect([...asked].sort()).toEqual(['absolute', 'relative']);
   });

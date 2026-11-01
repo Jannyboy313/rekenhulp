@@ -23,7 +23,12 @@ describe('wordsToNumberQuestion', () => {
       [25, 'honderdste', '0,25'],
     ];
     for (const [k, place, expected] of cases) {
-      const step = stepOf(wordsToNumberQuestion(k, PLACES.findIndex((p) => p.name === place)));
+      const step = stepOf(
+        wordsToNumberQuestion(
+          k,
+          PLACES.findIndex((p) => p.name === place),
+        ),
+      );
       expect(step.kind).toBe('number');
       expect(step.check(expected)).toMatchObject({ correct: true, expected });
       expect(step.check('0,1').correct).toBe(false);

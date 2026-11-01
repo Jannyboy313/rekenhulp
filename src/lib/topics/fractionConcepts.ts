@@ -54,8 +54,7 @@ export const CONCEPTS: readonly Concept[] = [
     definition: 'een breuk met een breuk in de teller of de noemer',
     subject: 'een samengestelde breuk',
     plural: false,
-    explanation:
-      'Een samengestelde breuk is een breuk met een breuk in de teller of de noemer.',
+    explanation: 'Een samengestelde breuk is een breuk met een breuk in de teller of de noemer.',
   },
   {
     term: 'gelijknamige breuken',

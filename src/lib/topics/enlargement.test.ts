@@ -30,7 +30,9 @@ const ofForm = (questions: Question[], form: string) =>
 describe('enlargement fixed cases', () => {
   it('12 cm enlarged with 25% → 15', () => {
     const step = stepOf(withPercentQuestion(FOTO, 'enlarge', 25, 12));
-    expect(step.prompt).toBe('Je vergroot een foto van 12 cm breed met 25%. Hoe breed wordt de foto?');
+    expect(step.prompt).toBe(
+      'Je vergroot een foto van 12 cm breed met 25%. Hoe breed wordt de foto?',
+    );
     expect(step.suffix).toBe('cm');
     expect(step.check('15')).toEqual({
       correct: true,
@@ -72,9 +74,7 @@ describe('enlargement fixed cases', () => {
 
   it('after +50% the photo is 18 cm → 12', () => {
     const step = stepOf(backQuestion(FOTO, 'enlarge', 50, 12));
-    expect(step.prompt).toBe(
-      'Na vergroten met 50% is een foto 18 cm breed. Hoe breed was hij?',
-    );
+    expect(step.prompt).toBe('Na vergroten met 50% is een foto 18 cm breed. Hoe breed was hij?');
     expect(step.check('12')).toMatchObject({
       correct: true,
       explanation: '150% = 18 → 50% = 6 → 100% = 12',

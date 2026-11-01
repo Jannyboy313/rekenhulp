@@ -125,7 +125,8 @@ export function percentExpression(
     };
   }
   const part = divide(whole, fromInteger(Number(share.den)));
-  const times = share.num === 1n ? '' : ` → ${share.num} × ${formatRational(part)} = ${formatRational(answer)}`;
+  const times =
+    share.num === 1n ? '' : ` → ${share.num} × ${formatRational(part)} = ${formatRational(answer)}`;
   return {
     text: `${percent}% van ${formatRational(whole)}`,
     answer,

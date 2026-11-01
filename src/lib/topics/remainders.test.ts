@@ -88,7 +88,11 @@ describe('remainders: groups', () => {
     for (const question of rows) {
       const [, , aText, bText, rText, loText, hiText] = question.key.split(':');
       const [a, b, r, lo, hi] = [aText, bText, rText, loText, hiText].map(Number) as number[] as [
-        number, number, number, number, number,
+        number,
+        number,
+        number,
+        number,
+        number,
       ];
       const step = stepOf(question);
       expect(step.suffix).toBe('kinderen');
@@ -124,7 +128,10 @@ describe('remainders: two remainders', () => {
     for (const question of rows) {
       const [, , m1Text, r1Text, m2Text, r2Text] = question.key.split(':');
       const [m1, r1, m2, r2] = [m1Text, r1Text, m2Text, r2Text].map(Number) as [
-        number, number, number, number,
+        number,
+        number,
+        number,
+        number,
       ];
       const step = stepOf(question);
       expect(gcd(m1, m2)).toBe(1);

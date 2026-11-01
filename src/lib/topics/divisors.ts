@@ -37,8 +37,7 @@ const LCM_TRIPLES: readonly (readonly number[])[] = range(2, MAX_LCM_TERM).flatM
   range(a + 1, MAX_LCM_TERM).flatMap((b) =>
     range(b + 1, MAX_LCM_TERM)
       .filter(
-        (c) =>
-          b % a !== 0 && c % a !== 0 && c % b !== 0 && lcm(lcm(a, b), c) <= MAX_LCM_OF_THREE,
+        (c) => b % a !== 0 && c % a !== 0 && c % b !== 0 && lcm(lcm(a, b), c) <= MAX_LCM_OF_THREE,
       )
       .map((c) => [a, b, c]),
   ),
@@ -87,7 +86,9 @@ function generateCount(rng: Rng): Question {
 function ggdTriple(rng: Rng): number[] {
   return drawUntil(() => {
     const g = randomInt(rng, MIN_COMMON_FACTOR, MAX_COMMON_FACTOR);
-    const factors = Array.from({ length: 3 }, () => randomInt(rng, 2, Math.floor(MAX_GCD_TERM / g)));
+    const factors = Array.from({ length: 3 }, () =>
+      randomInt(rng, 2, Math.floor(MAX_GCD_TERM / g)),
+    );
     if (new Set(factors).size !== 3 || gcd(gcd(factors[0]!, factors[1]!), factors[2]!) !== 1) {
       return null;
     }

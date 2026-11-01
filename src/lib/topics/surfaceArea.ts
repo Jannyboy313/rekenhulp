@@ -71,7 +71,11 @@ export function prismQuestion(
 export type CylinderContext = 'blik' | 'koker' | 'ton';
 
 /** `Een blik heeft een grondvlak van 25,1 cm² en een mantel van 225,3 cm². …` */
-export function cylinderQuestion(context: CylinderContext, base: Rational, mantle: Rational): Question {
+export function cylinderQuestion(
+  context: CylinderContext,
+  base: Rational,
+  mantle: Rational,
+): Question {
   const unit = context === 'ton' ? 'dm²' : 'cm²';
   const answer = add(mantle, multiply(fromInteger(2), base));
   const [baseText, mantleText] = [formatRational(base), formatRational(mantle)];

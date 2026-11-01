@@ -63,7 +63,10 @@ function ggdPairs(terms: readonly number[], accept: (g: number) => boolean): Pai
 }
 
 const GGD_PAIRS: Record<'planken' | 'fruit' | 'tegels', readonly Pair[]> = {
-  planken: ggdPairs(range(MIN_TERM_PLANKEN, MAX_TERM_GGD.planken), (g) => g >= 2 && g <= MAX_COMMON_DIVISOR),
+  planken: ggdPairs(
+    range(MIN_TERM_PLANKEN, MAX_TERM_GGD.planken),
+    (g) => g >= 2 && g <= MAX_COMMON_DIVISOR,
+  ),
   fruit: ggdPairs(range(2, MAX_TERM_GGD.fruit), (g) => g >= 2 && g <= MAX_COMMON_DIVISOR),
   tegels: ggdPairs(
     range(MIN_TILE_FLOOR / 10, MAX_TILE_FLOOR / 10).map((n) => n * 10),
@@ -124,7 +127,11 @@ export function lcmGcdPrompt(context: Context, numbers: readonly number[]): stri
 }
 
 /** The concept, then the §5.2 / §5.3 explanation. */
-export function lcmGcdExplanation(kind: Kind, context: Context, numbers: readonly number[]): string {
+export function lcmGcdExplanation(
+  kind: Kind,
+  context: Context,
+  numbers: readonly number[],
+): string {
   const [a, b] = numbers as [number, number];
   const detail =
     kind === 'kgv'

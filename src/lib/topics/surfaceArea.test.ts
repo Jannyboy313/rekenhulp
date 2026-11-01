@@ -153,9 +153,7 @@ describe('generateSurfaceArea', () => {
       expect(answerOf(question), question.key).toEqual(fromInteger(total));
       expect(stepOf(question).suffix).toBe(context === 'doos' ? 'cm²' : 'm²');
     }
-    expect(seen).toEqual(
-      new Set(['tent:3-4-5', 'doos:3-4-5', 'doos:6-8-10', 'doos:5-12-13']),
-    );
+    expect(seen).toEqual(new Set(['tent:3-4-5', 'doos:3-4-5', 'doos:6-8-10', 'doos:5-12-13']));
   });
 
   it('draws cylinders with base [5, 80] and mantle [50, 500] with 1 decimal', () => {

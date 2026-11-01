@@ -243,7 +243,9 @@ describe('generateFractionProblems', () => {
         expect(answer.den).toBeLessThanOrEqual(12n);
         const typed = `${answer.num}/${answer.den}`;
         expect(step.check(typed).correct).toBe(true);
-        expect(step.check(String(Number(answer.num) / Number(answer.den)).replace('.', ',')).correct).toBe(false);
+        expect(
+          step.check(String(Number(answer.num) / Number(answer.den)).replace('.', ',')).correct,
+        ).toBe(false);
         if (n - a !== Number(answer.num)) {
           expect(step.check(`${n - a}/${n}`).correct).toBe(false);
         }

@@ -35,10 +35,7 @@ function decimalTexts(numbers: readonly Shown[]): Map<Shown, string> {
     );
     if (strict) {
       return new Map(
-        numbers.map((shown) => [
-          shown,
-          formatRational(cut(shown)) + (finite(shown) ? '' : '…'),
-        ]),
+        numbers.map((shown) => [shown, formatRational(cut(shown)) + (finite(shown) ? '' : '…')]),
       );
     }
   }

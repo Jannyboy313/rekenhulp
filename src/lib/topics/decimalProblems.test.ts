@@ -119,7 +119,9 @@ describe('generateDecimalProblems', () => {
       const products = new Set<string>();
       for (const question of questions) {
         const step = stepOf(question);
-        const match = /^(\S+) kost(?:en)? (€.[\d,]+) per kilo\. Wat kost ([\d,]+) kg\?$/u.exec(step.prompt)!;
+        const match = /^(\S+) kost(?:en)? (€.[\d,]+) per kilo\. Wat kost ([\d,]+) kg\?$/u.exec(
+          step.prompt,
+        )!;
         products.add(match[1]!);
         weights.add(match[3]!);
         const price = number(match[2]!.slice(1));
@@ -178,9 +180,10 @@ describe('generateDecimalProblems', () => {
       const pieces = new Set<string>();
       for (const question of counts) {
         const step = stepOf(question);
-        const match = /^Een (plank|lint) van ([\d,]+) m (zaag|knip) je in stukken van ([\d,]+) m\. Hoeveel stukken krijg je\?$/.exec(
-          step.prompt,
-        )!;
+        const match =
+          /^Een (plank|lint) van ([\d,]+) m (zaag|knip) je in stukken van ([\d,]+) m\. Hoeveel stukken krijg je\?$/.exec(
+            step.prompt,
+          )!;
         materials.add(`${match[1]} ${match[3]}`);
         pieces.add(match[4]!);
         const total = number(match[2]!);
@@ -193,7 +196,9 @@ describe('generateDecimalProblems', () => {
         expect(step.check(String(count.num)).correct).toBe(true);
       }
       expect([...materials].sort()).toEqual(['lint knip', 'plank zaag']);
-      expect([...pieces].sort()).toEqual(['0,2', '0,25', '0,3', '0,4', '0,5', '0,6', '0,75'].sort());
+      expect([...pieces].sort()).toEqual(
+        ['0,2', '0,25', '0,3', '0,4', '0,5', '0,6', '0,75'].sort(),
+      );
     });
 
     it('leaves a positive rest of a lint of 2, 3, 5 or 10 m after 2 to 8 pieces of 0,15 to 1,5 m', () => {
@@ -201,16 +206,20 @@ describe('generateDecimalProblems', () => {
       const counts = new Set<number>();
       for (const question of rests) {
         const step = stepOf(question);
-        const match = /^Van een lint van (\d+) m knip je (\d+) stukken van ([\d,]+) m\. Hoeveel m blijft er over\?$/.exec(
-          step.prompt,
-        )!;
+        const match =
+          /^Van een lint van (\d+) m knip je (\d+) stukken van ([\d,]+) m\. Hoeveel m blijft er over\?$/.exec(
+            step.prompt,
+          )!;
         lints.add(Number(match[1]));
         counts.add(Number(match[2]));
         const piece = number(match[3]!);
         expect(compare(piece, decimal('0,15'))).toBeGreaterThanOrEqual(0);
         expect(compare(piece, decimal('1,5'))).toBeLessThanOrEqual(0);
         expect(multiply(piece, HUNDRED).num % 5n).toBe(0n);
-        const rest = subtract(fromInteger(Number(match[1])), multiply(piece, fromInteger(Number(match[2]))));
+        const rest = subtract(
+          fromInteger(Number(match[1])),
+          multiply(piece, fromInteger(Number(match[2]))),
+        );
         expect(compare(rest, fromInteger(0))).toBeGreaterThan(0);
         expect(number(step.check('').expected)).toEqual(rest);
       }

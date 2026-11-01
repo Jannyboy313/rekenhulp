@@ -25,7 +25,9 @@ function exercisesOf(strategy: Strategy): DeepExercise[] {
 
 /** The value of a prompt: `€` and the grouping removed, then parsed. */
 function valueOf(prompt: string) {
-  return evaluate(parse(prompt.replaceAll(`€${NO_BREAK_SPACE}`, '').replaceAll(GROUP_SEPARATOR, ''))!)!;
+  return evaluate(
+    parse(prompt.replaceAll(`€${NO_BREAK_SPACE}`, '').replaceAll(GROUP_SEPARATOR, ''))!,
+  )!;
 }
 
 const numbersIn = (text: string) => [...text.matchAll(/\d+(?:,\d+)?/g)].map((m) => m[0]);
@@ -77,7 +79,8 @@ describe('factorOut', () => {
     const ns = new Set<number>();
     for (const { prompt } of exercises) {
       const numbers = numbersIn(prompt).map(Number);
-      if (numbers.length === 3) ns.add(numbers.find((x) => FACTOR_OUT_NUMBERS.includes(x as 9) && x !== numbers[0]) ?? 0);
+      if (numbers.length === 3)
+        ns.add(numbers.find((x) => FACTOR_OUT_NUMBERS.includes(x as 9) && x !== numbers[0]) ?? 0);
     }
     expect(exercises.some((e) => e.prompt.includes('−'))).toBe(true);
     expect(exercises.some((e) => numbersIn(e.prompt).length === 4)).toBe(true);
@@ -103,12 +106,16 @@ describe('decimalFactor', () => {
   it('is 0,25 × 4k, 2,5 × b (b a multiple of 0,4 with 1 decimal) or 1,25 × 8k', () => {
     for (const { prompt, key } of exercises) {
       const parts = prompt.split(' × ');
-      const [factor, other] = parts.includes('0,25') || parts.includes('2,5') || parts.includes('1,25')
-        ? [parts.find((p) => ['0,25', '2,5', '1,25'].includes(p))!, parts.find((p) => !['0,25', '2,5', '1,25'].includes(p))!]
-        : [parts[0]!, parts[1]!];
+      const [factor, other] =
+        parts.includes('0,25') || parts.includes('2,5') || parts.includes('1,25')
+          ? [
+              parts.find((p) => ['0,25', '2,5', '1,25'].includes(p))!,
+              parts.find((p) => !['0,25', '2,5', '1,25'].includes(p))!,
+            ]
+          : [parts[0]!, parts[1]!];
       const o = centsOf(other);
       if (factor === '0,25') {
-        expect(o / 100 % 4).toBe(0);
+        expect((o / 100) % 4).toBe(0);
         expect(o / 100 / 4).toBeGreaterThanOrEqual(3);
         expect(o / 100 / 4).toBeLessThanOrEqual(50);
       } else if (factor === '2,5') {
@@ -118,7 +125,7 @@ describe('decimalFactor', () => {
         expect(o).toBeLessThanOrEqual(1200);
       } else {
         expect(factor).toBe('1,25');
-        expect(o / 100 % 8).toBe(0);
+        expect((o / 100) % 8).toBe(0);
         expect(o / 100 / 8).toBeGreaterThanOrEqual(2);
         expect(o / 100 / 8).toBeLessThanOrEqual(12);
       }
@@ -141,7 +148,10 @@ describe('decimalFactor', () => {
 
   it('2,5 × 4,8 = 12 and 1,25 × 24 = 30', () => {
     const find = (text: string) =>
-      createRngSearch((r) => buildDeepExercise(r, 'decimalFactor'), (e) => e.prompt === text);
+      createRngSearch(
+        (r) => buildDeepExercise(r, 'decimalFactor'),
+        (e) => e.prompt === text,
+      );
     expect(find('2,5 × 4,8')).toMatchObject({ explanation: '10 × 4,8 : 4 = 12' });
     expect(find('1,25 × 24')).toMatchObject({ explanation: '10 × 24 : 8 = 30' });
   });
@@ -175,7 +185,9 @@ describe('divideDecimal', () => {
       expect(Number(a)).toBeLessThanOrEqual(max);
       expect(explanation).toBe(`${a} × ${factor} = ${Number(a) * factor}`);
     }
-    expect(new Set(exercises.map((e) => e.prompt.split(' : ')[1]))).toEqual(new Set(Object.keys(ranges)));
+    expect(new Set(exercises.map((e) => e.prompt.split(' : ')[1]))).toEqual(
+      new Set(Object.keys(ranges)),
+    );
   });
 });
 
@@ -210,7 +222,10 @@ describe('money', () => {
   });
 
   it('€ 7,99 + € 2,98 = 10,97 and € 20 − € 4,95 = 15,05', () => {
-    const sum = createRngSearch((r) => buildDeepExercise(r, 'money'), (e) => e.prompt === `€${NO_BREAK_SPACE}7,99 + €${NO_BREAK_SPACE}2,98`);
+    const sum = createRngSearch(
+      (r) => buildDeepExercise(r, 'money'),
+      (e) => e.prompt === `€${NO_BREAK_SPACE}7,99 + €${NO_BREAK_SPACE}2,98`,
+    );
     expect(sum).toBeDefined();
     const hit = findDrawn(
       3,
@@ -243,7 +258,8 @@ describe('generateSmartCalculationDeep', () => {
 
   it('picks the strategies equally likely', () => {
     for (const strategy of STRATEGIES) {
-      const share = questions.filter((q) => q.key.split(':')[1] === strategy).length / questions.length;
+      const share =
+        questions.filter((q) => q.key.split(':')[1] === strategy).length / questions.length;
       expect(share).toBeGreaterThan(0.2);
       expect(share).toBeLessThan(0.3);
     }

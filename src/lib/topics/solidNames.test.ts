@@ -195,8 +195,16 @@ describe('generateSolidNames', () => {
 
   it('counts with the formulas of the spec', () => {
     const FORMULAS = {
-      prisma: { vlakken: (n: number) => n + 2, ribben: (n: number) => 3 * n, hoekpunten: (n: number) => 2 * n },
-      piramide: { vlakken: (n: number) => n + 1, ribben: (n: number) => 2 * n, hoekpunten: (n: number) => n + 1 },
+      prisma: {
+        vlakken: (n: number) => n + 2,
+        ribben: (n: number) => 3 * n,
+        hoekpunten: (n: number) => 2 * n,
+      },
+      piramide: {
+        vlakken: (n: number) => n + 1,
+        ribben: (n: number) => 2 * n,
+        hoekpunten: (n: number) => n + 1,
+      },
     } as const;
     for (const n of [3, 4, 5, 6, 8]) {
       for (const property of ['vlakken', 'ribben', 'hoekpunten'] as const) {

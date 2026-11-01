@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { createRng } from '../random';
-import { compare, fromInteger, parseDutchNumber, parseFraction, rational, subtract } from '../rational';
+import {
+  compare,
+  fromInteger,
+  parseDutchNumber,
+  parseFraction,
+  rational,
+  subtract,
+} from '../rational';
 import type { Rational } from '../rational';
 import {
   DENOMINATORS,
@@ -142,7 +149,9 @@ describe('generateCompareFractions', () => {
     const asked = new Set<string>();
     for (const question of extremes) {
       const step = stepOf(question);
-      const match = /^Welk getal is het (grootst|kleinst): (.+), (.+) of (.+)\?$/.exec(step.prompt)!;
+      const match = /^Welk getal is het (grootst|kleinst): (.+), (.+) of (.+)\?$/.exec(
+        step.prompt,
+      )!;
       asked.add(match[1]!);
       const texts = [match[2]!, match[3]!, match[4]!];
       checkNumbers(texts);
@@ -174,14 +183,15 @@ describe('generateCompareFractions', () => {
       checkNumbers(texts);
       expect(texts.filter((text) => text.includes('/'))).toHaveLength(2);
       expect(new Set(texts.map((text) => compare(valueOf(text), fromInteger(0)))).size).toBe(1);
-      expect(new Set(texts.map((text) => valueOf(text).num * 1000000n / valueOf(text).den)).size).toBe(4);
+      expect(
+        new Set(texts.map((text) => (valueOf(text).num * 1000000n) / valueOf(text).den)).size,
+      ).toBe(4);
       let correct = 0;
       for (const list of lists) {
         const values = list.map(valueOf);
         const sorted = values.every(
           (value, index) =>
-            index === 0 ||
-            compare(values[index - 1]!, value) === (sign === ' < ' ? -1 : 1),
+            index === 0 || compare(values[index - 1]!, value) === (sign === ' < ' ? -1 : 1),
         );
         if (sorted) correct++;
         expect([...list].sort()).toEqual([...texts].sort());
@@ -208,7 +218,8 @@ describe('generateCompareFractions', () => {
   it('uses every denominator and keeps the key per numbers', () => {
     const used = new Set<number>();
     for (const question of questions) {
-      for (const match of stepOf(question).prompt.matchAll(/\d+\/(\d+)/g)) used.add(Number(match[1]));
+      for (const match of stepOf(question).prompt.matchAll(/\d+\/(\d+)/g))
+        used.add(Number(match[1]));
       for (const option of stepOf(question).options ?? []) {
         for (const match of option.matchAll(/\d+\/(\d+)/g)) used.add(Number(match[1]));
       }

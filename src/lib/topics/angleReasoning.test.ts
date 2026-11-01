@@ -172,9 +172,10 @@ describe('generateAngleReasoning', () => {
   it('draws the three exterior variants equally often within their ranges', () => {
     const exterior = of('exterior');
     for (const variant of ['triangle', 'regular', 'count']) {
-      expect(Math.abs(of('exterior', variant).length / exterior.length - 1 / 3), variant).toBeLessThan(
-        0.05,
-      );
+      expect(
+        Math.abs(of('exterior', variant).length / exterior.length - 1 / 3),
+        variant,
+      ).toBeLessThan(0.05);
     }
     for (const question of of('exterior', 'triangle')) {
       const [, , a, b] = parts(question).map(Number);

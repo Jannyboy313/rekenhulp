@@ -29,7 +29,10 @@ describe('operationQuestion', () => {
   it('answers each word with its operation and explains it', () => {
     const step = (word: Parameters<typeof operationQuestion>[0]) =>
       stepOf(operationQuestion(word, 48, 12)).check('');
-    expect(step('som')).toMatchObject({ expected: '60', explanation: 'som = optellen: 48 + 12 = 60' });
+    expect(step('som')).toMatchObject({
+      expected: '60',
+      explanation: 'som = optellen: 48 + 12 = 60',
+    });
     expect(step('product')).toMatchObject({
       expected: '576',
       explanation: 'product = vermenigvuldigen: 48 × 12 = 576',
@@ -162,6 +165,8 @@ describe('generateArithmeticWords', () => {
   });
 
   it('is deterministic for a seed', () => {
-    expect(generateArithmeticWords(createRng(9)).key).toBe(generateArithmeticWords(createRng(9)).key);
+    expect(generateArithmeticWords(createRng(9)).key).toBe(
+      generateArithmeticWords(createRng(9)).key,
+    );
   });
 });

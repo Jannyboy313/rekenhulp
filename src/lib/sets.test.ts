@@ -445,12 +445,7 @@ describe('levels', () => {
   it('lists the four Getalbegrip Verdieping topics at weight 1 and keeps the card description', () => {
     const names = (size: number) =>
       describeSetTopicRows(forLevel(NUMBER_SENSE_SET, 'deep'), size).map((row) => row.name);
-    const topics = [
-      'Negatief in context',
-      'Afronden redeneren',
-      'Schatten',
-      'Rekenen met machten',
-    ];
+    const topics = ['Negatief in context', 'Afronden redeneren', 'Schatten', 'Rekenen met machten'];
     expect(names(15)).toEqual([...topics, '20% opfrisser']);
     expect(names(5)).toEqual(topics);
     expect(NUMBER_SENSE_SET.deep).toEqual([

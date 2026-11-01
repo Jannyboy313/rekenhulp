@@ -46,7 +46,9 @@ describe('ratioReasoning fixed cases', () => {
 
   it('asks the larger share or the total, in marbles', () => {
     const larger = stepOf(differenceQuestion(['Anna', 'Bas'], 'knikkers', [3, 5], 6, 'larger'));
-    expect(larger.prompt).toContain('Bas krijgt 12 knikkers meer dan Anna. Hoeveel knikkers krijgt Bas?');
+    expect(larger.prompt).toContain(
+      'Bas krijgt 12 knikkers meer dan Anna. Hoeveel knikkers krijgt Bas?',
+    );
     expect(larger.suffix).toBe('knikkers');
     expect(larger.check('30').correct).toBe(true);
     const total = stepOf(differenceQuestion(['Anna', 'Bas'], 'stickers', [3, 5], 6, 'total'));

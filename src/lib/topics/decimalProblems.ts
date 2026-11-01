@@ -17,7 +17,6 @@ import { decimal } from './fractionNotation';
 export const FORMS = ['price', 'priceBack', 'length'] as const;
 export type Form = (typeof FORMS)[number];
 
-
 /** Spec §5.78: the weights in kg. */
 export const WEIGHTS = ['0,1', '0,2', '0,25', '0,3', '0,4', '0,5', '0,75', '1,2', '1,5', '2,5'].map(
   decimal,
@@ -40,7 +39,11 @@ export const PRICE_PRODUCTS = [
 export const PRICE_BACK_PRODUCTS = ['appels', 'peren', 'tomaten'] as const;
 
 /** `Kaas kost € 14 per kilo. Wat kost 0,25 kg?` */
-export function priceQuestion(product: (typeof PRICE_PRODUCTS)[number], price: Rational, weight: Rational): Question {
+export function priceQuestion(
+  product: (typeof PRICE_PRODUCTS)[number],
+  price: Rational,
+  weight: Rational,
+): Question {
   const cost = exactCost(price, weight)!;
   const { num: p, den: q } = weight;
   const unit = divide(price, fromInteger(Number(q)));

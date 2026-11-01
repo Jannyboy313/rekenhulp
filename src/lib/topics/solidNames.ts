@@ -60,7 +60,8 @@ export const NAME_ITEMS: readonly NameItem[] = [
   {
     has: 'geen ribben en geen hoekpunten, en elk punt even ver van het middelpunt',
     answer: 'bol',
-    explanation: 'Een bol heeft geen ribben en geen hoekpunten; elk punt ligt even ver van het middelpunt.',
+    explanation:
+      'Een bol heeft geen ribben en geen hoekpunten; elk punt ligt even ver van het middelpunt.',
   },
 ];
 
@@ -89,7 +90,11 @@ export type Property = 'vlakken' | 'ribben' | 'hoekpunten';
 
 const PROPERTIES: readonly Property[] = ['vlakken', 'ribben', 'hoekpunten'];
 const BASES: readonly number[] = [3, 4, 5, 6, 8];
-const BASE_NAMES: Readonly<Record<number, string>> = { ...POLYGON_NAMES, 3: 'driehoek', 4: 'vierkant' };
+const BASE_NAMES: Readonly<Record<number, string>> = {
+  ...POLYGON_NAMES,
+  3: 'driehoek',
+  4: 'vierkant',
+};
 const BOX_COUNTS: Readonly<Record<Property, number>> = { vlakken: 6, ribben: 12, hoekpunten: 8 };
 
 /** The count and how it is worked out, for a prisma or a piramide with an `n`-hoek as base. */
@@ -116,7 +121,11 @@ function baseCount(solid: 'prisma' | 'piramide', n: number, property: Property) 
 }
 
 /** `n` is the number of sides of the base of a prisma or a piramide; a kubus and a balk have none. */
-export function countQuestion(solid: CountSolid, n: number | undefined, property: Property): Question {
+export function countQuestion(
+  solid: CountSolid,
+  n: number | undefined,
+  property: Property,
+): Question {
   if (solid === 'prisma' || solid === 'piramide') {
     const { count, how } = baseCount(solid, n!, property);
     return {

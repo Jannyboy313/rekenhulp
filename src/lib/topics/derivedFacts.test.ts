@@ -88,5 +88,4 @@ describe('generateDerivedFacts', () => {
       expect(question.key).toMatch(/^derivedFacts:\d+ × \d+:[a-zA-Z]+:\d$/);
     }
   });
-
 });

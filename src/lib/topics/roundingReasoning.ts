@@ -123,7 +123,8 @@ function bounds(rng: Rng): Question {
     const place = pick(rng, PLACES);
     const unit = UNITS[place];
     const value = drawUntil(() => {
-      const value = unit * randomInt(rng, Math.ceil(MIN_WHOLE / unit), Math.floor(MAX_WHOLE / unit));
+      const value =
+        unit * randomInt(rng, Math.ceil(MIN_WHOLE / unit), Math.floor(MAX_WHOLE / unit));
       const significant = String(value).replace(/0+$/, '').length;
       return significant >= 2 && significant <= 3 ? value : null;
     });

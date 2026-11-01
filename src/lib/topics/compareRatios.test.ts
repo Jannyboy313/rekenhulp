@@ -169,7 +169,10 @@ describe('generateCompareRatios', () => {
       const [, , first, a, b, c, d, apples] = question.key.split(':') as string[];
       const pair = NAME_PAIRS.find(([name]) => name === first)!;
       expect(step.options).toEqual([pair[0], pair[1], EVEN, UNKNOWN]);
-      const [pa, pb] = [(Number(apples) / Number(a)) * Number(b), (Number(apples) / Number(c)) * Number(d)];
+      const [pa, pb] = [
+        (Number(apples) / Number(a)) * Number(b),
+        (Number(apples) / Number(c)) * Number(d),
+      ];
       const expected = pa > pb ? pair[0] : pa < pb ? pair[1] : EVEN;
       expect(answerText(question)).toBe(expected);
     }
