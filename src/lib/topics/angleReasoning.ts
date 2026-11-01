@@ -71,7 +71,7 @@ export function isoscelesRatioQuestion(factor: number, asked: 'tophoek' | 'basis
     asked === 'tophoek' ? rational(180n * BigInt(factor), BigInt(parts)) : part;
   const how = `tophoek ${factor} delen, twee basishoeken 1 deel elk: ${factor} + 1 + 1 = ${parts} delen → 1 deel = 180 : ${parts} = ${formatRational(part)}`;
   return reasoningQuestion(`isosceles:${factor}:${asked}`, {
-    prompt: `De tophoek is ${factor} keer zo groot als een basishoek. Hoe groot is ${asked === 'tophoek' ? 'de tophoek' : 'een basishoek'}?`,
+    prompt: `In een gelijkbenige driehoek is de tophoek ${factor} keer zo groot als een basishoek. Hoe groot is ${asked === 'tophoek' ? 'de tophoek' : 'een basishoek'}?`,
     answer,
     explanation:
       asked === 'tophoek'
@@ -84,7 +84,8 @@ export function isoscelesRatioQuestion(factor: number, asked: 'tophoek' | 'basis
 export function clockAngleQuestion(hour: number, minutes: number): Question {
   const half = (twice: number) => rational(BigInt(twice), 2n);
   const minuteHand = minutes * 6;
-  const hourHandTwice = 60 * hour + minutes;
+  const hourOnDial = hour % 12;
+  const hourHandTwice = 60 * hourOnDial + minutes;
   const hourHand = half(hourHandTwice);
   const differenceTwice = Math.abs(hourHandTwice - 2 * minuteHand);
   const difference = half(differenceTwice);
@@ -98,7 +99,7 @@ export function clockAngleQuestion(hour: number, minutes: number): Question {
   return reasoningQuestion(`clock:${hour}:${minutes}`, {
     prompt: `Hoe groot is de kleinste hoek tussen de wijzers om ${hour}:${String(minutes).padStart(2, '0')}?`,
     answer,
-    explanation: `grote wijzer: ${minutes} × 6 = ${minuteHand}°, kleine wijzer: ${hour} × 30 + ${minutes} × 0,5 = ${formatRational(hourHand)}° → ${subtraction}${
+    explanation: `grote wijzer: ${minutes} × 6 = ${minuteHand}°, kleine wijzer: ${hourOnDial} × 30 + ${minutes} × 0,5 = ${formatRational(hourHand)}° → ${subtraction}${
       wraps
         ? ` is meer dan 180° → 360 ${MINUS} ${formatRational(difference)} = ${formatRational(answer)}`
         : ''

@@ -37,7 +37,7 @@ export function pyramidQuestion(
   });
 }
 
-export type PrismContext = 'tent' | 'doos' | 'dakkapel';
+export type PrismContext = 'tent' | 'doos';
 
 /** Right triangles with all three sides whole (spec §5.82). */
 export const TRIPLES: readonly (readonly [number, number, number])[] = [
@@ -49,7 +49,6 @@ export const TRIPLES: readonly (readonly [number, number, number])[] = [
 const PRISM_UNIT: Readonly<Record<PrismContext, 'm' | 'cm'>> = {
   tent: 'm',
   doos: 'cm',
-  dakkapel: 'm',
 };
 
 /** `Een tent is een prisma. De voorkant en achterkant zijn driehoeken met zijden van 3 m, … ` */
@@ -84,7 +83,6 @@ export function cylinderQuestion(context: CylinderContext, base: Rational, mantl
   });
 }
 
-const PRISM_CONTEXTS: readonly PrismContext[] = ['tent', 'doos', 'dakkapel'];
 const CYLINDER_CONTEXTS: readonly CylinderContext[] = ['blik', 'koker', 'ton'];
 
 function drawPyramid(rng: Rng): Question {
@@ -93,8 +91,11 @@ function drawPyramid(rng: Rng): Question {
   return pyramidQuestion(z, h, pick(rng, ['m', 'cm'] as const), rng() < 0.5 ? 'area' : 'height');
 }
 
+/** Tent: only 3-4-5, 2-6 m. Doos: any triple, 5-20 cm (spec §5.82). */
 const drawPrism = (rng: Rng) =>
-  prismQuestion(pick(rng, PRISM_CONTEXTS), pick(rng, TRIPLES), randomInt(rng, 2, 20));
+  rng() < 0.5
+    ? prismQuestion('tent', [3, 4, 5], randomInt(rng, 2, 6))
+    : prismQuestion('doos', pick(rng, TRIPLES), randomInt(rng, 5, 20));
 
 /** A value with 1 decimal in [min, max]. */
 const drawTenths = (rng: Rng, min: number, max: number) =>

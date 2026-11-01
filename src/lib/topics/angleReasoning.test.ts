@@ -66,7 +66,7 @@ describe('question text', () => {
     [
       'tophoek 3 keer basishoek',
       () => isoscelesRatioQuestion(3, 'tophoek'),
-      'De tophoek is 3 keer zo groot als een basishoek. Hoe groot is de tophoek?',
+      'In een gelijkbenige driehoek is de tophoek 3 keer zo groot als een basishoek. Hoe groot is de tophoek?',
       '108',
       '°',
       'tophoek 3 delen, twee basishoeken 1 deel elk: 3 + 1 + 1 = 5 delen → 1 deel = 180 : 5 = 36 → 3 × 36 = 108',
@@ -74,7 +74,7 @@ describe('question text', () => {
     [
       'tophoek 3 keer basishoek, basishoek',
       () => isoscelesRatioQuestion(3, 'basishoek'),
-      'De tophoek is 3 keer zo groot als een basishoek. Hoe groot is een basishoek?',
+      'In een gelijkbenige driehoek is de tophoek 3 keer zo groot als een basishoek. Hoe groot is een basishoek?',
       '36',
       '°',
       'tophoek 3 delen, twee basishoeken 1 deel elk: 3 + 1 + 1 = 5 delen → 1 deel = 180 : 5 = 36',
@@ -82,7 +82,7 @@ describe('question text', () => {
     [
       'tophoek 6 keer basishoek (halve graden)',
       () => isoscelesRatioQuestion(6, 'basishoek'),
-      'De tophoek is 6 keer zo groot als een basishoek. Hoe groot is een basishoek?',
+      'In een gelijkbenige driehoek is de tophoek 6 keer zo groot als een basishoek. Hoe groot is een basishoek?',
       '22,5',
       '°',
       'tophoek 6 delen, twee basishoeken 1 deel elk: 6 + 1 + 1 = 8 delen → 1 deel = 180 : 8 = 22,5',
@@ -109,7 +109,7 @@ describe('question text', () => {
       'Hoe groot is de kleinste hoek tussen de wijzers om 12:20?',
       '110',
       '°',
-      'grote wijzer: 20 × 6 = 120°, kleine wijzer: 12 × 30 + 20 × 0,5 = 370° → 370 − 120 = 250 is meer dan 180° → 360 − 250 = 110',
+      'grote wijzer: 20 × 6 = 120°, kleine wijzer: 0 × 30 + 20 × 0,5 = 10° → 120 − 10 = 110',
     ],
     [
       'klok 7:05 (meer dan 180°)',

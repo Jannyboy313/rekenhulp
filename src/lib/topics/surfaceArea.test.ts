@@ -54,14 +54,6 @@ describe('question text', () => {
       '2 driehoeken: 2 × (5 × 12 : 2) = 60, 3 rechthoeken: (5 + 12 + 13) × 2 = 60 → 60 + 60 = 120',
     ],
     [
-      'dakkapel 6-8-10, 20 m',
-      () => prismQuestion('dakkapel', [6, 8, 10], 20),
-      'Een dakkapel is een prisma. De voorkant en achterkant zijn driehoeken met zijden van 6 m, 8 m en 10 m en een rechte hoek. De dakkapel is 20 m lang. Hoe groot is de totale oppervlakte?',
-      '528',
-      'm²',
-      '2 driehoeken: 2 × (6 × 8 : 2) = 48, 3 rechthoeken: (6 + 8 + 10) × 20 = 480 → 48 + 480 = 528',
-    ],
-    [
       'blik 25,1 en 225,3',
       () => cylinderQuestion('blik', decimal('25,1'), decimal('225,3')),
       'Een blik heeft een grondvlak van 25,1 cm² en een mantel van 225,3 cm². Hoe groot is de totale oppervlakte?',
@@ -144,20 +136,26 @@ describe('generateSurfaceArea', () => {
     }
   });
 
-  it('draws every triple and context with a length in [2, 20] and the unit of its context', () => {
+  it('draws tent (3-4-5, 2-6 m) and doos (any triple, 5-20 cm) 50/50 with the unit of its context', () => {
     const prisms = of('prism');
     const seen = new Set<string>();
+    const tents = prisms.filter((question) => parts(question)[1] === 'tent').length;
+    expect(Math.abs(tents / prisms.length - 0.5)).toBeLessThan(0.06);
     for (const question of prisms) {
       const [, context, a, b, c, length] = parts(question);
       seen.add(`${context}:${a}-${b}-${c}`);
       expect(TRIPLES.map((triple) => triple.join('-'))).toContain(`${a}-${b}-${c}`);
-      expect(Number(length)).toBeGreaterThanOrEqual(2);
-      expect(Number(length)).toBeLessThanOrEqual(20);
+      const [min, max] = context === 'tent' ? [2, 6] : [5, 20];
+      expect(Number(length)).toBeGreaterThanOrEqual(min);
+      expect(Number(length)).toBeLessThanOrEqual(max);
+      if (context === 'tent') expect(`${a}-${b}-${c}`).toBe('3-4-5');
       const total = Number(a) * Number(b) + (Number(a) + Number(b) + Number(c)) * Number(length);
       expect(answerOf(question), question.key).toEqual(fromInteger(total));
       expect(stepOf(question).suffix).toBe(context === 'doos' ? 'cm²' : 'm²');
     }
-    expect(seen.size).toBe(9);
+    expect(seen).toEqual(
+      new Set(['tent:3-4-5', 'doos:3-4-5', 'doos:6-8-10', 'doos:5-12-13']),
+    );
   });
 
   it('draws cylinders with base [5, 80] and mantle [50, 500] with 1 decimal', () => {
