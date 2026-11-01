@@ -47,6 +47,7 @@ import { generateSequences } from './sequences';
 import { generateShapeProperties } from './shapeProperties';
 import { generateSimplifyProblem } from './simplifyProblem';
 import { generateSmartCalculation } from './smartCalculation';
+import { generateSmartCalculationDeep } from './smartCalculationDeep';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
@@ -92,6 +93,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   bracketPlacement: generateBracketPlacement,
   derivedFacts: generateDerivedFacts,
   multiStepProblems: generateMultiStepProblems,
+  smartCalculationDeep: generateSmartCalculationDeep,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
   rounding: generateRounding,
@@ -155,6 +157,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   bracketPlacement: 'Haakjes plaatsen (zodat de uitkomst klopt)',
   derivedFacts: 'Afleiden (uit een gegeven som)',
   multiStepProblems: 'Meerstapsopgaven (contexten, delen met rest)',
+  smartCalculationDeep: 'Handig rekenen+ (buiten haakjes, kommagetallen)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',

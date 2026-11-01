@@ -47,6 +47,7 @@ export type Topic =
   | 'bracketPlacement'
   | 'derivedFacts'
   | 'multiStepProblems'
+  | 'smartCalculationDeep'
   | 'mentalOperations'
   | 'negativeNumbers'
   | 'rounding'
