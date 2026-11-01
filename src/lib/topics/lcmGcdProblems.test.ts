@@ -112,6 +112,7 @@ describe('lcmGcdProblems', () => {
       expect(b / g).toBeGreaterThanOrEqual(2);
       expect(g).toBeGreaterThanOrEqual(2);
       expect(b).toBeLessThanOrEqual(limits[context]!);
+      if (context === 'planken') expect(Math.min(a, b)).toBeGreaterThanOrEqual(50);
       if (context === 'tegels') {
         expect(a % 10).toBe(0);
         expect(b % 10).toBe(0);
@@ -124,25 +125,25 @@ describe('lcmGcdProblems', () => {
   });
 
   it('writes the spec prompts', () => {
-    expect(lcmGcdPrompt('kgv', 'bus', [12, 18])).toBe(
+    expect(lcmGcdPrompt('bus', [12, 18])).toBe(
       'Bus A vertrekt elke 12 minuten, bus B elke 18 minuten. Om 8:00 vertrekken ze samen. Na hoeveel minuten weer?',
     );
-    expect(lcmGcdPrompt('kgv', 'lampen', [4, 6])).toBe(
+    expect(lcmGcdPrompt('lampen', [4, 6])).toBe(
       'Lamp A knippert elke 4 seconden, lamp B elke 6 seconden. Ze knipperen nu samen. Na hoeveel seconden weer?',
     );
-    expect(lcmGcdPrompt('kgv', 'groepjes', [4, 6])).toBe(
+    expect(lcmGcdPrompt('groepjes', [4, 6])).toBe(
       'Een klas kan in groepjes van 4 en in groepjes van 6, zonder dat er iemand overblijft. Hoeveel kinderen zijn er minstens?',
     );
-    expect(lcmGcdPrompt('kgv', 'groepjes', [4, 6, 8])).toBe(
+    expect(lcmGcdPrompt('groepjes', [4, 6, 8])).toBe(
       'Een klas kan in groepjes van 4, 6 en 8, zonder dat er iemand overblijft. Hoeveel kinderen zijn er minstens?',
     );
-    expect(lcmGcdPrompt('ggd', 'planken', [84, 126])).toBe(
+    expect(lcmGcdPrompt('planken', [84, 126])).toBe(
       'Een plank van 84 cm en een van 126 cm zaag je in zo lang mogelijke gelijke stukken, zonder afval. Hoe lang is een stuk?',
     );
-    expect(lcmGcdPrompt('ggd', 'fruit', [24, 36])).toBe(
+    expect(lcmGcdPrompt('fruit', [24, 36])).toBe(
       'Je hebt 24 appels en 36 peren en maakt zoveel mogelijk gelijke fruitschalen zonder over te houden. Hoeveel schalen?',
     );
-    expect(lcmGcdPrompt('ggd', 'tegels', [360, 480])).toBe(
+    expect(lcmGcdPrompt('tegels', [360, 480])).toBe(
       'Een vloer van 360 cm bij 480 cm leg je vol met zo groot mogelijke vierkante tegels. Hoe lang is een zijde?',
     );
   });

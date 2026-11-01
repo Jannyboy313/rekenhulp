@@ -43,6 +43,7 @@ const THREE_GROUPS_SHARE = 0.3;
 const SHARED_FACTOR_SHARE = 0.75;
 const MAX_COMMON_DIVISOR = 30;
 const MAX_TERM_GGD: Record<'planken' | 'fruit', number> = { planken: 200, fruit: 100 };
+const MIN_TERM_PLANKEN = 50;
 const MIN_TILE_FLOOR = 100;
 const MAX_TILE_FLOOR = 900;
 const MIN_TILE = 20;
@@ -62,7 +63,7 @@ function ggdPairs(terms: readonly number[], accept: (g: number) => boolean): Pai
 }
 
 const GGD_PAIRS: Record<'planken' | 'fruit' | 'tegels', readonly Pair[]> = {
-  planken: ggdPairs(range(2, MAX_TERM_GGD.planken), (g) => g >= 2 && g <= MAX_COMMON_DIVISOR),
+  planken: ggdPairs(range(MIN_TERM_PLANKEN, MAX_TERM_GGD.planken), (g) => g >= 2 && g <= MAX_COMMON_DIVISOR),
   fruit: ggdPairs(range(2, MAX_TERM_GGD.fruit), (g) => g >= 2 && g <= MAX_COMMON_DIVISOR),
   tegels: ggdPairs(
     range(MIN_TILE_FLOOR / 10, MAX_TILE_FLOOR / 10).map((n) => n * 10),
@@ -104,7 +105,7 @@ function groupSizes(numbers: readonly number[]): string {
 }
 
 /** The word problem of a context with its numbers in the order shown. */
-export function lcmGcdPrompt(kind: Kind, context: Context, numbers: readonly number[]): string {
+export function lcmGcdPrompt(context: Context, numbers: readonly number[]): string {
   const [a, b] = numbers.map(formatInteger) as [string, string];
   switch (context) {
     case 'bus':
@@ -146,7 +147,7 @@ export function generateLcmGcdProblems(rng: Rng): Question {
     topic: 'lcmGcdProblems',
     steps: [
       numberStep({
-        prompt: lcmGcdPrompt(kind, context, numbers),
+        prompt: lcmGcdPrompt(context, numbers),
         answer: fromInteger(answer),
         suffix: SUFFIXES[context],
         explanation: lcmGcdExplanation(kind, context, ascending),
