@@ -67,6 +67,7 @@ export type Topic =
   | 'fractionConversion'
   | 'decimalNames'
   | 'compareFractions'
+  | 'fractionConcepts'
   | 'fractionArithmetic'
   | 'perimeterArea'
   | 'solids'

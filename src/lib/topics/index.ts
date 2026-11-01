@@ -17,6 +17,7 @@ import { generateEquations } from './equations';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
+import { generateFractionConcepts } from './fractionConcepts';
 import { generateFractionConversion } from './fractionConversion';
 import { generateLcmGcdProblems } from './lcmGcdProblems';
 import { generateMeasureProblems } from './measureProblems';
@@ -127,6 +128,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   fractionConversion: generateFractionConversion,
   decimalNames: generateDecimalNames,
   compareFractions: generateCompareFractions,
+  fractionConcepts: generateFractionConcepts,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
@@ -203,6 +205,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
   decimalNames: 'Kommagetallen in woorden (tiende t/m miljardste)',
   compareFractions: 'Vergelijken (breuken en kommagetallen)',
+  fractionConcepts: 'Breukbegrippen (teller, stambreuk, gelijkwaardig)',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',

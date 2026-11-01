@@ -125,6 +125,7 @@ export const FRACTIONS_SET: PracticeSet = {
     { topic: 'decimalArithmetic', weight: 1 },
     { topic: 'decimalNames', weight: 1 },
     { topic: 'compareFractions', weight: 1 },
+    { topic: 'fractionConcepts', weight: 1 },
   ],
   tablesPercent: 15,
 };
