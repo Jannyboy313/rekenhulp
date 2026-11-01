@@ -14,7 +14,8 @@ overview at the end.
 The app started as short practice on the go, and that stays the default level, **Opfrisser**:
 short sessions (~3 minutes) of quick exercises, as all sets have now. v3 adds a second level,
 **Verdieping** (§12.2): exercises at the level of the PABO tests (Cito), with more steps and
-more time per exercise. The user chooses the level per session; Tafels has only one level.
+more time per exercise, plus a 20% share of Opfrisser exercises as retrieval of the basics. The
+user chooses the level per session; Tafels has only one level.
 
 A set can also have short study material (**lesstof**): a cheat sheet
 to refresh the method before practising. It is developed separately from the practice sets and
@@ -136,7 +137,8 @@ The app is a state machine in `App.svelte` with four states:
   label `Naam (detail)` is split at the first ` (`; a label without parentheses has no detail.
   For every set except Tafels, the list includes "15% tafels", except when the selected session
   size is below 10 (§4.2). It shows the topics of the selected level; Verdieping has no tables
-  row (§12.2).
+  row but ends with one row "20% opfrisser" (no detail) for its Opfrisser share, except when the
+  selected session size is below 10 (§4.2, §12.2).
 - **Table choice (Tafels only):** instead of the topic list, Tafels shows the heading "Kies
   tafels" with two small buttons **Alle** and **Geen**, and a grid of 13 toggles, one per table
   (2–9, 11–15, §5.1), five per row. By default all tables are selected. Alle selects all,
@@ -526,7 +528,7 @@ With v2, the description of Verhoudingen on its card (§3.1) becomes "Procenten,
 schaal".
 
 The table lists the Opfrisser topics. A set's Verdieping (§12.2) has its own topics, all weight
-1 and without tables:
+1 and without tables, plus a 20% share of the set's Opfrisser topics (§4.2):
 
 | Set       | Verdieping topics                                                  |
 |-----------|--------------------------------------------------------------------|
@@ -543,7 +545,8 @@ Given a set and a session size `n`:
 1. `tablesCount = Math.round(tablesPercent × n / 100)`. The share is stored as an integer
    percentage to avoid float artefacts: `0.15 × 50` must give exactly 7.5, so it rounds to 8.
    For the Tafels set, `tablesPercent = 100` and `topics` is empty. A mixed share (below 100%)
-   only applies from `n = 10`: with `n = 5`, `tablesCount = 0`.
+   only applies from `n = 10`: with `n = 5`, `tablesCount = 0`. Verdieping has
+   `tablesPercent = 0` but an Opfrisser share instead (below the steps).
 2. The remaining `r = n − tablesCount` exercises are distributed over the set's topics in
    proportion to their weights, using the **largest remainder method**:
    - Each topic first gets `floor(r × wᵢ / Σw)`.
@@ -559,11 +562,20 @@ Given a set and a session size `n`:
    different keys (`10⁻³ = ?` from §5.18 and §5.19). The builder calls a generator at most 20
    times to obtain a question that is not a duplicate. After that, a duplicate is accepted.
 
-Table share for each count:
+**Opfrisser share (Verdieping only).** `quickCount = Math.round(20 × n / 100)`, only from
+`n = 10`: with `n = 5`, `quickCount = 0`. These exercises are distributed over the set's
+Opfrisser topics with steps 2–3 (their weights, without the tables share); the remaining
+`n − quickCount` go over the Verdieping topics. Step 3 applies to each group separately: with 3
+exercises over 11 Opfrisser topics, 3 random topics get 1 and the rest 0. Steps 4–5 run over the
+whole list, so the Opfrisser exercises are shuffled in, not a warm-up block at the start. The
+share retrieves the quick basics the multi-step exercises build on.
 
-| `n`         | 5 | 10 | 15 | 25 | 50 |
-|-------------|---|----|----|----|----|
-| tables      | 1 | 2  | 2  | 4  | 8  |
+Table share and Opfrisser share for each count:
+
+| `n`                       | 5 | 10 | 15 | 25 | 50 |
+|---------------------------|---|----|----|----|----|
+| tables                    | 0 | 2  | 2  | 4  | 8  |
+| Opfrisser (Verdieping)    | 0 | 2  | 3  | 5  | 10 |
 
 Examples with `n = 15`:
 
@@ -574,8 +586,8 @@ Examples with `n = 15`:
 - **Verhoudingen:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen
   at random.
 - **Meten:** `r = 13` over 11 topics, so 2 + 2 + 1 × 9. The topics with 2 are chosen at random.
-  Verdieping has no tables: `r = 15` over 4 topics, so 4 + 4 + 4 + 3. The topic with 3 is chosen
-  at random.
+  Verdieping has no tables: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics) and
+  `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
 - **Getalbegrip:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen at
   random.
 - **Breuken & kommagetallen:** `r = 13` over 3 topics, so 5 + 4 + 4. The topic with 5 is chosen
@@ -2923,7 +2935,13 @@ Built in steps, each its own session and only when the user says so:
      `deep?: readonly TopicWeight[]` with its own topics and weights. A set without `deep`
      disables the segment; Tafels never has one. Verdieping mixes in no tables.
    - `forLevel(set, level)` gives the set at the chosen level (for Verdieping its `deep` topics
-     and no tables share); `buildSession` and the quota algorithm (§4.2) are unchanged.
+     and no tables share).
+   - Opfrisser share (decided 2026-11-01, after the framework): Verdieping also mixes in 20%
+     exercises from the set's quick topics (§4.2), shown as one row "20% opfrisser" (§3.2). The
+     levels are not disjoint, so a Verdieping session also retrieves the quick basics its
+     multi-step exercises build on; a separate warm-up block at the start was rejected (it
+     needs new session infrastructure for little gain). This changes `forLevel` and the quota
+     algorithm; it is a small feature of its own, not part of a set step.
    - Verdieping topics are their own `Topic` ids and generators (`lib/topics/`), with their own
      labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
 3. **Multiple choice** (done) — the multiple-choice answer kind `choice` (§6, §12.5),
