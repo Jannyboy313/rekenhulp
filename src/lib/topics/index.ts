@@ -23,6 +23,7 @@ import {
   generateVolume,
 } from './measurement';
 import { generateMentalOperations } from './mentalOperations';
+import { generateMultiStepProblems } from './multiStepProblems';
 import { generateNegativeNumbers } from './negativeNumbers';
 import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
@@ -90,6 +91,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   properties: generateProperties,
   bracketPlacement: generateBracketPlacement,
   derivedFacts: generateDerivedFacts,
+  multiStepProblems: generateMultiStepProblems,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
   rounding: generateRounding,
@@ -152,6 +154,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
   bracketPlacement: 'Haakjes plaatsen (zodat de uitkomst klopt)',
   derivedFacts: 'Afleiden (uit een gegeven som)',
+  multiStepProblems: 'Meerstapsopgaven (contexten, delen met rest)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
