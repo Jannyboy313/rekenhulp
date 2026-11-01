@@ -39,6 +39,7 @@ import { generateProbability } from './probability';
 import { generateProperties } from './properties';
 import { generatePythagoras } from './pythagoras';
 import { generateRatioProblems } from './ratioProblems';
+import { generateRatioReasoning } from './ratioReasoning';
 import { generateRatios } from './ratios';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
@@ -87,6 +88,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   percentProblems: generatePercentProblems,
   enlargement: generateEnlargement,
   compareRatios: generateCompareRatios,
+  ratioReasoning: generateRatioReasoning,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -152,6 +154,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   percentProblems: 'Procentenproblemen (stapelkorting, extra inhoud, promille)',
   enlargement: 'Vergroten en verkleinen (kopieerapparaat)',
   compareRatios: 'Verhoudingen vergelijken (meer, voordeliger, naar verhouding)',
+  ratioReasoning: 'Redeneren met verhoudingen (verschil, herschalen, aanvullen)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',

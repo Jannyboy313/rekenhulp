@@ -40,6 +40,7 @@ export type Topic =
   | 'percentProblems'
   | 'enlargement'
   | 'compareRatios'
+  | 'ratioReasoning'
   | 'lcm'
   | 'gcd'
   | 'prime'
