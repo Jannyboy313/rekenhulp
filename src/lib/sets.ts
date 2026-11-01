@@ -186,13 +186,24 @@ export function hasDeep(set: PracticeSet): boolean {
   return !choosesTables(set) && (set.deep?.length ?? 0) > 0;
 }
 
-/** The set at a level: Verdieping has its own topics and no tables share (spec §12.2). */
+/** Integer percentage of Opfrisser exercises mixed into Verdieping (spec §4.2). */
+export const QUICK_SHARE_PERCENT = 20;
+
+/**
+ * The set at a level: Verdieping has its own topics, no tables share and a share of the
+ * Opfrisser topics (spec §12.2).
+ */
 export function forLevel(set: PracticeSet, level: Level): PracticeSet {
   if (level === 'quick' || !set.deep || !hasDeep(set)) return set;
-  return { ...set, topics: set.deep, tablesPercent: 0 };
+  return {
+    ...set,
+    topics: set.deep,
+    tablesPercent: 0,
+    quickShare: { percent: QUICK_SHARE_PERCENT, topics: set.topics },
+  };
 }
 
-/** Sessions below this size get no mixed-in table exercises (spec §4.2). */
+/** Sessions below this size get no mixed-in table or Opfrisser exercises (spec §4.2). */
 export const MIN_SIZE_FOR_MIXED_TABLES = 10;
 
 export interface TopicRow {
@@ -213,7 +224,8 @@ export function describeSetTopicRows(
 ): TopicRow[] {
   if (choosesTables(set)) return [splitTopicLabel(TOPIC_LABELS.tables)];
   const rows = set.topics.map(({ topic }) => splitTopicLabel(TOPIC_LABELS[topic]));
-  return set.tablesPercent > 0 && size >= MIN_SIZE_FOR_MIXED_TABLES
-    ? [...rows, { name: `${set.tablesPercent}% tafels` }]
-    : rows;
+  if (size < MIN_SIZE_FOR_MIXED_TABLES) return rows;
+  if (set.tablesPercent > 0) rows.push({ name: `${set.tablesPercent}% tafels` });
+  if (set.quickShare) rows.push({ name: `${set.quickShare.percent}% opfrisser` });
+  return rows;
 }

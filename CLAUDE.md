@@ -16,9 +16,12 @@ not all of it:
 - expressions: §7; a new set: its entry in §12.1, open assumptions in §11
 - lesstof (study material per set): its own spec, `docs/superpowers/specs/2026-10-25-lesstof-design.md`
   (framework §3–§6, content per set §7); the main spec only holds its entry points
-- RWT scope (gaps in §12.5, check in §12.6): `docs/references/cito-rwt-handreiking.md`, an
+- RWT scope (gaps in §12.3, check in §12.7): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
   next to it is leading
+- LKT scope (year-3 kennistoets, not yet in the spec): `docs/references/lkt-kennisbasis-concept.md`,
+  an excerpt of the concept kennisbasis of 10voordeleraar ("Qua eigen vaardigheid" items only); the
+  version is unconfirmed and no gap check against the sets has been done yet
 - ideas (feature ideas that are not specced or planned): `docs/ideas.md`; add new ideas there,
   not to the spec
 
@@ -35,7 +38,7 @@ Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `an
 `simplifyProblem`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
-(§12.2 step 2: Niveau on setup, `deep` topics via `forLevel`; Meten has a Verdieping, the
+(§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; Meten has a Verdieping, the
 fixture set `lib/setFixture.ts` still tests the framework), and the multiple-choice framework
 (§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
 `measureSense`, `timeCalc` and `estimating`).
@@ -55,19 +58,24 @@ notation and that every `worked` line is a true equality chain. Keep lesson code
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 
-Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The user picks the
-next v3 step. There is no v4.
+Next steps (spec §12.2–§12.6), one at a time and only when the user says so. The user picks the
+next v3 step (a set or one of the §12.4 features). v4 practises across sets. v5 holds only
+persistent memory in IndexedDB.
 
-| Step                                                                                                       | New infrastructure                   |
-| ---------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.5), the user picks the order; not Tafels            | —                                    |
-| v3: mixed categories (§12.3), form decided in its spec iteration                                           | sessions across sets                 |
-| v3: practice test (§12.4), after mixed categories                                                          | test session                         |
+| Step                                                                                            | New infrastructure   |
+| ----------------------------------------------------------------------------------------------- | -------------------- |
+| v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.3), the user picks the order; not Tafels | —                    |
+| v3: practise mistakes (§12.4), a new session with the topics of the mistakes                    | —                    |
+| v3: score per topic on the results screen (§12.4)                                               | —                    |
+| v3: lesson link from a mistake (§12.4), via `openLesson`                                        | practice → lesstof   |
+| v4: mixed categories (§12.5), form decided in its spec iteration                                | sessions across sets |
+| v4: practice test (§12.6), after mixed categories                                               | test session         |
+| v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts         | IndexedDB            |
 
-Between versions: check the sets against the toetsmatrijs (§12.6).
+Between versions: check the sets against the toetsmatrijs (§12.7).
 
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
-§12.7).
+§12.8).
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in
@@ -162,6 +170,10 @@ with the commands below, so work can proceed autonomously. Authorised by the use
   globs, no other paths; authorised 2026-10-25)
 - `rm src/<path>/<file>` (files inside `src/` only, named explicitly; no `-r`, no `-f`, no globs,
   no directories, no paths outside `src/`; authorised 2026-10-25)
+- `git merge --no-ff <branch>` (merging agent worktree branches into `main`, and `main` into an
+  agent worktree branch to update its base; no other merge forms; authorised 2026-11-01)
+- `git worktree remove <path>` and `git branch -d <branch>` (cleanup of merged agent worktrees
+  and branches only; no `--force`, no `-D`; authorised 2026-11-01)
 - `git init`
 - `git add`
 - `git commit`
