@@ -29,11 +29,11 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
   the app.
-- No problems that need a calculator, at either level (§12.7). Verdieping is harder through
+- No problems that need a calculator, at either level (§12.8). Verdieping is harder through
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- v1 and v2 are done: all sets in §4 are implemented. v3 is on the roadmap (§12), and the
+- v1 and v2 are done: all sets in §4 are implemented. v3 and v4 are on the roadmap (§12), and the
   architecture must make adding it cheap.
 
 ## 2. Platform & stack
@@ -830,7 +830,7 @@ Value rules for metric dimensions:
   capacity and cubic units mix freely. Of the pairs with factor 1, only the links occur:
   `ml ↔ cm³`, `cc ↔ cm³`, `L ↔ dm³`, `kl ↔ m³`, `kuub ↔ m³` and `ca ↔ m²`; `cc ↔ ml` and
   `kuub ↔ kl` are left out.
-- The units `dam`, `hm`, `kl`, `cc`, `kuub` and `ca` were added in v3 (RWT C.2, §12.5). `km³` is
+- The units `dam`, `hm`, `kl`, `cc`, `kuub` and `ca` were added in v3 (RWT C.2, §12.3). `km³` is
   not converted (every other unit is more than 10⁶ away); it only occurs in `measureSense`
   (§5.48). `cc` and `kuub` count as cubic units for the tips (§3.4.1).
 - The source value has 1 to 3 significant digits.
@@ -2182,7 +2182,7 @@ There are three forms, each picked with equal probability:
 
 ### Meten v3 (§5.45–§5.52)
 
-The v3 step of the set Meten (§12.2 step 4): its RWT gaps (§12.5) and its Verdieping. Opfrisser
+The v3 step of the set Meten (§12.2 step 4): its RWT gaps (§12.3) and its Verdieping. Opfrisser
 gets four new topics (§5.45–§5.48) next to the new units of §5.10 and the new forms of §5.14;
 Verdieping has four topics of its own (§5.49–§5.52, §4.1). The card description (§3.1) becomes
 "Eenheden, klok, grote getallen en snelheid".
@@ -2594,7 +2594,7 @@ The keypad is custom. The system keyboard is never opened.
     ⌫  M───
     OK─────
     ```
-- **Multiple-choice input** (`choice`, §12.5; added in v3 as a framework, before any topic uses
+- **Multiple-choice input** (`choice`, §12.3; added in v3 as a framework, before any topic uses
   it):
   - Always exactly four options, each a short text (a number, a fraction, a word or a short
     phrase), rendered like the prompt (stacked fractions, §8). The texts are unique and one of
@@ -2838,9 +2838,10 @@ None at the moment.
 The roadmap covers the practice sets only. The lesstof has its own order (lesstof spec §2); a new
 set needs no lesson.
 
-v3 deepens practice: levels (§12.2), mixed categories (§12.3), a practice test (§12.4), and
-multiple choice with the RWT gaps (§12.5). The check against the toetsmatrijs (§12.6) is not
-tied to a version.
+v3 deepens practice within a set: levels (§12.2) and multiple choice with the RWT gaps
+(§12.3), then three small features that make a session's result usable (§12.4). v4 practises
+across sets: mixed categories (§12.5) and a practice test (§12.6). The check against the
+toetsmatrijs (§12.7) is not tied to a version.
 
 ### 12.1 v2 — PABO mental arithmetic and basic knowledge (done)
 
@@ -2921,7 +2922,7 @@ build on both. Talstelsels and Heuristieken are LKT-only and come last.
 Comes after the v2 sets (§12.1). Every set except Tafels
 gets a second level, **Verdieping**: exercises closer to the PABO tests (Cito), with more steps,
 combined skills and word problems, so an exercise takes longer than the ~12 s of Opfrisser. It
-stays mental arithmetic with the kladblok (§1, §12.7). Tafels has no levels: the table choice
+stays mental arithmetic with the kladblok (§1, §12.8). Tafels has no levels: the table choice
 (§3.2) already sets what is practised.
 
 Built in steps, each its own session and only when the user says so:
@@ -2944,39 +2945,16 @@ Built in steps, each its own session and only when the user says so:
      algorithm; it is a small feature of its own, not part of a set step.
    - Verdieping topics are their own `Topic` ids and generators (`lib/topics/`), with their own
      labels and tips. They may reuse the steps, answer kinds and helpers of the quick topics.
-3. **Multiple choice** (done) — the multiple-choice answer kind `choice` (§6, §12.5),
+3. **Multiple choice** (done) — the multiple-choice answer kind `choice` (§6, §12.3),
    framework only, right after the levels framework so every set step can use it.
 4. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
    light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
-   The step also closes the set's RWT gaps (§12.5), at both levels. No fixed order: the user
+   The step also closes the set's RWT gaps (§12.3), at both levels. No fixed order: the user
    picks the next set. Done: Meten (§5.45–§5.52).
 
 The lesstof (lesstof spec) is not split by level.
 
-### 12.3 v3 — mixed categories
-
-Comes after the levels and multiple-choice frameworks (§12.2 steps 2–3). A session that mixes exercises from more than
-one set. The form (the user picks sets, or a fixed mixed set) is decided in its own spec
-iteration.
-
-### 12.4 v3 — practice test (oefentoets)
-
-Comes after mixed categories (§12.3), whose mixing it reuses. A session in the style of a PABO
-test. Its form (composition, count, level, the pass mark) is decided in its own spec iteration.
-The non-goals of §1 hold: no stored results or history.
-
-Feedback is given only after the test, unlike a practice session (§3.4):
-
-- No repeat of wrong answers, and no sign during the test that an answer was wrong (no correct or
-  wrong state, no wrong-answer panel, no tips).
-- The mistakes are shown only on the results screen.
-- The results screen says whether the user passes or fails, and on which topics they still need to
-  practise.
-
-Within v3, after the levels and multiple-choice frameworks (§12.2 steps 2–3), the user picks
-the next step: a set (§12.2 step 4), mixed categories or the practice test.
-
-### 12.5 v3 — multiple choice and the RWT gaps
+### 12.3 v3 — multiple choice and the RWT gaps
 
 **Multiple choice** (§12.2 step 3): a multiple-choice answer kind, `choice` (§6). The step
 builds the framework only, tested with test-only steps; the sets add the questions in their
@@ -3034,19 +3012,57 @@ follow separately (lesstof spec §2).
   - Mean versus median and other concepts. MC.
 
 Getallen & delers, Bewerkingen, Talstelsels and Heuristieken have no RWT gaps. Out of scope
-(§12.7): C.5 to C.8 and C.14 (pictures), C.12 the volume of a sphere (calculator), D.1 to D.3
+(§12.8): C.5 to C.8 and C.14 (pictures), C.12 the volume of a sphere (calculator), D.1 to D.3
 (graphs, tables, spreadsheets). The hoofdrekenen part of the RWT has no questions from domain
 D.
 
-### 12.6 Check against the toetsmatrijs
+### 12.4 v3 — results and lesson link
+
+Comes after the levels (§12.2) in the roadmap. Three separate small features (CLAUDE.md
+workflow), each its own spec iteration; the user picks the order, also relative to the
+remaining set steps (§12.2 step 4). None needs persistence: everything lives in the memory of
+the current session.
+
+1. **Practise mistakes** — a button on the results screen (§3.5) that starts a new session with
+   only the topics of the first-attempt mistakes. Open: the count, new exercises of those topics
+   or the same ones, and the level.
+2. **Score per topic** — the results screen shows the first-attempt score per topic, so weak
+   topics stand out. The practice test (§12.6) reuses it for "on which topics they still need
+   to practise".
+3. **Lesson link** — from a mistake to the lesson of its topic, through the existing
+   `openLesson(set, lesson, returnTo)` (`App.svelte`). Open: where the link sits (wrong-answer
+   panel, error card on the results screen, or both), the topic → lesson mapping, and the return
+   to the session. This changes the rule that practice components get no lesson props or
+   branches (CLAUDE.md, lesstof spec).
+
+### 12.5 v4 — mixed categories
+
+Comes after v3. A session that mixes exercises from more than one set. The form (the user picks
+sets, or a fixed mixed set) is decided in its own spec iteration.
+
+### 12.6 v4 — practice test (oefentoets)
+
+Comes after mixed categories (§12.5), whose mixing it reuses. A session in the style of a PABO
+test. Its form (composition, count, level, the pass mark) is decided in its own spec iteration.
+The non-goals of §1 hold: no stored results or history.
+
+Feedback is given only after the test, unlike a practice session (§3.4):
+
+- No repeat of wrong answers, and no sign during the test that an answer was wrong (no correct or
+  wrong state, no wrong-answer panel, no tips).
+- The mistakes are shown only on the results screen.
+- The results screen says whether the user passes or fails, and on which topics they still need to
+  practise (score per topic, §12.4).
+
+### 12.7 Check against the toetsmatrijs
 
 Check the sets (topics, ranges, weights) against the toetsmatrijs and record the gaps. The
 toetsmatrijs is in the Cito handreiking (`docs/references/cito-rwt-handreiking.md`): the
 distribution per domain and part in §3.3 (table 1), the eindtermen with H/NH per eindterm in
 ch. 6. Not tied to a version: it is done between versions, and each later version checks its
-scope against it. The check of 2026-10-26 gave the RWT gaps of §12.5.
+scope against it. The check of 2026-10-26 gave the RWT gaps of §12.3.
 
-### 12.7 Out of scope until further notice
+### 12.8 Out of scope until further notice
 
 - Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at
   the Verdieping level. The app is for mental arithmetic and ways of thinking. This drops the
@@ -3058,6 +3074,6 @@ scope against it. The check of 2026-10-26 gave the RWT gaps of §12.5.
   - measuring angles
 - Didactics (part of the LKT).
 
-### 12.8 Optional later
+### 12.9 Optional later
 
 Topic toggles on the setup screen.

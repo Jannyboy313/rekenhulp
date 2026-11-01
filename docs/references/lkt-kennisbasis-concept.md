@@ -12,7 +12,7 @@ this concept is the version the LKT is currently based on. Check before relying 
 
 Left out: the didactic parts ("Het gaat hierbij om", "Hierbij valt te denken aan": how to teach),
 the handelingsmodel, drieslagmodel and hoofdlijnenmodel (§1). Mental arithmetic is the scope of
-the app (spec §12.7): items marked _(buiten scope)_ need a calculator or are didactic. Section
+the app (spec §12.8): items marked _(buiten scope)_ need a calculator or are didactic. Section
 numbers follow the source. Text is in Dutch as in the source.
 
 LKT shape (from paborekenacademy.nl, secondary source): 66 questions, 180 minutes, 47 without
