@@ -115,6 +115,12 @@ export const NUMBER_SENSE_SET: PracticeSet = {
     { topic: 'arithmeticWords', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'negativeContexts', weight: 1 },
+    { topic: 'roundingReasoning', weight: 1 },
+    { topic: 'estimateCalc', weight: 1 },
+    { topic: 'powerCalc', weight: 1 },
+  ],
 };
 
 export const FRACTIONS_SET: PracticeSet = {

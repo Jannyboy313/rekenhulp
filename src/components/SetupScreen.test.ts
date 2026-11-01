@@ -6,6 +6,7 @@ import {
   DEFAULT_SESSION_SIZE,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
+  RELATIONS_SET,
   TABLES_SET,
 } from '../lib/sets';
 import { TABLE_FACTORS } from '../lib/topics/tables';
@@ -146,7 +147,7 @@ describe('SetupScreen', () => {
 
 describe('SetupScreen level', () => {
   it('shows Niveau below the count, on Opfrisser, with Verdieping disabled for a real set', () => {
-    renderSetup(NUMBER_SENSE_SET);
+    renderSetup(RELATIONS_SET);
     const groups = screen.getAllByRole('radiogroup');
     expect(groups.map((group) => group.getAttribute('aria-labelledby'))).toEqual([
       'size-heading',
@@ -184,6 +185,19 @@ describe('SetupScreen level', () => {
     ]);
   });
 
+  it('enables Verdieping for Getalbegrip and lists its four topics', async () => {
+    renderSetup(NUMBER_SENSE_SET);
+    expect(levelRadio('Verdieping').disabled).toBe(false);
+    await fireEvent.click(levelRadio('Verdieping'));
+    expect(rowNames()).toEqual([
+      'Negatief in context',
+      'Afronden redeneren',
+      'Schatten',
+      'Rekenen met machten',
+      '20% opfrisser',
+    ]);
+  });
+
   it('moves to Verdieping with the arrow keys and focuses it', async () => {
     renderSetup(DEEP_FIXTURE_SET);
     await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });
@@ -193,7 +207,7 @@ describe('SetupScreen level', () => {
   });
 
   it('skips a disabled Verdieping with the arrow keys', async () => {
-    renderSetup(NUMBER_SENSE_SET);
+    renderSetup(RELATIONS_SET);
     await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });
     expect(levelRadio('Opfrisser').getAttribute('aria-checked')).toBe('true');
   });
