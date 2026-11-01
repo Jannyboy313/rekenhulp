@@ -62,6 +62,7 @@ import { generateSmartCalculationDeep } from './smartCalculationDeep';
 import { generateSolidNames } from './solidNames';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
+import { generateSurfaceArea } from './surfaceArea';
 import { generateSquares } from './squares';
 import { generateStatistics } from './statistics';
 import { generateSymmetry } from './symmetry';
@@ -133,6 +134,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   symmetry: generateSymmetry,
   solidNames: generateSolidNames,
   scalingSolids: generateScalingSolids,
+  surfaceArea: generateSurfaceArea,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
@@ -209,6 +211,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
   solidNames: 'Ruimtefiguren (namen, vlakken, ribben)',
   scalingSolids: 'Kwadratisch en kubisch vergroten',
+  surfaceArea: 'Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',

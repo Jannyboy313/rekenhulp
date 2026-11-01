@@ -73,6 +73,7 @@ export type Topic =
   | 'symmetry'
   | 'solidNames'
   | 'scalingSolids'
+  | 'surfaceArea'
   | 'shapeProperties'
   | 'statistics'
   | 'percentagePoints'
