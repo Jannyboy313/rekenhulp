@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { GROUP_SEPARATOR as S, NO_BREAK_SPACE as NB } from '../format';
+import { GROUP_SEPARATOR as S, MINUS, NO_BREAK_SPACE as NB } from '../format';
 import { createRng, range } from '../random';
 import {
   compare,
@@ -61,6 +61,9 @@ describe('percentProblems fixed cases', () => {
     expect(answerOf(question)).toEqual(rational(384n, 5n));
     expect(stepOf(question).check('76,80').correct).toBe(true);
     expect(stepOf(question).check('76,8').correct).toBe(true);
+    expect(stepOf(question).check('').explanation).toBe(
+      `20% van 80 = 16 → 80 + 16 = 96 → 20% van 96 = 19,2 → 96 ${MINUS} 19,2 = 76,8`,
+    );
   });
 
   it('total percentage: 20 + 10 → 28', () => {
@@ -98,7 +101,7 @@ describe('percentProblems fixed cases', () => {
   it('permille growth: 550 000 and 2‰ → 1100, or 551 100 after a year', () => {
     const growth = stepOf(permilleGrowthQuestion('growth', 550_000, 2));
     expect(growth.prompt).toBe(
-      `Een provincie heeft 550${S}000 inwoners en groeit in een jaar met 2‰. Met hoeveel inwoners groeit ze?`,
+      `Een gemeente heeft 550${S}000 inwoners en groeit in een jaar met 2‰. Met hoeveel inwoners groeit ze?`,
     );
     expect(growth.suffix).toBe('inwoners');
     expect(growth.check(`1100`)).toMatchObject({

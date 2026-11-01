@@ -53,7 +53,9 @@ export function stackedQuestion(
   const prompt = discounts
     ? `Een jas kost ${formatEuro(base)}. Je krijgt ${first}% korting en op de nieuwe prijs nog ${second}%. Wat betaal je?`
     : `Een jas kost ${formatEuro(base)}. De prijs stijgt met ${first}% en daalt daarna met ${first}%. Wat kost de jas daarna?`;
-  const explanation = `${first}% van ${money(base)} = ${money(firstStep)} → ${money(afterFirst)} → ${formatRational(secondPercent)}% van ${money(afterFirst)} = ${money(secondStep)} → ${money(answer)}`;
+  const explanation = discounts
+    ? `${first}% van ${money(base)} = ${money(firstStep)} → ${money(afterFirst)} → ${formatRational(secondPercent)}% van ${money(afterFirst)} = ${money(secondStep)} → ${money(answer)}`
+    : `${first}% van ${formatRational(base)} = ${formatRational(firstStep)} → ${formatRational(base)} + ${formatRational(firstStep)} = ${formatRational(afterFirst)} → ${first}% van ${formatRational(afterFirst)} = ${formatRational(secondStep)} → ${formatRational(afterFirst)} ${MINUS} ${formatRational(secondStep)} = ${formatRational(answer)}`;
   return {
     key: `percentProblems:stacked:${variant}:${price}:${first}:${discounts ? second : first}`,
     topic: 'percentProblems',
@@ -127,7 +129,7 @@ export function extraQuestion(context: string, percentage: number, normal: numbe
 
 export type PermilleGrowthVariant = 'growth' | 'after';
 
-/** `Een provincie heeft 550 000 inwoners en groeit in een jaar met 2‰. Met hoeveel inwoners groeit ze?` */
+/** `Een gemeente heeft 550 000 inwoners en groeit in een jaar met 2‰. Met hoeveel inwoners groeit ze?` */
 export function permilleGrowthQuestion(
   variant: PermilleGrowthVariant,
   population: number,
@@ -144,7 +146,7 @@ export function permilleGrowthQuestion(
     topic: 'percentProblems',
     steps: [
       numberStep({
-        prompt: `Een provincie heeft ${formatInteger(population)} inwoners en groeit in een jaar met ${permille}‰. ${question}`,
+        prompt: `Een gemeente heeft ${formatInteger(population)} inwoners en groeit in een jaar met ${permille}‰. ${question}`,
         answer: fromInteger(answer),
         suffix: 'inwoners',
         explanation:
