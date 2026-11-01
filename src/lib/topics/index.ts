@@ -1,9 +1,11 @@
 import type { Generator, Topic } from '../types';
+import { generateAngleReasoning } from './angleReasoning';
 import { generateAngles } from './angles';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
 import { generateCompareRatios } from './compareRatios';
+import { generateCompositeShapes } from './compositeShapes';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
@@ -50,6 +52,7 @@ import { generateRatios } from './ratios';
 import { generateRemainders } from './remainders';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
+import { generateScalingSolids } from './scalingSolids';
 import { generateNumberSystems } from './numberSystems';
 import { generateRomanNumerals } from './romanNumerals';
 import { generateScientificNotation } from './scientificNotation';
@@ -58,8 +61,10 @@ import { generateShapeProperties } from './shapeProperties';
 import { generateSimplifyProblem } from './simplifyProblem';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSmartCalculationDeep } from './smartCalculationDeep';
+import { generateSolidNames } from './solidNames';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
+import { generateSurfaceArea } from './surfaceArea';
 import { generateSquares } from './squares';
 import { generateStatistics } from './statistics';
 import { generateSymmetry } from './symmetry';
@@ -129,6 +134,11 @@ export const GENERATORS: Record<Topic, Generator> = {
   pythagoras: generatePythagoras,
   angles: generateAngles,
   symmetry: generateSymmetry,
+  solidNames: generateSolidNames,
+  scalingSolids: generateScalingSolids,
+  surfaceArea: generateSurfaceArea,
+  compositeShapes: generateCompositeShapes,
+  angleReasoning: generateAngleReasoning,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
@@ -203,6 +213,11 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   pythagoras: 'Pythagoras (schuine zijde en rechthoekszijde)',
   angles: 'Hoeken (driehoek, veelhoek, klok)',
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
+  solidNames: 'Ruimtefiguren (namen, vlakken, ribben)',
+  scalingSolids: 'Kwadratisch en kubisch vergroten',
+  surfaceArea: 'Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)',
+  compositeShapes: 'Samengestelde figuren (hoek eruit, pad, hectare)',
+  angleReasoning: 'Redeneren met hoeken (buitenhoek, verhouding, klok)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',
