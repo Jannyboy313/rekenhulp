@@ -169,6 +169,7 @@ describe('practice sets', () => {
       { topic: 'scale', weight: 1 },
       { topic: 'ratioProblems', weight: 1 },
       { topic: 'permille', weight: 1 },
+      { topic: 'proportionConcepts', weight: 1 },
     ]);
   });
 
@@ -329,6 +330,7 @@ describe('describeSetTopicRows per set', () => {
       'Schaal (kaart en tekening, schaal bepalen)',
       'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
       'Promille (‰ van, ‰ ↔ % ↔ kommagetal)',
+      'Begrippen (absoluut, relatief, 1 op de n)',
       '15% tafels',
     ]);
   });

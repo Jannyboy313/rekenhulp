@@ -27,6 +27,7 @@ import { generateFactorization, generateGcd, generateLcm, generatePrime } from '
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
 import { generatePermille } from './permille';
+import { generateProportionConcepts } from './proportionConcepts';
 import { generatePercentagePoints } from './percentagePoints';
 import { generatePercentChange } from './percentChange';
 import { generatePerimeterArea } from './perimeterArea';
@@ -79,6 +80,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   scale: generateScale,
   ratioProblems: generateRatioProblems,
   permille: generatePermille,
+  proportionConcepts: generateProportionConcepts,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -140,6 +142,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   scale: 'Schaal (kaart en tekening, schaal bepalen)',
   ratioProblems: 'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
   permille: 'Promille (‰ van, ‰ ↔ % ↔ kommagetal)',
+  proportionConcepts: 'Begrippen (absoluut, relatief, 1 op de n)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
