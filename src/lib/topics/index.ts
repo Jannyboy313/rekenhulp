@@ -15,6 +15,7 @@ import { generateFractionConversion } from './fractionConversion';
 import { generateLcmGcdProblems } from './lcmGcdProblems';
 import { generateMeasureProblems } from './measureProblems';
 import { generateMeasureSense } from './measureSense';
+import { generateMissingDigit } from './missingDigit';
 import {
   generateArea,
   generateLength,
@@ -87,6 +88,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   squares: generateSquares,
   lcmGcdProblems: generateLcmGcdProblems,
   divisors: generateDivisors,
+  missingDigit: generateMissingDigit,
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
@@ -149,6 +151,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   squares: 'Kwadraten en wortels (2² t/m 25²)',
   lcmGcdProblems: 'KGV en GGD in context (samen vertrekken, gelijke stukken)',
   divisors: 'Delers (aantal delers, drie getallen, uit ontbinding)',
+  missingDigit: 'Ontbrekend cijfer en deelbaarheid',
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',

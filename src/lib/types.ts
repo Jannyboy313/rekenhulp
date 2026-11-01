@@ -43,6 +43,7 @@ export type Topic =
   | 'squares'
   | 'lcmGcdProblems'
   | 'divisors'
+  | 'missingDigit'
   | 'orderOfOperations'
   | 'smartCalculation'
   | 'properties'
