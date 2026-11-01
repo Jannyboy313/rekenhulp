@@ -158,6 +158,22 @@ export function gcdTip(a: number, b: number): Diagnose {
   };
 }
 
+/** '4 = 2², 6 = 2 × 3 en 10 = 2 × 5': the factorizations of three or more numbers. */
+function describeAll(numbers: readonly number[]): string {
+  const parts = numbers.map(describeFactors);
+  return `${parts.slice(0, -1).join(', ')} en ${parts[parts.length - 1]}`;
+}
+
+/** The LCM explanation for any number of terms (spec §5.59, §5.60). */
+export function lcmListExplanation(numbers: readonly number[]): string {
+  return `${describeAll(numbers)} → KGV = ${showFactorized(numbers.reduce((a, b) => lcm(a, b)))}`;
+}
+
+/** The GCD explanation for any number of terms with a common factor (spec §5.60). */
+export function gcdListExplanation(numbers: readonly number[]): string {
+  return `${describeAll(numbers)} → GGD = ${showFactorized(numbers.reduce((a, b) => gcd(a, b)))}`;
+}
+
 /** '84 = 2² × 3 × 7 en 126 = 2 × 3² × 7 → GGD = 2 × 3 × 7 = 42' */
 export function gcdExplanation(a: number, b: number): string {
   const divisor = gcd(a, b);

@@ -384,9 +384,28 @@ describe('Heuristieken set', () => {
 });
 
 describe('levels', () => {
-  it('gives Meten the only real Verdieping so far (spec §12.2 step 4)', () => {
-    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([MEASUREMENT_SET]);
-    expect(hasDeep(MEASUREMENT_SET)).toBe(true);
+  it('gives Meten and Getallen & delers a Verdieping so far (spec §12.2 step 4)', () => {
+    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([MEASUREMENT_SET, NUMBERS_SET]);
+  });
+
+  it('lists the four Getallen & delers Verdieping topics and the Opfrisser share', () => {
+    expect(NUMBERS_SET.description).toBe('KGV, GGD, priemgetallen, deelbaarheid en kwadraten');
+    expect(NUMBERS_SET.deep).toEqual([
+      { topic: 'lcmGcdProblems', weight: 1 },
+      { topic: 'divisors', weight: 1 },
+      { topic: 'missingDigit', weight: 1 },
+      { topic: 'remainders', weight: 1 },
+    ]);
+    const names = (size: number) =>
+      describeSetTopicRows(forLevel(NUMBERS_SET, 'deep'), size).map((row) => row.name);
+    const topics = [
+      'KGV en GGD in context',
+      'Delers',
+      'Ontbrekend cijfer en deelbaarheid',
+      'Restpuzzels',
+    ];
+    expect(names(15)).toEqual([...topics, '20% opfrisser']);
+    expect(names(5)).toEqual(topics);
   });
 
   it('lists the four Meten Verdieping topics and the Opfrisser share, without a tables row', () => {
@@ -416,7 +435,7 @@ describe('levels', () => {
 
   it('returns the set itself for Opfrisser and for a set without Verdieping', () => {
     expect(forLevel(DEEP_FIXTURE_SET, 'quick')).toBe(DEEP_FIXTURE_SET);
-    expect(forLevel(NUMBERS_SET, 'deep')).toBe(NUMBERS_SET);
+    expect(forLevel(NUMBER_SENSE_SET, 'deep')).toBe(NUMBER_SENSE_SET);
     const empty = { ...DEEP_FIXTURE_SET, deep: [] };
     expect(forLevel(empty, 'deep')).toBe(empty);
   });

@@ -6,13 +6,16 @@ import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
+import { generateDivisors } from './divisors';
 import { generateEquations } from './equations';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
 import { generateFractionConversion } from './fractionConversion';
+import { generateLcmGcdProblems } from './lcmGcdProblems';
 import { generateMeasureProblems } from './measureProblems';
 import { generateMeasureSense } from './measureSense';
+import { generateMissingDigit } from './missingDigit';
 import {
   generateArea,
   generateLength,
@@ -35,6 +38,7 @@ import { generateProperties } from './properties';
 import { generatePythagoras } from './pythagoras';
 import { generateRatioProblems } from './ratioProblems';
 import { generateRatios } from './ratios';
+import { generateRemainders } from './remainders';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
 import { generateNumberSystems } from './numberSystems';
@@ -83,6 +87,10 @@ export const GENERATORS: Record<Topic, Generator> = {
   factorization: generateFactorization,
   divisibility: generateDivisibility,
   squares: generateSquares,
+  lcmGcdProblems: generateLcmGcdProblems,
+  divisors: generateDivisors,
+  missingDigit: generateMissingDigit,
+  remainders: generateRemainders,
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
@@ -143,6 +151,10 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   factorization: 'Ontbinden in priemfactoren (12 t/m 200)',
   divisibility: 'Deelbaarheid door 2 t/m 15 (zonder 10)',
   squares: 'Kwadraten en wortels (2² t/m 25²)',
+  lcmGcdProblems: 'KGV en GGD in context (samen vertrekken, gelijke stukken)',
+  divisors: 'Delers (aantal delers, drie getallen, uit ontbinding)',
+  missingDigit: 'Ontbrekend cijfer en deelbaarheid',
+  remainders: 'Restpuzzels (delen met rest en KGV)',
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
