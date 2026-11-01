@@ -170,8 +170,8 @@ with the commands below, so work can proceed autonomously. Authorised by the use
   globs, no other paths; authorised 2026-10-25)
 - `rm src/<path>/<file>` (files inside `src/` only, named explicitly; no `-r`, no `-f`, no globs,
   no directories, no paths outside `src/`; authorised 2026-10-25)
-- `git merge --no-ff <branch>` (merging agent worktree branches into `main`; no other merge
-  forms; authorised 2026-11-01)
+- `git merge --no-ff <branch>` (merging agent worktree branches into `main`, and `main` into an
+  agent worktree branch to update its base; no other merge forms; authorised 2026-11-01)
 - `git worktree remove <path>` and `git branch -d <branch>` (cleanup of merged agent worktrees
   and branches only; no `--force`, no `-D`; authorised 2026-11-01)
 - `git init`
