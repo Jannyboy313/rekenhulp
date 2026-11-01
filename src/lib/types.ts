@@ -38,6 +38,7 @@ export type Topic =
   | 'permille'
   | 'proportionConcepts'
   | 'percentProblems'
+  | 'enlargement'
   | 'lcm'
   | 'gcd'
   | 'prime'

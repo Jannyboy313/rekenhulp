@@ -6,6 +6,7 @@ import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
+import { generateEnlargement } from './enlargement';
 import { generateEquations } from './equations';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
@@ -83,6 +84,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   permille: generatePermille,
   proportionConcepts: generateProportionConcepts,
   percentProblems: generatePercentProblems,
+  enlargement: generateEnlargement,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -146,6 +148,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   permille: 'Promille (‰ van, ‰ ↔ % ↔ kommagetal)',
   proportionConcepts: 'Begrippen (absoluut, relatief, 1 op de n)',
   percentProblems: 'Procentenproblemen (stapelkorting, extra inhoud, promille)',
+  enlargement: 'Vergroten en verkleinen (kopieerapparaat)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
