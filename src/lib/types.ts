@@ -44,6 +44,7 @@ export type Topic =
   | 'lcmGcdProblems'
   | 'divisors'
   | 'missingDigit'
+  | 'remainders'
   | 'orderOfOperations'
   | 'smartCalculation'
   | 'properties'

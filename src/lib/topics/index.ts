@@ -38,6 +38,7 @@ import { generateProperties } from './properties';
 import { generatePythagoras } from './pythagoras';
 import { generateRatioProblems } from './ratioProblems';
 import { generateRatios } from './ratios';
+import { generateRemainders } from './remainders';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
 import { generateNumberSystems } from './numberSystems';
@@ -89,6 +90,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   lcmGcdProblems: generateLcmGcdProblems,
   divisors: generateDivisors,
   missingDigit: generateMissingDigit,
+  remainders: generateRemainders,
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
@@ -152,6 +154,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   lcmGcdProblems: 'KGV en GGD in context (samen vertrekken, gelijke stukken)',
   divisors: 'Delers (aantal delers, drie getallen, uit ontbinding)',
   missingDigit: 'Ontbrekend cijfer en deelbaarheid',
+  remainders: 'Restpuzzels (delen met rest en KGV)',
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
