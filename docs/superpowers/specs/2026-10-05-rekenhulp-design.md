@@ -3191,16 +3191,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-v3 of Verhoudingen, Getallen & delers and Bewerkingen (§5.53–§5.66), proposed 2026-11-01:
-
-- `proportionConcepts` (§5.54) has two forms only (absolute/relative, `1 op de n`); other B.1
-  concepts (gelijkwaardig, samengestelde breuk) stay with Breuken & kommagetallen.
-- `enlargement` (§5.56) asks one dimension; the area effect stays with Meetkunde (C.13).
-- `compareRatios` (§5.57) keeps `niet te zeggen` as an option that is never correct.
-- `bracketPlacement` (§5.63) accepts any placement that gives the target, also more than one
-  pair of parentheses.
-- `derivedFacts` (§5.64) and `smartCalculationDeep` (§5.66) use number steps; the explanation
-  shows the derivation, the user only gives the result.
+None at the moment.
 
 ## 12. Roadmap (not in v1)
 
