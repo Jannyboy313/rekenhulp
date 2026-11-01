@@ -66,6 +66,12 @@ export const NUMBERS_SET: PracticeSet = {
     { topic: 'squares', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'lcmGcdProblems', weight: 1 },
+    { topic: 'divisors', weight: 1 },
+    { topic: 'missingDigit', weight: 1 },
+    { topic: 'remainders', weight: 1 },
+  ],
 };
 
 /** properties has half the weight of the others: two steps take 2–3× as long (spec §4.1). */

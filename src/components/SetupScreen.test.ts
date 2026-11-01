@@ -2,7 +2,12 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { DEEP_FIXTURE_SET } from '../lib/setFixture';
-import { DEFAULT_SESSION_SIZE, MEASUREMENT_SET, NUMBERS_SET, TABLES_SET } from '../lib/sets';
+import {
+  DEFAULT_SESSION_SIZE,
+  MEASUREMENT_SET,
+  NUMBER_SENSE_SET,
+  TABLES_SET,
+} from '../lib/sets';
 import { TABLE_FACTORS } from '../lib/topics/tables';
 import type { Level, PracticeSet } from '../lib/types';
 import SetupScreen from './SetupScreen.svelte';
@@ -141,7 +146,7 @@ describe('SetupScreen', () => {
 
 describe('SetupScreen level', () => {
   it('shows Niveau below the count, on Opfrisser, with Verdieping disabled for a real set', () => {
-    renderSetup(NUMBERS_SET);
+    renderSetup(NUMBER_SENSE_SET);
     const groups = screen.getAllByRole('radiogroup');
     expect(groups.map((group) => group.getAttribute('aria-labelledby'))).toEqual([
       'size-heading',
@@ -188,7 +193,7 @@ describe('SetupScreen level', () => {
   });
 
   it('skips a disabled Verdieping with the arrow keys', async () => {
-    renderSetup(NUMBERS_SET);
+    renderSetup(NUMBER_SENSE_SET);
     await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });
     expect(levelRadio('Opfrisser').getAttribute('aria-checked')).toBe('true');
   });
