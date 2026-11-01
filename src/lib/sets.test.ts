@@ -99,7 +99,7 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Meetkunde six equally weighted topics with 15% tables', () => {
+  it('makes Meetkunde seven equally weighted topics with 15% tables', () => {
     expect(GEOMETRY_SET.name).toBe('Meetkunde');
     expect(GEOMETRY_SET.description).toBe('Omtrek, oppervlakte, inhoud, hoeken en vormen');
     expect(GEOMETRY_SET.tablesPercent).toBe(15);
@@ -110,6 +110,7 @@ describe('practice sets', () => {
       { topic: 'angles', weight: 1 },
       { topic: 'symmetry', weight: 1 },
       { topic: 'shapeProperties', weight: 1 },
+      { topic: 'solidNames', weight: 1 },
     ]);
   });
 
@@ -318,6 +319,7 @@ describe('describeSetTopicRows per set', () => {
       'Hoeken (driehoek, veelhoek, klok)',
       'Symmetrie (assen, draaien, puntsymmetrie)',
       'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
+      'Ruimtefiguren (namen, vlakken, ribben)',
       '15% tafels',
     ]);
   });

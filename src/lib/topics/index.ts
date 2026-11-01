@@ -58,6 +58,7 @@ import { generateShapeProperties } from './shapeProperties';
 import { generateSimplifyProblem } from './simplifyProblem';
 import { generateSmartCalculation } from './smartCalculation';
 import { generateSmartCalculationDeep } from './smartCalculationDeep';
+import { generateSolidNames } from './solidNames';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
@@ -129,6 +130,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   pythagoras: generatePythagoras,
   angles: generateAngles,
   symmetry: generateSymmetry,
+  solidNames: generateSolidNames,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
@@ -203,6 +205,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   pythagoras: 'Pythagoras (schuine zijde en rechthoekszijde)',
   angles: 'Hoeken (driehoek, veelhoek, klok)',
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
+  solidNames: 'Ruimtefiguren (namen, vlakken, ribben)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',

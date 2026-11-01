@@ -71,6 +71,7 @@ export type Topic =
   | 'pythagoras'
   | 'angles'
   | 'symmetry'
+  | 'solidNames'
   | 'shapeProperties'
   | 'statistics'
   | 'percentagePoints'

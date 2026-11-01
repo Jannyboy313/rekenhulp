@@ -138,6 +138,7 @@ export const GEOMETRY_SET: PracticeSet = {
     { topic: 'angles', weight: 1 },
     { topic: 'symmetry', weight: 1 },
     { topic: 'shapeProperties', weight: 1 },
+    { topic: 'solidNames', weight: 1 },
   ],
   tablesPercent: 15,
 };
