@@ -1,5 +1,5 @@
 import { formatInteger, formatMoney, formatRational, formatEuro, MINUS } from '../format';
-import { drawUntil, pick, type Rng } from '../random';
+import { drawUntil, pick, range, type Rng } from '../random';
 import {
   add,
   divide,
@@ -13,16 +13,15 @@ import {
 } from '../rational';
 import { fractionStep, numberStep } from '../steps';
 import type { Question } from '../types';
-import { niceWholesBetween } from './niceWholes';
-import { percentOf } from './percentages';
+import { hasAtMostTwoSignificantDigits, percentOf } from './percentages';
 
 /** Spec §5.55. */
 export const PERCENTAGES = [10, 20, 25, 50] as const;
 const PERMILLES = [1, 2, 3, 4, 5, 8] as const;
 
-const PRICES = niceWholesBetween(20, 400);
-const CONTENTS = niceWholesBetween(100, 1000);
-const POPULATIONS = niceWholesBetween(10_000, 900_000);
+const PRICES = range(20, 400).filter(hasAtMostTwoSignificantDigits);
+const CONTENTS = range(100, 1000).filter(hasAtMostTwoSignificantDigits);
+const POPULATIONS = range(10_000, 900_000).filter(hasAtMostTwoSignificantDigits);
 
 export type PercentProblemForm = 'stacked' | 'total' | 'extra' | 'permille';
 const FORMS: readonly PercentProblemForm[] = ['stacked', 'total', 'extra', 'permille'];

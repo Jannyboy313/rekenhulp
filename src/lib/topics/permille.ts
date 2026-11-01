@@ -1,10 +1,10 @@
 import { formatInteger, formatRational } from '../format';
-import { drawUntil, pick, randomInt, type Rng } from '../random';
+import { drawUntil, pick, randomInt, range, type Rng } from '../random';
 import { fromInteger, rational, type Rational } from '../rational';
 import { SLOT } from '../slot';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
-import { niceWholesBetween } from './niceWholes';
+import { hasAtMostTwoSignificantDigits } from './percentages';
 
 /** Spec §5.53. */
 export const PERMILLES: readonly number[] = [1, 2, 3, 4, 5, 8, 10, 12, 15, 20, 25, 50];
@@ -21,7 +21,7 @@ export const CONVERTED_PERCENTAGES: readonly Rational[] = [
   rational(25n, 2n),
 ];
 
-const WHOLES = niceWholesBetween(1000, 900_000);
+const WHOLES = range(1000, 900_000).filter(hasAtMostTwoSignificantDigits);
 
 export type PermilleForm = 'of' | 'convert' | 'what';
 const FORMS: readonly PermilleForm[] = ['of', 'convert', 'what'];

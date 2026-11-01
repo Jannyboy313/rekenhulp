@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { NO_BREAK_SPACE as NB } from '../format';
 import { gcd } from '../primes';
-import { createRng } from '../random';
+import { createRng, range } from '../random';
 import { hasAtMostDecimals, rational } from '../rational';
 import { hasSlot } from '../slot';
 import type { Question } from '../types';
-import { niceWholesBetween } from './niceWholes';
+import { hasAtMostTwoSignificantDigits } from './percentages';
 import {
   DIFFERENCE_ASKED,
   DIFFERENCE_CONTEXTS,
@@ -163,7 +163,7 @@ describe('generateRatioReasoning', () => {
   });
 
   it('rescale: counts, nice amounts, realistic per person and at most 2 decimals', () => {
-    const amounts = new Set(niceWholesBetween(10, 1000));
+    const amounts = new Set(range(10, 1000).filter(hasAtMostTwoSignificantDigits));
     const contexts = new Set<string>();
     for (const question of ofForm(questions, 'rescale')) {
       const [, , context, first, amount, second] = question.key.split(':') as string[];

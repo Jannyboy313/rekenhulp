@@ -4,7 +4,7 @@ import { drawUntil, pick, randomInt, range, type Rng } from '../random';
 import { fromInteger, hasAtMostDecimals, rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
-import { niceWholesBetween } from './niceWholes';
+import { hasAtMostTwoSignificantDigits } from './percentages';
 
 /** Spec §5.58. */
 export const NAME_PAIRS = [
@@ -208,7 +208,7 @@ function randomDifference(rng: Rng): Question {
   );
 }
 
-const AMOUNTS = niceWholesBetween(10, 1000);
+const AMOUNTS = range(10, 1000).filter(hasAtMostTwoSignificantDigits);
 const SECOND_COUNTS = range(2, 12).map((times) => times * 5);
 
 function randomRescale(rng: Rng): Question {

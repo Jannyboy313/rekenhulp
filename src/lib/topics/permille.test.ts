@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createRng } from '../random';
+import { createRng, range } from '../random';
 import { fromInteger, hasAtMostDecimals, isInteger, rational } from '../rational';
 import { hasSlot } from '../slot';
 import type { Question } from '../types';
-import { niceWholesBetween } from './niceWholes';
+import { hasAtMostTwoSignificantDigits } from './percentages';
 import {
   conversionQuestion,
   generatePermille,
@@ -19,19 +19,6 @@ function sample(): Question[] {
   const rng = createRng(53);
   return Array.from({ length: SAMPLES }, () => generatePermille(rng));
 }
-
-describe('niceWholesBetween', () => {
-  it('keeps at most 2 significant digits inside the bounds', () => {
-    const wholes = niceWholesBetween(20, 400);
-    expect(wholes).toContain(20);
-    expect(wholes).toContain(85);
-    expect(wholes).toContain(400);
-    expect(wholes).not.toContain(19);
-    expect(wholes).not.toContain(357);
-    expect(wholes).not.toContain(410);
-    expect(new Set(wholes).size).toBe(wholes.length);
-  });
-});
 
 describe('permille fixed cases', () => {
   it('3‰ van 4000', () => {
@@ -112,7 +99,7 @@ describe('generatePermille', () => {
   });
 
   it('draws part of a whole from the listed permilles and nice wholes with integer parts', () => {
-    const wholes = new Set(niceWholesBetween(1000, 900_000));
+    const wholes = new Set(range(1000, 900_000).filter(hasAtMostTwoSignificantDigits));
     const seen = new Set<number>();
     for (const { key } of questions.filter(({ key }) => /:(of|what):/.test(key))) {
       const [, , permille, whole] = key.split(':').map(Number) as [number, number, number, number];

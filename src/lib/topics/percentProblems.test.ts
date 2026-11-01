@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { GROUP_SEPARATOR as S, NO_BREAK_SPACE as NB } from '../format';
-import { createRng } from '../random';
+import { createRng, range } from '../random';
 import {
   compare,
   equals,
@@ -13,7 +13,7 @@ import {
 } from '../rational';
 import { hasSlot } from '../slot';
 import type { Question } from '../types';
-import { niceWholesBetween } from './niceWholes';
+import { hasAtMostTwoSignificantDigits } from './percentages';
 import {
   EXTRA_CONTEXTS,
   extraQuestion,
@@ -133,7 +133,7 @@ describe('generatePercentProblems', () => {
   });
 
   it('stacked change: nice price in [20, 400], at most 2 decimals, 70/30 variants', () => {
-    const prices = new Set(niceWholesBetween(20, 400));
+    const prices = new Set(range(20, 400).filter(hasAtMostTwoSignificantDigits));
     const stacked = ofForm(questions, 'stacked');
     let discounts = 0;
     for (const question of stacked) {
@@ -167,7 +167,7 @@ describe('generatePercentProblems', () => {
   });
 
   it('extra content: integer action content, normal content in [100, 1000], all contexts', () => {
-    const contents = new Set(niceWholesBetween(100, 1000));
+    const contents = new Set(range(100, 1000).filter(hasAtMostTwoSignificantDigits));
     const contexts = new Set<string>();
     for (const question of ofForm(questions, 'extra')) {
       const [, , context, percentage, normal] = question.key.split(':') as string[];
@@ -182,7 +182,7 @@ describe('generatePercentProblems', () => {
   });
 
   it('permille growth: nice population in [10 000, 900 000], integer growth, both variants', () => {
-    const populations = new Set(niceWholesBetween(10_000, 900_000));
+    const populations = new Set(range(10_000, 900_000).filter(hasAtMostTwoSignificantDigits));
     const variants = new Set<string>();
     const permilles = new Set<number>();
     for (const question of ofForm(questions, 'permille')) {
