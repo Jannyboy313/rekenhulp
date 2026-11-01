@@ -385,7 +385,7 @@ describe('Heuristieken set', () => {
 
 describe('levels', () => {
   it('gives Meten the only real Verdieping so far (spec §12.2 step 4)', () => {
-    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([MEASUREMENT_SET]);
+    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([MEASUREMENT_SET, OPERATIONS_SET]);
     expect(hasDeep(MEASUREMENT_SET)).toBe(true);
   });
 
@@ -406,6 +406,27 @@ describe('levels', () => {
       { topic: 'timeCalc', weight: 1 },
       { topic: 'estimating', weight: 1 },
     ]);
+  });
+
+  it('lists the four Bewerkingen Verdieping topics at weight 1 and keeps the card description', () => {
+    const rows = describeSetTopicRows(forLevel(OPERATIONS_SET, 'deep'), 15).map((row) => row.name);
+    expect(rows).toEqual([
+      'Haakjes plaatsen',
+      'Afleiden',
+      'Meerstapsopgaven',
+      'Handig rekenen+',
+      '20% opfrisser',
+    ]);
+    expect(OPERATIONS_SET.deep).toEqual([
+      { topic: 'bracketPlacement', weight: 1 },
+      { topic: 'derivedFacts', weight: 1 },
+      { topic: 'multiStepProblems', weight: 1 },
+      { topic: 'smartCalculationDeep', weight: 1 },
+    ]);
+    expect(forLevel(OPERATIONS_SET, 'deep').tablesPercent).toBe(0);
+    expect(OPERATIONS_SET.description).toBe(
+      'Volgorde van bewerkingen, eigenschappen en handig rekenen',
+    );
   });
 
   it('knows the fixture has a Verdieping, but not an empty one or one for Tafels', () => {
