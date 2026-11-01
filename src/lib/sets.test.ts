@@ -127,7 +127,7 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Getalbegrip five equally weighted topics with 15% tables', () => {
+  it('makes Getalbegrip seven equally weighted topics with 15% tables', () => {
     expect(NUMBER_SENSE_SET.name).toBe('Getalbegrip');
     expect(NUMBER_SENSE_SET.tablesPercent).toBe(15);
     expect(NUMBER_SENSE_SET.topics).toEqual([
@@ -136,6 +136,8 @@ describe('practice sets', () => {
       { topic: 'rounding', weight: 1 },
       { topic: 'powersRoots', weight: 1 },
       { topic: 'scientificNotation', weight: 1 },
+      { topic: 'numberOrder', weight: 1 },
+      { topic: 'arithmeticWords', weight: 1 },
     ]);
   });
 
@@ -289,6 +291,8 @@ describe('describeSetTopicRows per set', () => {
       'Afronden (tientallen t/m miljoenen, decimalen)',
       'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
       'Wetenschappelijke notatie (4,5 × 10⁶)',
+      'Ordenen (negatief, kommagetal, getallenlijn)',
+      'Rekentaal (som, verschil, product, bijna, ruim)',
       '15% tafels',
     ]);
   });
@@ -402,6 +406,7 @@ describe('levels', () => {
       PROPORTIONS_SET,
       NUMBERS_SET,
       OPERATIONS_SET,
+      NUMBER_SENSE_SET,
       FRACTIONS_SET,
       GEOMETRY_SET,
     ]);
@@ -435,6 +440,32 @@ describe('levels', () => {
     expect(deep.tablesPercent).toBe(0);
     expect(deep.quickShare).toEqual({ percent: 20, topics: FRACTIONS_SET.topics });
     expect(FRACTIONS_SET.topics).toHaveLength(6);
+  });
+
+  it('lists the four Getalbegrip Verdieping topics at weight 1 and keeps the card description', () => {
+    const names = (size: number) =>
+      describeSetTopicRows(forLevel(NUMBER_SENSE_SET, 'deep'), size).map((row) => row.name);
+    const topics = [
+      'Negatief in context',
+      'Afronden redeneren',
+      'Schatten',
+      'Rekenen met machten',
+    ];
+    expect(names(15)).toEqual([...topics, '20% opfrisser']);
+    expect(names(5)).toEqual(topics);
+    expect(NUMBER_SENSE_SET.deep).toEqual([
+      { topic: 'negativeContexts', weight: 1 },
+      { topic: 'roundingReasoning', weight: 1 },
+      { topic: 'estimateCalc', weight: 1 },
+      { topic: 'powerCalc', weight: 1 },
+    ]);
+    const deep = forLevel(NUMBER_SENSE_SET, 'deep');
+    expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: NUMBER_SENSE_SET.topics });
+    expect(NUMBER_SENSE_SET.topics).toHaveLength(7);
+    expect(NUMBER_SENSE_SET.description).toBe(
+      'Hoofdrekenen, negatieve getallen, afronden, machten en wetenschappelijke notatie',
+    );
   });
 
   it('lists the four Getallen & delers Verdieping topics and the Opfrisser share', () => {
@@ -557,7 +588,7 @@ describe('levels', () => {
 
   it('returns the set itself for Opfrisser and for a set without Verdieping', () => {
     expect(forLevel(DEEP_FIXTURE_SET, 'quick')).toBe(DEEP_FIXTURE_SET);
-    expect(forLevel(NUMBER_SENSE_SET, 'deep')).toBe(NUMBER_SENSE_SET);
+    expect(forLevel(RELATIONS_SET, 'deep')).toBe(RELATIONS_SET);
     const empty = { ...DEEP_FIXTURE_SET, deep: [] };
     expect(forLevel(empty, 'deep')).toBe(empty);
   });

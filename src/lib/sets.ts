@@ -111,8 +111,16 @@ export const NUMBER_SENSE_SET: PracticeSet = {
     { topic: 'rounding', weight: 1 },
     { topic: 'powersRoots', weight: 1 },
     { topic: 'scientificNotation', weight: 1 },
+    { topic: 'numberOrder', weight: 1 },
+    { topic: 'arithmeticWords', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'negativeContexts', weight: 1 },
+    { topic: 'roundingReasoning', weight: 1 },
+    { topic: 'estimateCalc', weight: 1 },
+    { topic: 'powerCalc', weight: 1 },
+  ],
 };
 
 export const FRACTIONS_SET: PracticeSet = {

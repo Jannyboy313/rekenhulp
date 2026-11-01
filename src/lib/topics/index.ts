@@ -1,6 +1,7 @@
 import type { Generator, Topic } from '../types';
 import { generateAngleReasoning } from './angleReasoning';
 import { generateAngles } from './angles';
+import { generateArithmeticWords } from './arithmeticWords';
 import { generateBetweenNumbers } from './betweenNumbers';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
@@ -18,6 +19,7 @@ import { generateDivisibility } from './divisibility';
 import { generateDivisors } from './divisors';
 import { generateEnlargement } from './enlargement';
 import { generateEquations } from './equations';
+import { generateEstimateCalc } from './estimateCalc';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
@@ -38,7 +40,9 @@ import {
 } from './measurement';
 import { generateMentalOperations } from './mentalOperations';
 import { generateMultiStepProblems } from './multiStepProblems';
+import { generateNegativeContexts } from './negativeContexts';
 import { generateNegativeNumbers } from './negativeNumbers';
+import { generateNumberOrder } from './numberOrder';
 import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
@@ -49,6 +53,7 @@ import { generatePercentProblems } from './percentProblems';
 import { generatePermille } from './permille';
 import { generateProportionConcepts } from './proportionConcepts';
 import { generatePerimeterArea } from './perimeterArea';
+import { generatePowerCalc } from './powerCalc';
 import { generatePowersRoots } from './powersRoots';
 import { generateProbability } from './probability';
 import { generateProperties } from './properties';
@@ -58,6 +63,7 @@ import { generateRatioReasoning } from './ratioReasoning';
 import { generateRatios } from './ratios';
 import { generateRemainders } from './remainders';
 import { generateRounding } from './rounding';
+import { generateRoundingReasoning } from './roundingReasoning';
 import { generateScale } from './scale';
 import { generateScalingSolids } from './scalingSolids';
 import { generateNumberSystems } from './numberSystems';
@@ -128,6 +134,12 @@ export const GENERATORS: Record<Topic, Generator> = {
   smartCalculationDeep: generateSmartCalculationDeep,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
+  numberOrder: generateNumberOrder,
+  arithmeticWords: generateArithmeticWords,
+  negativeContexts: generateNegativeContexts,
+  roundingReasoning: generateRoundingReasoning,
+  estimateCalc: generateEstimateCalc,
+  powerCalc: generatePowerCalc,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
@@ -214,6 +226,12 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   smartCalculationDeep: 'Handig rekenen+ (buiten haakjes, kommagetallen)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
+  numberOrder: 'Ordenen (negatief, kommagetal, getallenlijn)',
+  arithmeticWords: 'Rekentaal (som, verschil, product, bijna, ruim)',
+  negativeContexts: 'Negatief in context (rood staan, tekort, NAP)',
+  roundingReasoning: 'Afronden redeneren (grenzen, contant betalen)',
+  estimateCalc: 'Schatten (uitkomst ongeveer)',
+  powerCalc: 'Rekenen met machten (rekenregels, wortels, wetenschappelijke notatie)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',
