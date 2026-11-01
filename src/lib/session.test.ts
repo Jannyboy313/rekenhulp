@@ -38,7 +38,7 @@ describe('shareCount', () => {
     [50, 8],
     [75, 11],
     [100, 15],
-  ])('mixes 15%% of %i exercises as %i tables', (size, expected) => {
+  ])('mixes 15 percent of %i exercises as %i tables', (size, expected) => {
     expect(shareCount(15, size)).toBe(expected);
   });
 
@@ -48,7 +48,7 @@ describe('shareCount', () => {
     [15, 3],
     [25, 5],
     [50, 10],
-  ])('mixes 20%% of %i exercises as %i Opfrisser exercises', (size, expected) => {
+  ])('mixes 20 percent of %i exercises as %i Opfrisser exercises', (size, expected) => {
     expect(shareCount(20, size)).toBe(expected);
   });
 
