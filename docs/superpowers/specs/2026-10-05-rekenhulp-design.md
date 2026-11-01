@@ -509,9 +509,9 @@ exercises, from a session size of 10 (§4.2).
 | **Bewerkingen**             | `orderOfOperations` (2), `properties` (1), `smartCalculation` (2)                 | 15%    | v1      |
 | **Meten**                   | `volume`, `area`, `length`, `mass`, `time`, `numberUnits` (v1); `speed` (v2); `calendar`, `dataSize`, `clock`, `measureSense` (v3) | 15% | v1–v3 |
 | **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale`, `ratioProblems` (v2); `permille`, `proportionConcepts` (v3) | 15% | v1–v3 |
-| **Getalbegrip**             | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` | 15% | v2   |
-| **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic`                   | 15%    | v2      |
-| **Meetkunde**               | `perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties`  | 15%    | v2      |
+| **Getalbegrip**             | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` (v2); `numberOrder`, `arithmeticWords` (v3) | 15% | v2–v3 |
+| **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic` (v2); `decimalNames`, `compareFractions`, `fractionConcepts` (v3) | 15% | v2–v3 |
+| **Meetkunde**               | `perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties` (v2); `solidNames` (v3) | 15% | v2–v3 |
 | **Verbanden & statistiek**  | `statistics`, `percentagePoints`, `sequences`, `formulas`, `equations`, `probability` | 15% | v2      |
 | **Talstelsels**             | `numberSystems`, `romanNumerals`                                                  | 15%    | v2      |
 | **Heuristieken**            | `systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`      | 15%    | v2      |
@@ -536,6 +536,9 @@ The table lists the Opfrisser topics. A set's Verdieping (§12.2) has its own to
 | **Verhoudingen** | `percentProblems`, `enlargement`, `compareRatios`, `ratioReasoning` |
 | **Getallen & delers** | `lcmGcdProblems`, `divisors`, `missingDigit`, `remainders` |
 | **Bewerkingen** | `bracketPlacement`, `derivedFacts`, `multiStepProblems`, `smartCalculationDeep` |
+| **Getalbegrip** | `negativeContexts`, `roundingReasoning`, `estimateCalc`, `powerCalc` |
+| **Breuken & kommagetallen** | `mixedNotation`, `fractionProblems`, `decimalProblems`, `betweenNumbers` |
+| **Meetkunde** | `scalingSolids`, `surfaceArea`, `compositeShapes`, `angleReasoning` |
 
 The set overview (§3.1) shows the implemented sets in the build order of §12.1 (Tafels, Meten,
 Verhoudingen, Getallen & delers, Bewerkingen, Getalbegrip, Breuken & kommagetallen, …), not in
@@ -593,12 +596,14 @@ Examples with `n = 15`:
 - **Meten:** `r = 13` over 11 topics, so 2 + 2 + 1 × 9. The topics with 2 are chosen at random.
   Verdieping has no tables: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics) and
   `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
-- **Getalbegrip:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen at
-  random.
-- **Breuken & kommagetallen:** `r = 13` over 3 topics, so 5 + 4 + 4. The topic with 5 is chosen
+- **Getalbegrip:** `r = 13` over 7 topics, so 2 + 2 + 2 + 2 + 2 + 2 + 1. The topic with 1 is
+  chosen at random.
+- **Breuken & kommagetallen:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3
+  is chosen at random.
+- **Meetkunde:** `r = 13` over 7 topics, so 2 + 2 + 2 + 2 + 2 + 2 + 1. The topic with 1 is chosen
   at random.
-- **Meetkunde:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is chosen at
-  random.
+- Verdieping of these three: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics) and
+  `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
 - **Verbanden & statistiek:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3
   is chosen at random.
 - **Talstelsels:** `r = 13` over 2 topics, so 7 + 6. The topic with 7 is chosen at random.
@@ -2845,6 +2850,481 @@ equally likely:
   amounts, or a whole amount in `{10, 20, 50, 100}` minus one; `€` prefix, answer money.
 - The de-duplication key is the sum, factors of a product in ascending order.
 
+### v3 rules for Getalbegrip, Breuken & kommagetallen and Meetkunde (§5.67–§5.84)
+
+The v3 steps of three more sets (§12.2 step 4), specified and built together. The rules of
+§5.53–§5.66 apply (multiple choice via `choice`, no topic tips, the de-duplication key is the
+form, the variant or context and the numbers, money as §8, "nice whole" as §5.12). Also:
+
+- An ordering option reads as a chain with `<` (`van klein naar groot`) or `>` (`van groot naar
+  klein`) and spaces around the sign: `−3,5 < −1,2 < 0,35 < 0,4`. The prompt is
+  `Welke rij klopt?`; the three wrong chains are false statements.
+- A fraction answer "any equal value" follows §6: `0,875`, `7/8` and `14/16` are all correct.
+
+### Getalbegrip v3 (§5.67–§5.72)
+
+The RWT gaps of Getalbegrip (§12.3) and its Verdieping. Opfrisser gets two new topics
+(§5.67–§5.68); Verdieping has four topics of its own (§5.69–§5.72, §4.1). The card description
+stays.
+
+### 5.67 Number order (`numberOrder`)
+
+Opfrisser (RWT A.3), all multiple choice. Label: `Ordenen (negatief, kommagetal, getallenlijn)`.
+Two forms, 50/50:
+
+| Form    | Example                                     | Answer                          |
+|---------|---------------------------------------------|---------------------------------|
+| Order   | `Welke rij klopt?`                          | `−3,5 < −1,2 < 0,35 < 0,4`      |
+| Between | `Welk getal ligt tussen −2,5 en −2,4?`      | `−2,45`                         |
+
+- **Order:** four distinct numbers in `[−20, 20]` with 0 to 2 decimals and at most 3
+  significant digits; two or three of them negative; at least two have a different number of
+  decimals. The direction is 50/50. Options in random order: the right chain, the chain ordered
+  by the numbers without their sign (the sign trap), and two chains that each swap one
+  neighbouring pair of the right chain; all four different (redraw otherwise).
+- **Between:** bounds `a` and `a + 0,1` with 1 decimal, `a ∈ [−9,9; −0,1]` (always negative).
+  The answer is `a + 0,05`. Distractors: `−(a + 0,05)` (the sign trap), `a − 0,05` and
+  `a + 0,15`. Options in ascending order.
+- Explanations: order `op de getallenlijn van links naar rechts: −3,5, −1,2, 0,35, 0,4`, and with
+  the sign trap in mind `−3,5 is kleiner dan −1,2: hoe verder onder nul, hoe kleiner`; between
+  `−2,5 = −2,50 en −2,4 = −2,40 → −2,45 ligt ertussen`.
+
+### 5.68 Words of arithmetic (`arithmeticWords`)
+
+Opfrisser (RWT A.2), all multiple choice. Label: `Rekentaal (som, verschil, product, bijna,
+ruim)`. Two forms, 50/50:
+
+| Form        | Example                                    | Answer |
+|-------------|--------------------------------------------|--------|
+| Operation   | `Wat is het verschil van 48 en 12?`        | `36`   |
+| Bijna, ruim | `Welk bedrag is ruim € 50?`                | `€ 53` |
+
+- **Operation:** the word is `som`, `verschil`, `product` or `quotiënt` (each 25%); `a ∈ [12, 99]`,
+  `b ∈ [2, 12]`, `a` a multiple of `b`. Options in ascending order: `a + b`, `a − b`, `a × b`,
+  `a : b` (all four different; redraw otherwise).
+- **Bijna, ruim** (50/50): a round number `R` from `{20, 50, 100, 200, 500, 1000}` and a context:
+  `bedrag` (`€` before the number), `kinderen`, `km`, `minuten` (the unit after it:
+  `Welke afstand is bijna 100 km?`). With `d` a whole number in `[2%, 8%]` of `R` (at least
+  1), the options in ascending order: `R − d`, `R`, `R + d` and the far one `R + 30%` (ruim) or
+  `R − 30%` (bijna). The answer is `R + d` (ruim) or `R − d` (bijna).
+- Explanations: `verschil = aftrekken: 48 − 12 = 36`, `som = optellen`, `product =
+  vermenigvuldigen`, `quotiënt = delen`; `ruim € 50 = iets meer dan € 50`, `bijna 100 km = iets
+  minder dan 100 km`.
+
+### 5.69 Negative numbers in context (`negativeContexts`)
+
+Verdieping (RWT A.4b). Label: `Negatief in context (rood staan, tekort, NAP)`. Three forms, each
+equally likely:
+
+| Form        | Example                                                                                    | Answer | Suffix     |
+|-------------|--------------------------------------------------------------------------------------------|--------|------------|
+| Money       | `Je hebt € 312 op je rekening en betaalt € 774. Hoeveel sta je in het rood?`               | 462    | `€` prefix |
+| Height      | `Een polder ligt op −4 m NAP, een duin op 23 m NAP. Hoeveel meter hoger ligt het duin?`    | 27     | `m`        |
+| Temperature | `'s Ochtends is het −3 °C. Het wordt 9 graden warmer en 's avonds weer 11 graden kouder. Hoeveel graden is het dan?` | −5 | `°C` |
+
+- **Money**, three variants, each equally likely; whole euros:
+  - `in het rood`: balance `[50, 900]`, payment `[100, 999]` above it, with at least one borrow;
+    the answer is the shortage.
+  - `saldo`: `Je staat € 145 in het rood. Je krijgt € 400 salaris. Wat is je saldo nu?`; minus
+    `[20, 900]`, income `[100, 2000]`, a multiple of 10 when above 1000; the answer can be
+    negative (typed with `−`) and is not 0.
+  - `te kort`: `Je wilt een fiets van € 849 kopen en hebt € 387 gespaard. Hoeveel kom je te
+    kort?`; price `[100, 999]`, savings `[20, price − 10]`. Contexts: fiets, telefoon, laptop.
+- **Height**, two variants, 50/50:
+  - `verschil`: a low point in `[−7; −1]` m NAP with at most 1 decimal (`polder`, `meer`) and a
+    high point in `[5, 50]` m NAP (`duin`, `dijk`, `heuvel`); the difference.
+  - `lift`: `Een lift staat op verdieping −2 en gaat 7 verdiepingen omhoog. Op welke verdieping
+    stopt hij?` A start in `[−3, 10]` and a move in `[2, 12]` up or down, the end in `[−3, 12]`;
+    the start or the end is below 0. No suffix.
+- **Temperature:** start `[−10, 10]`, two changes `[2, 15]` (`warmer` or `kouder`, not both the
+  same), each value in `[−15, 20]`; at least one change crosses 0.
+- Explanations: `774 − 312 = 462 → € 462 in het rood`, `−145 + 400 = 255`, `849 − 387 = 462`;
+  `23 − (−4) = 23 + 4 = 27`, `−2 + 7 = 5`; `−3 + 9 = 6 → 6 − 11 = −5` (crossing zero as §5.16).
+
+### 5.70 Rounding reasoning (`roundingReasoning`)
+
+Verdieping (RWT A.3, B.2). Label: `Afronden redeneren (grenzen, contant betalen)`. Two forms,
+50/50:
+
+| Form   | Example                                                                                       | Answer | Suffix     |
+|--------|-----------------------------------------------------------------------------------------------|--------|------------|
+| Bounds | `Een getal is afgerond op honderdtallen 4500. Wat is het kleinste getal dat het kan zijn?`    | 4450   | —          |
+| Cash   | `Je boodschappen kosten € 7,93. Je betaalt contant. Hoeveel betaal je?`                       | 7,95   | `€` prefix |
+
+- **Bounds:** `kleinste` or `grootste` (50/50).
+  - Whole numbers (70%): the place `tientallen`, `honderdtallen` or `duizendtallen`; the rounded
+    value has 2 or 3 significant digits and lies in `[100, 99 000]`. The answer is the rounded
+    value − half a unit (kleinste) or + half a unit − 1 (grootste): `4450`, `4549`.
+  - Decimals (30%): `Een getal met 2 decimalen is afgerond op 1 decimaal 3,7. Wat is het
+    kleinste getal dat het kan zijn?`, the rounded value in `[0,1; 99,9]` with 1 decimal (not
+    whole); answer `3,65` or `3,74`.
+- **Cash** (Dutch cash rounding to 5 cents): cents ending in 1 or 2 go down to 0, 3 to 7 go to
+  5, 8 or 9 go up to 10. The amount is in `[1, 50]` and does not end in 0 or 5. Two variants,
+  50/50: what you pay, or the change from a note of `€ 5`, `€ 10`, `€ 20` or `€ 50` above the
+  amount (`Je betaalt met € 10. Hoeveel krijg je terug?`, `€ 7,93 → € 7,95 → 10 − 7,95 =
+  2,05`).
+- Explanations: `4449 wordt 4400, 4450 wordt 4500 → 4450`, `4549 wordt 4500, 4550 wordt 4600 →
+  4549`; `3,64 wordt 3,6, 3,65 wordt 3,7 → 3,65`; `€ 7,93: 3 cent wordt 5 cent → € 7,95`.
+
+### 5.71 Estimating calculations (`estimateCalc`)
+
+Verdieping (RWT A.3), all multiple choice. Label: `Schatten (uitkomst ongeveer)`. Prompt:
+`Ongeveer hoeveel is 6189 : 31?`.
+
+- `×` or `:` (50/50). Generated backwards: first the rounded operands, each 1 significant digit
+  (`6000 : 30`, `400 × 0,5`); a rounded dividend may have 2 significant digits and is a
+  multiple of the rounded divisor. Then each operand is moved by 3% to 10% to a number that is
+  not round: a whole number with 3 or 4 significant digits, or (in 30% of the exercises, one
+  operand) a decimal with 2 or 3 significant digits in `[0,1; 99]`. The estimate `c` (the
+  calculation with the rounded operands) and the exact value differ by at most a factor 1,4.
+- Options as §5.52: `c × {0,1; 1; 10; 100}` or `c × {0,01; 0,1; 1; 10}` (50/50), in ascending
+  order; a set with an option of more than 2 decimals is not used.
+- Explanation: `6189 ≈ 6000 en 31 ≈ 30 → 6000 : 30 = 200`.
+
+### 5.72 Calculating with powers (`powerCalc`)
+
+Verdieping (LKT: powers, roots and scientific notation). Label: `Rekenen met machten
+(rekenregels, wortels, wetenschappelijke notatie)`. Three forms, each equally likely:
+
+| Form       | Example                                        | Answer        | Answer kind  |
+|------------|------------------------------------------------|---------------|--------------|
+| Rules      | `2³ × 2⁴ = 2ⁿ. n = ?`, `(3²)³ = 3ⁿ. n = ?`     | 7, 6          | number       |
+| Combined   | `√(36 × 25) = ?`, `2⁵ − 3³ = ?`                | 30, 5         | number       |
+| Scientific | `(3 × 10⁴) × (5 × 10³) = ?`                    | `1,5 × 10⁸`   | scientific   |
+
+- **Rules:** `aᵐ × aⁿ`, `aᵐ : aⁿ` (`m > n`) or `(aᵐ)ⁿ`, each equally likely; `a ∈ {2, 3, 5, 10}`,
+  `m, n ∈ [2, 6]`, the result exponent at most 12. The question is the exponent, written as in
+  §5.18 (`2ⁿ`, `UNKNOWN_EXPONENT`).
+- **Combined**, two variants, 50/50:
+  - `√(p × q)` with `p ≠ q` squares of `[2, 10]` and the answer at most 90.
+  - `aᵐ ± bⁿ` with `a ≠ b`, each power from the positive pairs of §5.18 (bases 2 to 9) with value
+    at most 1000; in 20% one base is negative, `(−2)³`, `(−3)²` style, from the negative pairs of
+    §5.18. The answer is not 0; it may be negative.
+- **Scientific**, three variants, each equally likely:
+  - product `(c₁ × 10ᵐ) × (c₂ × 10ⁿ)`, `c₁, c₂ ∈ [1, 9]` whole, `m, n ∈ [2, 9]`; the answer
+    normalised (`15 × 10⁷ = 1,5 × 10⁸`), its exponent at most 15.
+  - quotient `(c₁ × 10ᵐ) : (c₂ × 10ⁿ)`, `c₁` a multiple of `c₂` (`c₁ ∈ [2, 9]`), `m > n`.
+  - `Hoeveel keer zo groot is 6 × 10⁸ als 2 × 10⁵?`, the same numbers as the quotient, a number
+    answer of at most 10⁷ (`3000`).
+  - Answers with `scientificStep` (§5.19, normalised form required); the times question with a
+    number step.
+- Explanations: `2³ × 2⁴ = 2³⁺⁴ = 2⁷`, `2⁶ : 2² = 2⁶⁻² = 2⁴`, `(3²)³ = 3²ˣ³ = 3⁶`;
+  `√(36 × 25) = √36 × √25 = 6 × 5 = 30`, `2⁵ − 3³ = 32 − 27 = 5`;
+  `3 × 5 = 15 en 10⁴ × 10³ = 10⁷ → 15 × 10⁷ = 1,5 × 10⁸`, `6 : 2 = 3 en 10⁸ : 10⁵ = 10³ → 3000`.
+
+### Breuken & kommagetallen v3 (§5.73–§5.79)
+
+The RWT gaps of Breuken & kommagetallen (§12.3) and its Verdieping, which adds the contexts (the
+set was almost only formal). Opfrisser gets three new topics (§5.73–§5.75); Verdieping has four
+topics of its own (§5.76–§5.79, §4.1). The card description (§3.1) becomes "Omzetten,
+vergelijken en rekenen met breuken en kommagetallen".
+
+### 5.73 Decimal names (`decimalNames`)
+
+Opfrisser (RWT B.2). Label: `Kommagetallen in woorden (tiende t/m miljardste)`. Two directions,
+50/50:
+
+| Direction        | Example                                 | Answer                 | Answer kind |
+|------------------|-----------------------------------------|------------------------|-------------|
+| Words → number   | `Schrijf als kommagetal: acht duizendste` | `0,008`              | number      |
+| Number → words   | `Hoe spreek je 0,007 uit?`              | `zeven duizendste` (multiple choice) | choice |
+
+- Places: `tiende` (10⁻¹), `honderdste`, `duizendste`, `tienduizendste`, `honderdduizendste`,
+  `miljoenste` (10⁻⁶) and `miljardste` (10⁻⁹), each equally likely. The count `k ∈ [1, 19] \
+  {10} ∪ {25, 75}` as a word (`één`, `twee`, …, `negentien`, `vijfentwintig`, `vijfenzeventig`;
+  a fixed list in the module).
+- **Number → words:** the options are `k` with four consecutive places of the list that contain
+  the answer (at a random position), in the order of the list.
+- Explanations: `duizendste = 0,001 → 8 × 0,001 = 0,008`; `0,007: de 7 staat op de plek van de
+  duizendsten → zeven duizendste`.
+
+### 5.74 Comparing fractions and decimals (`compareFractions`)
+
+Opfrisser (RWT B.4). Label: `Vergelijken (breuken en kommagetallen)`. Two forms, 50/50:
+
+| Form    | Example                                          | Answer                       | Answer kind |
+|---------|--------------------------------------------------|------------------------------|-------------|
+| Extreme | `Welk getal is het grootst: 3/5, 0,58 of 5/8?`   | `5/8`                        | fraction, any equal value |
+| Order   | `Welke rij klopt?`                               | `0,58 < 3/5 < 5/8 < 0,65`    | choice      |
+
+- Fractions are proper with `q ∈ {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 25}` (the denominators
+  of B.4); decimals have 1 to 3 decimals; all values in `(0, 1)` and distinct.
+- **Extreme:** three numbers, at least one fraction and one decimal; `grootst` or `kleinst`
+  (50/50); the largest and smallest differ by at most 0,2 and any two by at least 0,01. The
+  answer is typed with the existing keys, and any equal value is correct (`5/8` or `0,625`); the
+  expected answer is the number as written in the prompt.
+- **Order:** four numbers, two fractions and two decimals, in either direction (50/50); options
+  in random order: the right chain and the three chains that each swap one neighbouring pair.
+- Explanation: every number as a decimal (thirds and the like with `…`: `1/3 = 0,33…`), then the
+  conclusion: `3/5 = 0,6 en 5/8 = 0,625 → 0,58 < 0,6 < 0,625 → 5/8`.
+
+### 5.75 Fraction concepts (`fractionConcepts`)
+
+Opfrisser (RWT B.1), all multiple choice. Label: `Breukbegrippen (teller, stambreuk,
+gelijkwaardig)`. Two forms, 50/50:
+
+| Form       | Example                                         | Answer                    |
+|------------|-------------------------------------------------|---------------------------|
+| Concept    | `Wat is een stambreuk?`, `Hoe heet een breuk met teller 1?` | `een breuk met teller 1`, `stambreuk` |
+| Equivalent | `Welke breuk is gelijkwaardig aan 3/4?`         | `9/12`                    |
+
+- **Concept**, a fixed list of terms and definitions; the direction is 50/50 (`Wat is …?` with
+  definitions as options, or `Hoe heet …?` with terms). The distractors are three random other
+  entries of the list; options in random order.
+
+  | Term                     | Definition                                         |
+  |--------------------------|----------------------------------------------------|
+  | `teller`                 | `het getal boven de breukstreep`                   |
+  | `noemer`                 | `het getal onder de breukstreep`                   |
+  | `stambreuk`              | `een breuk met teller 1`                           |
+  | `onechte breuk`          | `een breuk met een teller groter dan de noemer`    |
+  | `gemengd getal`          | `een heel getal en een breuk samen`                |
+  | `samengestelde breuk`    | `een breuk met een breuk in de teller of de noemer` |
+  | `gelijknamige breuken`   | `breuken met dezelfde noemer`                      |
+  | `gelijkwaardige breuken` | `breuken met dezelfde waarde`                      |
+
+  Prompts: `Wat is een stambreuk?`, `Wat zijn gelijknamige breuken?` (plural terms), and
+  `Hoe heet een breuk met teller 1?`, `Hoe heten breuken met dezelfde noemer?`.
+- **Equivalent:** a proper fraction `p/q` in lowest terms, `q ∈ [3, 10]`, `k ∈ [2, 5]`. Options in
+  random order: `kp/kq` (the answer), `(p + k)/(q + k)` (adding the same), `q/p` (upside down)
+  and `p/(q + 1)`; all four different.
+- Explanations: the definition, `Een stambreuk is een breuk met teller 1, zoals 1/5.`;
+  `3/4 = 9/12 (teller en noemer × 3)`.
+
+### 5.76 Mixed notation (`mixedNotation`)
+
+Verdieping (RWT B.9). Label: `Gemengd rekenen (breuk, kommagetal, procent)`. Prompt as a sum,
+`4 3/5 : 0,2 = ?`. Answer kind fraction, any equal value; the expected answer is a decimal when
+it has at most 3 decimals, otherwise a whole or mixed number. Four templates, each equally
+likely:
+
+| Template           | Example                 | Answer | Range                                                                                  |
+|--------------------|-------------------------|--------|----------------------------------------------------------------------------------------|
+| Divide by decimal  | `4 3/5 : 0,2 = ?`       | 23     | a mixed number `w p/q`, `w ∈ [1, 9]`, `q ∈ {2, 4, 5, 10}`, divided by `0,1`, `0,2`, `0,25` or `0,5`; whole answer |
+| Decimal × fraction | `0,75 × 2/3 = ?`        | 0,5    | a decimal from `{0,2; 0,25; 0,4; 0,5; 0,6; 0,75; 0,8; 1,5; 2,5}` and a proper fraction with `q ∈ [2, 12]`, in random order; the answer has a denominator of at most 20 |
+| Percent of         | `25% van 3/4 = ?`       | 3/16   | `p ∈ {10, 20, 25, 50, 75}` of a proper fraction (`q ∈ [2, 10]`) or of a decimal with 1 decimal in `[0,2; 9,9]` |
+| Sum                | `1/4 + 0,15 = ?`        | 0,4    | a proper fraction with `q ∈ {2, 4, 5, 8, 10, 20, 25}` plus or minus a decimal with 1 or 2 decimals below 1; the answer positive |
+
+- Explanations: one notation first, the easiest: `0,2 = 1/5 → 4 3/5 : 1/5 = 23/5 × 5 = 23`;
+  `0,75 = 3/4 → 3/4 × 2/3 = 6/12 = 1/2 = 0,5`; `25% = 1/4 → 1/4 × 3/4 = 3/16`; `1/4 = 0,25 →
+  0,25 + 0,15 = 0,4`.
+
+### 5.77 Fraction problems (`fractionProblems`)
+
+Verdieping (RWT B.6, in a context). Label: `Breuken in context (deel, rest, geheel)`. Four forms,
+each equally likely:
+
+| Form          | Example                                                                                                      | Answer | Suffix / kind |
+|---------------|--------------------------------------------------------------------------------------------------------------|--------|---------------|
+| Rest          | `Van de 32 leerlingen komt 3/8 op de fiets en 1/4 met de bus. De rest loopt. Hoeveel leerlingen lopen?`      | 12     | `leerlingen`  |
+| Part of rest  | `Je hebt € 60. Je geeft 1/3 uit aan een boek en van wat over is 1/4 aan eten. Hoeveel houd je over?`          | 30     | `€` prefix    |
+| Whole         | `2/5 van de klas is jongen. Dat zijn 12 kinderen. Hoeveel kinderen zitten er in de klas?`                    | 30     | `kinderen`    |
+| Which part    | `In een klas van 30 kinderen zitten 12 jongens. Welk deel van de klas is meisje?`                            | 3/5    | fraction, simplest form, no decimal |
+
+- Fractions are proper and in lowest terms with `q ∈ {2, 3, 4, 5, 6, 8, 10, 12}`; every
+  intermediate result is whole.
+- **Rest:** a whole `N ∈ [12, 60]` and two fractions with different denominators that together
+  are below 1; the rest at least 1. Contexts: `leerlingen` (fiets, bus, lopen), `bezoekers`
+  (volwassenen, kinderen, the rest senioren), `boeken` (romans, strips, the rest
+  informatieboeken).
+- **Part of rest:** `N ∈ [12, 240]`, two fractions; asked is what is left over or (50/50) the
+  second part. Contexts: `geld` (€, a multiple of 5), `taart` (stukken), `snoepjes`.
+- **Whole:** `p/q` and the part `p × m`, `m ∈ [2, 12]`, answer `q × m`. Contexts: `klas`
+  (jongens, kinderen), `boek` (bladzijden gelezen), `tank` (liter, `vol`).
+- **Which part:** a whole `N ∈ [12, 60]` and one part; asked is the other part as a fraction in
+  lowest terms (`q ≤ 12`). Contexts as Whole.
+- Explanations: `3/8 van 32 = 12, 1/4 van 32 = 8 → 32 − 12 − 8 = 12`; `1/3 van 60 = 20 → 40 over
+  → 1/4 van 40 = 10 → 40 − 10 = 30`; `2/5 = 12 → 1/5 = 6 → 5/5 = 30`; `30 − 12 = 18 meisjes →
+  18/30 = 3/5`.
+
+### 5.78 Decimal problems (`decimalProblems`)
+
+Verdieping (RWT B.3, in a context). Label: `Kommagetallen in context (prijs per kilo, lengte)`.
+Three forms, each equally likely:
+
+| Form         | Example                                                                                   | Answer | Suffix     |
+|--------------|-------------------------------------------------------------------------------------------|--------|------------|
+| Price        | `Kaas kost € 14 per kilo. Wat kost 0,25 kg?`                                               | 3,50   | `€` prefix |
+| Price back   | `1,5 kg appels kost € 3,60. Wat kost 1 kg?`                                                | 2,40   | `€` prefix |
+| Length       | `Een plank van 2,4 m zaag je in stukken van 0,3 m. Hoeveel stukken krijg je?`              | 8      | `stukken`  |
+
+- **Price:** a price per kilo that is a multiple of `€ 0,10` in `[1, 30]` and a weight from
+  `{0,1; 0,2; 0,25; 0,3; 0,4; 0,5; 0,75; 1,2; 1,5; 2,5}` kg; the cost has at most 2 decimals
+  (no rounding). Products: `kaas`, `gehakt`, `druiven`, `noten`.
+- **Price back:** the same numbers, the weight not 1; the total and weight given, the price per
+  kilo asked. Products: `appels`, `peren`, `tomaten`.
+- **Length**, two variants, 50/50: the count (`stukken` of `{0,2; 0,25; 0,3; 0,4; 0,5; 0,6;
+  0,75}` m from a `plank` or `lint` of at most 6 m, the count whole in `[3, 20]`), or the rest
+  (`Van een lint van 5 m knip je 6 stukken van 0,45 m. Hoeveel m blijft er over?`, a lint of
+  `{2, 3, 5, 10}` m, `[2, 8]` stukken of a multiple of 0,05 m in `[0,15; 1,5]`, the rest
+  positive, suffix `m`).
+- Explanations: `0,25 kg = 1/4 kilo → 14 : 4 = 3,50`; `1,5 kg = € 3,60 → 0,5 kg = 1,20 → 1 kg =
+  2,40`; `2,4 : 0,3 = 24 : 3 = 8`; `6 × 0,45 = 2,7 → 5 − 2,7 = 2,3`.
+
+### 5.79 Number line (`betweenNumbers`)
+
+Verdieping (RWT B.4, on a number line). Label: `Getallenlijn (midden, sprongen, streepjes)`.
+Three forms, each equally likely; answer kind fraction, any equal value (expected as §5.76):
+
+| Form    | Example                                                                                            | Answer   |
+|---------|----------------------------------------------------------------------------------------------------|----------|
+| Middle  | `Welk getal ligt precies midden tussen 1/4 en 1/3?`                                                | 7/24     |
+| Jumps   | `Je springt op de getallenlijn van 1,2 naar 3 in sprongen van 0,15. Hoeveel sprongen zijn dat?`     | 12       |
+| Marks   | `De getallenlijn van 2 tot 3 is in 8 gelijke stukjes verdeeld. Welk getal staat bij het 5e streepje na 2?` | `2,625` |
+
+- **Middle**, three variants, each equally likely: two proper fractions with `q ∈ [2, 12]` and a
+  middle with denominator at most 48 (`1/4` and `1/3`); two decimals with 1 or 2 decimals in
+  `[0, 20]` at least 0,05 apart (`2,7` and `3,05` → `2,875`); a fraction and a decimal
+  (`0,6` and `3/4` → `27/40` or `0,675`).
+- **Jumps:** the count whole in `[4, 30]`; a decimal jump from `{0,05; 0,1; 0,15; 0,2; 0,25; 0,3;
+  0,4; 0,5; 0,75}` with a start of 1 decimal in `[0, 10]`, or (30%) a fraction jump `1/q`,
+  `q ∈ {2, 3, 4, 5, 8}`, from a whole or half start. Number answer.
+- **Marks:** a whole `w ∈ [0, 9]` to `w + 1`, divided into `n ∈ {4, 5, 8, 10, 20}` pieces;
+  mark `k ∈ [1, n − 1]`, `k/n` not `1/2`. The expected answer as §5.76 (`2,625`; `2 5/8` is
+  also correct).
+- Explanations: `1/4 = 6/24 en 1/3 = 8/24 → midden 7/24`, `(2,7 + 3,05) : 2 = 5,75 : 2 = 2,875`;
+  `3 − 1,2 = 1,8 → 1,8 : 0,15 = 180 : 15 = 12`; `1 stukje = 1/8 → 2 + 5/8 = 2 5/8`.
+
+### Meetkunde v3 (§5.80–§5.84)
+
+The RWT gaps of Meetkunde (§12.3) and its Verdieping. Opfrisser gets one new topic (§5.80);
+Verdieping has four topics of its own (§5.81–§5.84, §4.1). The card description stays. As in
+§5.27–§5.32, figures are described in words.
+
+### 5.80 Solid names (`solidNames`)
+
+Opfrisser (RWT C.1). Label: `Ruimtefiguren (namen, vlakken, ribben)`. Two forms, 50/50:
+
+| Form  | Example                                                                  | Answer   | Answer kind |
+|-------|--------------------------------------------------------------------------|----------|-------------|
+| Name  | `Welk ruimtefiguur heeft een cirkel als grondvlak en een punt als top?`  | `kegel`  | choice      |
+| Count | `Hoeveel ribben heeft een prisma met een zeshoek als grondvlak?`          | 18       | number      |
+
+- **Name**, a fixed list; the options are the answer and three random others from `balk`,
+  `kubus`, `prisma`, `kegel`, `bol`, `cilinder`, `piramide`, in random order. Definitions are
+  inclusive (§5.32): a kubus is a balk and a balk is a prisma, so `kubus`, `balk` and `prisma`
+  are never a distractor for each other.
+
+  | `Welk ruimtefiguur heeft …?`                                                         | Answer     |
+  |--------------------------------------------------------------------------------------|------------|
+  | `een cirkel als grondvlak en een punt als top`                                       | `kegel`    |
+  | `twee gelijke cirkels als grondvlak en bovenvlak`                                    | `cilinder` |
+  | `een veelhoek als grondvlak en driehoeken als zijvlakken die in één punt samenkomen` | `piramide` |
+  | `twee gelijke driehoeken als grondvlak en bovenvlak en rechthoeken als zijvlakken`   | `prisma`   |
+  | `zes vierkanten als zijvlakken`                                                      | `kubus`    |
+  | `zes rechthoeken als zijvlakken, niet allemaal vierkant`                             | `balk`     |
+  | `geen ribben en geen hoekpunten, en elk punt even ver van het middelpunt`            | `bol`      |
+
+- **Count:** `vlakken`, `ribben` or `hoekpunten` (each equally likely, also the suffix) of a
+  `kubus` or `balk` (6, 12, 8), a prisma with an `n`-hoek as grondvlak (`n + 2`, `3n`, `2n`) or a
+  piramide with an `n`-hoek as grondvlak (`n + 1`, `2n`, `n + 1`); `n ∈ {3, 4, 5, 6, 8}`, named
+  `driehoek`, `vierkant`, `vijfhoek`, `zeshoek`, `achthoek`. Each of the three solids equally
+  likely.
+- Explanations: `Een kegel heeft een cirkel als grondvlak en loopt uit in een punt.`;
+  `zeshoek als grondvlak: 6 ribben onder, 6 boven en 6 opstaand → 18`, `piramide: 4 ribben in
+  het grondvlak en 4 naar de top → 8`.
+
+### 5.81 Scaling solids (`scalingSolids`)
+
+Verdieping (RWT C.13). Label: `Kwadratisch en kubisch vergroten`. Three forms, each equally
+likely:
+
+| Form    | Example                                                                                                        | Answer | Suffix      |
+|---------|----------------------------------------------------------------------------------------------------------------|--------|-------------|
+| Factor  | `De ribben van een kubus worden 3 keer zo lang. Hoeveel keer zo groot wordt de inhoud?`                         | 27     | `keer`      |
+| Value   | `Een kubus met ribben van 2 cm heeft een inhoud van 8 cm³. De ribben worden 3 keer zo lang. Hoe groot wordt de inhoud?` | 216 | `cm³` |
+| Back    | `De inhoud van een kubus wordt 8 keer zo groot. Hoeveel keer zo lang worden de ribben?`                          | 2      | `keer`      |
+
+- Figures: `vierkant`, `rechthoek` (zijden; asked `omtrek` or `oppervlakte`) and `kubus`, `balk`
+  (ribben; asked `oppervlakte` or `inhoud`), each equally likely. The `omtrek` question (factor
+  `k`) is the linear trap and is 20% of the 2D exercises.
+- **Factor:** `k ∈ {2, 3, 4, 5, 10}` `keer zo lang` (75%), or `keer zo klein` with `k ∈ {2, 3,
+  4, 5}` (25%: `Hoeveel keer zo klein wordt …?`).
+- **Value:** the original lengths whole in `[1, 10]` cm, its area or volume given; `k ∈ {2, 3, 4,
+  5}`; the answer at most 10 000. Also as a model (50%): `Een maquette is 10 keer zo klein als
+  het echte gebouw. Het dak van de maquette is 0,5 m². Hoe groot is het echte dak?`, `k ∈ {2, 5,
+  10, 20}`, the area in m² with at most 1 decimal, the answer at most 5000 (suffix `m²`).
+- **Back:** an area factor `k²` (`k ∈ [2, 10]`) asking the side, or a volume factor `k³`
+  (`k ∈ {2, 3, 4, 5, 10}`) asking the edge.
+- Explanations: `oppervlakte: 3 × 3 = 9 keer`, `inhoud: 3 × 3 × 3 = 27 keer`, `omtrek: 3 keer`
+  (a length); `8 × 27 = 216`; `8 = 2 × 2 × 2 → 2 keer`.
+
+### 5.82 Surface area of solids (`surfaceArea`)
+
+Verdieping (RWT C.10). Label: `Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)`.
+Three forms, each equally likely:
+
+| Form     | Example                                                                                                                      | Answer | Suffix |
+|----------|------------------------------------------------------------------------------------------------------------------------------|--------|--------|
+| Pyramid  | `Een piramide heeft een vierkant grondvlak van 3 m bij 3 m. Elk zijvlak is een driehoek met een basis van 3 m en een hoogte van 5 m. Hoe groot is de totale oppervlakte?` | 39 | `m²` |
+| Prism    | `Een tent is een prisma. De voorkant en achterkant zijn driehoeken met zijden van 3 m, 4 m en 5 m en een rechte hoek. De tent is 6 m lang. Hoe groot is de totale oppervlakte?` | 84 | `m²` |
+| Cylinder | `Een blik heeft een grondvlak van 25,1 cm² en een mantel van 225,3 cm². Hoe groot is de totale oppervlakte?`                  | 275,5  | `cm²`  |
+
+- **Pyramid:** a square base `z ∈ [2, 12]`, the height of a side triangle `h ∈ [z, 20]`; in 50%
+  the area of a side is given instead (`Elk van de vier zijvlakken heeft een oppervlakte van
+  7,5 m².`). Unit m or cm (50/50).
+- **Prism:** a right triangle from `(3, 4, 5)`, `(6, 8, 10)` or `(5, 12, 13)` (all three sides
+  given), length `[2, 20]`; total `2 × (a × b : 2) + (a + b + c) × l`. Contexts: `tent` (m),
+  `doos` (cm), `dakkapel` (m).
+- **Cylinder:** the base area and the mantle given with 1 decimal, base `[5, 80]`, mantle
+  `[50, 500]` cm²; total `mantel + 2 × grondvlak`. Contexts: `blik`, `koker`, `ton` (`dm²`).
+- Explanations: `grondvlak 3 × 3 = 9, zijvlak 3 × 5 : 2 = 7,5 → 9 + 4 × 7,5 = 39`;
+  `2 driehoeken: 2 × (3 × 4 : 2) = 12, 3 rechthoeken: (3 + 4 + 5) × 6 = 72 → 12 + 72 = 84`;
+  `225,3 + 2 × 25,1 = 275,5`.
+
+### 5.83 Composite shapes (`compositeShapes`)
+
+Verdieping (RWT C.10, C.2, C.13). Label: `Samengestelde figuren (hoek eruit, pad, hectare)`. Four
+forms, each equally likely:
+
+| Form        | Example                                                                                                   | Answer | Suffix |
+|-------------|-----------------------------------------------------------------------------------------------------------|--------|--------|
+| Corner out  | `Uit een rechthoek van 8 m bij 6 m is een hoek van 3 m bij 2 m weggehaald. Hoe groot is de omtrek?`        | 28     | `m`    |
+| Path        | `Een gazon van 10 m bij 6 m heeft rondom een pad van 1 m breed. Hoe groot is de oppervlakte van het pad?`  | 36     | `m²`   |
+| Are, ha     | `Een weiland is 250 m lang en 80 m breed. Hoeveel hectare is dat?`                                         | 2      | `ha`   |
+| Fixed area  | `Een rechthoek heeft een oppervlakte van 24 cm². De zijden zijn hele cm. Wat is de kleinste mogelijke omtrek?` | 20 | `cm`  |
+
+- **Corner out:** a rectangle `l ∈ [5, 20]`, `b ∈ [4, 15]` m, a corner `[1, l − 2] × [1, b − 2]`;
+  `oppervlakte` (minus the corner) or `omtrek` (unchanged: the trap), 50/50.
+- **Path:** a lawn `l ∈ [4, 20]`, `b ∈ [3, 12]` m, a path width from `{0,5; 1; 2}`; the area of the
+  path `(l + 2w)(b + 2w) − l × b`, at most 2 decimals.
+- **Are, ha:** a rectangle with sides multiples of 10 m in `[20, 500]`, asked in `are`
+  (`1 are = 100 m²`) or `hectare` (`1 ha = 10 000 m²`), 50/50; the answer has at most 2 decimals.
+- **Fixed area:** an area in `[12, 100]` with at least three factor pairs; `kleinste` or
+  `grootste` omtrek (50/50), whole-number sides.
+- Explanations: `oppervlakte 8 × 6 − 3 × 2 = 42`; `omtrek: de hoek verschuift twee zijden naar
+  binnen, de omtrek blijft 2 × (8 + 6) = 28`; `12 × 8 − 10 × 6 = 96 − 60 = 36`;
+  `250 × 80 = 20 000 m² = 2 ha`; `1 × 24, 2 × 12, 3 × 8, 4 × 6 → 4 × 6: 2 × (4 + 6) = 20`.
+
+### 5.84 Angle reasoning (`angleReasoning`)
+
+Verdieping (LKT: reasoning with angles). Label: `Redeneren met hoeken (buitenhoek, verhouding,
+klok)`. Three forms, each equally likely; suffix `°`, except the number of angles:
+
+| Form      | Example                                                                                         | Answer |
+|-----------|-------------------------------------------------------------------------------------------------|--------|
+| Exterior  | `Een driehoek heeft hoeken van 50° en 60°. Hoe groot is de buitenhoek bij de derde hoek?`        | 110    |
+| Ratio     | `De hoeken van een driehoek verhouden zich als 2 : 3 : 4. Hoe groot is de grootste hoek?`        | 80     |
+| Clock     | `Hoe groot is de kleinste hoek tussen de wijzers om 4:20?`                                      | 10     |
+
+- **Exterior**, three variants, each equally likely: the exterior angle of a triangle (two angles
+  as §5.30); the exterior angle of a regular `n`-hoek (`360 : n`, `n ∈ {5, 6, 8, 9, 10, 12}`);
+  the number of angles of a regular polygon from one angle (`Een regelmatige veelhoek heeft
+  hoeken van 140°. Hoeveel hoeken heeft hij?`, `n ∈ {5, 6, 8, 9, 10, 12, 15, 18, 20}`, suffix
+  `hoeken`).
+- **Ratio:** `a : b : c` with terms in `[1, 9]`, not all equal, `a + b + c` a divisor of 180;
+  asked the smallest, the largest or (if distinct) the middle angle. In 30% an isosceles
+  triangle instead: `De tophoek is 3 keer zo groot als een basishoek. Hoe groot is de
+  tophoek?`, factor from `{2, 3, 4, 6, 7}` (whole or half-degree angles), asked the top or a
+  base angle.
+- **Clock:** `H:MM` as §5.47, hours 1 to 12, minutes a multiple of 5 and not `:00` or `:30`
+  (those are in §5.30); the smaller angle `|30 × H − 5,5 × MM|` (or 360 minus it), at most 1
+  decimal (`4:25` → `17,5`).
+- Explanations: `buitenhoek = som van de twee andere hoeken: 50 + 60 = 110`, `360 : 8 = 45`,
+  `buitenhoek 180 − 140 = 40 → 360 : 40 = 9`; `2 + 3 + 4 = 9 delen → 1 deel = 180 : 9 = 20 →
+  4 × 20 = 80`; `grote wijzer: 20 × 6 = 120°, kleine wijzer: 4 × 30 + 20 × 0,5 = 130° → 130 −
+  120 = 10`.
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -3348,7 +3828,7 @@ follow separately (lesstof spec §2).
     and speed from metres (`500 m in 3 min → km/u`). Verdieping.
   - C.9: reading the time (`tien voor half 9` ↔ `20:20`) and elapsed time. Opfrisser; how a time
     is typed is decided in the spec iteration.
-- **Getalbegrip**
+- **Getalbegrip** — specified in §5.67–§5.72
   - A.3: ordering positive and negative numbers, and estimating. MC.
   - A.2: the words of arithmetic (som, verschil, bijna, ruim). MC.
   - A.4b: shortages with money (`€ 462 te kort`, `in het rood`). Verdieping.
@@ -3357,7 +3837,7 @@ follow separately (lesstof spec §2).
   - B.10: enlarging and reducing with percentages (a copier at 125%). Verdieping.
   - B.4: comparing ratios (`appels : peren = 1 : 2` against `3 : 4`). Verdieping.
   - B.1: concepts such as absolute versus relative. MC.
-- **Breuken & kommagetallen**
+- **Breuken & kommagetallen** — specified in §5.73–§5.79
   - B.2: naming small decimals (`acht duizendste`, `drie miljardste`). Opfrisser.
   - B.4: comparing fractions and decimals (`Welke breuk is het grootst?`, the answer typed with
     the existing keys). Opfrisser; ordering a whole list MC.
@@ -3365,7 +3845,7 @@ follow separately (lesstof spec §2).
   - §3.6 of the handreiking: every eindterm is tested formally and in a context; the set is now
     almost only formal. Verdieping adds contexts.
   - B.1: concepts such as gelijkwaardig and samengestelde breuk. MC.
-- **Meetkunde**
+- **Meetkunde** — specified in §5.80–§5.84
   - C.13: quadratic and cubic enlargement (`de ribbe wordt 2 keer zo lang → de inhoud 8 keer`).
     Verdieping.
   - C.10: the surface area of a pyramid from given parts (`9 + 4 × 7,5`). Verdieping.
