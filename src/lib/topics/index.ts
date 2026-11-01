@@ -7,6 +7,7 @@ import { generateCompareRatios } from './compareRatios';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
+import { generateDecimalNames } from './decimalNames';
 import { generateDerivedFacts } from './derivedFacts';
 import { generateDivisibility } from './divisibility';
 import { generateDivisors } from './divisors';
@@ -123,6 +124,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   scientificNotation: generateScientificNotation,
   decimalArithmetic: generateDecimalArithmetic,
   fractionConversion: generateFractionConversion,
+  decimalNames: generateDecimalNames,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
@@ -197,6 +199,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
+  decimalNames: 'Kommagetallen in woorden (tiende t/m miljardste)',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',

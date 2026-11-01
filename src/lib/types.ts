@@ -65,6 +65,7 @@ export type Topic =
   | 'scientificNotation'
   | 'decimalArithmetic'
   | 'fractionConversion'
+  | 'decimalNames'
   | 'fractionArithmetic'
   | 'perimeterArea'
   | 'solids'
