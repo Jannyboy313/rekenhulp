@@ -60,6 +60,7 @@ export type Topic =
   | 'smartCalculationDeep'
   | 'mentalOperations'
   | 'negativeNumbers'
+  | 'numberOrder'
   | 'rounding'
   | 'powersRoots'
   | 'scientificNotation'

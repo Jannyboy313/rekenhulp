@@ -30,6 +30,7 @@ import {
 import { generateMentalOperations } from './mentalOperations';
 import { generateMultiStepProblems } from './multiStepProblems';
 import { generateNegativeNumbers } from './negativeNumbers';
+import { generateNumberOrder } from './numberOrder';
 import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
@@ -116,6 +117,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   smartCalculationDeep: generateSmartCalculationDeep,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
+  numberOrder: generateNumberOrder,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
@@ -190,6 +192,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   smartCalculationDeep: 'Handig rekenen+ (buiten haakjes, kommagetallen)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
+  numberOrder: 'Ordenen (negatief, kommagetal, getallenlijn)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',

@@ -132,6 +132,7 @@ describe('practice sets', () => {
       { topic: 'rounding', weight: 1 },
       { topic: 'powersRoots', weight: 1 },
       { topic: 'scientificNotation', weight: 1 },
+      { topic: 'numberOrder', weight: 1 },
     ]);
   });
 
@@ -285,6 +286,7 @@ describe('describeSetTopicRows per set', () => {
       'Afronden (tientallen t/m miljoenen, decimalen)',
       'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
       'Wetenschappelijke notatie (4,5 × 10⁶)',
+      'Ordenen (negatief, kommagetal, getallenlijn)',
       '15% tafels',
     ]);
   });
