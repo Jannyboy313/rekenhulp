@@ -72,6 +72,7 @@ export type Topic =
   | 'angles'
   | 'symmetry'
   | 'solidNames'
+  | 'scalingSolids'
   | 'shapeProperties'
   | 'statistics'
   | 'percentagePoints'

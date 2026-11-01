@@ -50,6 +50,7 @@ import { generateRatios } from './ratios';
 import { generateRemainders } from './remainders';
 import { generateRounding } from './rounding';
 import { generateScale } from './scale';
+import { generateScalingSolids } from './scalingSolids';
 import { generateNumberSystems } from './numberSystems';
 import { generateRomanNumerals } from './romanNumerals';
 import { generateScientificNotation } from './scientificNotation';
@@ -131,6 +132,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   angles: generateAngles,
   symmetry: generateSymmetry,
   solidNames: generateSolidNames,
+  scalingSolids: generateScalingSolids,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
@@ -206,6 +208,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   angles: 'Hoeken (driehoek, veelhoek, klok)',
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
   solidNames: 'Ruimtefiguren (namen, vlakken, ribben)',
+  scalingSolids: 'Kwadratisch en kubisch vergroten',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',
