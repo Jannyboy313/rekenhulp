@@ -2,6 +2,7 @@ import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
+import { generateCompareRatios } from './compareRatios';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
@@ -85,6 +86,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   proportionConcepts: generateProportionConcepts,
   percentProblems: generatePercentProblems,
   enlargement: generateEnlargement,
+  compareRatios: generateCompareRatios,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -149,6 +151,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   proportionConcepts: 'Begrippen (absoluut, relatief, 1 op de n)',
   percentProblems: 'Procentenproblemen (stapelkorting, extra inhoud, promille)',
   enlargement: 'Vergroten en verkleinen (kopieerapparaat)',
+  compareRatios: 'Verhoudingen vergelijken (meer, voordeliger, naar verhouding)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
