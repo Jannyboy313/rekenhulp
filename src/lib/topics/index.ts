@@ -4,6 +4,7 @@ import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
 import { generateCompareRatios } from './compareRatios';
+import { generateCompositeShapes } from './compositeShapes';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
@@ -135,6 +136,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   solidNames: generateSolidNames,
   scalingSolids: generateScalingSolids,
   surfaceArea: generateSurfaceArea,
+  compositeShapes: generateCompositeShapes,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
@@ -212,6 +214,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   solidNames: 'Ruimtefiguren (namen, vlakken, ribben)',
   scalingSolids: 'Kwadratisch en kubisch vergroten',
   surfaceArea: 'Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)',
+  compositeShapes: 'Samengestelde figuren (hoek eruit, pad, hectare)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',
