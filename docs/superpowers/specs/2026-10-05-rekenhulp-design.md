@@ -3263,9 +3263,9 @@ Three forms, each equally likely:
 - **Pyramid:** a square base `z ∈ [2, 12]`, the height of a side triangle `h ∈ [z, 20]`; in 50%
   the area of a side is given instead (`Elk van de vier zijvlakken heeft een oppervlakte van
   7,5 m².`). Unit m or cm (50/50).
-- **Prism:** a right triangle from `(3, 4, 5)`, `(6, 8, 10)` or `(5, 12, 13)` (all three sides
-  given), length `[2, 20]`; total `2 × (a × b : 2) + (a + b + c) × l`. Contexts: `tent` (m),
-  `doos` (cm), `dakkapel` (m).
+- **Prism:** a right triangle (all three sides given); total `2 × (a × b : 2) + (a + b + c) ×
+  l`. Two contexts, 50/50: `tent` with `(3, 4, 5)` m and a length in `[2, 6]` m, and `doos` with
+  `(3, 4, 5)`, `(6, 8, 10)` or `(5, 12, 13)` cm and a length in `[5, 20]` cm.
 - **Cylinder:** the base area and the mantle given with 1 decimal, base `[5, 80]`, mantle
   `[50, 500]` cm²; total `mantel + 2 × grondvlak`. Contexts: `blik`, `koker`, `ton` (`dm²`).
 - Explanations: `grondvlak 3 × 3 = 9, zijvlak 3 × 5 : 2 = 7,5 → 9 + 4 × 7,5 = 39`;
@@ -3314,12 +3314,13 @@ klok)`. Three forms, each equally likely; suffix `°`, except the number of angl
   `hoeken`).
 - **Ratio:** `a : b : c` with terms in `[1, 9]`, not all equal, `a + b + c` a divisor of 180;
   asked the smallest, the largest or (if distinct) the middle angle. In 30% an isosceles
-  triangle instead: `De tophoek is 3 keer zo groot als een basishoek. Hoe groot is de
-  tophoek?`, factor from `{2, 3, 4, 6, 7}` (whole or half-degree angles), asked the top or a
+  triangle instead: `In een gelijkbenige driehoek is de tophoek 3 keer zo groot als een
+  basishoek. Hoe groot is de tophoek?`, factor from `{2, 3, 4, 6, 7}` (whole or half-degree angles), asked the top or a
   base angle.
 - **Clock:** `H:MM` as §5.47, hours 1 to 12, minutes a multiple of 5 and not `:00` or `:30`
   (those are in §5.30); the smaller angle `|30 × H − 5,5 × MM|` (or 360 minus it), at most 1
-  decimal (`4:25` → `17,5`).
+  decimal (`4:25` → `17,5`). For 12 the explanation counts the hour hand from 0
+  (`kleine wijzer: 0 × 30 + 20 × 0,5 = 10°`).
 - Explanations: `buitenhoek = som van de twee andere hoeken: 50 + 60 = 110`, `360 : 8 = 45`,
   `buitenhoek 180 − 140 = 40 → 360 : 40 = 9`; `2 + 3 + 4 = 9 delen → 1 deel = 180 : 9 = 20 →
   4 × 20 = 80`; `grote wijzer: 20 × 6 = 120°, kleine wijzer: 4 × 30 + 20 × 0,5 = 130° → 130 −
