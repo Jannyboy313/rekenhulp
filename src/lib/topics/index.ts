@@ -9,6 +9,7 @@ import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDecimalNames } from './decimalNames';
+import { generateDecimalProblems } from './decimalProblems';
 import { generateDerivedFacts } from './derivedFacts';
 import { generateDivisibility } from './divisibility';
 import { generateDivisors } from './divisors';
@@ -133,6 +134,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   fractionConcepts: generateFractionConcepts,
   mixedNotation: generateMixedNotation,
   fractionProblems: generateFractionProblems,
+  decimalProblems: generateDecimalProblems,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
@@ -212,6 +214,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   fractionConcepts: 'Breukbegrippen (teller, stambreuk, gelijkwaardig)',
   mixedNotation: 'Gemengd rekenen (breuk, kommagetal, procent)',
   fractionProblems: 'Breuken in context (deel, rest, geheel)',
+  decimalProblems: 'Kommagetallen in context (prijs per kilo, lengte)',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',

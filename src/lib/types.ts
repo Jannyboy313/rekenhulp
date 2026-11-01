@@ -70,6 +70,7 @@ export type Topic =
   | 'fractionConcepts'
   | 'mixedNotation'
   | 'fractionProblems'
+  | 'decimalProblems'
   | 'fractionArithmetic'
   | 'perimeterArea'
   | 'solids'
