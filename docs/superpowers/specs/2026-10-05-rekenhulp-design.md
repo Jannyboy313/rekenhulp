@@ -72,7 +72,9 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
   back on an allowed screen.
 - Later closes the dialog until the next resume or start; if the update is still waiting it is
   offered again then. Installeren activates the new version and reloads.
-- Escape closes the dialog like Later. A system back is not handled by the dialog: it navigates as
+- After Installeren the dialog shows a busy state ("Installeren…" with a spinner, both buttons
+  disabled) until the reload, so the press is visibly acknowledged.
+- Escape closes the dialog like Later, except while installing. A system back is not handled by the dialog: it navigates as
   on the screen underneath (spec §3), and the dialog follows the allowed-screen rule above.
 
 ### Mobile UX requirements

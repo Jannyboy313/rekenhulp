@@ -29,6 +29,19 @@ describe('UpdateDialog', () => {
     expect(onlater).toHaveBeenCalledTimes(1);
   });
 
+  it('shows a busy state after Installeren and ignores further input', async () => {
+    const { oninstall, onlater } = renderDialog();
+    await fireEvent.click(screen.getByRole('button', { name: 'Installeren' }));
+    const busy = screen.getByRole('button', { name: 'Installeren…' }) as HTMLButtonElement;
+    expect(busy.disabled).toBe(true);
+    expect((screen.getByRole('button', { name: 'Later' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole('dialog').getAttribute('aria-busy')).toBe('true');
+    await fireEvent.click(busy);
+    await fireEvent.keyDown(window, { key: 'Escape' });
+    expect(oninstall).toHaveBeenCalledTimes(1);
+    expect(onlater).not.toHaveBeenCalled();
+  });
+
   it('treats Escape as Later', async () => {
     const { oninstall, onlater } = renderDialog();
     await fireEvent.keyDown(window, { key: 'Escape' });
