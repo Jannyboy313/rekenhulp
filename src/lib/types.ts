@@ -41,6 +41,7 @@ export type Topic =
   | 'factorization'
   | 'divisibility'
   | 'squares'
+  | 'lcmGcdProblems'
   | 'orderOfOperations'
   | 'smartCalculation'
   | 'properties'

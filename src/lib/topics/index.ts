@@ -11,6 +11,7 @@ import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
 import { generateFractionConversion } from './fractionConversion';
+import { generateLcmGcdProblems } from './lcmGcdProblems';
 import { generateMeasureProblems } from './measureProblems';
 import { generateMeasureSense } from './measureSense';
 import {
@@ -83,6 +84,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   factorization: generateFactorization,
   divisibility: generateDivisibility,
   squares: generateSquares,
+  lcmGcdProblems: generateLcmGcdProblems,
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
@@ -143,6 +145,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   factorization: 'Ontbinden in priemfactoren (12 t/m 200)',
   divisibility: 'Deelbaarheid door 2 t/m 15 (zonder 10)',
   squares: 'Kwadraten en wortels (2² t/m 25²)',
+  lcmGcdProblems: 'KGV en GGD in context (samen vertrekken, gelijke stukken)',
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
