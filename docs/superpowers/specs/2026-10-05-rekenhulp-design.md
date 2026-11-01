@@ -508,7 +508,7 @@ exercises, from a session size of 10 (§4.2).
 | **Getallen & delers**       | `lcm`, `gcd`, `prime`, `factorization`, `divisibility`, `squares`                 | 15%    | v1      |
 | **Bewerkingen**             | `orderOfOperations` (2), `properties` (1), `smartCalculation` (2)                 | 15%    | v1      |
 | **Meten**                   | `volume`, `area`, `length`, `mass`, `time`, `numberUnits` (v1); `speed` (v2); `calendar`, `dataSize`, `clock`, `measureSense` (v3) | 15% | v1–v3 |
-| **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale`, `ratioProblems` (v2)      | 15%    | v1 + v2 |
+| **Verhoudingen**            | `percentages`, `ratios` (v1); `percentChange`, `scale`, `ratioProblems` (v2); `permille`, `proportionConcepts` (v3) | 15% | v1–v3 |
 | **Getalbegrip**             | `mentalOperations`, `negativeNumbers`, `rounding`, `powersRoots`, `scientificNotation` | 15% | v2   |
 | **Breuken & kommagetallen** | `fractionConversion`, `fractionArithmetic`, `decimalArithmetic`                   | 15%    | v2      |
 | **Meetkunde**               | `perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties`  | 15%    | v2      |
@@ -533,6 +533,9 @@ The table lists the Opfrisser topics. A set's Verdieping (§12.2) has its own to
 | Set       | Verdieping topics                                                  |
 |-----------|--------------------------------------------------------------------|
 | **Meten** | `compoundUnits`, `measureProblems`, `timeCalc`, `estimating`       |
+| **Verhoudingen** | `percentProblems`, `enlargement`, `compareRatios`, `ratioReasoning` |
+| **Getallen & delers** | `lcmGcdProblems`, `divisors`, `missingDigit`, `remainders` |
+| **Bewerkingen** | `bracketPlacement`, `derivedFacts`, `multiStepProblems`, `smartCalculationDeep` |
 
 The set overview (§3.1) shows the implemented sets in the build order of §12.1 (Tafels, Meten,
 Verhoudingen, Getallen & delers, Bewerkingen, Getalbegrip, Breuken & kommagetallen, …), not in
@@ -583,8 +586,10 @@ Examples with `n = 15`:
   orderOfOperations 5, properties 3 and smartCalculation 5.
 - **Getallen & delers:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3 is
   chosen at random.
-- **Verhoudingen:** `r = 13` over 5 topics, so 3 + 3 + 3 + 2 + 2. The topics with 3 are chosen
-  at random.
+- **Verhoudingen:** `r = 13` over 7 topics, so 2 + 2 + 2 + 2 + 2 + 2 + 1. The topic with 1 is
+  chosen at random. Verdieping: 3 Opfrisser exercises over 7 topics and `r = 12` over 4 topics,
+  so 3 + 3 + 3 + 3. Getallen & delers and Bewerkingen have the same Verdieping split (their
+  Opfrisser share follows their own weights).
 - **Meten:** `r = 13` over 11 topics, so 2 + 2 + 1 × 9. The topics with 2 are chosen at random.
   Verdieping has no tables: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics) and
   `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
@@ -2483,6 +2488,361 @@ Label: `Schatten (met referentiematen)`. Six contexts, each equally likely:
 - Explanation: the reference, then the calculation: `1 woonlaag ≈ 3 m → 12 × 3 = 36 m`,
   `80 × 40 × 50 = 160 000 cm³ = 160 L, 1 L water ≈ 1 kg → ongeveer 160 kg`.
 
+### v3 rules for Verhoudingen, Getallen & delers and Bewerkingen (§5.53–§5.66)
+
+The v3 steps of three sets (§12.2 step 4), specified and built together. The rules of Meten v3
+apply to all of them:
+
+- Multiple-choice forms use the `choice` answer kind (§6): four options, no kladblok, no tip.
+- The new topics have no topic tips (§3.4.1); number steps keep the factor-of-ten fallback.
+- The de-duplication key of every new topic is the form, the variant or context and the numbers.
+- Money as §8: `€` prefix, the expected answer with 2 decimals when not whole.
+- A "nice whole" is an integer with at most 2 significant digits (§5.12).
+
+### Verhoudingen v3 (§5.53–§5.58)
+
+The RWT gaps of Verhoudingen (§12.3) and its Verdieping. Opfrisser gets two new topics
+(§5.53–§5.54); Verdieping has four topics of its own (§5.55–§5.58, §4.1). The card description
+(§3.1) becomes "Procenten, promille, verhoudingen en schaal".
+
+### 5.53 Permille (`permille`)
+
+Opfrisser (RWT B.1, B.7). Label: `Promille (‰ van, ‰ ↔ % ↔ kommagetal)`. There are three forms,
+each picked with equal probability:
+
+| Form            | Example                  | Answer | Suffix |
+|-----------------|--------------------------|--------|--------|
+| Part of a whole | `3‰ van 4000 = ?`        | 12     | —      |
+| Conversion      | `25‰ = ?%`               | 2,5    | `%`    |
+| What permille   | `6 is ?‰ van 2000`       | 3      | `‰`    |
+
+- **Part of a whole:** `p ∈ {1, 2, 3, 4, 5, 8, 10, 12, 15, 20, 25, 50}`, the whole a nice whole
+  in `[1000, 900 000]`, the answer an integer.
+- **Conversion**, three directions, each equally likely:
+  - `‰ → %`: `v ∈ [1, 99]` ‰, so the answer has at most 1 decimal (`25‰ = 2,5%`)
+  - `% → ‰`: `v ∈ {0,1; 0,2; 0,5; 1; 1,5; 2; 2,5; 5; 10; 12,5}` %
+  - `‰ → kommagetal`: `7‰ = ?`, `v ∈ [1, 99]`, answer `v : 1000` (`0,007`)
+- **What permille:** the whole and `p` as in part of a whole; the part is given, `p` is the
+  answer.
+- Explanations: `1‰ = 4000 : 1000 = 4 → 3‰ = 3 × 4 = 12`, `1% = 10‰ → 25 : 10 = 2,5`,
+  `1‰ = 0,001 → 7‰ = 0,007`, `1‰ = 2000 : 1000 = 2 → 6 : 2 = 3`.
+
+### 5.54 Proportion concepts (`proportionConcepts`)
+
+Opfrisser (RWT B.1), all multiple choice. Label: `Begrippen (absoluut, relatief, 1 op de n)`.
+There are two forms, each picked with equal probability:
+
+| Form              | Example                                       | Answer                         |
+|-------------------|-----------------------------------------------|--------------------------------|
+| Absolute/relative | `Welke uitspraak is relatief?`                | `Er wonen 5% meer mensen.`     |
+| 1 op de n         | `"1 op de 4" betekent hetzelfde als …`        | `25%`                          |
+
+- **Absolute/relative:** the question asks for the relative or the absolute statement (50/50).
+  Four statements about one context, each with its own numbers: one of the asked kind, three of
+  the other. Relative statements use a percentage, a fraction or `1 op de n`; absolute ones a
+  count or an amount. Contexts, each equally likely:
+
+  | Context   | Absolute statements (templates)                                                  | Relative statements (templates)                                    |
+  |-----------|----------------------------------------------------------------------------------|--------------------------------------------------------------------|
+  | dorp      | `Er wonen 300 mensen meer.`, `Er wonen nu 6300 mensen.`, `Er zijn 40 nieuwe huizen.` | `Er wonen 5% meer mensen.`, `1 op de 20 inwoners is nieuw.`, `Een kwart van de inwoners is kind.` |
+  | school    | `Er zijn 24 leerlingen ziek.`, `Er zitten 12 meisjes in de klas.`, `De school heeft 18 leraren.` | `10% van de leerlingen is ziek.`, `De helft van de klas is meisje.`, `1 op de 3 leerlingen fietst.` |
+  | winkel    | `De jas is € 20 goedkoper.`, `Er zijn 150 jassen verkocht.`, `De jas kost nu € 60.` | `De jas is 25% goedkoper.`, `1 op de 4 klanten koopt een jas.`, `Een derde van de jassen is verkocht.` |
+
+  The numbers in a template are drawn from small sets (`[2, 9]` × 10 for counts, `{5, 10, 20, 25}`
+  for percentages, `{2, 3, 4, 5, 10}` for `n`); the options are in random order.
+- **1 op de n:** `n ∈ {4, 5, 10, 20, 25}`. Options in random order: the answer `100/n %`, the
+  ratio trap `1 : n` (that is 1 of `n + 1`), `n%` and the fraction `1/(n − 1)` (written stacked,
+  §8).
+- Explanations: `Relatief: een deel van het geheel (procent, breuk, 1 op de n).`,
+  `Absoluut: een aantal of bedrag.`; `1 op de 4 = 1/4 = 25%; 1 : 4 is 1 op de 5`.
+
+### 5.55 Percent problems (`percentProblems`)
+
+Verdieping (RWT B.7). Label: `Procentenproblemen (stapelkorting, extra inhoud, promille)`. There
+are four forms, each picked with equal probability:
+
+| Form             | Example                                                                                                   | Answer | Suffix     |
+|------------------|-----------------------------------------------------------------------------------------------------------|--------|------------|
+| Stacked change   | `Een jas kost € 80. Je krijgt 25% korting en op de nieuwe prijs nog 10%. Wat betaal je?`                   | 54     | `€` prefix |
+| Total percentage | `Eerst 20% korting en op de nieuwe prijs nog 10% korting. Hoeveel procent korting is dat samen?`            | 28     | `%`        |
+| Extra content    | `Een actiefles shampoo bevat 20% extra: 360 ml. Hoeveel ml zit er in een gewone fles?`                     | 300    | `ml`       |
+| Permille growth  | `Een provincie heeft 550 000 inwoners en groeit in een jaar met 2‰. Met hoeveel inwoners groeit ze?`        | 1100   | `inwoners` |
+
+- **Stacked change:** the price is a nice whole in `[20, 400]`. Two variants, 70/30:
+  - two discounts, `p₁, p₂ ∈ {10, 20, 25, 50}`
+  - first an increase of `p`, then a decrease of the same `p` (`Een prijs stijgt met 20% en
+    daalt daarna met 20%. …`), `p ∈ {10, 20, 25, 50}`; the answer is below the old price
+  - the answer has at most 2 decimals.
+- **Total percentage:** `p₁, p₂ ∈ {10, 20, 25, 50}`; answer `100 − (100 − p₁)(100 − p₂)/100`
+  (`20, 10 → 28`, `25, 10 → 32½`). Fraction step with any equal value correct, as §5.12, so
+  `32 1/2` and `32,5` are correct.
+- **Extra content:** `p ∈ {10, 20, 25, 50}`; the normal content is a nice whole in `[100, 1000]`
+  and the action content `normal × (100 + p)/100` is an integer. Contexts: `fles shampoo` (ml),
+  `pak koffie` (g), `zak chips` (g).
+- **Permille growth:** the population is a nice whole in `[10 000, 900 000]`,
+  `p ∈ {1, 2, 3, 4, 5, 8}`, the growth `population × p : 1000` an integer. Two variants, 50/50:
+  the growth, or the population after a year (`Hoeveel inwoners heeft ze na een jaar?`).
+- Explanations: `25% van 80 = 20 → 60 → 10% van 60 = 6 → 54`; total
+  `stel 100 → 20% korting: 80 → 10% van 80 = 8: 72 → 100 − 72 = 28%`; extra
+  `120% = 360 → 10% = 30 → 100% = 300`; permille `1‰ = 550 000 : 1000 = 550 → 2‰ = 1100`.
+
+### 5.56 Enlargement (`enlargement`)
+
+Verdieping (RWT B.10). One dimension per exercise. Label: `Vergroten en verkleinen
+(kopieerapparaat)`. There are four forms, each picked with equal probability:
+
+| Form           | Example                                                                                   | Answer | Suffix |
+|----------------|-------------------------------------------------------------------------------------------|--------|--------|
+| With p%        | `Je vergroot een foto van 12 cm breed met 25%. Hoe breed wordt de foto?`                  | 15     | `cm`   |
+| At q%          | `Je kopieert een tekening van 20 cm breed op 80%. Hoe breed wordt de kopie?`              | 16     | `cm`   |
+| Find q         | `Een foto van 10 cm breed wordt 15 cm breed. Op hoeveel procent stel je het kopieerapparaat in?` | 150 | `%`   |
+| Back           | `Na vergroten met 50% is een foto 18 cm breed. Hoe breed was hij?`                        | 12     | `cm`   |
+
+- `met p%`: enlarging `p ∈ {10, 20, 25, 50, 100}` or reducing (`verklein met`)
+  `p ∈ {10, 20, 25, 50}`, 50/50. `op q%`: `q ∈ {50, 75, 80, 120, 125, 150, 200}`.
+- The original is an integer in `[4, 40]` cm; the result has at most 1 decimal. Find q uses
+  the `op q%` list with an integer result; back uses the `met p%` list.
+- Context: `foto`, `tekening` or `plattegrond`, `breed` or `hoog` (each equally likely).
+- Explanations: `vergroten met 25% → 125% van 12: 25% = 3 → 12 + 3 = 15`,
+  `80% van 20: 10% = 2 → 8 × 2 = 16`, `15 : 10 = 1,5 → 150%`, `150% = 18 → 50% = 6 → 100% = 12`.
+
+### 5.57 Comparing ratios (`compareRatios`)
+
+Verdieping (RWT B.4, B.1), all multiple choice. Label: `Verhoudingen vergelijken (meer,
+voordeliger, naar verhouding)`. There are three forms, each picked with equal probability:
+
+| Form     | Example                                                                                                                                | Answer   |
+|----------|----------------------------------------------------------------------------------------------------------------------------------------|----------|
+| Recipe   | `Jack bakt met appels : peren = 1 : 2, Jasmijn met 3 : 4. Ze gebruiken allebei 3 appels. Wie gebruikt de meeste peren?`                 | `Jack`   |
+| Offer    | `Welke aanbieding is het voordeligst?`                                                                                                 | `5 voor € 3,75` |
+| Relative | `Klas A: 6 van de 24 leerlingen zijn ziek. Klas B: 8 van de 40. Waar is naar verhouding het meest ziek?`                               | `klas A` |
+
+- **Recipe:** name pairs `Jack/Jasmijn`, `Sam/Noor`, `Daan/Lotte`; ratios `a : b` and `c : d`
+  with terms in `[1, 6]` and `a ≠ c`. The common apples `A` is a multiple of `a` and `c`, at
+  most 12; both pear counts are integers, at most 30. In 80% both ratios are simplified and
+  the pear counts differ; in 20% the second ratio is the first times 2 or 3, not simplified
+  (`1 : 2` and `3 : 6`), so the pear counts are equal. Options in this order: the first name,
+  the second name,
+  `evenveel`, `niet te zeggen`.
+- **Offer:** four offers `k voor € x` with distinct `k ∈ {2, 3, 4, 5, 6, 10}`, the price per item
+  a multiple of 5 cents in `[€ 0,40; € 3]`, all four different by at least 5 cents and
+  `x = k × price`; exactly one is the cheapest. Products: `pakken sap`, `bekers yoghurt`,
+  `rollen koekjes`. Options in random order.
+- **Relative:** two groups with wholes from `{20, 24, 25, 30, 40, 50, 60, 80, 100}` and parts
+  whose share is a whole percentage. In 70% the group with the larger share has the smaller
+  part (the absolute trap); in 15% the shares are equal. Contexts: `klas` (ziek), `club`
+  (leden die meedoen), `vakantiepark` (huisjes bezet). Options: `klas A`, `klas B`, `evenveel`,
+  `niet te zeggen` (with the context's own nouns).
+- Explanations: `Jack: 3 appels → 6 peren, Jasmijn: 3 appels → 4 peren → Jack`; per item
+  `€ 0,80 – € 0,75 – … → 5 voor € 3,75`; `6/24 = 25%, 8/40 = 20% → klas A`.
+
+### 5.58 Ratio reasoning (`ratioReasoning`)
+
+Verdieping (RWT B.5, B.9). Label: `Redeneren met verhoudingen (verschil, herschalen,
+aanvullen)`. There are three forms, each picked with equal probability:
+
+| Form       | Example                                                                                                           | Answer | Suffix     |
+|------------|-------------------------------------------------------------------------------------------------------------------|--------|------------|
+| Difference | `Anna en Bas verdelen geld in de verhouding 3 : 5. Bas krijgt € 12 meer dan Anna. Hoeveel krijgt Anna?`            | 18     | `€` prefix |
+| Rescale    | `Voor 4 personen heb je 300 g pasta nodig. Hoeveel kg is dat voor 30 personen?`                                   | 2,25   | `kg`       |
+| Top up     | `In een zak zitten 30 knikkers, rood : blauw = 2 : 3. Hoeveel rode knikkers moet je erbij doen om 1 : 1 te krijgen?` | 6   | `knikkers` |
+
+- **Difference:** a simplified ratio `a : b`, `a < b`, terms in `[1, 9]`; one part `u ∈ [2, 50]`;
+  the prompt gives the difference `(b − a) × u` and asks for the smaller share, the larger share
+  or the total (each equally likely). Contexts: `geld` (€), `knikkers`, `stickers`.
+- **Rescale:** like the scaling form of §5.13 with the answer in the larger unit: pasta `g → kg`
+  (50–150 g per person), melk `ml → L` (50–250 ml per person). The first count is in `[2, 8]`,
+  the second a multiple of 5 in `[10, 60]`; the answer has at most 2 decimals.
+- **Top up:** a start ratio `a : b` (simplified, terms in `[1, 5]`), the total `(a + b) × u` at
+  most 60; a target ratio `c : d` from `{1 : 1, 2 : 1, 1 : 2, 3 : 2, 2 : 3, 3 : 1, 1 : 3}` that
+  is reached by adding only the asked colour (an integer count of at least 1). Contexts:
+  `knikkers` (rood : blauw), `kralen` (wit : zwart).
+- Explanations: `5 − 3 = 2 delen = € 12 → 1 deel = € 6 → Anna = 3 × 6 = 18`;
+  `4 → 300 g, 2 → 150 g, 30 → 2250 g = 2,25 kg`; `rood 12, blauw 18 → 1 : 1 → rood 18 → 18 −
+  12 = 6 erbij`.
+
+### Getallen & delers v3 (§5.59–§5.62)
+
+Getallen & delers has no RWT gaps (§12.3); its v3 step is a Verdieping at LKT level with four
+topics (§4.1). The card description stays.
+
+### 5.59 LCM and GCD in context (`lcmGcdProblems`)
+
+Verdieping. Label: `KGV en GGD in context (samen vertrekken, gelijke stukken)`. LCM and GCD
+each 50%, three contexts each, each equally likely:
+
+| Kind | Context | Example                                                                                                               | Suffix      |
+|------|---------|-----------------------------------------------------------------------------------------------------------------------|-------------|
+| KGV  | bus     | `Bus A vertrekt elke 12 minuten, bus B elke 18 minuten. Om 8:00 vertrekken ze samen. Na hoeveel minuten weer?`        | `min`       |
+| KGV  | lampen  | `Lamp A knippert elke 4 seconden, lamp B elke 6 seconden. Ze knipperen nu samen. Na hoeveel seconden weer?`           | `s`         |
+| KGV  | groepjes | `Een klas kan in groepjes van 4 en in groepjes van 6, zonder dat er iemand overblijft. Hoeveel kinderen zijn er minstens?` | `kinderen` |
+| GGD  | planken | `Een plank van 84 cm en een van 126 cm zaag je in zo lang mogelijke gelijke stukken, zonder afval. Hoe lang is een stuk?` | `cm`     |
+| GGD  | fruit   | `Je hebt 24 appels en 36 peren en maakt zoveel mogelijk gelijke fruitschalen zonder over te houden. Hoeveel schalen?`  | `schalen`   |
+| GGD  | tegels  | `Een vloer van 360 cm bij 480 cm leg je vol met zo groot mogelijke vierkante tegels. Hoe lang is een zijde?`         | `cm`        |
+
+- KGV: `a ≠ b ∈ [4, 30]`, `lcm ≤ 120` (groepjes `[2, 12]`, `lcm ≤ 60`; in 30% three sizes), and
+  in 75% `gcd(a, b) > 1`, as §5.2.
+- GGD: as §5.3 without coprime pairs and with `p, q ≥ 2`; planken `a, b ≤ 200`, fruit
+  `a, b ≤ 100`, tegels `a, b` multiples of 10 in `[100, 900]` with `g ≥ 20`.
+- Explanation: the concept, then the §5.2/§5.3 explanation: `Weer samen = KGV. 12 = 2² × 3 en
+  18 = 2 × 3² → KGV = 2² × 3² = 36`, `Zo lang mogelijk = GGD. 84 = 2² × 3 × 7 en 126 = 2 × 3² × 7
+  → GGD = 2 × 3 × 7 = 42`.
+
+### 5.60 Divisors (`divisors`)
+
+Verdieping. Label: `Delers (aantal delers, drie getallen, uit ontbinding)`. There are three forms,
+each picked with equal probability:
+
+| Form                  | Example                                                    | Answer |
+|-----------------------|------------------------------------------------------------|--------|
+| Number of divisors    | `Hoeveel delers heeft 36?`                                 | 9      |
+| Three numbers         | `KGV van 4, 6 en 10 = ?`, `GGD van 24, 36 en 60 = ?`        | 60, 12 |
+| From a factorization  | `a = 2² × 3 × 5 en b = 2 × 3² × 7. GGD van a en b = ?`      | 6      |
+
+- **Number of divisors:** composite `n ∈ [12, 120]` with 4 to 12 divisors (1 and `n` count).
+- **Three numbers:** KGV or GGD, 50/50. KGV: distinct `a, b, c ∈ [2, 20]`, none a divisor of
+  another, `lcm ≤ 360`. GGD: `g ∈ [2, 25]` and `g × p₁, g × p₂, g × p₃` with distinct `pᵢ ≥ 2`,
+  `gcd(p₁, p₂, p₃) = 1`, all at most 200.
+- **From a factorization:** `a` and `b` are products of primes from `{2, 3, 5, 7}` with
+  exponents at most 3, each at most 1000, written as in §5.5; KGV (at most 2000) or GGD (at
+  least 2), 50/50.
+- Explanations: the divisor pairs, `1 × 36, 2 × 18, 3 × 12, 4 × 9, 6 × 6 → 9 delers`; three
+  numbers as §5.2/§5.3 with three factorizations; from a factorization
+  `gemeenschappelijk: 2 × 3 → GGD = 6`, `hoogste machten: 2² × 3² × 5 × 7 → KGV = 1260`.
+
+### 5.61 Missing digit (`missingDigit`)
+
+Verdieping. Label: `Ontbrekend cijfer en deelbaarheid`. There are two forms, each picked with
+equal probability:
+
+| Form             | Example                                                                 | Answer |
+|------------------|-------------------------------------------------------------------------|--------|
+| Missing digit    | `3?72 is deelbaar door 9. Welk cijfer staat op de lege plek?`            | 6      |
+| Smallest/largest | `Wat is het kleinste getal van vier cijfers dat deelbaar is door 6?`     | 1002   |
+
+- **Missing digit:** the `?` is the slot (`SLOT`, never a literal `?`). Divisors
+  `{3, 4, 6, 8, 9, 11, 12}`; the number has 3 to 5 digits and the slot is never its first digit.
+  When more than one digit fits, the prompt ends `Geef het kleinste.` (or `het grootste`,
+  50/50) and that digit is the answer.
+- **Smallest/largest:** `kleinste getal van n cijfers`, `grootste getal van n cijfers` or
+  `kleinste getal boven m`, each equally likely; `n ∈ {3, 4}`, `m` a multiple of 100 in
+  `[200, 900]`, divisors `{3, 4, 6, 7, 8, 9, 11, 12, 13, 15}`.
+- Explanations: the rule of §5.6 with the digit filled in: `Cijfersom 3 + 7 + 2 = 12 →
+  12 + 6 = 18 is deelbaar door 9 → 6`; `1000 : 6 = 166 rest 4 → 1000 + 2 = 1002`,
+  `9999 : 7 = 1428 rest 3 → 9999 − 3 = 9996`.
+
+### 5.62 Remainders (`remainders`)
+
+Verdieping. Label: `Restpuzzels (delen met rest en KGV)`. There are three forms, each picked with
+equal probability:
+
+| Form               | Example                                                                                                        | Answer |
+|--------------------|----------------------------------------------------------------------------------------------------------------|--------|
+| Same remainder     | `Een getal tussen 50 en 100 geeft bij delen door 2, 3, 4 en 5 steeds rest 1. Welk getal is het?`                | 61     |
+| Groups             | `Bij groepjes van 4 blijft er 1 kind over, bij groepjes van 5 ook. Er zijn tussen de 20 en 30 kinderen. Hoeveel?` | 21   |
+| Two remainders     | `Wat is het kleinste getal dat bij delen door 4 rest 2 geeft en bij delen door 3 rest 1?`                      | 10     |
+
+- **Same remainder:** divisor sets with `L = lcm ≤ 60`: `{2, 3}`, `{3, 4}`, `{4, 6}`, `{2, 5}`,
+  `{3, 5}`, `{4, 5}`, `{2, 3, 4}`, `{2, 3, 5}`, `{2, 3, 4, 5}`, `{3, 4, 5}`; remainder `r ∈ [1,
+  min − 1]`; bounds multiples of 10 at most 200 that contain exactly one `k × L + r`, `k ≥ 1`.
+- **Groups:** two group sizes from `[3, 8]`, `lcm ≤ 40`, the same remainder `r ≥ 1`, bounds as
+  above; context `kinderen`.
+- **Two remainders:** coprime `m₁, m₂ ∈ [3, 9]`, `r₁ ∈ [1, m₁ − 1]`, `r₂ ∈ [1, m₂ − 1]`, answer
+  the smallest positive solution, at most 60.
+- Explanations: `KGV van 2, 3, 4 en 5 = 60 → 60 + 1 = 61`; `KGV van 4 en 5 = 20 → 20 + 1 = 21`;
+  `rest 2 bij 4: 2, 6, 10 → 10 : 3 = 3 rest 1 → 10`.
+
+### Bewerkingen v3 (§5.63–§5.66)
+
+Bewerkingen has no RWT gaps (§12.3); its v3 step is a Verdieping (RWT A.4c, LKT properties and
+inverse relations) with four topics (§4.1). The card description stays.
+
+### 5.63 Bracket placement (`bracketPlacement`)
+
+Verdieping. Label: `Haakjes plaatsen (zodat de uitkomst klopt)`. Prompt:
+`Zet haakjes zodat het klopt: 3 + 4 × 5 − 2 = 33`. The user types the whole left side with
+parentheses on the expression keypad (§6).
+
+- Templates: 3 or 4 integers in `[1, 12]` with 2 or 3 operators from `+ − × :`, at least one
+  `×` or `:`. One pair of parentheses around two or more numbers gives the target; without
+  parentheses the value differs from the target. Every division is exact, also in the
+  parenthesized version; the target is an integer in `[0, 200]`.
+- Check (`bracketCheck`): the input parses (§7); its numbers and operators, read without
+  parentheses, are the prompt's in the same order; its value equals the target. Any placement
+  that does this is correct, also more than one pair. Otherwise:
+  - other numbers or operators: `Gebruik dezelfde getallen en bewerkingen in dezelfde volgorde.`
+  - another value: the evaluation of the input as §5.8, ending in `≠ 33`.
+  - Invalid input gives "Ongeldige som" (§6) and does not count.
+- Expected answer: the generated placement. Explanation: its evaluation as §5.8,
+  `(3 + 4) × 5 − 2 = 7 × 5 − 2 = 35 − 2 = 33`.
+- The de-duplication key is the expression without parentheses and the target.
+
+### 5.64 Derived facts (`derivedFacts`)
+
+Verdieping (LKT inverse relations). Label: `Afleiden (uit een gegeven som)`. Prompt:
+`37 × 24 = 888. Hoeveel is 37 × 25?`. The given fact is `a × b` with `a ∈ [13, 99]`,
+`b ∈ [12, 49]`, neither a multiple of 10, the product at most 5000. Four derivations, each
+equally likely:
+
+| Derivation      | Asked                                     | Explanation                                    |
+|-----------------|-------------------------------------------|------------------------------------------------|
+| One more / less | `37 × 25`, `37 × 23`, `38 × 24`           | `37 × 25 = 37 × 24 + 37 = 888 + 37 = 925`       |
+| Inverse         | `888 : 24`, `888 : 37`                    | `888 : 24 = 37, want 37 × 24 = 888`             |
+| Double / halve  | `74 × 24`, `37 × 12` (`b` even), `74 × 12` | `74 × 12 = 37 × 2 × 24 : 2 = 888`              |
+| Factor of ten   | `370 × 24`, `3,7 × 24`, `8880 : 24`        | `3,7 × 24 = 888 : 10 = 88,8`                   |
+
+- The answer has at most 2 decimals; each variant within a derivation is equally likely.
+
+### 5.65 Multi-step problems (`multiStepProblems`)
+
+Verdieping (RWT A.4a–c). Label: `Meerstapsopgaven (contexten, delen met rest)`. There are three
+forms, each picked with equal probability:
+
+| Form       | Example                                                                                                   | Answer | Suffix     |
+|------------|-----------------------------------------------------------------------------------------------------------|--------|------------|
+| Operations | `Een school bestelt 28 dozen met elk 24 schriften en verdeelt ze eerlijk over 16 klassen. Hoeveel schriften krijgt elke klas?` | 42 | `schriften` |
+| Round up   | `59 kinderen gaan met busjes van 8 plaatsen. Hoeveel busjes zijn er nodig?`                                | 8      | `busjes`   |
+| Round down | `Je hebt € 50 en een kaartje kost € 7. Hoeveel kaartjes kun je kopen?`                                      | 7      | `kaartjes` |
+
+- **Operations**, three contexts, each equally likely; every intermediate result is an integer
+  (money: at most 2 decimals):
+  - `schriften`: `d × s : k`, `d ∈ [5, 40]`, `s ∈ {12, 16, 20, 24, 25, 30}`, `k ∈ [4, 30]`,
+    answer at least 5
+  - `wisselgeld`: `a` kaartjes van `€ p` en `b` van `€ q`, betalen met `€ B`; `a, b ∈ [2, 6]`,
+    `p, q` whole or half euros in `[3, 25]`, `B ∈ {50, 100, 200}` above the total (`€` prefix)
+  - `schoolreis`: a bus of `€ B` shared by `n` children plus `€ e` entree each, per child;
+    `B ∈ {300, 400, 450, 500, 600, 750}`, `n ∈ [20, 60]` with `B : n` whole, `e ∈ [3, 15]`
+    (`€` prefix)
+- **Round up / round down:** dividend in `[20, 500]`, divisor in `[3, 15]`, remainder not 0.
+  Round up contexts: `busjes` (plaatsen), `dozen` (eieren, 6, 10 or 12 per doos), `tafels`
+  (stoelen). Round down: `kaartjes` (€), `zakjes` (snoepjes per zakje, `volle zakjes`),
+  `stukken` (cm uit een plank).
+- Explanations: `28 × 24 = 672 → 672 : 16 = 42`; `59 : 8 = 7 rest 3 → 8 busjes`;
+  `50 : 7 = 7 rest 1 → 7 kaartjes`.
+
+### 5.66 Smart calculation, deeper (`smartCalculationDeep`)
+
+Verdieping. Label: `Handig rekenen+ (buiten haakjes, kommagetallen)`. Four strategies, each
+equally likely:
+
+| Strategy          | Example                          | Explanation shown                         |
+|-------------------|----------------------------------|-------------------------------------------|
+| Factor out        | `99 × 47 + 47`, `47 × 63 + 47 × 37` | `100 × 47 = 4700`, `47 × 100 = 4700`     |
+| Decimal factor    | `0,25 × 128`, `2,5 × 4,8`, `1,25 × 24` | `128 : 4 = 32`, `10 × 4,8 : 4 = 12`, `10 × 24 : 8 = 30` |
+| Divide by a decimal | `37 : 0,5`, `14 : 0,25`, `9 : 0,2` | `37 × 2 = 74`, `14 × 4 = 56`, `9 × 5 = 45` |
+| Money compensation | `€ 7,99 + € 2,98`, `€ 20 − € 4,95` | `8 + 3 − 0,03 = 10,97`, `20 − 5 + 0,05 = 15,05` |
+
+- **Factor out:** `a × n ± a` with `n ∈ {9, 11, 99, 101, 999}` (the sign makes `n ± 1` round),
+  or `a × b + a × c` with `b + c ∈ {100, 1000}`; `a ∈ [13, 99]`, not a multiple of 10; the order
+  of the terms and factors random.
+- **Decimal factor:** `0,25 × 4k` (`k ∈ [3, 50]`), `2,5 × b` with `b` a multiple of 0,4 in
+  `[1,2; 12]` and 1 decimal, `1,25 × 8k` (`k ∈ [2, 12]`); the factors in random order.
+- **Divide by a decimal:** `a : 0,5` (`a ∈ [11, 99]`), `a : 0,25` (`a ∈ [3, 30]`),
+  `a : 0,2` (`a ∈ [3, 50]`).
+- **Money compensation:** amounts ending in `,99`, `,98` or `,95` in `[1, 50]`; sum of two such
+  amounts, or a whole amount in `{10, 20, 50, 100}` minus one; `€` prefix, answer money.
+- The de-duplication key is the sum, factors of a product in ascending order.
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -2831,7 +3191,16 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-None at the moment.
+v3 of Verhoudingen, Getallen & delers and Bewerkingen (§5.53–§5.66), proposed 2026-11-01:
+
+- `proportionConcepts` (§5.54) has two forms only (absolute/relative, `1 op de n`); other B.1
+  concepts (gelijkwaardig, samengestelde breuk) stay with Breuken & kommagetallen.
+- `enlargement` (§5.56) asks one dimension; the area effect stays with Meetkunde (C.13).
+- `compareRatios` (§5.57) keeps `niet te zeggen` as an option that is never correct.
+- `bracketPlacement` (§5.63) accepts any placement that gives the target, also more than one
+  pair of parentheses.
+- `derivedFacts` (§5.64) and `smartCalculationDeep` (§5.66) use number steps; the explanation
+  shows the derivation, the user only gives the result.
 
 ## 12. Roadmap (not in v1)
 
@@ -2950,7 +3319,8 @@ Built in steps, each its own session and only when the user says so:
 4. **Per set** — one set at a time: a spec iteration (topics, ranges, tips, quota examples), a
    light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
    The step also closes the set's RWT gaps (§12.3), at both levels. No fixed order: the user
-   picks the next set. Done: Meten (§5.45–§5.52).
+   picks the next set. Done: Meten (§5.45–§5.52). Specified, built together: Verhoudingen
+   (§5.53–§5.58), Getallen & delers (§5.59–§5.62) and Bewerkingen (§5.63–§5.66).
 
 The lesstof (lesstof spec) is not split by level.
 
@@ -2989,7 +3359,7 @@ follow separately (lesstof spec §2).
   - A.3: ordering positive and negative numbers, and estimating. MC.
   - A.2: the words of arithmetic (som, verschil, bijna, ruim). MC.
   - A.4b: shortages with money (`€ 462 te kort`, `in het rood`). Verdieping.
-- **Verhoudingen**
+- **Verhoudingen** — specified in §5.53–§5.58
   - B.1, B.7: promille, missing everywhere. Opfrisser and Verdieping.
   - B.10: enlarging and reducing with percentages (a copier at 125%). Verdieping.
   - B.4: comparing ratios (`appels : peren = 1 : 2` against `3 : 4`). Verdieping.
