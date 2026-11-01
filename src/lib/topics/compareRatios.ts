@@ -1,4 +1,4 @@
-import { formatEuro } from '../format';
+import { capitalize, formatEuro } from '../format';
 import { gcd, lcm } from '../primes';
 import { drawUntil, pick, randomInt, range, shuffle, type Rng } from '../random';
 import { rational } from '../rational';
@@ -102,8 +102,6 @@ export const RELATIVE_CONTEXTS: Readonly<Record<string, RelativeContext>> = {
   },
 };
 
-const capitalised = (text: string) => text[0]!.toUpperCase() + text.slice(1);
-
 export const RELATIVE_WHOLES = [20, 24, 25, 30, 40, 50, 60, 80, 100] as const;
 
 export interface Group {
@@ -126,7 +124,7 @@ export function relativeQuestion(context: string, a: Group, b: Group): Question 
     topic: 'compareRatios',
     steps: [
       choiceStep({
-        prompt: `${capitalised(labelA)}: ${statement(a.part, a.whole)} ${capitalised(labelB)}: ${b.part} van de ${b.whole}. ${question}`,
+        prompt: `${capitalize(labelA)}: ${statement(a.part, a.whole)} ${capitalize(labelB)}: ${b.part} van de ${b.whole}. ${question}`,
         options: [labelA, labelB, EVEN, UNKNOWN],
         answer,
         explanation: `${a.part}/${a.whole} = ${shareA}%, ${b.part}/${b.whole} = ${shareB}% → ${answer}`,
