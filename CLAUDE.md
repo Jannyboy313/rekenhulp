@@ -34,18 +34,24 @@ Done: the sets Tafels, Meten (v1 + v2: `speed` + v3: Opfrisser `calendar`, `data
 `percentProblems`, `enlargement`, `compareRatios`, `ratioReasoning`), Getallen & delers (v3
 Verdieping: `lcmGcdProblems`, `divisors`, `missingDigit`, `remainders`), Bewerkingen (v3
 Verdieping: `bracketPlacement`, `derivedFacts`, `multiStepProblems`, `smartCalculationDeep`),
-Getalbegrip,
-Breuken & kommagetallen, Meetkunde (`perimeterArea`, `solids`, `pythagoras`, `angles`,
-`symmetry`, `shapeProperties`) and Verbanden & statistiek (`statistics`, `percentagePoints`,
+Getalbegrip (v3: Opfrisser `numberOrder`, `arithmeticWords` and Verdieping
+`negativeContexts`, `roundingReasoning`, `estimateCalc`, `powerCalc`), Breuken & kommagetallen
+(v3: Opfrisser `decimalNames`, `compareFractions`, `fractionConcepts` and Verdieping
+`mixedNotation`, `fractionProblems`, `decimalProblems`, `betweenNumbers`), Meetkunde
+(`perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties` + v3:
+Opfrisser `solidNames` and Verdieping `scalingSolids`, `surfaceArea`, `compositeShapes`,
+`angleReasoning`) and Verbanden & statistiek (`statistics`, `percentagePoints`,
 `sequences`, `formulas`, `equations`, `probability`), Talstelsels (`numberSystems`,
 `romanNumerals`) and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`,
 `simplifyProblem`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
-(§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; Meten, Verhoudingen, Getallen & delers and Bewerkingen have a Verdieping, the
+(§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; every set except Tafels, Verbanden & statistiek, Talstelsels and Heuristieken has a Verdieping, the
 fixture set `lib/setFixture.ts` still tests the framework), and the multiple-choice framework
 (§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
-`measureSense`, `timeCalc`, `estimating`, `proportionConcepts` and `compareRatios`).
+`measureSense`, `timeCalc`, `estimating`, `proportionConcepts`, `compareRatios`,
+`numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
+`fractionConcepts` and `solidNames`).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The

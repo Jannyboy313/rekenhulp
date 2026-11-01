@@ -3800,7 +3800,9 @@ Built in steps, each its own session and only when the user says so:
    light plan, then the implementation. Enabling a set's Verdieping is adding its `deep` config.
    The step also closes the set's RWT gaps (§12.3), at both levels. No fixed order: the user
    picks the next set. Done: Meten (§5.45–§5.52), and, built together, Verhoudingen
-   (§5.53–§5.58), Getallen & delers (§5.59–§5.62) and Bewerkingen (§5.63–§5.66).
+   (§5.53–§5.58), Getallen & delers (§5.59–§5.62) and Bewerkingen (§5.63–§5.66), and, built
+   together, Getalbegrip (§5.67–§5.72), Breuken & kommagetallen (§5.73–§5.79) and Meetkunde
+   (§5.80–§5.84).
 
 The lesstof (lesstof spec) is not split by level.
 
