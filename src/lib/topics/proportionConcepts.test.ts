@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createRng } from '../random';
+import { createRng, range } from '../random';
 import { hasSlot } from '../slot';
 import type { Question } from '../types';
 import {
@@ -136,6 +136,11 @@ describe('generateProportionConcepts', () => {
         if (percent) expect([5, 10, 20, 25]).toContain(Number(percent));
       }
     }
+  });
+
+  it('draws the current population of the dorp from 2000 to 9000 in steps of 100', () => {
+    const population = CONTEXTS.dorp!.absolute.find(({ template }) => template.includes('nu'))!;
+    expect(population.values).toEqual(range(20, 90).map((hundreds) => hundreds * 100));
   });
 
   it('has a stable key and no slot in its prompts', () => {

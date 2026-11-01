@@ -10,6 +10,7 @@ export interface Statement {
 }
 
 const COUNTS = range(2, 9).map((tens) => tens * 10);
+const POPULATIONS = range(20, 90).map((hundreds) => hundreds * 100);
 const PERCENTAGES = [5, 10, 20, 25];
 const N_VALUES = [2, 3, 4, 5, 10];
 
@@ -29,7 +30,7 @@ export const CONTEXTS: Readonly<Record<string, Context>> = {
   dorp: {
     absolute: [
       count('Er wonen {} mensen meer.'),
-      count('Er wonen nu {} mensen.'),
+      { template: 'Er wonen nu {} mensen.', values: POPULATIONS },
       count('Er zijn {} nieuwe huizen.'),
     ],
     relative: [
