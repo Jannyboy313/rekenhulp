@@ -85,6 +85,12 @@ export const OPERATIONS_SET: PracticeSet = {
     { topic: 'smartCalculation', weight: 2 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'bracketPlacement', weight: 1 },
+    { topic: 'derivedFacts', weight: 1 },
+    { topic: 'multiStepProblems', weight: 1 },
+    { topic: 'smartCalculationDeep', weight: 1 },
+  ],
 };
 
 export const NUMBER_SENSE_SET: PracticeSet = {

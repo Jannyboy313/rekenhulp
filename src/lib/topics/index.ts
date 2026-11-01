@@ -1,10 +1,12 @@
 import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
+import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
+import { generateDerivedFacts } from './derivedFacts';
 import { generateDivisibility } from './divisibility';
 import { generateDivisors } from './divisors';
 import { generateEquations } from './equations';
@@ -24,6 +26,7 @@ import {
   generateVolume,
 } from './measurement';
 import { generateMentalOperations } from './mentalOperations';
+import { generateMultiStepProblems } from './multiStepProblems';
 import { generateNegativeNumbers } from './negativeNumbers';
 import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
@@ -48,6 +51,7 @@ import { generateSequences } from './sequences';
 import { generateShapeProperties } from './shapeProperties';
 import { generateSimplifyProblem } from './simplifyProblem';
 import { generateSmartCalculation } from './smartCalculation';
+import { generateSmartCalculationDeep } from './smartCalculationDeep';
 import { generateSolids } from './solids';
 import { generateSpeed } from './speed';
 import { generateSquares } from './squares';
@@ -94,6 +98,10 @@ export const GENERATORS: Record<Topic, Generator> = {
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
+  bracketPlacement: generateBracketPlacement,
+  derivedFacts: generateDerivedFacts,
+  multiStepProblems: generateMultiStepProblems,
+  smartCalculationDeep: generateSmartCalculationDeep,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
   rounding: generateRounding,
@@ -158,6 +166,10 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
+  bracketPlacement: 'Haakjes plaatsen (zodat de uitkomst klopt)',
+  derivedFacts: 'Afleiden (uit een gegeven som)',
+  multiStepProblems: 'Meerstapsopgaven (contexten, delen met rest)',
+  smartCalculationDeep: 'Handig rekenen+ (buiten haakjes, kommagetallen)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
