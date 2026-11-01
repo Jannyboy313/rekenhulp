@@ -45,6 +45,7 @@ export type Topic =
   | 'smartCalculation'
   | 'properties'
   | 'bracketPlacement'
+  | 'derivedFacts'
   | 'mentalOperations'
   | 'negativeNumbers'
   | 'rounding'

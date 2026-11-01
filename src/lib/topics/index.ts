@@ -6,6 +6,7 @@ import { generateClock } from './clock';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
+import { generateDerivedFacts } from './derivedFacts';
 import { generateDivisibility } from './divisibility';
 import { generateEquations } from './equations';
 import { generateEstimating } from './estimating';
@@ -88,6 +89,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
   bracketPlacement: generateBracketPlacement,
+  derivedFacts: generateDerivedFacts,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
   rounding: generateRounding,
@@ -149,6 +151,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
   bracketPlacement: 'Haakjes plaatsen (zodat de uitkomst klopt)',
+  derivedFacts: 'Afleiden (uit een gegeven som)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
