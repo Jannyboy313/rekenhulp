@@ -42,7 +42,7 @@ export const MEASUREMENT_SET: PracticeSet = {
 export const PROPORTIONS_SET: PracticeSet = {
   id: 'verhoudingen',
   name: 'Verhoudingen',
-  description: 'Procenten, verhoudingen en schaal',
+  description: 'Procenten, promille, verhoudingen en schaal',
   topics: [
     { topic: 'percentages', weight: 1 },
     { topic: 'ratios', weight: 1 },
@@ -53,6 +53,12 @@ export const PROPORTIONS_SET: PracticeSet = {
     { topic: 'proportionConcepts', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'percentProblems', weight: 1 },
+    { topic: 'enlargement', weight: 1 },
+    { topic: 'compareRatios', weight: 1 },
+    { topic: 'ratioReasoning', weight: 1 },
+  ],
 };
 
 export const NUMBERS_SET: PracticeSet = {

@@ -160,7 +160,7 @@ describe('practice sets', () => {
 
   it('makes Verhoudingen five equally weighted topics with 15% tables', () => {
     expect(PROPORTIONS_SET.name).toBe('Verhoudingen');
-    expect(PROPORTIONS_SET.description).toBe('Procenten, verhoudingen en schaal');
+    expect(PROPORTIONS_SET.description).toBe('Procenten, promille, verhoudingen en schaal');
     expect(PROPORTIONS_SET.tablesPercent).toBe(15);
     expect(PROPORTIONS_SET.topics).toEqual([
       { topic: 'percentages', weight: 1 },
@@ -388,9 +388,37 @@ describe('Heuristieken set', () => {
 });
 
 describe('levels', () => {
-  it('gives Meten the only real Verdieping so far (spec §12.2 step 4)', () => {
-    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([MEASUREMENT_SET]);
+  it('gives Meten and Verhoudingen a real Verdieping so far (spec §12.2 step 4)', () => {
+    expect(PRACTICE_SETS.filter(hasDeep)).toEqual([MEASUREMENT_SET, PROPORTIONS_SET]);
     expect(hasDeep(MEASUREMENT_SET)).toBe(true);
+    expect(hasDeep(PROPORTIONS_SET)).toBe(true);
+  });
+
+  it('lists the four Verhoudingen Verdieping topics and the Opfrisser share, without a tables row', () => {
+    const names = (size: number) =>
+      describeSetTopicRows(forLevel(PROPORTIONS_SET, 'deep'), size).map((row) => row.name);
+    const topics = [
+      'Procentenproblemen',
+      'Vergroten en verkleinen',
+      'Verhoudingen vergelijken',
+      'Redeneren met verhoudingen',
+    ];
+    expect(names(15)).toEqual([...topics, '20% opfrisser']);
+    expect(names(5)).toEqual(topics);
+    expect(PROPORTIONS_SET.deep).toEqual([
+      { topic: 'percentProblems', weight: 1 },
+      { topic: 'enlargement', weight: 1 },
+      { topic: 'compareRatios', weight: 1 },
+      { topic: 'ratioReasoning', weight: 1 },
+    ]);
+  });
+
+  it('keeps the seven Opfrisser topics of Verhoudingen and its tables share at Opfrisser level', () => {
+    expect(forLevel(PROPORTIONS_SET, 'quick')).toBe(PROPORTIONS_SET);
+    const deep = forLevel(PROPORTIONS_SET, 'deep');
+    expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: PROPORTIONS_SET.topics });
+    expect(PROPORTIONS_SET.topics).toHaveLength(7);
   });
 
   it('lists the four Meten Verdieping topics and the Opfrisser share, without a tables row', () => {
