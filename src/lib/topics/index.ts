@@ -23,6 +23,7 @@ import { generateLcmGcdProblems } from './lcmGcdProblems';
 import { generateMeasureProblems } from './measureProblems';
 import { generateMeasureSense } from './measureSense';
 import { generateMissingDigit } from './missingDigit';
+import { generateMixedNotation } from './mixedNotation';
 import {
   generateArea,
   generateLength,
@@ -129,6 +130,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   decimalNames: generateDecimalNames,
   compareFractions: generateCompareFractions,
   fractionConcepts: generateFractionConcepts,
+  mixedNotation: generateMixedNotation,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
@@ -206,6 +208,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   decimalNames: 'Kommagetallen in woorden (tiende t/m miljardste)',
   compareFractions: 'Vergelijken (breuken en kommagetallen)',
   fractionConcepts: 'Breukbegrippen (teller, stambreuk, gelijkwaardig)',
+  mixedNotation: 'Gemengd rekenen (breuk, kommagetal, procent)',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
