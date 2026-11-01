@@ -13,6 +13,7 @@ import { generateDivisibility } from './divisibility';
 import { generateDivisors } from './divisors';
 import { generateEnlargement } from './enlargement';
 import { generateEquations } from './equations';
+import { generateEstimateCalc } from './estimateCalc';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
@@ -124,6 +125,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   arithmeticWords: generateArithmeticWords,
   negativeContexts: generateNegativeContexts,
   roundingReasoning: generateRoundingReasoning,
+  estimateCalc: generateEstimateCalc,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
@@ -202,6 +204,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   arithmeticWords: 'Rekentaal (som, verschil, product, bijna, ruim)',
   negativeContexts: 'Negatief in context (rood staan, tekort, NAP)',
   roundingReasoning: 'Afronden redeneren (grenzen, contant betalen)',
+  estimateCalc: 'Schatten (uitkomst ongeveer)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',

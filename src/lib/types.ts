@@ -64,6 +64,7 @@ export type Topic =
   | 'arithmeticWords'
   | 'negativeContexts'
   | 'roundingReasoning'
+  | 'estimateCalc'
   | 'rounding'
   | 'powersRoots'
   | 'scientificNotation'
