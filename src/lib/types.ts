@@ -37,6 +37,7 @@ export type Topic =
   | 'ratioProblems'
   | 'permille'
   | 'proportionConcepts'
+  | 'percentProblems'
   | 'lcm'
   | 'gcd'
   | 'prime'

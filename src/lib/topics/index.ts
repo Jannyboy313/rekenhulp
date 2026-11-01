@@ -26,10 +26,11 @@ import { generateNumberUnits } from './numberUnits';
 import { generateFactorization, generateGcd, generateLcm, generatePrime } from './numberTheory';
 import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
-import { generatePermille } from './permille';
-import { generateProportionConcepts } from './proportionConcepts';
 import { generatePercentagePoints } from './percentagePoints';
 import { generatePercentChange } from './percentChange';
+import { generatePercentProblems } from './percentProblems';
+import { generatePermille } from './permille';
+import { generateProportionConcepts } from './proportionConcepts';
 import { generatePerimeterArea } from './perimeterArea';
 import { generatePowersRoots } from './powersRoots';
 import { generateProbability } from './probability';
@@ -81,6 +82,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   ratioProblems: generateRatioProblems,
   permille: generatePermille,
   proportionConcepts: generateProportionConcepts,
+  percentProblems: generatePercentProblems,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -143,6 +145,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   ratioProblems: 'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
   permille: 'Promille (‰ van, ‰ ↔ % ↔ kommagetal)',
   proportionConcepts: 'Begrippen (absoluut, relatief, 1 op de n)',
+  percentProblems: 'Procentenproblemen (stapelkorting, extra inhoud, promille)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
