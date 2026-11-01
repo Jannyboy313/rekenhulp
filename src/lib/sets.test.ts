@@ -392,7 +392,12 @@ describe('levels', () => {
   it('lists the four Meten Verdieping topics and the Opfrisser share, without a tables row', () => {
     const names = (size: number) =>
       describeSetTopicRows(forLevel(MEASUREMENT_SET, 'deep'), size).map((row) => row.name);
-    const topics = ['Samengestelde grootheden', 'Rekenen met maten', 'Rekenen met tijd', 'Schatten'];
+    const topics = [
+      'Samengestelde grootheden',
+      'Rekenen met maten',
+      'Rekenen met tijd',
+      'Schatten',
+    ];
     expect(names(15)).toEqual([...topics, '20% opfrisser']);
     expect(names(5)).toEqual(topics);
     expect(MEASUREMENT_SET.deep).toEqual([

@@ -61,11 +61,11 @@ props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.s
 Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The user picks the
 next v3 step. There is no v4.
 
-| Step                                                                                                       | New infrastructure                   |
-| ---------------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.5), the user picks the order; not Tafels            | —                                    |
-| v3: mixed categories (§12.3), form decided in its spec iteration                                           | sessions across sets                 |
-| v3: practice test (§12.4), after mixed categories                                                          | test session                         |
+| Step                                                                                            | New infrastructure   |
+| ----------------------------------------------------------------------------------------------- | -------------------- |
+| v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.5), the user picks the order; not Tafels | —                    |
+| v3: mixed categories (§12.3), form decided in its spec iteration                                | sessions across sets |
+| v3: practice test (§12.4), after mixed categories                                               | test session         |
 
 Between versions: check the sets against the toetsmatrijs (§12.6).
 

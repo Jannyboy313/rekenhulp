@@ -34,7 +34,9 @@ describe('UpdateDialog', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Installeren' }));
     const busy = screen.getByRole('button', { name: 'Installeren…' }) as HTMLButtonElement;
     expect(busy.disabled).toBe(true);
-    expect((screen.getByRole('button', { name: 'Later' }) as HTMLButtonElement).disabled).toBe(true);
+    expect((screen.getByRole('button', { name: 'Later' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
     expect(screen.getByRole('dialog').getAttribute('aria-busy')).toBe('true');
     await fireEvent.click(busy);
     await fireEvent.keyDown(window, { key: 'Escape' });

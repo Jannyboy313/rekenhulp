@@ -32,7 +32,8 @@
     <div class="actions">
       <button class="secondary" disabled={installing} onclick={onlater}>Later</button>
       <button class="primary" bind:this={install} disabled={installing} onclick={start}>
-        {#if installing}<span class="spinner" aria-hidden="true"></span>Installeren…{:else}Installeren{/if}
+        {#if installing}<span class="spinner" aria-hidden="true"
+          ></span>Installeren…{:else}Installeren{/if}
       </button>
     </div>
   </div>
