@@ -158,12 +158,12 @@ describe('SetupScreen level', () => {
     expect(screen.getAllByRole('radiogroup')).toHaveLength(1);
   });
 
-  it('lists the Verdieping topics without tables once Verdieping is chosen', async () => {
+  it('lists the Verdieping topics and Opfrisser share without tables once Verdieping is chosen', async () => {
     renderSetup(DEEP_FIXTURE_SET);
     expect(rowNames()).toEqual(['Priemgetal of niet', '15% tafels']);
     await fireEvent.click(levelRadio('Verdieping'));
     expect(levelRadio('Verdieping').getAttribute('aria-checked')).toBe('true');
-    expect(rowNames()).toEqual(['KGV', 'GGD']);
+    expect(rowNames()).toEqual(['KGV', 'GGD', '20% opfrisser']);
   });
 
   it('enables Verdieping for Meten and lists its four topics', async () => {
@@ -175,6 +175,7 @@ describe('SetupScreen level', () => {
       'Rekenen met maten',
       'Rekenen met tijd',
       'Schatten',
+      '20% opfrisser',
     ]);
   });
 

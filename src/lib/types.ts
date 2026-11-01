@@ -120,6 +120,8 @@ export interface PracticeSet {
   tablesPercent: number;
   /** Verdieping topics (spec §12.2); without them the set has Opfrisser only. */
   deep?: readonly TopicWeight[];
+  /** Mixed-in Opfrisser exercises; set by `forLevel` for Verdieping only (spec §4.2). */
+  quickShare?: { percent: number; topics: readonly TopicWeight[] };
 }
 
 /** Opfrisser and Verdieping (spec §12.2). */
