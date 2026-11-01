@@ -2882,7 +2882,8 @@ Two forms, 50/50:
   decimals. The direction is 50/50. Options in random order: the right chain, the chain ordered
   by the numbers without their sign (the sign trap), and two chains that each swap one
   neighbouring pair of the right chain; all four different (redraw otherwise).
-- **Between:** bounds `a` and `a + 0,1` with 1 decimal, `a ∈ [−9,9; −0,1]` (always negative).
+- **Between:** bounds `a` and `a + 0,1` with 1 decimal, `a ∈ [−9,9; −0,2]` (always negative; `−0,1` is left out because its sign trap would equal
+  `a + 0,15`).
   The answer is `a + 0,05`. Distractors: `−(a + 0,05)` (the sign trap), `a − 0,05` and
   `a + 0,15`. Options in ascending order.
 - Explanations: order `op de getallenlijn van links naar rechts: −3,5, −1,2, 0,35, 0,4`, and with
