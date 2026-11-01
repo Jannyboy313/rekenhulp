@@ -14,7 +14,7 @@ import {
   type DeepExercise,
   type Strategy,
 } from './smartCalculationDeep';
-import { answerOf, stepOf, typed } from './testHelpers';
+import { answerOf, findDrawn, stepOf, typed } from './testHelpers';
 
 const PER_STRATEGY = 1000;
 
@@ -85,8 +85,10 @@ describe('factorOut', () => {
   });
 
   it('99 × 47 + 47 = 4700 explained by 100 × 47', () => {
-    const rng = createRng(9);
-    const found = Array.from({ length: 100000 }, () => buildDeepExercise(rng, 'factorOut')).find(
+    const found = findDrawn(
+      9,
+      100000,
+      (rng) => buildDeepExercise(rng, 'factorOut'),
       (e) => e.key === 'smartCalculationDeep:factorOut:47:99',
     );
     expect(found).toBeDefined();
@@ -210,8 +212,10 @@ describe('money', () => {
   it('€ 7,99 + € 2,98 = 10,97 and € 20 − € 4,95 = 15,05', () => {
     const sum = createRngSearch((r) => buildDeepExercise(r, 'money'), (e) => e.prompt === `€${NO_BREAK_SPACE}7,99 + €${NO_BREAK_SPACE}2,98`);
     expect(sum).toBeDefined();
-    const rng = createRng(3);
-    const hit = Array.from({ length: 200000 }, () => buildDeepExercise(rng, 'money')).find(
+    const hit = findDrawn(
+      3,
+      200000,
+      (rng) => buildDeepExercise(rng, 'money'),
       (e) => e.prompt === `€${NO_BREAK_SPACE}20 − €${NO_BREAK_SPACE}4,95`,
     );
     expect(hit?.explanation).toBe('20 − 5 + 0,05 = 15,05');

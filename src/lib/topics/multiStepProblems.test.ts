@@ -17,7 +17,7 @@ import {
   type Context,
   type Form,
 } from './multiStepProblems';
-import { answerOf, stepOf, typed } from './testHelpers';
+import { answerOf, findDrawn, stepOf, typed } from './testHelpers';
 
 const PER_CONTEXT = 1000;
 
@@ -45,9 +45,12 @@ describe('operations (spec §5.65)', () => {
   });
 
   it('schriften: 28 × 24 : 16 = 42', () => {
-    const rng = createRng(2);
-    const found = Array.from({ length: 200000 }, () => buildProblem(rng, 'operations', 'schriften'));
-    const match = found.find((p) => p.numbers.join() === '28,24,16');
+    const match = findDrawn(
+      2,
+      200000,
+      (rng) => buildProblem(rng, 'operations', 'schriften'),
+      (p) => p.numbers.join() === '28,24,16',
+    );
     expect(match).toBeDefined();
     expect(formatRational(match!.answer)).toBe('42');
     expect(stepOf(match!.question).check('').explanation).toBe('28 × 24 = 672 → 672 : 16 = 42');
