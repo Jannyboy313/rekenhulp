@@ -396,6 +396,7 @@ describe('levels', () => {
       PROPORTIONS_SET,
       NUMBERS_SET,
       OPERATIONS_SET,
+      GEOMETRY_SET,
     ]);
   });
 
@@ -484,6 +485,31 @@ describe('levels', () => {
     expect(OPERATIONS_SET.description).toBe(
       'Volgorde van bewerkingen, eigenschappen en handig rekenen',
     );
+  });
+
+  it('lists the four Meetkunde Verdieping topics and the Opfrisser share, without a tables row', () => {
+    const names = (size: number) =>
+      describeSetTopicRows(forLevel(GEOMETRY_SET, 'deep'), size).map((row) => row.name);
+    const topics = [
+      'Kwadratisch en kubisch vergroten',
+      'Oppervlakte van ruimtefiguren',
+      'Samengestelde figuren',
+      'Redeneren met hoeken',
+    ];
+    expect(names(15)).toEqual([...topics, '20% opfrisser']);
+    expect(names(5)).toEqual(topics);
+    expect(GEOMETRY_SET.deep).toEqual([
+      { topic: 'scalingSolids', weight: 1 },
+      { topic: 'surfaceArea', weight: 1 },
+      { topic: 'compositeShapes', weight: 1 },
+      { topic: 'angleReasoning', weight: 1 },
+    ]);
+    expect(hasDeep(GEOMETRY_SET)).toBe(true);
+    expect(forLevel(GEOMETRY_SET, 'quick')).toBe(GEOMETRY_SET);
+    const deep = forLevel(GEOMETRY_SET, 'deep');
+    expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: GEOMETRY_SET.topics });
+    expect(GEOMETRY_SET.description).toBe('Omtrek, oppervlakte, inhoud, hoeken en vormen');
   });
 
   it('knows the fixture has a Verdieping, but not an empty one or one for Tafels', () => {

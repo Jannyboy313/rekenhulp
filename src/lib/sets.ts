@@ -141,6 +141,12 @@ export const GEOMETRY_SET: PracticeSet = {
     { topic: 'solidNames', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'scalingSolids', weight: 1 },
+    { topic: 'surfaceArea', weight: 1 },
+    { topic: 'compositeShapes', weight: 1 },
+    { topic: 'angleReasoning', weight: 1 },
+  ],
 };
 
 export const RELATIONS_SET: PracticeSet = {
