@@ -16,9 +16,7 @@ import {
 } from '../rational';
 import {
   buildBetweenNumbers,
-  decimalShown,
   FORMS,
-  fractionShown,
   generateBetweenNumbers,
   jumpsQuestion,
   marksQuestion,
@@ -28,6 +26,7 @@ import {
   middleQuestion,
   type Form,
 } from './betweenNumbers';
+import { decimalShown, fractionShown } from './fractionNotation';
 import { decimal, stepOf } from './testHelpers';
 
 const PER_FORM = 1500;

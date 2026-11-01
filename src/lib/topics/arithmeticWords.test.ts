@@ -38,9 +38,15 @@ describe('operationQuestion', () => {
       expected: '4',
       explanation: 'quotiënt = delen: 48 : 12 = 4',
     });
-    expect(stepOf(operationQuestion('quotiënt', 48, 12)).prompt).toBe(
-      'Wat is het quotiënt van 48 en 12?',
-    );
+  });
+
+  it('uses the right article per word', () => {
+    const prompt = (word: Parameters<typeof operationQuestion>[0]) =>
+      stepOf(operationQuestion(word, 48, 12)).prompt;
+    expect(prompt('som')).toBe('Wat is de som van 48 en 12?');
+    expect(prompt('verschil')).toBe('Wat is het verschil van 48 en 12?');
+    expect(prompt('product')).toBe('Wat is het product van 48 en 12?');
+    expect(prompt('quotiënt')).toBe('Wat is het quotiënt van 48 en 12?');
   });
 });
 

@@ -19,17 +19,17 @@ const FAR_PERCENT = 30;
 
 const OPERATIONS: Record<
   ArithmeticWord,
-  { verb: string; sign: string; apply: (a: number, b: number) => number }
+  { article: string; verb: string; sign: string; apply: (a: number, b: number) => number }
 > = {
-  som: { verb: 'optellen', sign: '+', apply: (a, b) => a + b },
-  verschil: { verb: 'aftrekken', sign: '−', apply: (a, b) => a - b },
-  product: { verb: 'vermenigvuldigen', sign: '×', apply: (a, b) => a * b },
-  quotiënt: { verb: 'delen', sign: ':', apply: (a, b) => a / b },
+  som: { article: 'de', verb: 'optellen', sign: '+', apply: (a, b) => a + b },
+  verschil: { article: 'het', verb: 'aftrekken', sign: '−', apply: (a, b) => a - b },
+  product: { article: 'het', verb: 'vermenigvuldigen', sign: '×', apply: (a, b) => a * b },
+  quotiënt: { article: 'het', verb: 'delen', sign: ':', apply: (a, b) => a / b },
 };
 
 /** `Wat is het verschil van 48 en 12?` with the four results as options, ascending. */
 export function operationQuestion(word: ArithmeticWord, a: number, b: number): Question {
-  const { verb, sign, apply } = OPERATIONS[word];
+  const { article, verb, sign, apply } = OPERATIONS[word];
   const options = ARITHMETIC_WORDS.map((other) => OPERATIONS[other].apply(a, b)).sort(
     (x, y) => x - y,
   );
@@ -39,7 +39,7 @@ export function operationQuestion(word: ArithmeticWord, a: number, b: number): Q
     topic: 'arithmeticWords',
     steps: [
       choiceStep({
-        prompt: `Wat is het ${word} van ${f(a)} en ${f(b)}?`,
+        prompt: `Wat is ${article} ${word} van ${f(a)} en ${f(b)}?`,
         options: options.map(f),
         answer: f(answer),
         explanation: `${word} = ${verb}: ${f(a)} ${sign} ${f(b)} = ${f(answer)}`,

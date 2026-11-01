@@ -6,19 +6,17 @@ import {
   divide,
   fromInteger,
   multiply,
-  parseDutchNumber,
   rational,
   subtract,
   type Rational,
 } from '../rational';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
+import { decimal } from './fractionNotation';
 
 export const FORMS = ['price', 'priceBack', 'length'] as const;
 export type Form = (typeof FORMS)[number];
 
-const decimal = (text: string) => parseDutchNumber(text)!;
-const money = (value: Rational) => formatMoney(value);
 
 /** Spec §5.78: the weights in kg. */
 export const WEIGHTS = ['0,1', '0,2', '0,25', '0,3', '0,4', '0,5', '0,75', '1,2', '1,5', '2,5'].map(
@@ -46,7 +44,7 @@ export function priceQuestion(product: (typeof PRICE_PRODUCTS)[number], price: R
   const cost = exactCost(price, weight)!;
   const { num: p, den: q } = weight;
   const unit = divide(price, fromInteger(Number(q)));
-  const times = p === 1n ? '' : ` → ${p} × ${money(unit)} = ${money(cost)}`;
+  const times = p === 1n ? '' : ` → ${p} × ${formatMoney(unit)} = ${formatMoney(cost)}`;
   return {
     key: `decimalProblems:price:${product.name}:${formatRational(price)}:${formatRational(weight)}`,
     topic: 'decimalProblems',
@@ -55,8 +53,8 @@ export function priceQuestion(product: (typeof PRICE_PRODUCTS)[number], price: R
         prompt: `${product.name} ${product.verb} ${formatEuro(price)} per kilo. Wat kost ${formatRational(weight)} kg?`,
         answer: cost,
         prefix: '€',
-        expected: money(cost),
-        explanation: `${formatRational(weight)} kg = ${formatFraction(weight)} kilo → ${money(price)} : ${q} = ${money(unit)}${times}`,
+        expected: formatMoney(cost),
+        explanation: `${formatRational(weight)} kg = ${formatFraction(weight)} kilo → ${formatMoney(price)} : ${q} = ${formatMoney(unit)}${times}`,
       }),
     ],
   };
@@ -67,7 +65,7 @@ export function priceBackQuestion(product: string, price: Rational, weight: Rati
   const total = exactCost(price, weight)!;
   const { num: p, den: q } = weight;
   const part = divide(total, fromInteger(Number(p)));
-  const middle = p === 1n ? '' : ` → ${formatRational(rational(1n, q))} kg = ${money(part)}`;
+  const middle = p === 1n ? '' : ` → ${formatRational(rational(1n, q))} kg = ${formatMoney(part)}`;
   return {
     key: `decimalProblems:priceBack:${product}:${formatRational(price)}:${formatRational(weight)}`,
     topic: 'decimalProblems',
@@ -76,8 +74,8 @@ export function priceBackQuestion(product: string, price: Rational, weight: Rati
         prompt: `${formatRational(weight)} kg ${product} kost ${formatEuro(total)}. Wat kost 1 kg?`,
         answer: price,
         prefix: '€',
-        expected: money(price),
-        explanation: `${formatRational(weight)} kg = ${formatEuro(total)}${middle} → 1 kg = ${money(price)}`,
+        expected: formatMoney(price),
+        explanation: `${formatRational(weight)} kg = ${formatEuro(total)}${middle} → 1 kg = ${formatMoney(price)}`,
       }),
     ],
   };

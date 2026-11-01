@@ -4,14 +4,13 @@ import { compare, fromInteger, parseDutchNumber, parseFraction, rational, subtra
 import type { Rational } from '../rational';
 import {
   DENOMINATORS,
-  decimalShown,
   extremeQuestion,
-  fractionShown,
   generateCompareFractions,
   MAX_SPREAD,
   MIN_GAP,
   orderQuestion,
 } from './compareFractions';
+import { decimalShown, fractionShown } from './fractionNotation';
 import { decimal, stepOf } from './testHelpers';
 
 const SAMPLES = 2000;

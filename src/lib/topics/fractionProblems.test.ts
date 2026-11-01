@@ -94,6 +94,7 @@ describe('spec examples', () => {
     expect(stepOf(wholeQuestion('tank', frac(1, 4), 3)).check('12').explanation).toBe(
       '1/4 = 3 → 4/4 = 12',
     );
+    expect(stepOf(wholeQuestion('tank', frac(1, 4), 3)).prompt).toMatch(/^De tank is 1\/4 vol\. /);
   });
 
   it('which part: 12 jongens of 30 → 3/5, and 18/30 is not simplest', () => {

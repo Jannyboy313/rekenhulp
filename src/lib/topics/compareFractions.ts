@@ -1,32 +1,15 @@
-import { formatFraction, formatRational } from '../format';
+import { formatRational } from '../format';
 import { gcd } from '../primes';
 import { drawUntil, pick, randomInt, shuffle, type Rng } from '../random';
 import { compare, decimalPlaces, rational, subtract, type Rational } from '../rational';
 import { choiceStep, fractionStep } from '../steps';
 import type { Question } from '../types';
-
-/** A number of the prompt: a proper fraction or a decimal, as it is written. */
-export interface Shown {
-  text: string;
-  value: Rational;
-  fraction: boolean;
-}
+import { absDifference, decimalShown, fractionShown, type Shown } from './fractionNotation';
 
 /** Spec §5.74: the denominators of RWT B.4. */
 export const DENOMINATORS = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 25] as const;
 export const MAX_SPREAD = rational(1n, 5n);
 export const MIN_GAP = rational(1n, 100n);
-
-export const fractionShown = (p: number, q: number): Shown => {
-  const value = rational(BigInt(p), BigInt(q));
-  return { text: formatFraction(value), value, fraction: true };
-};
-
-export const decimalShown = (value: Rational): Shown => ({
-  text: formatRational(value),
-  value,
-  fraction: false,
-});
 
 export type Extreme = 'grootst' | 'kleinst';
 export type Direction = '<' | '>';
@@ -168,13 +151,8 @@ function randomNumbers(rng: Rng, fractions: number, decimals: number): Shown[] {
 
 const distinct = (numbers: readonly Shown[], gap: Rational) =>
   numbers.every((a, i) =>
-    numbers.every((b, j) => i === j || compare(subtractAbs(a.value, b.value), gap) >= 0),
+    numbers.every((b, j) => i === j || compare(absDifference(a.value, b.value), gap) >= 0),
   );
-
-const subtractAbs = (a: Rational, b: Rational) => {
-  const difference = subtract(a, b);
-  return difference.num < 0n ? rational(-difference.num, difference.den) : difference;
-};
 
 function randomExtreme(rng: Rng): Question {
   const fractions = randomInt(rng, 1, 2);

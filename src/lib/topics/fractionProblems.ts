@@ -28,8 +28,6 @@ interface RestContext {
   /** `Van de 32 leerlingen komt 3/8 op de fiets en 1/4 met de bus. De rest loopt. …` */
   prompt(total: number, first: string, second: string): string;
   suffix: string;
-  /** The names of the three groups; the third is the rest. */
-  groups: readonly [string, string, string];
 }
 
 export const REST_CONTEXTS: Readonly<Record<string, RestContext>> = {
@@ -37,19 +35,16 @@ export const REST_CONTEXTS: Readonly<Record<string, RestContext>> = {
     prompt: (n, a, b) =>
       `Van de ${n} leerlingen komt ${a} op de fiets en ${b} met de bus. De rest loopt. Hoeveel leerlingen lopen?`,
     suffix: 'leerlingen',
-    groups: ['fiets', 'bus', 'lopen'],
   },
   bezoekers: {
     prompt: (n, a, b) =>
       `Van de ${n} bezoekers van een museum zijn ${a} volwassenen en ${b} kinderen. De rest is senior. Hoeveel senioren zijn dat?`,
     suffix: 'bezoekers',
-    groups: ['volwassenen', 'kinderen', 'senioren'],
   },
   boeken: {
     prompt: (n, a, b) =>
       `Van de ${n} boeken in een kast zijn ${a} romans en ${b} strips. De rest zijn informatieboeken. Hoeveel informatieboeken zijn dat?`,
     suffix: 'boeken',
-    groups: ['romans', 'strips', 'informatieboeken'],
   },
 };
 
@@ -163,7 +158,7 @@ export const WHOLE_CONTEXTS: Readonly<Record<string, WholeContext>> = {
   },
   tank: {
     prompt: (f, part) =>
-      `De tank is voor ${f} vol. Er zit ${part} liter in. Hoeveel liter past er in de tank?`,
+      `De tank is ${f} vol. Er zit ${part} liter in. Hoeveel liter past er in de tank?`,
     suffix: 'liter',
     minWhole: 4,
     maxWhole: 144,

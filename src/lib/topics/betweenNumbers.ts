@@ -12,38 +12,25 @@ import {
   decimalPlaces,
   fromInteger,
   multiply,
-  parseDutchNumber,
   rational,
   subtract,
   type Rational,
 } from '../rational';
 import { fractionStep, numberStep } from '../steps';
 import type { Question } from '../types';
+import {
+  absDifference,
+  decimal,
+  decimalShown,
+  fractionShown,
+  type Shown,
+} from './fractionNotation';
 import { expectedText } from './mixedNotation';
 
 export const FORMS = ['middle', 'jumps', 'marks'] as const;
 export type Form = (typeof FORMS)[number];
 
 const half = rational(1n, 2n);
-const decimal = (text: string) => parseDutchNumber(text)!;
-
-/** A number as it is written in the prompt. */
-export interface Shown {
-  text: string;
-  value: Rational;
-  fraction: boolean;
-}
-
-export const fractionShown = (p: number, q: number): Shown => {
-  const value = rational(BigInt(p), BigInt(q));
-  return { text: formatFraction(value), value, fraction: true };
-};
-
-export const decimalShown = (value: Rational): Shown => ({
-  text: formatRational(value),
-  value,
-  fraction: false,
-});
 
 /** The middle of two numbers must have a denominator of at most this, unless it is a decimal. */
 export const MAX_MIDDLE_DENOMINATOR = 48;
@@ -180,11 +167,6 @@ function randomDecimal(rng: Rng, minHundredths: number, maxHundredths: number): 
   });
   return decimalShown(rational(BigInt(digits), 100n));
 }
-
-const absDifference = (a: Rational, b: Rational) => {
-  const difference = subtract(a, b);
-  return difference.num < 0n ? rational(-difference.num, difference.den) : difference;
-};
 
 function randomMiddle(rng: Rng): Question {
   const variant = pick(rng, ['fractions', 'decimals', 'mixed'] as const);

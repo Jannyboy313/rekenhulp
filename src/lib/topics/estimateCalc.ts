@@ -24,7 +24,7 @@ const MULTIPLIER_SETS: readonly (readonly number[])[] = [
 ];
 
 const DECIMAL_SHARE = 0.3;
-/** Assumption: the spec has no range for the estimate; its options stay within a million. */
+/** Spec §5.71: rounded whole operands in [10, 900], dividend at most 9900, estimate at most 10 000. */
 const MAX_ESTIMATE = fromInteger(10_000);
 const MIN_DECIMAL = rational(1n, 10n);
 const MAX_DECIMAL = fromInteger(99);

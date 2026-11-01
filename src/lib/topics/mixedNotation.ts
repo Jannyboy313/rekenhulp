@@ -10,7 +10,6 @@ import {
   isInteger,
   multiply,
   ONE,
-  parseDutchNumber,
   rational,
   subtract,
   type Rational,
@@ -18,13 +17,12 @@ import {
 import { SLOT } from '../slot';
 import { fractionStep } from '../steps';
 import type { Question } from '../types';
+import { decimal } from './fractionNotation';
 
 export const TEMPLATES = ['divide', 'multiply', 'percent', 'sum'] as const;
 export type Template = (typeof TEMPLATES)[number];
 
 const MAX_EXPECTED_DECIMALS = 3;
-
-const decimal = (text: string) => parseDutchNumber(text)!;
 
 /** The expected answer: a decimal when it has at most 3 decimals, else a whole or mixed number. */
 export function expectedText(value: Rational): string {
