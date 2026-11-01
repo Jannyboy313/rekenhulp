@@ -61,6 +61,7 @@ export type Topic =
   | 'mentalOperations'
   | 'negativeNumbers'
   | 'numberOrder'
+  | 'arithmeticWords'
   | 'rounding'
   | 'powersRoots'
   | 'scientificNotation'

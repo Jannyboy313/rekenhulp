@@ -123,7 +123,7 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Getalbegrip five equally weighted topics with 15% tables', () => {
+  it('makes Getalbegrip seven equally weighted topics with 15% tables', () => {
     expect(NUMBER_SENSE_SET.name).toBe('Getalbegrip');
     expect(NUMBER_SENSE_SET.tablesPercent).toBe(15);
     expect(NUMBER_SENSE_SET.topics).toEqual([
@@ -133,6 +133,7 @@ describe('practice sets', () => {
       { topic: 'powersRoots', weight: 1 },
       { topic: 'scientificNotation', weight: 1 },
       { topic: 'numberOrder', weight: 1 },
+      { topic: 'arithmeticWords', weight: 1 },
     ]);
   });
 
@@ -287,6 +288,7 @@ describe('describeSetTopicRows per set', () => {
       'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
       'Wetenschappelijke notatie (4,5 × 10⁶)',
       'Ordenen (negatief, kommagetal, getallenlijn)',
+      'Rekentaal (som, verschil, product, bijna, ruim)',
       '15% tafels',
     ]);
   });

@@ -1,5 +1,6 @@
 import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
+import { generateArithmeticWords } from './arithmeticWords';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
@@ -118,6 +119,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
   numberOrder: generateNumberOrder,
+  arithmeticWords: generateArithmeticWords,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
@@ -193,6 +195,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   numberOrder: 'Ordenen (negatief, kommagetal, getallenlijn)',
+  arithmeticWords: 'Rekentaal (som, verschil, product, bijna, ruim)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',

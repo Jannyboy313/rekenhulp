@@ -112,6 +112,7 @@ export const NUMBER_SENSE_SET: PracticeSet = {
     { topic: 'powersRoots', weight: 1 },
     { topic: 'scientificNotation', weight: 1 },
     { topic: 'numberOrder', weight: 1 },
+    { topic: 'arithmeticWords', weight: 1 },
   ],
   tablesPercent: 15,
 };
