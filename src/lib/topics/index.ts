@@ -44,6 +44,7 @@ import { generatePercentProblems } from './percentProblems';
 import { generatePermille } from './permille';
 import { generateProportionConcepts } from './proportionConcepts';
 import { generatePerimeterArea } from './perimeterArea';
+import { generatePowerCalc } from './powerCalc';
 import { generatePowersRoots } from './powersRoots';
 import { generateProbability } from './probability';
 import { generateProperties } from './properties';
@@ -126,6 +127,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   negativeContexts: generateNegativeContexts,
   roundingReasoning: generateRoundingReasoning,
   estimateCalc: generateEstimateCalc,
+  powerCalc: generatePowerCalc,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
@@ -205,6 +207,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   negativeContexts: 'Negatief in context (rood staan, tekort, NAP)',
   roundingReasoning: 'Afronden redeneren (grenzen, contant betalen)',
   estimateCalc: 'Schatten (uitkomst ongeveer)',
+  powerCalc: 'Rekenen met machten (rekenregels, wortels, wetenschappelijke notatie)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',
