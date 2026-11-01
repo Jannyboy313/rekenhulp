@@ -48,6 +48,8 @@ export const decimalShown = (value: Rational): Shown => ({
 /** The middle of two numbers must have a denominator of at most this, unless it is a decimal. */
 export const MAX_MIDDLE_DENOMINATOR = 48;
 export const MIN_GAP = rational(1n, 20n);
+/** Two decimals are at most this far apart. */
+export const MAX_DECIMAL_GAP = rational(1n);
 
 /** `p/q` with the numerator written over the common denominator `den`. */
 const over = (value: Rational, den: bigint) => `${formatInteger((value.num * den) / value.den)}/${den}`;
@@ -193,7 +195,9 @@ function randomMiddle(rng: Rng): Question {
         : variant === 'decimals'
           ? ([randomDecimal(rng, 5, 2000), randomDecimal(rng, 5, 2000)] as const)
           : ([randomProperFraction(rng), randomDecimal(rng, 5, 99)] as const);
-    if (compare(absDifference(pair[0].value, pair[1].value), MIN_GAP) < 0) return null;
+    const gap = absDifference(pair[0].value, pair[1].value);
+    if (compare(gap, MIN_GAP) < 0) return null;
+    if (variant === 'decimals' && compare(gap, MAX_DECIMAL_GAP) > 0) return null;
     const middle = multiply(add(pair[0].value, pair[1].value), half);
     const readable = decimalPlaces(middle) !== null || middle.den <= BigInt(MAX_MIDDLE_DENOMINATOR);
     return readable ? pair : null;

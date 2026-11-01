@@ -3,6 +3,7 @@ import { drawUntil, pick, randomInt, type Rng } from '../random';
 import { fromInteger, negate, rational, subtract, type Rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
+import { explainAddSubtract } from './negativeNumbers';
 
 // Negative numbers in context (spec §5.69): money, height (NAP, lift) and temperature.
 export const MONEY_ITEMS = ['fiets', 'telefoon', 'laptop'] as const;
@@ -22,7 +23,6 @@ const ARTICLES: Record<LowPoint | HighPoint, string> = {
 };
 
 const euro = (value: number) => formatEuro(fromInteger(value));
-const sign = (value: number) => (value < 0 ? '−' : '+');
 const degrees = (value: number) => `${f(value)}${NO_BREAK_SPACE}°C`;
 const metres = (value: Rational) => `${formatRational(value)}${NO_BREAK_SPACE}m NAP`;
 
@@ -54,7 +54,7 @@ export function balanceQuestion(minus: number, income: number): Question {
         prompt: `Je staat ${euro(minus)} in het rood. Je krijgt ${euro(income)} salaris. Wat is je saldo nu?`,
         answer: fromInteger(balance),
         prefix: '€',
-        explanation: `${f(-minus)} + ${f(income)} = ${f(balance)}`,
+        explanation: explainAddSubtract(-minus, true, income),
       }),
     ],
   };
@@ -117,7 +117,7 @@ export function liftQuestion(start: number, move: number): Question {
           `Een lift staat op verdieping ${f(start)} en gaat ${Math.abs(move)} verdiepingen ` +
           `${move > 0 ? 'omhoog' : 'omlaag'}. Op welke verdieping stopt hij?`,
         answer: fromInteger(end),
-        explanation: `${f(start)} ${sign(move)} ${Math.abs(move)} = ${f(end)}`,
+        explanation: explainAddSubtract(start, move > 0, Math.abs(move)),
       }),
     ],
   };
@@ -128,8 +128,7 @@ export function temperatureQuestion(start: number, first: number, second: number
   const afterFirst = start + first;
   const end = afterFirst + second;
   const change = (value: number) => `${Math.abs(value)} graden ${value > 0 ? 'warmer' : 'kouder'}`;
-  const step = (from: number, by: number, to: number) =>
-    `${f(from)} ${sign(by)} ${Math.abs(by)} = ${f(to)}`;
+  const step = (from: number, by: number) => explainAddSubtract(from, by > 0, Math.abs(by));
   return {
     key: `negativeContexts:temperature:${start}:${first}:${second}`,
     topic: 'negativeContexts',
@@ -140,7 +139,7 @@ export function temperatureQuestion(start: number, first: number, second: number
           `${change(second)}. Hoeveel graden is het dan?`,
         answer: fromInteger(end),
         suffix: '°C',
-        explanation: `${step(start, first, afterFirst)} → ${step(afterFirst, second, end)}`,
+        explanation: `${step(start, first)} → ${step(afterFirst, second)}`,
       }),
     ],
   };

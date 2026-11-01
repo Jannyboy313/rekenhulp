@@ -18,18 +18,18 @@ const NBSP = '\u{a0}';
 
 describe('money', () => {
   it('asks how far in the red', () => {
-    const step = stepOf(inTheRedQuestion(312, 774));
+    const step = stepOf(inTheRedQuestion(318, 774));
     expect(step.kind).toBe('number');
     expect(step.prompt).toBe(
-      `Je hebt €${NBSP}312 op je rekening en betaalt €${NBSP}774. Hoeveel sta je in het rood?`,
+      `Je hebt €${NBSP}318 op je rekening en betaalt €${NBSP}774. Hoeveel sta je in het rood?`,
     );
     expect(step.prefix).toBe('€');
-    expect(step.check('462')).toEqual({
+    expect(step.check('456')).toEqual({
       correct: true,
-      expected: '462',
-      explanation: `774 − 312 = 462 → €${NBSP}462 in het rood`,
+      expected: '456',
+      explanation: `774 − 318 = 456 → €${NBSP}456 in het rood`,
     });
-    expect(step.check('1086').correct).toBe(false);
+    expect(step.check('1092').correct).toBe(false);
   });
 
   it('asks the balance, which can be negative', () => {
@@ -41,7 +41,7 @@ describe('money', () => {
     expect(step.check('255')).toEqual({
       correct: true,
       expected: '255',
-      explanation: '−145 + 400 = 255',
+      explanation: '−145 + 400 = −145 + 145 + 255 = 255',
     });
     const negative = stepOf(balanceQuestion(400, 100)).check('−300');
     expect(negative).toMatchObject({ correct: true, expected: '−300' });
@@ -95,12 +95,15 @@ describe('height', () => {
       'Een lift staat op verdieping −2 en gaat 7 verdiepingen omhoog. Op welke verdieping stopt hij?',
     );
     expect(up.suffix).toBeUndefined();
-    expect(up.check('5')).toEqual({ correct: true, expected: '5', explanation: '−2 + 7 = 5' });
+    expect(up.check('5')).toEqual({ correct: true, expected: '5',
+      explanation: '−2 + 7 = −2 + 2 + 5 = 5',
+    });
     const down = stepOf(liftQuestion(3, -6));
     expect(down.prompt).toBe(
       'Een lift staat op verdieping 3 en gaat 6 verdiepingen omlaag. Op welke verdieping stopt hij?',
     );
-    expect(down.check('−3')).toMatchObject({ correct: true, explanation: '3 − 6 = −3' });
+    expect(down.check('−3')).toMatchObject({ correct: true, explanation: '3 − 6 = 3 − 3 − 3 = −3',
+    });
   });
 });
 
@@ -114,7 +117,7 @@ describe('temperature', () => {
     expect(step.check('−5')).toEqual({
       correct: true,
       expected: '−5',
-      explanation: '−3 + 9 = 6 → 6 − 11 = −5',
+      explanation: '−3 + 9 = −3 + 3 + 6 = 6 → 6 − 11 = 6 − 6 − 5 = −5',
     });
   });
 
@@ -123,7 +126,9 @@ describe('temperature', () => {
     expect(step.prompt).toBe(
       `'s Ochtends is het 4${NBSP}°C. Het wordt 10 graden kouder en 's avonds weer 3 graden warmer. Hoeveel graden is het dan?`,
     );
-    expect(step.check('−3')).toMatchObject({ explanation: '4 − 10 = −6 → −6 + 3 = −3' });
+    expect(step.check('−3')).toMatchObject({
+      explanation: '4 − 10 = 4 − 4 − 6 = −6 → −6 + 3 = −3',
+    });
   });
 });
 

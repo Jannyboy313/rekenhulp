@@ -170,6 +170,9 @@ describe('generateBetweenNumbers', () => {
         const [x, y] = [parse(a), parse(b)];
         expect(compare(x, y), step.prompt).toBeLessThan(0);
         expect(compare(subtract(y, x), MIN_GAP)).toBeGreaterThanOrEqual(0);
+        if (kindOf(a) === 'decimal' && kindOf(b) === 'decimal') {
+          expect(compare(subtract(y, x), decimal('1'))).toBeLessThanOrEqual(0);
+        }
         variants.add([kindOf(a), kindOf(b)].sort().join('+'));
         for (const text of [a, b]) {
           if (kindOf(text) === 'fraction') {
