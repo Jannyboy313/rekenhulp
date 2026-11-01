@@ -225,13 +225,13 @@ describe('buildSession for Meten', () => {
 });
 
 describe('buildSession for Verhoudingen', () => {
-  it('mixes 2 tables with 13 exercises over all five topics at n = 15 (spec §4.2)', () => {
+  it('mixes 2 tables with 13 exercises over all seven topics at n = 15 (spec §4.2)', () => {
     const questions = buildSession(PROPORTIONS_SET, 15, createRng(3));
     const counts = new Map<string, number>();
     for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
     expect(counts.get('tables')).toBe(2);
     const perTopic = PROPORTIONS_SET.topics.map(({ topic }) => counts.get(topic) ?? 0);
-    expect(perTopic.sort((a, b) => a - b)).toEqual([2, 2, 3, 3, 3]);
+    expect(perTopic.sort((a, b) => a - b)).toEqual([1, 2, 2, 2, 2, 2, 2]);
   });
 
   it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
@@ -441,6 +441,26 @@ describe('buildSession for Meten Verdieping', () => {
     const quick = MEASUREMENT_SET.topics.map(({ topic }) => counts.get(topic) ?? 0);
     expect(quick.reduce((sum, count) => sum + count, 0)).toBe(3);
     expect(Math.max(...quick)).toBe(1);
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(deep, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+});
+
+describe('buildSession for Verhoudingen Verdieping', () => {
+  const deep = forLevel(PROPORTIONS_SET, 'deep');
+
+  it('has no tables, 3 Opfrisser exercises and 3 + 3 + 3 + 3 Verdieping', () => {
+    const questions = buildSession(deep, 15, createRng(3));
+    const counts = new Map<string, number>();
+    for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
+    expect(counts.has('tables')).toBe(false);
+    expect(deep.topics.map(({ topic }) => counts.get(topic) ?? 0)).toEqual([3, 3, 3, 3]);
+    const quick = PROPORTIONS_SET.topics.map(({ topic }) => counts.get(topic) ?? 0);
+    expect(quick.reduce((sum, count) => sum + count, 0)).toBe(3);
   });
 
   it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {

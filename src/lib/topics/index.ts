@@ -3,12 +3,14 @@ import { generateAngles } from './angles';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
+import { generateCompareRatios } from './compareRatios';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDerivedFacts } from './derivedFacts';
 import { generateDivisibility } from './divisibility';
 import { generateDivisors } from './divisors';
+import { generateEnlargement } from './enlargement';
 import { generateEquations } from './equations';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
@@ -34,12 +36,16 @@ import { generateOrderOfOperations } from './orderOfOperations';
 import { generatePercentages } from './percentages';
 import { generatePercentagePoints } from './percentagePoints';
 import { generatePercentChange } from './percentChange';
+import { generatePercentProblems } from './percentProblems';
+import { generatePermille } from './permille';
+import { generateProportionConcepts } from './proportionConcepts';
 import { generatePerimeterArea } from './perimeterArea';
 import { generatePowersRoots } from './powersRoots';
 import { generateProbability } from './probability';
 import { generateProperties } from './properties';
 import { generatePythagoras } from './pythagoras';
 import { generateRatioProblems } from './ratioProblems';
+import { generateRatioReasoning } from './ratioReasoning';
 import { generateRatios } from './ratios';
 import { generateRemainders } from './remainders';
 import { generateRounding } from './rounding';
@@ -85,6 +91,12 @@ export const GENERATORS: Record<Topic, Generator> = {
   percentChange: generatePercentChange,
   scale: generateScale,
   ratioProblems: generateRatioProblems,
+  permille: generatePermille,
+  proportionConcepts: generateProportionConcepts,
+  percentProblems: generatePercentProblems,
+  enlargement: generateEnlargement,
+  compareRatios: generateCompareRatios,
+  ratioReasoning: generateRatioReasoning,
   lcm: generateLcm,
   gcd: generateGcd,
   prime: generatePrime,
@@ -153,6 +165,12 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   percentChange: 'Procentuele verandering (stijging en daling, btw, oude prijs)',
   scale: 'Schaal (kaart en tekening, schaal bepalen)',
   ratioProblems: 'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
+  permille: 'Promille (‰ van, ‰ ↔ % ↔ kommagetal)',
+  proportionConcepts: 'Begrippen (absoluut, relatief, 1 op de n)',
+  percentProblems: 'Procentenproblemen (stapelkorting, extra inhoud, promille)',
+  enlargement: 'Vergroten en verkleinen (kopieerapparaat)',
+  compareRatios: 'Verhoudingen vergelijken (meer, voordeliger, naar verhouding)',
+  ratioReasoning: 'Redeneren met verhoudingen (verschil, herschalen, aanvullen)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',
