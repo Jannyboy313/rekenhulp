@@ -114,13 +114,16 @@ describe('practice sets', () => {
     ]);
   });
 
-  it('makes Breuken & kommagetallen three equally weighted topics with 15% tables', () => {
+  it('makes Breuken & kommagetallen six equally weighted topics with 15% tables', () => {
     expect(FRACTIONS_SET.name).toBe('Breuken & kommagetallen');
     expect(FRACTIONS_SET.tablesPercent).toBe(15);
     expect(FRACTIONS_SET.topics).toEqual([
       { topic: 'fractionConversion', weight: 1 },
       { topic: 'fractionArithmetic', weight: 1 },
       { topic: 'decimalArithmetic', weight: 1 },
+      { topic: 'decimalNames', weight: 1 },
+      { topic: 'compareFractions', weight: 1 },
+      { topic: 'fractionConcepts', weight: 1 },
     ]);
   });
 
@@ -295,6 +298,9 @@ describe('describeSetTopicRows per set', () => {
       'Omzetten tussen breuk, kommagetal en procent',
       'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
       'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
+      'Kommagetallen in woorden (tiende t/m miljardste)',
+      'Vergelijken (breuken en kommagetallen)',
+      'Breukbegrippen (teller, stambreuk, gelijkwaardig)',
       '15% tafels',
     ]);
   });
@@ -396,8 +402,39 @@ describe('levels', () => {
       PROPORTIONS_SET,
       NUMBERS_SET,
       OPERATIONS_SET,
+      FRACTIONS_SET,
       GEOMETRY_SET,
     ]);
+  });
+
+  it('lists the four Breuken & kommagetallen Verdieping topics and the Opfrisser share', () => {
+    expect(FRACTIONS_SET.description).toBe(
+      'Omzetten, vergelijken en rekenen met breuken en kommagetallen',
+    );
+    expect(FRACTIONS_SET.deep).toEqual([
+      { topic: 'mixedNotation', weight: 1 },
+      { topic: 'fractionProblems', weight: 1 },
+      { topic: 'decimalProblems', weight: 1 },
+      { topic: 'betweenNumbers', weight: 1 },
+    ]);
+    const names = (size: number) =>
+      describeSetTopicRows(forLevel(FRACTIONS_SET, 'deep'), size).map((row) => row.name);
+    const topics = [
+      'Gemengd rekenen',
+      'Breuken in context',
+      'Kommagetallen in context',
+      'Getallenlijn',
+    ];
+    expect(names(15)).toEqual([...topics, '20% opfrisser']);
+    expect(names(5)).toEqual(topics);
+  });
+
+  it('keeps the six Opfrisser topics of Breuken & kommagetallen and its tables share at Opfrisser level', () => {
+    expect(forLevel(FRACTIONS_SET, 'quick')).toBe(FRACTIONS_SET);
+    const deep = forLevel(FRACTIONS_SET, 'deep');
+    expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: FRACTIONS_SET.topics });
+    expect(FRACTIONS_SET.topics).toHaveLength(6);
   });
 
   it('lists the four Getallen & delers Verdieping topics and the Opfrisser share', () => {

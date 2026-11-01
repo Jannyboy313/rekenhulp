@@ -118,13 +118,22 @@ export const NUMBER_SENSE_SET: PracticeSet = {
 export const FRACTIONS_SET: PracticeSet = {
   id: 'breuken',
   name: 'Breuken & kommagetallen',
-  description: 'Omzetten, rekenen met breuken en met kommagetallen',
+  description: 'Omzetten, vergelijken en rekenen met breuken en kommagetallen',
   topics: [
     { topic: 'fractionConversion', weight: 1 },
     { topic: 'fractionArithmetic', weight: 1 },
     { topic: 'decimalArithmetic', weight: 1 },
+    { topic: 'decimalNames', weight: 1 },
+    { topic: 'compareFractions', weight: 1 },
+    { topic: 'fractionConcepts', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'mixedNotation', weight: 1 },
+    { topic: 'fractionProblems', weight: 1 },
+    { topic: 'decimalProblems', weight: 1 },
+    { topic: 'betweenNumbers', weight: 1 },
+  ],
 };
 
 export const GEOMETRY_SET: PracticeSet = {

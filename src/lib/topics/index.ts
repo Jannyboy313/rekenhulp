@@ -1,14 +1,18 @@
 import type { Generator, Topic } from '../types';
 import { generateAngleReasoning } from './angleReasoning';
 import { generateAngles } from './angles';
+import { generateBetweenNumbers } from './betweenNumbers';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
+import { generateCompareFractions } from './compareFractions';
 import { generateCompareRatios } from './compareRatios';
 import { generateCompositeShapes } from './compositeShapes';
 import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
+import { generateDecimalNames } from './decimalNames';
+import { generateDecimalProblems } from './decimalProblems';
 import { generateDerivedFacts } from './derivedFacts';
 import { generateDivisibility } from './divisibility';
 import { generateDivisors } from './divisors';
@@ -17,11 +21,14 @@ import { generateEquations } from './equations';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
 import { generateFractionArithmetic } from './fractionArithmetic';
+import { generateFractionConcepts } from './fractionConcepts';
 import { generateFractionConversion } from './fractionConversion';
+import { generateFractionProblems } from './fractionProblems';
 import { generateLcmGcdProblems } from './lcmGcdProblems';
 import { generateMeasureProblems } from './measureProblems';
 import { generateMeasureSense } from './measureSense';
 import { generateMissingDigit } from './missingDigit';
+import { generateMixedNotation } from './mixedNotation';
 import {
   generateArea,
   generateLength,
@@ -128,6 +135,13 @@ export const GENERATORS: Record<Topic, Generator> = {
   scientificNotation: generateScientificNotation,
   decimalArithmetic: generateDecimalArithmetic,
   fractionConversion: generateFractionConversion,
+  decimalNames: generateDecimalNames,
+  compareFractions: generateCompareFractions,
+  fractionConcepts: generateFractionConcepts,
+  mixedNotation: generateMixedNotation,
+  fractionProblems: generateFractionProblems,
+  decimalProblems: generateDecimalProblems,
+  betweenNumbers: generateBetweenNumbers,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
@@ -207,6 +221,13 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   scientificNotation: 'Wetenschappelijke notatie (4,5 × 10⁶)',
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
+  decimalNames: 'Kommagetallen in woorden (tiende t/m miljardste)',
+  compareFractions: 'Vergelijken (breuken en kommagetallen)',
+  fractionConcepts: 'Breukbegrippen (teller, stambreuk, gelijkwaardig)',
+  mixedNotation: 'Gemengd rekenen (breuk, kommagetal, procent)',
+  fractionProblems: 'Breuken in context (deel, rest, geheel)',
+  decimalProblems: 'Kommagetallen in context (prijs per kilo, lengte)',
+  betweenNumbers: 'Getallenlijn (midden, sprongen, streepjes)',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',
