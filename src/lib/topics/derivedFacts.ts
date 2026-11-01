@@ -1,7 +1,6 @@
 import { formatInteger as f, formatRational } from '../format';
 import { notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
 import { fromInteger, rational, type Rational } from '../rational';
-import { SLOT } from '../slot';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
 
@@ -89,7 +88,7 @@ export function generateDerivedFacts(rng: Rng): Question {
     topic: 'derivedFacts',
     steps: [
       numberStep({
-        prompt: `${a} × ${b} = ${f(a * b)}. Hoeveel is ${asked} = ${SLOT}`,
+        prompt: `${a} × ${b} = ${f(a * b)}. Hoeveel is ${asked}?`,
         answer,
         explanation,
       }),

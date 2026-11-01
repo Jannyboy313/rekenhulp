@@ -82,7 +82,7 @@ describe('generateDerivedFacts', () => {
       const step = stepOf(question);
       expect(question.topic).toBe('derivedFacts');
       expect(step.kind).toBe('number');
-      expect(step.prompt).toMatch(/^\d+ × \d+ = [\d ]+\. Hoeveel is .+ = \?$/);
+      expect(step.prompt).toMatch(/^\d+ × \d+ = [\d ]+\. Hoeveel is [^=]+\?$/);
       expect(step.check(typed(answerOf(question))).correct).toBe(true);
       expect(step.check('').explanation).toContain('=');
       expect(question.key).toMatch(/^derivedFacts:\d+ × \d+:[a-zA-Z]+:\d$/);
