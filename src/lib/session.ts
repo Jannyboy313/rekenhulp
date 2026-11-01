@@ -12,12 +12,13 @@ interface Weighted<K> {
 }
 
 /**
- * Number of table exercises; the share is an integer percentage to avoid float artefacts. A mixed
- * share (below 100%) only applies from `MIN_SIZE_FOR_MIXED_TABLES` exercises.
+ * Number of exercises for a share (tables or Opfrisser); the share is an integer percentage to
+ * avoid float artefacts. A mixed share (below 100%) only applies from `MIN_SIZE_FOR_MIXED_TABLES`
+ * exercises.
  */
-export function tablesCount(tablesPercent: number, size: number): number {
-  if (tablesPercent < 100 && size < MIN_SIZE_FOR_MIXED_TABLES) return 0;
-  return Math.round((tablesPercent * size) / 100);
+export function shareCount(percent: number, size: number): number {
+  if (percent < 100 && size < MIN_SIZE_FOR_MIXED_TABLES) return 0;
+  return Math.round((percent * size) / 100);
 }
 
 /**
@@ -83,16 +84,23 @@ export function buildSession(
   rng: Rng,
   generators: Record<Topic, Generator> = GENERATORS,
 ): Question[] {
-  const tables = tablesCount(set.tablesPercent, size);
-  const quotas = allocateQuotas(
-    set.topics.map(({ topic, weight }) => ({ key: topic, weight })),
-    size - tables,
-    rng,
-  );
-
+  const tables = shareCount(set.tablesPercent, size);
+  const quick = set.quickShare ? shareCount(set.quickShare.percent, size) : 0;
   const plan: Topic[] = Array.from({ length: tables }, (): Topic => 'tables');
-  for (const [topic, count] of quotas) {
-    for (let i = 0; i < count; i++) plan.push(topic);
+  // Step 3 of the quota algorithm applies to each group separately (spec §4.2).
+  const groups = [
+    { topics: set.quickShare?.topics ?? [], total: quick },
+    { topics: set.topics, total: size - tables - quick },
+  ];
+  for (const { topics, total } of groups) {
+    const quotas = allocateQuotas(
+      topics.map(({ topic, weight }) => ({ key: topic, weight })),
+      total,
+      rng,
+    );
+    for (const [topic, count] of quotas) {
+      for (let i = 0; i < count; i++) plan.push(topic);
+    }
   }
 
   const used = new Set<string>();

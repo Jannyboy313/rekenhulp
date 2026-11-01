@@ -7,7 +7,7 @@ import {
   generatorsFor,
   insertRepeat,
   MAX_UNIQUE_ATTEMPTS,
-  tablesCount,
+  shareCount,
 } from './session';
 import { DEEP_FIXTURE_SET } from './setFixture';
 import {
@@ -29,7 +29,7 @@ import { numberStep } from './steps';
 import { GENERATORS } from './topics';
 import type { Generator, Question } from './types';
 
-describe('tablesCount', () => {
+describe('shareCount', () => {
   it.each([
     [5, 0],
     [10, 2],
@@ -39,11 +39,21 @@ describe('tablesCount', () => {
     [75, 11],
     [100, 15],
   ])('mixes 15%% of %i exercises as %i tables', (size, expected) => {
-    expect(tablesCount(15, size)).toBe(expected);
+    expect(shareCount(15, size)).toBe(expected);
+  });
+
+  it.each([
+    [5, 0],
+    [10, 2],
+    [15, 3],
+    [25, 5],
+    [50, 10],
+  ])('mixes 20%% of %i exercises as %i Opfrisser exercises', (size, expected) => {
+    expect(shareCount(20, size)).toBe(expected);
   });
 
   it('uses every exercise for a 100% set', () => {
-    for (const size of SESSION_SIZES) expect(tablesCount(100, size)).toBe(size);
+    for (const size of SESSION_SIZES) expect(shareCount(100, size)).toBe(size);
   });
 });
 
@@ -422,14 +432,15 @@ describe('buildSession for Heuristieken', () => {
 describe('buildSession for Meten Verdieping', () => {
   const deep = forLevel(MEASUREMENT_SET, 'deep');
 
-  it('has no tables and splits 15 over the four topics as 4 + 4 + 4 + 3 (spec §4.2)', () => {
+  it('has no tables, 3 Opfrisser exercises and 3 + 3 + 3 + 3 Verdieping (spec §4.2)', () => {
     const questions = buildSession(deep, 15, createRng(3));
     const counts = new Map<string, number>();
     for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
     expect(counts.has('tables')).toBe(false);
-    expect(deep.topics.map(({ topic }) => counts.get(topic) ?? 0).sort((a, b) => a - b)).toEqual([
-      3, 4, 4, 4,
-    ]);
+    expect(deep.topics.map(({ topic }) => counts.get(topic) ?? 0)).toEqual([3, 3, 3, 3]);
+    const quick = MEASUREMENT_SET.topics.map(({ topic }) => counts.get(topic) ?? 0);
+    expect(quick.reduce((sum, count) => sum + count, 0)).toBe(3);
+    expect(Math.max(...quick)).toBe(1);
   });
 
   it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
@@ -444,14 +455,22 @@ describe('buildSession for Verdieping', () => {
   const counts = (size: number) => {
     const topics = buildSession(deep, size, createRng(size)).map((q) => q.topic);
     const count = (topic: string) => topics.filter((t) => t === topic).length;
-    return { lcm: count('lcm'), gcd: count('gcd'), total: topics.length };
+    return {
+      lcm: count('lcm'),
+      gcd: count('gcd'),
+      prime: count('prime'),
+      tables: count('tables'),
+      total: topics.length,
+    };
   };
 
-  it('splits 15 by the weights 2 : 1, with no tables', () => {
-    expect(counts(15)).toEqual({ lcm: 10, gcd: 5, total: 15 });
+  it('mixes in 20% Opfrisser and splits the rest by the weights 2 : 1, with no tables', () => {
+    expect(counts(15)).toEqual({ lcm: 8, gcd: 4, prime: 3, tables: 0, total: 15 });
+    expect(counts(10)).toEqual({ lcm: 5, gcd: 3, prime: 2, tables: 0, total: 10 });
+    expect(counts(50)).toEqual({ lcm: 27, gcd: 13, prime: 10, tables: 0, total: 50 });
   });
 
-  it('splits 5 by largest remainder', () => {
-    expect(counts(5)).toEqual({ lcm: 3, gcd: 2, total: 5 });
+  it('has no Opfrisser share below 10 and splits 5 by largest remainder', () => {
+    expect(counts(5)).toEqual({ lcm: 3, gcd: 2, prime: 0, tables: 0, total: 5 });
   });
 });

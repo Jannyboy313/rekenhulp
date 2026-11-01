@@ -291,6 +291,8 @@ describe('App', () => {
       await click('Menu');
       await click(/^Fixture/);
       await fireEvent.click(screen.getByRole('radio', { name: 'Verdieping' }));
+      // Below 10 exercises Verdieping mixes in no Opfrisser share, so every question is deep.
+      await fireEvent.click(screen.getByRole('radio', { name: '5' }));
       await click(/^Start/);
       expect(isDeep()).toBe(true);
       await click('Stoppen');

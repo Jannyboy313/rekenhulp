@@ -389,10 +389,12 @@ describe('levels', () => {
     expect(hasDeep(MEASUREMENT_SET)).toBe(true);
   });
 
-  it('lists the four Meten Verdieping topics without a tables row', () => {
-    expect(
-      describeSetTopicRows(forLevel(MEASUREMENT_SET, 'deep'), 15).map((row) => row.name),
-    ).toEqual(['Samengestelde grootheden', 'Rekenen met maten', 'Rekenen met tijd', 'Schatten']);
+  it('lists the four Meten Verdieping topics and the Opfrisser share, without a tables row', () => {
+    const names = (size: number) =>
+      describeSetTopicRows(forLevel(MEASUREMENT_SET, 'deep'), size).map((row) => row.name);
+    const topics = ['Samengestelde grootheden', 'Rekenen met maten', 'Rekenen met tijd', 'Schatten'];
+    expect(names(15)).toEqual([...topics, '20% opfrisser']);
+    expect(names(5)).toEqual(topics);
     expect(MEASUREMENT_SET.deep).toEqual([
       { topic: 'compoundUnits', weight: 1 },
       { topic: 'measureProblems', weight: 1 },
@@ -414,18 +416,20 @@ describe('levels', () => {
     expect(forLevel(empty, 'deep')).toBe(empty);
   });
 
-  it('swaps in the Verdieping topics without a tables share', () => {
+  it('swaps in the Verdieping topics with a 20% Opfrisser share and no tables share', () => {
     const deep = forLevel(DEEP_FIXTURE_SET, 'deep');
     expect(deep.id).toBe(DEEP_FIXTURE_SET.id);
     expect(deep.name).toBe(DEEP_FIXTURE_SET.name);
     expect(deep.topics).toEqual(DEEP_FIXTURE_SET.deep);
     expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: DEEP_FIXTURE_SET.topics });
+    expect(forLevel(DEEP_FIXTURE_SET, 'quick').quickShare).toBeUndefined();
   });
 
   it('lists the topics of the chosen level', () => {
     const names = (level: Level) =>
       describeSetTopicRows(forLevel(DEEP_FIXTURE_SET, level), 15).map((row) => row.name);
     expect(names('quick')).toEqual(['Priemgetal of niet', '15% tafels']);
-    expect(names('deep')).toEqual(['KGV', 'GGD']);
+    expect(names('deep')).toEqual(['KGV', 'GGD', '20% opfrisser']);
   });
 });
