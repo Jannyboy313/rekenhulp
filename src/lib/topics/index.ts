@@ -1,5 +1,6 @@
 import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
+import { generateBetweenNumbers } from './betweenNumbers';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
@@ -135,6 +136,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   mixedNotation: generateMixedNotation,
   fractionProblems: generateFractionProblems,
   decimalProblems: generateDecimalProblems,
+  betweenNumbers: generateBetweenNumbers,
   fractionArithmetic: generateFractionArithmetic,
   perimeterArea: generatePerimeterArea,
   solids: generateSolids,
@@ -215,6 +217,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   mixedNotation: 'Gemengd rekenen (breuk, kommagetal, procent)',
   fractionProblems: 'Breuken in context (deel, rest, geheel)',
   decimalProblems: 'Kommagetallen in context (prijs per kilo, lengte)',
+  betweenNumbers: 'Getallenlijn (midden, sprongen, streepjes)',
   fractionArithmetic: 'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
   perimeterArea: 'Omtrek en oppervlakte (vierkant t/m cirkel)',
   solids: 'Inhoud en oppervlakte (kubus, balk, cilinder, liters)',

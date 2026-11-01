@@ -71,6 +71,7 @@ export type Topic =
   | 'mixedNotation'
   | 'fractionProblems'
   | 'decimalProblems'
+  | 'betweenNumbers'
   | 'fractionArithmetic'
   | 'perimeterArea'
   | 'solids'
