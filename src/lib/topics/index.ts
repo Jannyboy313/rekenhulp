@@ -6,6 +6,7 @@ import { generateCompoundUnits } from './compoundUnits';
 import { generateDataSize } from './dataSize';
 import { generateDecimalArithmetic } from './decimalArithmetic';
 import { generateDivisibility } from './divisibility';
+import { generateDivisors } from './divisors';
 import { generateEquations } from './equations';
 import { generateEstimating } from './estimating';
 import { generateFormulas } from './formulas';
@@ -85,6 +86,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   divisibility: generateDivisibility,
   squares: generateSquares,
   lcmGcdProblems: generateLcmGcdProblems,
+  divisors: generateDivisors,
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
@@ -146,6 +148,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   divisibility: 'Deelbaarheid door 2 t/m 15 (zonder 10)',
   squares: 'Kwadraten en wortels (2² t/m 25²)',
   lcmGcdProblems: 'KGV en GGD in context (samen vertrekken, gelijke stukken)',
+  divisors: 'Delers (aantal delers, drie getallen, uit ontbinding)',
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',

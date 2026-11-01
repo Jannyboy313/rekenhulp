@@ -42,6 +42,7 @@ export type Topic =
   | 'divisibility'
   | 'squares'
   | 'lcmGcdProblems'
+  | 'divisors'
   | 'orderOfOperations'
   | 'smartCalculation'
   | 'properties'
