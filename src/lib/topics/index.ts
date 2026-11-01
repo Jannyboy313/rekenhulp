@@ -1,4 +1,5 @@
 import type { Generator, Topic } from '../types';
+import { generateAngleReasoning } from './angleReasoning';
 import { generateAngles } from './angles';
 import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
@@ -137,6 +138,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   scalingSolids: generateScalingSolids,
   surfaceArea: generateSurfaceArea,
   compositeShapes: generateCompositeShapes,
+  angleReasoning: generateAngleReasoning,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
@@ -215,6 +217,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   scalingSolids: 'Kwadratisch en kubisch vergroten',
   surfaceArea: 'Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)',
   compositeShapes: 'Samengestelde figuren (hoek eruit, pad, hectare)',
+  angleReasoning: 'Redeneren met hoeken (buitenhoek, verhouding, klok)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
   statistics: 'Statistiek (gemiddelde, mediaan, modus, spreidingsbreedte)',
   percentagePoints: 'Procentpunten (procentpunt of procent)',

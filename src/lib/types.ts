@@ -75,6 +75,7 @@ export type Topic =
   | 'scalingSolids'
   | 'surfaceArea'
   | 'compositeShapes'
+  | 'angleReasoning'
   | 'shapeProperties'
   | 'statistics'
   | 'percentagePoints'
