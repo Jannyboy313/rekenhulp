@@ -30,6 +30,7 @@ import {
 } from './measurement';
 import { generateMentalOperations } from './mentalOperations';
 import { generateMultiStepProblems } from './multiStepProblems';
+import { generateNegativeContexts } from './negativeContexts';
 import { generateNegativeNumbers } from './negativeNumbers';
 import { generateNumberOrder } from './numberOrder';
 import { generateNumberUnits } from './numberUnits';
@@ -120,6 +121,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   negativeNumbers: generateNegativeNumbers,
   numberOrder: generateNumberOrder,
   arithmeticWords: generateArithmeticWords,
+  negativeContexts: generateNegativeContexts,
   rounding: generateRounding,
   powersRoots: generatePowersRoots,
   numberSystems: generateNumberSystems,
@@ -196,6 +198,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   numberOrder: 'Ordenen (negatief, kommagetal, getallenlijn)',
   arithmeticWords: 'Rekentaal (som, verschil, product, bijna, ruim)',
+  negativeContexts: 'Negatief in context (rood staan, tekort, NAP)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
   powersRoots: 'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
   numberSystems: 'Talstelsels (tweetallig/binair, vijftallig, zestientallig/hexadecimaal)',
