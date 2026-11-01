@@ -44,6 +44,7 @@ export type Topic =
   | 'orderOfOperations'
   | 'smartCalculation'
   | 'properties'
+  | 'bracketPlacement'
   | 'mentalOperations'
   | 'negativeNumbers'
   | 'rounding'

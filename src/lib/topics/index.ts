@@ -1,5 +1,6 @@
 import type { Generator, Topic } from '../types';
 import { generateAngles } from './angles';
+import { generateBracketPlacement } from './bracketPlacement';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
 import { generateCompoundUnits } from './compoundUnits';
@@ -86,6 +87,7 @@ export const GENERATORS: Record<Topic, Generator> = {
   orderOfOperations: generateOrderOfOperations,
   smartCalculation: generateSmartCalculation,
   properties: generateProperties,
+  bracketPlacement: generateBracketPlacement,
   mentalOperations: generateMentalOperations,
   negativeNumbers: generateNegativeNumbers,
   rounding: generateRounding,
@@ -146,6 +148,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   orderOfOperations: 'Volgorde van bewerkingen (ook met negatieve getallen)',
   smartCalculation: 'Handig rekenen (compenseren, aanvullen, splitsen, verdubbelen en halveren)',
   properties: 'Eigenschappen (commutatief, associatief, distributief)',
+  bracketPlacement: 'Haakjes plaatsen (zodat de uitkomst klopt)',
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   rounding: 'Afronden (tientallen t/m miljoenen, decimalen)',
