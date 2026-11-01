@@ -35,6 +35,7 @@ export type Topic =
   | 'percentChange'
   | 'scale'
   | 'ratioProblems'
+  | 'permille'
   | 'lcm'
   | 'gcd'
   | 'prime'

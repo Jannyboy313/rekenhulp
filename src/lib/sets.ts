@@ -49,6 +49,7 @@ export const PROPORTIONS_SET: PracticeSet = {
     { topic: 'percentChange', weight: 1 },
     { topic: 'scale', weight: 1 },
     { topic: 'ratioProblems', weight: 1 },
+    { topic: 'permille', weight: 1 },
   ],
   tablesPercent: 15,
 };

@@ -168,6 +168,7 @@ describe('practice sets', () => {
       { topic: 'percentChange', weight: 1 },
       { topic: 'scale', weight: 1 },
       { topic: 'ratioProblems', weight: 1 },
+      { topic: 'permille', weight: 1 },
     ]);
   });
 
@@ -327,6 +328,7 @@ describe('describeSetTopicRows per set', () => {
       'Procentuele verandering (stijging en daling, btw, oude prijs)',
       'Schaal (kaart en tekening, schaal bepalen)',
       'Verhoudingsverhaaltjes (deel van het geheel, mengen, per eenheid)',
+      'Promille (‰ van, ‰ ↔ % ↔ kommagetal)',
       '15% tafels',
     ]);
   });
