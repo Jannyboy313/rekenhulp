@@ -59,13 +59,14 @@ the practice code: lesson components get their own files, practice components ge
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 
 Next steps (spec §12.2–§12.5), one at a time and only when the user says so. The user picks the
-next v3 step. There is no v4.
+next v3 step. v4 holds only persistent memory in IndexedDB.
 
 | Step                                                                                            | New infrastructure   |
 | ----------------------------------------------------------------------------------------------- | -------------------- |
 | v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.5), the user picks the order; not Tafels | —                    |
 | v3: mixed categories (§12.3), form decided in its spec iteration                                | sessions across sets |
 | v3: practice test (§12.4), after mixed categories                                               | test session         |
+| v4: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts         | IndexedDB            |
 
 Between versions: check the sets against the toetsmatrijs (§12.6).
 
