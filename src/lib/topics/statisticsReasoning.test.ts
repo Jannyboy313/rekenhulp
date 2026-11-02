@@ -26,7 +26,9 @@ const answerText = (question: Question) => {
 describe('statisticsReasoning fixed cases', () => {
   it('5, 6, 6, 7, 9 plus 10 → de modus', () => {
     const step = stepOf(unchangedQuestion([5, 6, 6, 7, 9], 10));
-    expect(step.prompt).toBe('Cijfers: 5, 6, 6, 7, 9. Er komt een 10 bij. Welke maat blijft gelijk?');
+    expect(step.prompt).toBe(
+      'Cijfers: 5, 6, 6, 7, 9. Er komt een 10 bij. Welke maat blijft gelijk?',
+    );
     expect(step.options).toEqual([...MEASURES]);
     expect(step.check('de modus')).toEqual({
       correct: true,
@@ -74,8 +76,12 @@ describe('statisticsReasoning generator', () => {
   });
 
   it('draws both forms, about 50/50', () => {
-    const unchanged = questions.filter(({ key }) => key.startsWith('statisticsReasoning:unchanged:'));
-    const meanMedian = questions.filter(({ key }) => key.startsWith('statisticsReasoning:meanMedian:'));
+    const unchanged = questions.filter(({ key }) =>
+      key.startsWith('statisticsReasoning:unchanged:'),
+    );
+    const meanMedian = questions.filter(({ key }) =>
+      key.startsWith('statisticsReasoning:meanMedian:'),
+    );
     expect(unchanged.length + meanMedian.length).toBe(SAMPLES);
     expect(unchanged.length / SAMPLES).toBeGreaterThan(0.45);
     expect(unchanged.length / SAMPLES).toBeLessThan(0.55);

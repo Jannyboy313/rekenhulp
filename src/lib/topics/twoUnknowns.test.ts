@@ -45,16 +45,19 @@ describe('twoUnknowns: spec examples', () => {
   it('ages: the spec example', () => {
     const question = agesQuestion('vader', 4, 10, false);
     expect(view(question)).toEqual({
-      prompt: 'Een vader is 4 keer zo oud als zijn zoon. Samen zijn ze 50 jaar. Hoe oud is de zoon?',
+      prompt:
+        'Een vader is 4 keer zo oud als zijn zoon. Samen zijn ze 50 jaar. Hoe oud is de zoon?',
       suffix: 'jaar',
       answer: 10,
-      explanation: 'Schema maken: zoon 1 deel, vader 4 delen → samen 5 delen = 50 → 1 deel = 10 → de zoon is 10 jaar',
+      explanation:
+        'Schema maken: zoon 1 deel, vader 4 delen → samen 5 delen = 50 → 1 deel = 10 → de zoon is 10 jaar',
     });
   });
 
   it('ages: the upper limit (factor 5, sum 90) and asking the older one', () => {
     expect(view(agesQuestion('moeder', 5, 15, true))).toEqual({
-      prompt: 'Een moeder is 5 keer zo oud als haar dochter. Samen zijn ze 90 jaar. Hoe oud is de moeder?',
+      prompt:
+        'Een moeder is 5 keer zo oud als haar dochter. Samen zijn ze 90 jaar. Hoe oud is de moeder?',
       suffix: 'jaar',
       answer: 75,
       explanation:
@@ -82,7 +85,8 @@ describe('twoUnknowns: spec examples', () => {
 
   it('rectangle, times: the spec example', () => {
     expect(view(timesQuestion(2, 6))).toEqual({
-      prompt: 'Een rechthoek heeft een omtrek van 36 cm. De lengte is 2 keer de breedte. Hoe groot is de oppervlakte?',
+      prompt:
+        'Een rechthoek heeft een omtrek van 36 cm. De lengte is 2 keer de breedte. Hoe groot is de oppervlakte?',
       suffix: 'cm²',
       answer: 72,
       explanation:
@@ -92,7 +96,8 @@ describe('twoUnknowns: spec examples', () => {
 
   it('rectangle, plus: the length is d cm longer', () => {
     expect(view(plusQuestion(4, 7))).toEqual({
-      prompt: 'Een rechthoek heeft een omtrek van 36 cm. De lengte is 4 cm langer dan de breedte. Hoe groot is de oppervlakte?',
+      prompt:
+        'Een rechthoek heeft een omtrek van 36 cm. De lengte is 4 cm langer dan de breedte. Hoe groot is de oppervlakte?',
       suffix: 'cm²',
       answer: 77,
       explanation:

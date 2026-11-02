@@ -156,7 +156,8 @@ describe('question text and explanation', () => {
 
 describe('generateTwoDice', () => {
   const GENERATIONS = 1000;
-  const PROMPT = /^Je gooit (met twee dobbelstenen|\d keer een munt op)\. Hoe groot is de kans op .+\?$/;
+  const PROMPT =
+    /^Je gooit (met twee dobbelstenen|\d keer een munt op)\. Hoe groot is de kans op .+\?$/;
 
   it('draws valid, distinct and correctly checked exercises over 1000 generations', () => {
     const rng = createRng(20261102);

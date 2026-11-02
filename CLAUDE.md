@@ -45,15 +45,16 @@ Opfrisser `solidNames` and Verdieping `scalingSolids`, `surfaceArea`, `composite
 `statisticsReasoning`, `statisticsProblems`, `formulaProblems`), Talstelsels (`numberSystems`,
 `romanNumerals` + v3 Verdieping: `baseArithmetic`, `baseReasoning`, `hexBinary`, `romanCalc`)
 and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`
-+ v3 Verdieping: `countingCases`, `backwardsProblems`, `twoUnknowns`, `simplifyDeep`), plus stacked fractions, the kladblok (§3.6), repeat until correct
-(§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
-Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
-(§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; every set except Tafels has a Verdieping, the
-fixture set `lib/setFixture.ts` still tests the framework), and the multiple-choice framework
-(§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
-`measureSense`, `timeCalc`, `estimating`, `proportionConcepts`, `compareRatios`,
-`numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
-`fractionConcepts` and `solidNames`).
+
+- v3 Verdieping: `countingCases`, `backwardsProblems`, `twoUnknowns`, `simplifyDeep`), plus stacked fractions, the kladblok (§3.6), repeat until correct
+  (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
+  Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
+  (§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; every set except Tafels has a Verdieping, the
+  fixture set `lib/setFixture.ts` still tests the framework), and the multiple-choice framework
+  (§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
+  `measureSense`, `timeCalc`, `estimating`, `proportionConcepts`, `compareRatios`,
+  `numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
+  `fractionConcepts` and `solidNames`).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -74,14 +75,14 @@ Next steps (spec §12.2–§12.6), one at a time and only when the user says so.
 (§12.2 step 4) is done; the user picks the next v3 step among the §12.4 features. v4 practises
 across sets. v5 holds only persistent memory in IndexedDB.
 
-| Step                                                                                            | New infrastructure   |
-| ----------------------------------------------------------------------------------------------- | -------------------- |
-| v3: practise mistakes (§12.4), a new session with the topics of the mistakes                    | —                    |
-| v3: score per topic on the results screen (§12.4)                                               | —                    |
-| v3: lesson link from a mistake (§12.4), via `openLesson`                                        | practice → lesstof   |
-| v4: mixed categories (§12.5), form decided in its spec iteration                                | sessions across sets |
-| v4: practice test (§12.6), after mixed categories                                               | test session         |
-| v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts         | IndexedDB            |
+| Step                                                                                    | New infrastructure   |
+| --------------------------------------------------------------------------------------- | -------------------- |
+| v3: practise mistakes (§12.4), a new session with the topics of the mistakes            | —                    |
+| v3: score per topic on the results screen (§12.4)                                       | —                    |
+| v3: lesson link from a mistake (§12.4), via `openLesson`                                | practice → lesstof   |
+| v4: mixed categories (§12.5), form decided in its spec iteration                        | sessions across sets |
+| v4: practice test (§12.6), after mixed categories                                       | test session         |
+| v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB            |
 
 Between versions: check the sets against the toetsmatrijs (§12.7).
 

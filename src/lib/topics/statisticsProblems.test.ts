@@ -80,9 +80,7 @@ describe('statisticsProblems: spec examples', () => {
       'Het gemiddelde van 6 getallen is 8. Je haalt het getal 14 weg. Wat is het gemiddelde van de andere 5?',
     );
     expect(typed(answerOf(question))).toBe('6,8');
-    expect(step.check('6,8').explanation).toBe(
-      `6 × 8 = 48 → 48 ${MINUS} 14 = 34 → 34 : 5 = 6,8`,
-    );
+    expect(step.check('6,8').explanation).toBe(`6 × 8 = 48 → 48 ${MINUS} 14 = 34 → 34 : 5 = 6,8`);
   });
 });
 
@@ -149,9 +147,9 @@ describe('statisticsProblems: generated questions', () => {
       );
     }
     for (const direction of ['up', 'down']) {
-      expect(
-        withForm('added').some((question) => question.key.endsWith(`:${direction}`)),
-      ).toBe(true);
+      expect(withForm('added').some((question) => question.key.endsWith(`:${direction}`))).toBe(
+        true,
+      );
     }
   });
 

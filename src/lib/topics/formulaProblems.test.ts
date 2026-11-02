@@ -152,9 +152,7 @@ describe('formulaProblems: reverse', () => {
       expect(input).toBeLessThanOrEqual(formula.inputRange[1]);
       expect(answer(question)).toBe(input);
       expect(step.suffix).toBe(REVERSE_SUFFIX[context as WordContext]);
-      expect(step.check(String(input)).explanation ?? '').toMatch(
-        new RegExp(`: \\S+ = ${input}$`),
-      );
+      expect(step.check(String(input)).explanation ?? '').toMatch(new RegExp(`: \\S+ = ${input}$`));
       if (context === 'kaars') {
         const left = subtract(
           decimal(startText!),

@@ -1,14 +1,6 @@
 import { formatEuro, formatInteger as f, formatMoney, formatRational, MINUS } from '../format';
 import { drawUntil, pick, randomInt, range, type Rng } from '../random';
-import {
-  add,
-  compare,
-  fromInteger,
-  multiply,
-  ONE,
-  subtract,
-  type Rational,
-} from '../rational';
+import { add, compare, fromInteger, multiply, ONE, subtract, type Rational } from '../rational';
 import { numberStep } from '../steps';
 import type { Question } from '../types';
 import { WORD_FORMULAS, WORD_TEXTS, type WordContext } from './formulas';
@@ -60,11 +52,12 @@ export function reverseQuestion(
   };
 }
 
-const BREAK_EVEN: Readonly<Record<BreakEvenContext, { name: string; noun: string; plural: string }>> =
-  {
-    abonnement: { name: 'Abonnement', noun: 'film', plural: 'films' },
-    sportschool: { name: 'Sportschool', noun: 'les', plural: 'lessen' },
-  };
+const BREAK_EVEN: Readonly<
+  Record<BreakEvenContext, { name: string; noun: string; plural: string }>
+> = {
+  abonnement: { name: 'Abonnement', noun: 'film', plural: 'films' },
+  sportschool: { name: 'Sportschool', noun: 'les', plural: 'lessen' },
+};
 
 /** Two offers `startA + rateA × x` and `startB + rateB × x`, with startA > startB and rateA < rateB. */
 export function breakEvenQuestion(

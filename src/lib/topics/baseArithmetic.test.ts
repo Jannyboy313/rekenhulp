@@ -136,9 +136,7 @@ describe('generateBaseArithmetic', () => {
       const { form, base, values } = parts(question);
       const step = stepOf(question);
       const expected =
-        form === 'sum'
-          ? toBase(values[0]! + values[1]!, base)
-          : toBase(values[0]! * base, base);
+        form === 'sum' ? toBase(values[0]! + values[1]!, base) : toBase(values[0]! * base, base);
       const result = step.check(expected);
       expect(result.correct).toBe(true);
       expect(result.expected).toBe(expected);

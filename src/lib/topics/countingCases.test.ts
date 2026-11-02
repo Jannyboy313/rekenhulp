@@ -27,9 +27,24 @@ const factorial = (n: number): number => (n <= 1 ? 1 : n * factorial(n - 1));
 
 describe('countingCases: spec examples', () => {
   it.each([
-    [4, 3, 24, 'Hoeveel getallen van 3 cijfers kun je maken met de cijfers 1, 2, 3 en 4, als elk cijfer hoogstens één keer voorkomt?'],
-    [4, 2, 12, 'Hoeveel getallen van 2 cijfers kun je maken met de cijfers 1, 2, 3 en 4, als elk cijfer hoogstens één keer voorkomt?'],
-    [6, 3, 120, 'Hoeveel getallen van 3 cijfers kun je maken met de cijfers 1, 2, 3, 4, 5 en 6, als elk cijfer hoogstens één keer voorkomt?'],
+    [
+      4,
+      3,
+      24,
+      'Hoeveel getallen van 3 cijfers kun je maken met de cijfers 1, 2, 3 en 4, als elk cijfer hoogstens één keer voorkomt?',
+    ],
+    [
+      4,
+      2,
+      12,
+      'Hoeveel getallen van 2 cijfers kun je maken met de cijfers 1, 2, 3 en 4, als elk cijfer hoogstens één keer voorkomt?',
+    ],
+    [
+      6,
+      3,
+      120,
+      'Hoeveel getallen van 3 cijfers kun je maken met de cijfers 1, 2, 3, 4, 5 en 6, als elk cijfer hoogstens één keer voorkomt?',
+    ],
   ])('codes once s=%i k=%i → %i', (s, k, expected, prompt) => {
     const question = codesOnceQuestion(s, k);
     expect(answer(question)).toBe(expected);
@@ -46,8 +61,18 @@ describe('countingCases: spec examples', () => {
   });
 
   it.each([
-    [5, 3, 125, 'Een slot heeft een code van 3 cijfers uit 1, 2, 3, 4 en 5. Een cijfer mag vaker voorkomen. Hoeveel codes zijn er?'],
-    [3, 2, 9, 'Een slot heeft een code van 2 cijfers uit 1, 2 en 3. Een cijfer mag vaker voorkomen. Hoeveel codes zijn er?'],
+    [
+      5,
+      3,
+      125,
+      'Een slot heeft een code van 3 cijfers uit 1, 2, 3, 4 en 5. Een cijfer mag vaker voorkomen. Hoeveel codes zijn er?',
+    ],
+    [
+      3,
+      2,
+      9,
+      'Een slot heeft een code van 2 cijfers uit 1, 2 en 3. Een cijfer mag vaker voorkomen. Hoeveel codes zijn er?',
+    ],
   ])('codes repeating s=%i k=%i → %i', (s, k, expected, prompt) => {
     const question = codesRepeatQuestion(s, k);
     expect(answer(question)).toBe(expected);
@@ -61,8 +86,18 @@ describe('countingCases: spec examples', () => {
   });
 
   it.each([
-    [5, ['Anna', 'Bram'], 48, 'Op hoeveel manieren kunnen 5 kinderen in een rij staan als Anna en Bram naast elkaar moeten staan?'],
-    [4, ['Chris', 'Dora'], 12, 'Op hoeveel manieren kunnen 4 kinderen in een rij staan als Chris en Dora naast elkaar moeten staan?'],
+    [
+      5,
+      ['Anna', 'Bram'],
+      48,
+      'Op hoeveel manieren kunnen 5 kinderen in een rij staan als Anna en Bram naast elkaar moeten staan?',
+    ],
+    [
+      4,
+      ['Chris', 'Dora'],
+      12,
+      'Op hoeveel manieren kunnen 4 kinderen in een rij staan als Chris en Dora naast elkaar moeten staan?',
+    ],
   ])('together n=%i → %i', (n, pair, expected, prompt) => {
     const question = togetherQuestion(n, pair as [string, string]);
     expect(answer(question)).toBe(expected);

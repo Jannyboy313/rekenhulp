@@ -68,7 +68,10 @@ export function placeValueExplanation(value: number, base: Base, position = 1): 
   const digits = toBase(value, base).length;
   const exponent = digits - position;
   const place = base ** exponent;
-  const chain = exponent < 2 ? `${place}` : `${Array.from({ length: exponent }, () => base).join(' × ')} = ${place}`;
+  const chain =
+    exponent < 2
+      ? `${place}`
+      : `${Array.from({ length: exponent }, () => base).join(' × ')} = ${place}`;
   const digit = Math.floor(value / place) % base;
   return `het ${ORDINALS[position]} van ${digits} cijfers staat op de plaats van ${chain} → ${digit} × ${place} = ${digit * place}`;
 }
@@ -117,7 +120,12 @@ function generatePlace(rng: Rng): Question {
   });
   const numeral = toBase(value, base);
   const position =
-    base === 2 ? pick(rng, [2, 3, 4].filter((candidate) => numeral[candidate - 1] === '1')) : 1;
+    base === 2
+      ? pick(
+          rng,
+          [2, 3, 4].filter((candidate) => numeral[candidate - 1] === '1'),
+        )
+      : 1;
   const answer = base === 2 ? 2 ** (4 - position) : firstDigitValue(value, base);
   return {
     key: `baseReasoning:place:${base}:${value}${base === 2 ? `:${position}` : ''}`,

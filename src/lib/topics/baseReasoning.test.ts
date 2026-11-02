@@ -71,8 +71,12 @@ function expectSound(question: Question, expected: number): void {
 
 describe('baseReasoning: spec examples', () => {
   it('writes the largest-number explanation', () => {
-    expect(largestExplanation(2, 4)).toBe(`1111 = 8 + 4 + 2 + 1 = 15, of 2⁴ ${MINUS} 1 = 16 ${MINUS} 1 = 15`);
-    expect(largestExplanation(2, 3)).toBe(`111 = 4 + 2 + 1 = 7, of 2³ ${MINUS} 1 = 8 ${MINUS} 1 = 7`);
+    expect(largestExplanation(2, 4)).toBe(
+      `1111 = 8 + 4 + 2 + 1 = 15, of 2⁴ ${MINUS} 1 = 16 ${MINUS} 1 = 15`,
+    );
+    expect(largestExplanation(2, 3)).toBe(
+      `111 = 4 + 2 + 1 = 7, of 2³ ${MINUS} 1 = 8 ${MINUS} 1 = 7`,
+    );
     expect(largestExplanation(16, 2)).toBe(
       `F = 15: FF = 15 × 16 + 15 × 1 = 255, of 16² ${MINUS} 1 = 256 ${MINUS} 1 = 255`,
     );
@@ -82,8 +86,12 @@ describe('baseReasoning: spec examples', () => {
     expect(digitCountExplanation(100, 2)).toBe(
       '64 = 2⁶ en 128 = 2⁷ → 100 zit tussen 64 en 128 → 7 cijfers',
     );
-    expect(digitCountExplanation(10, 2)).toBe('8 = 2³ en 16 = 2⁴ → 10 zit tussen 8 en 16 → 4 cijfers');
-    expect(digitCountExplanation(26, 5)).toBe('25 = 5² en 125 = 5³ → 26 zit tussen 25 en 125 → 3 cijfers');
+    expect(digitCountExplanation(10, 2)).toBe(
+      '8 = 2³ en 16 = 2⁴ → 10 zit tussen 8 en 16 → 4 cijfers',
+    );
+    expect(digitCountExplanation(26, 5)).toBe(
+      '25 = 5² en 125 = 5³ → 26 zit tussen 25 en 125 → 3 cijfers',
+    );
     expect(digitCountExplanation(624, 5)).toBe(
       '125 = 5³ en 625 = 5⁴ → 624 zit tussen 125 en 625 → 4 cijfers',
     );

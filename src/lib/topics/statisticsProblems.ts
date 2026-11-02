@@ -120,10 +120,7 @@ function drawCombined(rng: Rng): Question {
     const a: Group = { size: pick(rng, GROUP_SIZES), mean: randomInt(rng, min, max) };
     const b: Group = { size: pick(rng, GROUP_SIZES), mean: randomInt(rng, min, max) };
     if (a.size === b.size || a.mean === b.mean) return null;
-    const mean = rational(
-      BigInt(a.size * a.mean + b.size * b.mean),
-      BigInt(a.size + b.size),
-    );
+    const mean = rational(BigInt(a.size * a.mean + b.size * b.mean), BigInt(a.size + b.size));
     return hasAtMostDecimals(mean, 1) ? ([a, b] as const) : null;
   });
   return combinedQuestion(context, first, second);

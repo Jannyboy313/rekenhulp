@@ -419,12 +419,7 @@ describe('levels', () => {
     describeSetTopicRows(forLevel(set, 'deep'), size).map((row) => row.name);
 
   it('lists the four Verbanden & statistiek Verdieping topics and the Opfrisser share', () => {
-    const topics = [
-      'Kans',
-      'Statistiek',
-      'Gemiddelde in context',
-      'Formules en rijen in context',
-    ];
+    const topics = ['Kans', 'Statistiek', 'Gemiddelde in context', 'Formules en rijen in context'];
     expect(deepRows(RELATIONS_SET, 15)).toEqual([...topics, '20% opfrisser']);
     expect(deepRows(RELATIONS_SET, 10)).toEqual([...topics, '20% opfrisser']);
     expect(deepRows(RELATIONS_SET, 5)).toEqual(topics);

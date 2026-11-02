@@ -17,13 +17,25 @@ const cents = (value: number) => rational(BigInt(value), 100n);
 const euros = (value: number) => formatEuro(fromInteger(value));
 
 const COINS = {
-  euro: { low: euros(1), lowCents: 100, high: euros(2), highCents: 200, each: `munt van ${euros(2)}` },
+  euro: {
+    low: euros(1),
+    lowCents: 100,
+    high: euros(2),
+    highCents: 200,
+    each: `munt van ${euros(2)}`,
+  },
   cent: { low: '50 cent', lowCents: 50, high: euros(1), highCents: 100, each: 'euro' },
 } as const;
 
 type CoinPair = keyof typeof COINS;
 
-function question(key: string, prompt: string, answer: number, explanation: string, suffix?: string): Question {
+function question(
+  key: string,
+  prompt: string,
+  answer: number,
+  explanation: string,
+  suffix?: string,
+): Question {
   return {
     key: `twoUnknowns:${key}`,
     topic: 'twoUnknowns',
@@ -32,7 +44,12 @@ function question(key: string, prompt: string, answer: number, explanation: stri
 }
 
 /** Father/son or mother/daughter: `factor` times the younger age, `young` the smaller age. */
-export function agesQuestion(family: Family, factor: number, young: number, askOld: boolean): Question {
+export function agesQuestion(
+  family: Family,
+  factor: number,
+  young: number,
+  askOld: boolean,
+): Question {
   const { old, child, possessive } = FAMILIES[family];
   const sum = (factor + 1) * young;
   const oldAge = factor * young;
@@ -49,13 +66,19 @@ export function agesQuestion(family: Family, factor: number, young: number, askO
 }
 
 /** `count` coins of two kinds, `high` of the higher kind; the total follows from them. */
-export function coinsQuestion(pair: CoinPair, count: number, high: number, askHigh: boolean): Question {
+export function coinsQuestion(
+  pair: CoinPair,
+  count: number,
+  high: number,
+  askHigh: boolean,
+): Question {
   const { low, lowCents, high: highLabel, highCents, each } = COINS[pair];
   const diff = highCents - lowCents;
   const baseCents = count * lowCents;
   const totalCents = baseCents + high * diff;
   const shortCents = high * diff;
-  const division = diff === 100 ? '' : `${formatMoney(cents(shortCents))} : ${formatMoney(cents(diff))} = `;
+  const division =
+    diff === 100 ? '' : `${formatMoney(cents(shortCents))} : ${formatMoney(cents(diff))} = `;
   const steps = [
     `stel dat alle ${count} munten ${low} zijn: ${count} × ${formatMoney(cents(lowCents))} = ${formatEuro(cents(baseCents))}`,
     `${formatMoney(cents(totalCents))} ${MINUS} ${formatMoney(cents(baseCents))} = ${formatEuro(cents(shortCents))} te weinig`,

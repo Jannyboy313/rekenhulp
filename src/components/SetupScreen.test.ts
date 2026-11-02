@@ -2,12 +2,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { DEEP_FIXTURE_SET } from '../lib/setFixture';
-import {
-  DEFAULT_SESSION_SIZE,
-  MEASUREMENT_SET,
-  NUMBER_SENSE_SET,
-  TABLES_SET,
-} from '../lib/sets';
+import { DEFAULT_SESSION_SIZE, MEASUREMENT_SET, NUMBER_SENSE_SET, TABLES_SET } from '../lib/sets';
 import { TABLE_FACTORS } from '../lib/topics/tables';
 import type { Level, PracticeSet } from '../lib/types';
 import SetupScreen from './SetupScreen.svelte';

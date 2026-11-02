@@ -111,7 +111,12 @@ describe('hexBinary explanations', () => {
       'B7',
       'groepjes van 4 vanaf rechts: 1011 | 0111 → 1011 = 11 = B en 0111 = 7 → B7',
     ],
-    ['toHex', 62, '3E', 'groepjes van 4 vanaf rechts: 0011 | 1110 → 0011 = 3 en 1110 = 14 = E → 3E'],
+    [
+      'toHex',
+      62,
+      '3E',
+      'groepjes van 4 vanaf rechts: 0011 | 1110 → 0011 = 3 en 1110 = 14 = E → 3E',
+    ],
     ['toBinary', 62, '111110', '3 = 0011 en E = 14 = 1110 → 0011 1110 → 111110'],
   ])('%s %i → %s', (direction, value, answer, explanation) => {
     const step = stepOf(find(direction, value));
