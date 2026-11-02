@@ -3490,7 +3490,10 @@ likely, all `number` answers:
 - **Reverse:** the three word formulas of §5.36 (taxi, fietsverhuur, kaars) with their ranges;
   a quantity is drawn and the result given: `Een rit kost € 29. Hoeveel km is dat?`, `Je
   betaalt € 69 voor de huur. Hoeveel dagen was dat?`, `De kaars is nog 14 cm lang. Hoeveel uur
-  brandt hij al?` (suffixes `km`, `dagen`, `uur`). The quantity is whole.
+  brandt hij al?` (suffixes `km`, `dagen`, `uur`). The quantity is whole. A fourth context,
+  equally likely, is temperatuur (RWT D.4): `Temperatuur: graden Fahrenheit = 32 + 1,8 × graden
+  Celsius. Het is 77 °F. Hoeveel °C is dat?` (answer 25, suffix `°C`); the Celsius value is a
+  multiple of 5 in `[−20, 40]` and not 0, so the Fahrenheit value is whole (`−4` to `104`).
 - **Break-even:** two offers `start + rate × x` in whole euros, `start₁ > start₂` and
   `rate₁ < rate₂`; `start₁ − start₂ ∈ [2, 12]`, `rate₂ − rate₁ ∈ [1, 3]` dividing it, the
   answer `x = (start₁ − start₂) : (rate₂ − rate₁) ∈ [2, 10]`. Two contexts, 50/50: abonnement
@@ -3499,6 +3502,7 @@ likely, all `number` answers:
 - **Position:** an increasing arithmetic sequence with start in `[1, 20]` and difference in
   `[2, 9]`, four terms shown and `…`; the asked term is at `n ∈ [10, 60]` and at most 500.
 - Explanations: `4 + 2,50 × aantal km = 29 → 2,50 × aantal km = 29 − 4 = 25 → 25 : 2,50 = 10`;
+  `32 + 1,8 × graden Celsius = 77 → 1,8 × graden Celsius = 77 − 32 = 45 → 45 : 1,8 = 25`;
   `A is € 6 duurder per maand (10 − 4), B is € 1 duurder per film (3 − 2) → 6 : 1 = 6 films`;
   `van 4 naar 100 is 96 meer → 96 : 3 = 32 stappen → plek 1 + 32 = 33`.
 - The de-duplication key is the form, the context and the numbers.
@@ -4288,7 +4292,8 @@ wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§
     `compareFractions` has fractions and decimals only. Opfrisser. Closed by the Mixed form of
     §5.74.
   - D.4: a formula with a decimal factor, such as Celsius ↔ Fahrenheit (`F = 32 + 1,8 × C`).
-    Verdieping.
+    Verdieping. Closed by the temperatuur context of §5.89; decimal rates were already in the
+    word formulas of §5.36 (taxi `2,50`, kaars `1,5`).
   - C.1: the terms horizontaal, verticaal, grootheid and eenheid. A.1: cijfer versus getal
     (`45 bestaat uit de cijfers 4 en 5`). MC.
 - LKT, provisional: the version of the kennisbasis
