@@ -55,7 +55,8 @@ and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`, `si
   `measureSense`, `timeCalc`, `estimating`, `proportionConcepts`, `compareRatios`,
   `numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
   `fractionConcepts` and `solidNames`), and the score per topic on the results screen (§3.5,
-§12.4: `topicScores` in `lib/results.ts`).
+§12.4: `topicScores` in `lib/results.ts`) and Fouten oefenen (§3.5, §12.4: `mistakeSession`
+in `lib/session.ts`, three new exercises per wrong question).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -77,13 +78,11 @@ props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.s
 The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScreen` only pass
 lesson data through to `LessonLinks` and `LessonSheet`.
 
-Next steps (spec §12.2–§12.6), one at a time and only when the user says so. The per-set v3 step
-(§12.2 step 4) is done; the user picks the next v3 step among the §12.4 features. v4 practises
-across sets. v5 holds only persistent memory in IndexedDB.
+Next steps (spec §12.2–§12.6), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
+check the sets against the toetsmatrijs (§12.7) before v4. v4 practises across sets. v5 holds only persistent memory in IndexedDB.
 
 | Step                                                                                    | New infrastructure   |
 | --------------------------------------------------------------------------------------- | -------------------- |
-| v3: practise mistakes (§12.4), a new session with the topics of the mistakes            | —                    |
 | v4: mixed categories (§12.5), form decided in its spec iteration                        | sessions across sets |
 | v4: practice test (§12.6), after mixed categories                                       | test session         |
 | v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB            |
