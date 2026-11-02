@@ -3264,12 +3264,14 @@ Verdieping has four topics of its own (§5.81–§5.84, §4.1). The card descrip
 
 ### 5.80 Solid names (`solidNames`)
 
-Opfrisser (RWT C.1). Label: `Ruimtefiguren (namen, vlakken, ribben)`. Two forms, 50/50:
+Opfrisser (RWT C.1). Label: `Ruimtefiguren en lijnen (namen, vlakken, begrippen)`. Three
+forms, each equally likely:
 
 | Form  | Example                                                                  | Answer   | Answer kind |
 |-------|--------------------------------------------------------------------------|----------|-------------|
 | Name  | `Welk ruimtefiguur heeft een cirkel als grondvlak en een punt als top?`  | `kegel`  | choice      |
 | Count | `Hoeveel ribben heeft een prisma met een zeshoek als grondvlak?`          | 18       | number      |
+| Line  | `Welk woord hoort bij: een lijn die recht omhoog loopt, zoals een vlaggenmast?` | `verticaal` | choice |
 
 - **Name**, a fixed list; the options are the answer and three random others from `balk`,
   `kubus`, `prisma`, `kegel`, `bol`, `cilinder`, `piramide`, in random order. Definitions are
@@ -3291,6 +3293,18 @@ Opfrisser (RWT C.1). Label: `Ruimtefiguren (namen, vlakken, ribben)`. Two forms,
   piramide with an `n`-hoek as grondvlak (`n + 1`, `2n`, `n + 1`); `n ∈ {3, 4, 5, 6, 8}`, named
   `driehoek`, `vierkant`, `vijfhoek`, `zeshoek`, `achthoek`. Each of the three solids equally
   likely.
+- **Line** (the line terms of C.1), a fixed list; the options are the answer and three random
+  others from the five terms, in random order. `Loodrecht` also means "straight up" in everyday
+  Dutch, so `verticaal` and `loodrecht` are never a distractor for each other.
+
+  | `Welk woord hoort bij: …?`                                          | Answer        | Explanation                                                        |
+  |---------------------------------------------------------------------|---------------|--------------------------------------------------------------------|
+  | `een lijn die waterpas loopt, zoals de horizon`                     | `horizontaal` | `Horizontaal betekent waterpas, zoals de horizon.`                 |
+  | `een lijn die recht omhoog loopt, zoals een vlaggenmast`            | `verticaal`   | `Verticaal betekent recht omhoog, zoals een vlaggenmast.`          |
+  | `een lijn tussen twee hoekpunten die niet naast elkaar liggen`      | `diagonaal`   | `Een diagonaal verbindt twee hoekpunten die niet naast elkaar liggen.` |
+  | `twee lijnen die een rechte hoek met elkaar maken`                  | `loodrecht`   | `Loodrechte lijnen maken een rechte hoek (90°) met elkaar.`        |
+  | `twee lijnen die elkaar nooit snijden, hoe ver je ze ook doortrekt` | `evenwijdig`  | `Evenwijdige lijnen snijden elkaar nooit.`                         |
+
 - Explanations: `Een kegel heeft een cirkel als grondvlak en loopt uit in een punt.`;
   `zeshoek als grondvlak: 6 ribben onder, 6 boven en 6 opstaand → 18`, `piramide: 4 ribben in
   het grondvlak en 4 naar de top → 8`.
@@ -4323,7 +4337,8 @@ wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§
     Verdieping. Closed by the temperatuur context of §5.89; decimal rates were already in the
     word formulas of §5.36 (taxi `2,50`, kaars `1,5`).
   - C.1: the terms horizontaal, verticaal, grootheid and eenheid. A.1: cijfer versus getal
-    (`45 bestaat uit de cijfers 4 en 5`). MC.
+    (`45 bestaat uit de cijfers 4 en 5`). MC. Closed by the Digit form of §5.68, the Quantity
+    form of §5.48 and the Line form of §5.80.
 - LKT, provisional: the version of the kennisbasis
   (`docs/references/lkt-kennisbasis-concept.md`) is unconfirmed.
   - 2.3: meetniveaus (nominaal, ordinaal, interval, ratio), correlatie versus causaliteit, and
