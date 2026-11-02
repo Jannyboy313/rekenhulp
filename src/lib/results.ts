@@ -1,3 +1,4 @@
+import { splitTopicLabel } from './sets';
 import { TOPIC_LABELS } from './topics';
 import type { AnswerKind, CheckResult, Question } from './types';
 
@@ -70,7 +71,7 @@ export interface TopicScore {
 export function topicScores(records: readonly QuestionRecord[]): TopicScore[] {
   const scores = new Map<string, TopicScore>();
   for (const record of records) {
-    const name = TOPIC_LABELS[record.question.topic].split(' (')[0]!;
+    const { name } = splitTopicLabel(TOPIC_LABELS[record.question.topic]);
     const score = scores.get(name) ?? { name, correct: 0, answered: 0 };
     score.answered++;
     if (isCorrect(record)) score.correct++;
