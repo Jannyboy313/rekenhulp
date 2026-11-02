@@ -2308,9 +2308,9 @@ with equal probability:
 
 ### 5.48 Measure sense (`measureSense`)
 
-Opfrisser (RWT 0.1, 0.2 and C.2), all multiple choice. Label:
-`Maatgevoel (referenties, meetinstrumenten, eenheden)`. There are four forms, each picked with
-equal probability:
+Opfrisser (RWT 0.1, 0.2, C.2, and C.1 for grootheid and eenheid), all multiple choice. Label:
+`Maatgevoel (referenties, meetinstrumenten, eenheden, grootheden)`. There are five forms, each
+picked with equal probability:
 
 | Form       | Example                                  | Answer                            |
 |------------|------------------------------------------|-----------------------------------|
@@ -2318,6 +2318,7 @@ equal probability:
 | Instrument | `Waarmee meet je de lengte van een potlood?` | `liniaal`                     |
 | Unit       | `In een drinkglas past ongeveer 200 ?.`  | `ml`                              |
 | Ordering   | `Welke rij staat van klein naar groot?`  | `5,2 mm – 76 cm – 2 m – 104 dm`   |
+| Quantity   | `Bij welke grootheid hoort de eenheid liter?` | `inhoud`                     |
 
 - **Reference** (0.2): the nine Cito references, each with fixed options in ascending order:
 
@@ -2377,10 +2378,30 @@ equal probability:
   the bare numbers, and two orders that each swap one neighbouring pair of the right order
   (all four different). An option reads `5,2 mm – 76 cm – 2 m – 104 dm` (an en dash with
   spaces).
+- **Quantity** (C.1): the seven grootheden `lengte`, `oppervlakte`, `inhoud`, `gewicht` (the
+  Cito word), `tijd`, `snelheid`, `temperatuur`, each with its units written as words:
+
+  | Grootheid   | Units                             |
+  |-------------|-----------------------------------|
+  | lengte      | meter, kilometer                  |
+  | oppervlakte | vierkante meter, hectare          |
+  | inhoud      | liter, kubieke meter              |
+  | gewicht     | gram, kilogram, ton               |
+  | tijd        | seconde, minuut                   |
+  | snelheid    | kilometer per uur                 |
+  | temperatuur | graad Celsius                     |
+
+  Two variants, 50/50; options in random order:
+  - *unit:* `Bij welke grootheid hoort de eenheid liter?`, one of the 14 units, each equally
+    likely; the options are its grootheid and three other grootheden.
+  - *which:* `Welk woord is een grootheid?`; the options are one grootheid and three units of
+    three other grootheden.
 - Explanations: reference `Een deur is ongeveer 2 m hoog.`; instrument `De lengte van een
   potlood meet je met een liniaal.`; unit the filled-in sentence, `In een drinkglas past
   ongeveer 200 ml (2 dl).` where a second unit helps; ordering all lengths in cm,
-  `in cm: 0,52 – 76 – 200 – 1040`.
+  `in cm: 0,52 – 76 – 200 – 1040`; quantity `Liter is een eenheid van inhoud.` and
+  `Inhoud is een grootheid; meter, gram en seconde zijn eenheden.`
+- The de-duplication key of a quantity question is the variant and the unit or grootheid.
 
 ### 5.49 Compound quantities (`compoundUnits`)
 
