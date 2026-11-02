@@ -409,7 +409,76 @@ describe('levels', () => {
       NUMBER_SENSE_SET,
       FRACTIONS_SET,
       GEOMETRY_SET,
+      RELATIONS_SET,
+      NUMBER_SYSTEMS_SET,
+      HEURISTICS_SET,
     ]);
+  });
+
+  const deepRows = (set: PracticeSet, size: number) =>
+    describeSetTopicRows(forLevel(set, 'deep'), size).map((row) => row.name);
+
+  it('lists the four Verbanden & statistiek Verdieping topics and the Opfrisser share', () => {
+    const topics = [
+      'Kans',
+      'Statistiek',
+      'Gemiddelde in context',
+      'Formules en rijen in context',
+    ];
+    expect(deepRows(RELATIONS_SET, 15)).toEqual([...topics, '20% opfrisser']);
+    expect(deepRows(RELATIONS_SET, 10)).toEqual([...topics, '20% opfrisser']);
+    expect(deepRows(RELATIONS_SET, 5)).toEqual(topics);
+    expect(RELATIONS_SET.deep?.map((t) => t.topic)).toEqual([
+      'twoDice',
+      'statisticsReasoning',
+      'statisticsProblems',
+      'formulaProblems',
+    ]);
+    const deep = forLevel(RELATIONS_SET, 'deep');
+    expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: RELATIONS_SET.topics });
+  });
+
+  it('lists the four Talstelsels Verdieping topics and the Opfrisser share', () => {
+    const topics = [
+      'Rekenen in een ander talstelsel',
+      'Talstelsels begrijpen',
+      'Tweetallig ↔ zestientallig',
+      'Rekenen met Romeinse cijfers',
+    ];
+    expect(deepRows(NUMBER_SYSTEMS_SET, 15)).toEqual([...topics, '20% opfrisser']);
+    expect(deepRows(NUMBER_SYSTEMS_SET, 10)).toEqual([...topics, '20% opfrisser']);
+    expect(deepRows(NUMBER_SYSTEMS_SET, 5)).toEqual(topics);
+    expect(NUMBER_SYSTEMS_SET.deep?.map((t) => t.topic)).toEqual([
+      'baseArithmetic',
+      'baseReasoning',
+      'hexBinary',
+      'romanCalc',
+    ]);
+    const deep = forLevel(NUMBER_SYSTEMS_SET, 'deep');
+    expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: NUMBER_SYSTEMS_SET.topics });
+  });
+
+  it('lists the four Heuristieken Verdieping topics and the Opfrisser share', () => {
+    const topics = [
+      'Systematisch tellen met voorwaarden',
+      'Terugrekenen',
+      'Twee onbekenden',
+      'Vereenvoudigen',
+    ];
+    expect(deepRows(HEURISTICS_SET, 15)).toEqual([...topics, '20% opfrisser']);
+    expect(deepRows(HEURISTICS_SET, 10)).toEqual([...topics, '20% opfrisser']);
+    expect(deepRows(HEURISTICS_SET, 5)).toEqual(topics);
+    expect(HEURISTICS_SET.deep?.map((t) => t.topic)).toEqual([
+      'countingCases',
+      'backwardsProblems',
+      'twoUnknowns',
+      'simplifyDeep',
+    ]);
+    const deep = forLevel(HEURISTICS_SET, 'deep');
+    expect(deep.tablesPercent).toBe(0);
+    expect(deep.quickShare).toEqual({ percent: 20, topics: HEURISTICS_SET.topics });
   });
 
   it('lists the four Breuken & kommagetallen Verdieping topics and the Opfrisser share', () => {
@@ -583,7 +652,7 @@ describe('levels', () => {
 
   it('returns the set itself for Opfrisser and for a set without Verdieping', () => {
     expect(forLevel(DEEP_FIXTURE_SET, 'quick')).toBe(DEEP_FIXTURE_SET);
-    expect(forLevel(RELATIONS_SET, 'deep')).toBe(RELATIONS_SET);
+    expect(forLevel(TABLES_SET, 'deep')).toBe(TABLES_SET);
     const empty = { ...DEEP_FIXTURE_SET, deep: [] };
     expect(forLevel(empty, 'deep')).toBe(empty);
   });

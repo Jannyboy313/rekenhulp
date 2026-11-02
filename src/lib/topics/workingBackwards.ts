@@ -35,7 +35,11 @@ function apply({ kind, k }: Operation, value: number): number {
  * Applies the operations in order; null when a rule of §5.42 breaks (same kind in a row, an
  * undo, a division that is not exact, a value outside [1, 200]).
  */
-export function applyChain(start: number, operations: readonly Operation[]): number | null {
+export function applyChain(
+  start: number,
+  operations: readonly Operation[],
+  max = 200,
+): number | null {
   let value = start;
   let previous: Operation | undefined;
   for (const operation of operations) {
@@ -44,7 +48,7 @@ export function applyChain(start: number, operations: readonly Operation[]): num
       if (INVERSE[previous.kind] === operation.kind && previous.k === operation.k) return null;
     }
     value = apply(operation, value);
-    if (!Number.isInteger(value) || value < 1 || value > 200) return null;
+    if (!Number.isInteger(value) || value < 1 || value > max) return null;
     previous = operation;
   }
   return value;
@@ -76,8 +80,11 @@ function joinPhrases(phrases: readonly string[]): string {
   return `${phrases.slice(0, -1).join(', ')} en ${phrases.at(-1)}`;
 }
 
-export function thinkOfNumberQuestion(start: number, operations: readonly Operation[]): Question {
-  const result = applyChain(start, operations)!;
+/** The spoken chain ('Ik trek er 4 af, … en …') and its undo steps ('24 − 9 = 15 → …'). */
+export function describeChain(
+  result: number,
+  operations: readonly Operation[],
+): { spoken: string; undo: string } {
   const phrases = operations.map(({ kind, k }, i) =>
     i === 0 ? FIRST_PHRASE[kind](k) : LATER_PHRASE[kind](k),
   );
@@ -88,14 +95,20 @@ export function thinkOfNumberQuestion(start: number, operations: readonly Operat
     undo.push(`${f(value)} ${UNDO_SYMBOL[operation.kind]} ${operation.k} = ${f(before)}`);
     value = before;
   }
+  return { spoken: joinPhrases(phrases), undo: undo.join(' → ') };
+}
+
+export function thinkOfNumberQuestion(start: number, operations: readonly Operation[]): Question {
+  const result = applyChain(start, operations)!;
+  const { spoken, undo } = describeChain(result, operations);
   return {
     key: `workingBackwards:number:${start}:${operations.map(({ kind, k }) => `${kind}${k}`).join(',')}`,
     topic: 'workingBackwards',
     steps: [
       numberStep({
-        prompt: `Ik denk aan een getal. ${joinPhrases(phrases)}. Ik kom uit op ${f(result)}. Aan welk getal dacht ik?`,
+        prompt: `Ik denk aan een getal. ${spoken}. Ik kom uit op ${f(result)}. Aan welk getal dacht ik?`,
         answer: fromInteger(start),
-        explanation: `Terugrekenen vanaf ${f(result)}: ${undo.join(' → ')}`,
+        explanation: `Terugrekenen vanaf ${f(result)}: ${undo}`,
       }),
     ],
   };
@@ -177,19 +190,23 @@ export function moneyQuestion(start: number, expenses: Expenses): Question {
 
 const KINDS: readonly OperationKind[] = ['times', 'divide', 'plus', 'minus'];
 
-// The shares of the spec (operation count, part, order) are drawn before the redraw loop, so
-// rejected draws do not skew them.
-function drawThinkOfNumber(rng: Rng): Question {
-  const count = rng() < 0.5 ? 2 : 3;
-  const { start, operations } = drawUntil(() => {
+/** Draws `count` operations on a start in [2, 20] that satisfy applyChain up to `max`. */
+export function drawChain(rng: Rng, count: number, max = 200) {
+  return drawUntil(() => {
     const start = randomInt(rng, 2, 20);
     const operations = Array.from({ length: count }, (): Operation => {
       const kind = pick(rng, KINDS);
       const small = kind === 'times' || kind === 'divide';
       return { kind, k: small ? randomInt(rng, 2, 5) : randomInt(rng, 1, 20) };
     });
-    return applyChain(start, operations) === null ? null : { start, operations };
+    return applyChain(start, operations, max) === null ? null : { start, operations };
   });
+}
+
+// The shares of the spec (operation count, part, order) are drawn before the redraw loop, so
+// rejected draws do not skew them.
+function drawThinkOfNumber(rng: Rng): Question {
+  const { start, operations } = drawChain(rng, rng() < 0.5 ? 2 : 3);
   return thinkOfNumberQuestion(start, operations);
 }
 
