@@ -384,6 +384,13 @@ already names the mistake.
   the number of answered exercises (after Stop, fewer than the count). With none answered the
   screen shows "Geen opgaven beantwoord."
 - Total time (wall clock, repeats included), and average time per exercise (first attempts)
+- A card "Per onderwerp" between the score card and "Fouten" (§12.4): one text row per topic
+  with its short name and `x / n`, over the same first attempts as the score. The short name is
+  the topic label (§4) up to its first ` (`, so "Procenten", "Schaal", "KGV". Topics with the
+  same short name in one session (e.g. `probability` and `twoDice`, both "Kans", in a Verdieping
+  session with its Opfrisser share) share one row. Sorted weakest first: lowest percentage, then
+  the larger `n`, then the order of first appearance in the session. The card is shown only with
+  at least two rows; with one row it would repeat the score.
 - A list "Fouten" with one entry per wrong step, each showing the prompt, the user's answer, the
   correct answer and the tip and explanation; a correct step of a two-step exercise is left
   out. These are the first-attempt mistakes, also when a repeat was correct. Without mistakes:
@@ -4212,9 +4219,9 @@ the current session.
    only the topics of the first-attempt mistakes. Open: the count, new exercises of those topics
    or the same ones, and the level.
 2. **Score per topic** — the results screen shows the first-attempt score per topic, so weak
-   topics stand out. The practice test (§12.6) reuses it for "on which topics they still need
+   topics stand out. Decided in §3.5 (card "Per onderwerp"). The practice test (§12.6) reuses it for "on which topics they still need
    to practise".
-3. **Lesson link** — from a mistake in the wrong-answer panel to the lesson topics of its
+3. **Lesson link** (done) — from a mistake in the wrong-answer panel to the lesson topics of its
    practice topic, read in a sheet over the session (not via `openLesson`). Decided in the
    lesstof spec §3.1–§3.2 (place, button, sheet, mapping) and §4 (exception to the code
    separation).
