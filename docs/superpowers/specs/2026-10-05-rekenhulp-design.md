@@ -397,6 +397,15 @@ already names the mistake.
   "Alles goed!"
 - Buttons **Opnieuw** (new session with the same set, count, level and table choice) and
   **Menu**
+- With at least one first-attempt mistake, a primary full-width button **Fouten oefenen · n**
+  above them (§12.4); Opnieuw is then secondary. It starts a session with three new exercises
+  per wrong question, of that question's topic, so `n` is three times the number of wrong
+  questions (a two-step question counts once), without a maximum. "New" means freshly
+  generated and de-duplicated as in §4.2, with the wrong questions themselves counted as
+  used, so none of them comes back as is. The topics come from the mistakes, so the level stays
+  the same (incl. Opfrisser-share topics of a Verdieping session); Tafels keeps the table choice.
+  The session runs as any other (repeats, tips, kladblok). Its results screen works the same:
+  Fouten oefenen uses the mistakes of that session, Opnieuw starts a normal session of the set.
 
 ### 3.6 Kladblok (scratchpad)
 
@@ -4216,8 +4225,7 @@ remaining set steps (§12.2 step 4). None needs persistence: everything lives in
 the current session.
 
 1. **Practise mistakes** — a button on the results screen (§3.5) that starts a new session with
-   only the topics of the first-attempt mistakes. Open: the count, new exercises of those topics
-   or the same ones, and the level.
+   only the topics of the first-attempt mistakes. Decided in §3.5 (button Fouten oefenen).
 2. **Score per topic** — the results screen shows the first-attempt score per topic, so weak
    topics stand out. Decided in §3.5 (card "Per onderwerp"). The practice test (§12.6) reuses it for "on which topics they still need
    to practise".
