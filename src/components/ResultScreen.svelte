@@ -131,15 +131,12 @@
 
   <footer>
     {#if summary.mistakes.length > 0}
-      <button type="button" class="primary practise" onclick={onpractise}>
+      <button type="button" class="primary tonal" onclick={onpractise}>
         Fouten oefenen · {summary.mistakes.length * EXERCISES_PER_MISTAKE}
       </button>
-      <button type="button" class="secondary" onclick={onmenu}>Menu</button>
-      <button type="button" class="secondary" onclick={onrestart}>Opnieuw</button>
-    {:else}
-      <button type="button" class="secondary" onclick={onmenu}>Menu</button>
-      <button type="button" class="primary again" onclick={onrestart}>Opnieuw</button>
     {/if}
+    <button type="button" class="secondary" onclick={onmenu}>Menu</button>
+    <button type="button" class="primary again" onclick={onrestart}>Opnieuw</button>
   </footer>
 </main>
 
@@ -398,12 +395,14 @@
     background: var(--bg);
   }
 
-  .again,
-  .practise {
+  .again {
     box-shadow: var(--shadow-glow);
   }
 
-  .practise {
+  /* Between primary and secondary in weight (spec §3.5). */
+  .tonal {
     grid-column: 1 / -1;
+    background: var(--primary-tint);
+    color: var(--primary);
   }
 </style>

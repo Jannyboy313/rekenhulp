@@ -217,7 +217,7 @@ describe('ResultScreen', () => {
     expect(screen.getByRole('button', { name: 'Opnieuw' }).classList).toContain('primary');
   });
 
-  it('offers Fouten oefenen with three exercises per wrong question, Opnieuw secondary', async () => {
+  it('offers a tonal Fouten oefenen with three exercises per wrong question, Opnieuw primary', async () => {
     const second = numberStep({ prompt: '6 × 6 = ?', answer: fromInteger(36) });
     // Two wrong steps of one question count as one mistake.
     const twoSteps: QuestionRecord = {
@@ -232,6 +232,7 @@ describe('ResultScreen', () => {
     renderResults([recordOf(product, '54'), twoSteps, recordOf(second, '36')], { onpractise });
     await fireEvent.click(screen.getByRole('button', { name: 'Fouten oefenen · 6' }));
     expect(onpractise).toHaveBeenCalledOnce();
-    expect(screen.getByRole('button', { name: 'Opnieuw' }).classList).toContain('secondary');
+    expect(screen.getByRole('button', { name: 'Opnieuw' }).classList).toContain('primary');
+    expect(screen.getByRole('button', { name: 'Fouten oefenen · 6' }).classList).toContain('tonal');
   });
 });
