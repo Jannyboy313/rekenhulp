@@ -152,6 +152,30 @@ describe('App', () => {
     expect(screen.getByText('1 / 15')).toBeTruthy();
   });
 
+  it('practises the mistakes, again from the mistakes of that session, and Opnieuw', async () => {
+    render(App);
+    await click(/Tafels/);
+    await click(/^Start/);
+    // 1 is never a table answer (factors 2 t/m 15, products from 4).
+    await click('1');
+    await click('OK');
+    await click('Verder');
+    await click('Stoppen');
+    await click('Fouten oefenen · 3');
+    expect(screen.getByText('1 / 3')).toBeTruthy();
+
+    await click('1');
+    await click('OK');
+    await click('Verder');
+    await click('Stoppen');
+    await click('Fouten oefenen · 3');
+    expect(screen.getByText('1 / 3')).toBeTruthy();
+
+    await click('Stoppen');
+    await click('Opnieuw');
+    expect(screen.getByText('1 / 15')).toBeTruthy();
+  });
+
   it.each(PRACTICE_SETS)('offers $name with its topics and starts a session', async (set) => {
     render(App);
     await click(new RegExp(`^${set.name}`));

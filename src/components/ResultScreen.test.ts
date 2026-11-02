@@ -21,10 +21,16 @@ function recordOf(
 
 function renderResults(
   records: QuestionRecord[],
-  { totalMs = 10_000, onrestart = vi.fn(), onmenu = vi.fn() } = {},
+  { totalMs = 10_000, onrestart = vi.fn(), onmenu = vi.fn(), onpractise = vi.fn() } = {},
 ) {
   return render(ResultScreen, {
-    props: { set: TABLES_SET, summary: summarize(records, totalMs), onrestart, onmenu },
+    props: {
+      set: TABLES_SET,
+      summary: summarize(records, totalMs),
+      onrestart,
+      onmenu,
+      onpractise,
+    },
   });
 }
 
@@ -195,5 +201,29 @@ describe('ResultScreen', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Opnieuw' }));
     expect(onmenu).toHaveBeenCalledOnce();
     expect(onrestart).toHaveBeenCalledOnce();
+  });
+
+  it('offers no Fouten oefenen without mistakes, with Opnieuw as the primary button', () => {
+    renderResults([recordOf(product, '56')]);
+    expect(screen.queryByRole('button', { name: /Fouten oefenen/ })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Opnieuw' }).classList).toContain('primary');
+  });
+
+  it('offers Fouten oefenen with three exercises per wrong question, Opnieuw secondary', async () => {
+    const second = numberStep({ prompt: '6 × 6 = ?', answer: fromInteger(36) });
+    // Two wrong steps of one question count as one mistake.
+    const twoSteps: QuestionRecord = {
+      question: { key: 'two', topic: 'tables', steps: [product, second] },
+      attempts: [
+        { input: '1', result: product.check('1') },
+        { input: '1', result: second.check('1') },
+      ],
+      durationMs: 3000,
+    };
+    const onpractise = vi.fn();
+    renderResults([recordOf(product, '54'), twoSteps, recordOf(second, '36')], { onpractise });
+    await fireEvent.click(screen.getByRole('button', { name: 'Fouten oefenen · 6' }));
+    expect(onpractise).toHaveBeenCalledOnce();
+    expect(screen.getByRole('button', { name: 'Opnieuw' }).classList).toContain('secondary');
   });
 });

@@ -12,7 +12,7 @@
   import type { Lesson, LessonTopic } from './lib/lessons/types';
   import { createRng, randomSeed } from './lib/random';
   import { summarize, type QuestionRecord, type SessionSummary } from './lib/results';
-  import { buildSession, generatorsFor } from './lib/session';
+  import { buildSession, generatorsFor, mistakeSession } from './lib/session';
   import { DEFAULT_SESSION_SIZE, forLevel, PRACTICE_SETS } from './lib/sets';
   import { TABLE_FACTORS } from './lib/topics/tables';
   import type { Level, PracticeSet, Question } from './lib/types';
@@ -103,6 +103,16 @@
     screen = { name: 'playing', set, questions };
   }
 
+  /** Fouten oefenen (spec §3.5): new exercises of the topics of the first-attempt mistakes. */
+  function practiseMistakes(set: PracticeSet, summary: SessionSummary) {
+    const questions = mistakeSession(
+      summary.mistakes.map(({ question }) => question),
+      createRng(randomSeed()),
+      generatorsFor(set, tables),
+    );
+    screen = { name: 'playing', set, questions };
+  }
+
   function finishSession(set: PracticeSet, records: QuestionRecord[], totalMs: number) {
     screen = { name: 'results', set, summary: summarize(records, totalMs) };
   }
@@ -156,11 +166,13 @@
   {/key}
 {:else}
   {@const set = screen.set}
+  {@const summary = screen.summary}
   <ResultScreen
     {set}
-    summary={screen.summary}
+    {summary}
     onrestart={() => startSession(set)}
     onmenu={showSets}
+    onpractise={() => practiseMistakes(set, summary)}
   />
 {/if}
 

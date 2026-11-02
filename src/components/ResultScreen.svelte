@@ -2,6 +2,7 @@
   import { formatDuration, formatSeconds } from '../lib/format';
   import { displayAnswer } from '../lib/inputModels';
   import { wrongSteps, type SessionSummary } from '../lib/results';
+  import { EXERCISES_PER_MISTAKE } from '../lib/session';
   import type { PracticeSet } from '../lib/types';
   import Icon from './Icon.svelte';
   import MathText from './MathText.svelte';
@@ -11,9 +12,11 @@
     summary: SessionSummary;
     onrestart: () => void;
     onmenu: () => void;
+    /** Fouten oefenen (spec §3.5); shown only with mistakes. */
+    onpractise: () => void;
   }
 
-  let { set, summary, onrestart, onmenu }: Props = $props();
+  let { set, summary, onrestart, onmenu, onpractise }: Props = $props();
 
   const failedSteps = $derived(wrongSteps(summary.mistakes));
 </script>
@@ -122,8 +125,16 @@
   </div>
 
   <footer>
-    <button type="button" class="secondary" onclick={onmenu}>Menu</button>
-    <button type="button" class="primary again" onclick={onrestart}>Opnieuw</button>
+    {#if summary.mistakes.length > 0}
+      <button type="button" class="primary practise" onclick={onpractise}>
+        Fouten oefenen · {summary.mistakes.length * EXERCISES_PER_MISTAKE}
+      </button>
+      <button type="button" class="secondary" onclick={onmenu}>Menu</button>
+      <button type="button" class="secondary" onclick={onrestart}>Opnieuw</button>
+    {:else}
+      <button type="button" class="secondary" onclick={onmenu}>Menu</button>
+      <button type="button" class="primary again" onclick={onrestart}>Opnieuw</button>
+    {/if}
   </footer>
 </main>
 
@@ -354,7 +365,12 @@
     background: var(--bg);
   }
 
-  .again {
+  .again,
+  .practise {
     box-shadow: var(--shadow-glow);
+  }
+
+  .practise {
+    grid-column: 1 / -1;
   }
 </style>
