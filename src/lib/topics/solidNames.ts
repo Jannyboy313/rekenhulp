@@ -85,7 +85,73 @@ export function nameQuestion(index: number, rng: Rng): Question {
   };
 }
 
-export type CountSolid = 'kubus' | 'balk' | 'prisma' | 'piramide';
+export const LINE_TERMS: readonly string[] = [
+  'horizontaal',
+  'verticaal',
+  'diagonaal',
+  'loodrecht',
+  'evenwijdig',
+];
+
+/** `Loodrecht` also means "straight up" in everyday Dutch (spec §5.80). */
+const UPRIGHT: readonly string[] = ['verticaal', 'loodrecht'];
+
+interface LineItem {
+  /** Completes `Welk woord hoort bij: …?` */
+  meaning: string;
+  answer: string;
+  explanation: string;
+}
+
+export const LINE_ITEMS: readonly LineItem[] = [
+  {
+    meaning: 'een lijn die waterpas loopt, zoals de horizon',
+    answer: 'horizontaal',
+    explanation: 'Horizontaal betekent waterpas, zoals de horizon.',
+  },
+  {
+    meaning: 'een lijn die recht omhoog loopt, zoals een vlaggenmast',
+    answer: 'verticaal',
+    explanation: 'Verticaal betekent recht omhoog, zoals een vlaggenmast.',
+  },
+  {
+    meaning: 'een lijn tussen twee hoekpunten die niet naast elkaar liggen',
+    answer: 'diagonaal',
+    explanation: 'Een diagonaal verbindt twee hoekpunten die niet naast elkaar liggen.',
+  },
+  {
+    meaning: 'twee lijnen die een rechte hoek met elkaar maken',
+    answer: 'loodrecht',
+    explanation: 'Loodrechte lijnen maken een rechte hoek (90°) met elkaar.',
+  },
+  {
+    meaning: 'twee lijnen die elkaar nooit snijden, hoe ver je ze ook doortrekt',
+    answer: 'evenwijdig',
+    explanation: 'Evenwijdige lijnen snijden elkaar nooit.',
+  },
+];
+
+/** The answer and three random other terms, in random order (spec §5.80). */
+export function lineQuestion(index: number, rng: Rng): Question {
+  const { meaning, answer, explanation } = LINE_ITEMS[index]!;
+  const others = LINE_TERMS.filter(
+    (term) => term !== answer && !(UPRIGHT.includes(answer) && UPRIGHT.includes(term)),
+  );
+  return {
+    key: `solidNames:line:${answer}`,
+    topic: 'solidNames',
+    steps: [
+      choiceStep({
+        prompt: `Welk woord hoort bij: ${meaning}?`,
+        options: shuffle(rng, [answer, ...shuffle(rng, others).slice(0, 3)]),
+        answer,
+        explanation,
+      }),
+    ],
+  };
+}
+
+export type CountSolid ='kubus' | 'balk' | 'prisma' | 'piramide';
 export type Property = 'vlakken' | 'ribben' | 'hoekpunten';
 
 const PROPERTIES: readonly Property[] = ['vlakken', 'ribben', 'hoekpunten'];
@@ -168,6 +234,14 @@ function drawCount(rng: Rng): Question {
   }
 }
 
+/** Name, count or line, each equally likely (spec §5.80). */
 export function generateSolidNames(rng: Rng): Question {
-  return rng() < 0.5 ? nameQuestion(randomInt(rng, 0, NAME_ITEMS.length - 1), rng) : drawCount(rng);
+  switch (pick(rng, ['name', 'count', 'line'] as const)) {
+    case 'name':
+      return nameQuestion(randomInt(rng, 0, NAME_ITEMS.length - 1), rng);
+    case 'count':
+      return drawCount(rng);
+    case 'line':
+      return lineQuestion(randomInt(rng, 0, LINE_ITEMS.length - 1), rng);
+  }
 }

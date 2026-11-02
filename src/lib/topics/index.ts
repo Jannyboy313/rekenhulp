@@ -276,7 +276,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   pythagoras: 'Pythagoras (schuine zijde en rechthoekszijde)',
   angles: 'Hoeken (driehoek, veelhoek, klok)',
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
-  solidNames: 'Ruimtefiguren (namen, vlakken, ribben)',
+  solidNames: 'Ruimtefiguren en lijnen (namen, vlakken, begrippen)',
   scalingSolids: 'Kwadratisch en kubisch vergroten',
   surfaceArea: 'Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)',
   compositeShapes: 'Samengestelde figuren (hoek eruit, pad, hectare)',

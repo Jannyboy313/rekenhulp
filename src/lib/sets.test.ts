@@ -329,7 +329,7 @@ describe('describeSetTopicRows per set', () => {
       'Hoeken (driehoek, veelhoek, klok)',
       'Symmetrie (assen, draaien, puntsymmetrie)',
       'Eigenschappen van vierhoeken en driehoeken (ja/nee)',
-      'Ruimtefiguren (namen, vlakken, ribben)',
+      'Ruimtefiguren en lijnen (namen, vlakken, begrippen)',
       '15% tafels',
     ]);
   });

@@ -3,6 +3,9 @@ import { createRng } from '../random';
 import {
   countQuestion,
   generateSolidNames,
+  LINE_ITEMS,
+  LINE_TERMS,
+  lineQuestion,
   nameQuestion,
   NAME_ITEMS,
   SOLID_NAMES,
@@ -10,6 +13,40 @@ import {
 import { stepOf } from './testHelpers';
 
 const BOX_FAMILY = ['kubus', 'balk', 'prisma'];
+
+describe('lineQuestion', () => {
+  it('has the five line terms of the spec', () => {
+    expect(LINE_TERMS).toEqual(['horizontaal', 'verticaal', 'diagonaal', 'loodrecht', 'evenwijdig']);
+    expect(LINE_ITEMS.map(({ answer }) => answer)).toEqual(LINE_TERMS);
+  });
+
+  it('asks the word for a vertical line', () => {
+    const step = stepOf(lineQuestion(1, createRng(1)));
+    expect(step.prompt).toBe(
+      'Welk woord hoort bij: een lijn die recht omhoog loopt, zoals een vlaggenmast?',
+    );
+    expect(step.check('verticaal').correct).toBe(true);
+    expect(step.check('horizontaal').correct).toBe(false);
+    expect(step.check('verticaal').explanation).toBe(
+      'Verticaal betekent recht omhoog, zoals een vlaggenmast.',
+    );
+  });
+
+  it('offers the answer and three other terms, never verticaal and loodrecht together', () => {
+    const rng = createRng(7);
+    for (let round = 0; round < 50; round++) {
+      LINE_ITEMS.forEach(({ answer }, index) => {
+        const options = stepOf(lineQuestion(index, rng)).options!;
+        expect(options).toHaveLength(4);
+        expect(new Set(options).size).toBe(4);
+        expect(options).toContain(answer);
+        expect(options.every((option) => LINE_TERMS.includes(option))).toBe(true);
+        if (answer === 'verticaal') expect(options).not.toContain('loodrecht');
+        if (answer === 'loodrecht') expect(options).not.toContain('verticaal');
+      });
+    }
+  });
+});
 
 describe('nameQuestion', () => {
   it.each<[number, string, string]>([
@@ -173,9 +210,18 @@ describe('generateSolidNames', () => {
     }
   });
 
-  it('uses the name and count forms about 50/50', () => {
-    const names = questions.filter((question) => stepOf(question).kind === 'choice').length;
-    expect(Math.abs(names / questions.length - 0.5)).toBeLessThan(0.05);
+  it('uses the name, count and line forms about equally', () => {
+    for (const form of ['name', 'count', 'line']) {
+      const share = questions.filter(({ key }) => key.split(':')[1] === form).length;
+      expect(Math.abs(share / questions.length - 1 / 3), form).toBeLessThan(0.04);
+    }
+  });
+
+  it('draws every line term', () => {
+    const keys = new Set(questions.map(({ key }) => key));
+    for (const { answer } of LINE_ITEMS) {
+      expect(keys.has(`solidNames:line:${answer}`), answer).toBe(true);
+    }
   });
 
   it('draws every name, solid, base and property', () => {
