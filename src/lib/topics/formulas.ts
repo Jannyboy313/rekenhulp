@@ -47,7 +47,7 @@ interface WordText {
   ask: (input: number) => string;
 }
 
-const WORD_TEXTS: Readonly<Record<WordContext, WordText>> = {
+export const WORD_TEXTS: Readonly<Record<WordContext, WordText>> = {
   taxi: {
     name: 'Taxi: kosten in euro',
     unit: 'aantal km',
