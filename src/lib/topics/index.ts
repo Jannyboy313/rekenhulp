@@ -84,6 +84,18 @@ import { generateSymmetry } from './symmetry';
 import { generateGuessAndCheck } from './guessAndCheck';
 import { generateSystematicCounting } from './systematicCounting';
 import { generateWorkingBackwards } from './workingBackwards';
+import { generateTwoDice } from './twoDice';
+import { generateStatisticsReasoning } from './statisticsReasoning';
+import { generateStatisticsProblems } from './statisticsProblems';
+import { generateFormulaProblems } from './formulaProblems';
+import { generateBaseArithmetic } from './baseArithmetic';
+import { generateBaseReasoning } from './baseReasoning';
+import { generateHexBinary } from './hexBinary';
+import { generateRomanCalc } from './romanCalc';
+import { generateCountingCases } from './countingCases';
+import { generateBackwardsProblems } from './backwardsProblems';
+import { generateTwoUnknowns } from './twoUnknowns';
+import { generateSimplifyDeep } from './simplifyDeep';
 import { generateTables } from './tables';
 import { generateTimeCalc } from './timeCalc';
 
@@ -172,10 +184,22 @@ export const GENERATORS: Record<Topic, Generator> = {
   formulas: generateFormulas,
   equations: generateEquations,
   probability: generateProbability,
+  twoDice: generateTwoDice,
+  statisticsReasoning: generateStatisticsReasoning,
+  statisticsProblems: generateStatisticsProblems,
+  formulaProblems: generateFormulaProblems,
+  baseArithmetic: generateBaseArithmetic,
+  baseReasoning: generateBaseReasoning,
+  hexBinary: generateHexBinary,
+  romanCalc: generateRomanCalc,
   systematicCounting: generateSystematicCounting,
   workingBackwards: generateWorkingBackwards,
   guessAndCheck: generateGuessAndCheck,
   simplifyProblem: generateSimplifyProblem,
+  countingCases: generateCountingCases,
+  backwardsProblems: generateBackwardsProblems,
+  twoUnknowns: generateTwoUnknowns,
+  simplifyDeep: generateSimplifyDeep,
 };
 
 /** Dutch labels shown on the setup screen. */
@@ -264,8 +288,20 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   formulas: 'Formules (invullen, startgetal en hellingsgetal)',
   equations: 'Vergelijkingen (x oplossen)',
   probability: 'Kans (dobbelsteen, knikkers)',
+  twoDice: 'Kans (twee dobbelstenen, munten)',
+  statisticsReasoning: 'Statistiek (welke maat: gemiddelde, mediaan, modus)',
+  statisticsProblems: 'Gemiddelde in context (samen, erbij, eraf)',
+  formulaProblems: 'Formules en rijen in context (omgekeerd, gelijk, plek)',
+  baseArithmetic: 'Rekenen in een ander talstelsel',
+  baseReasoning: 'Talstelsels begrijpen (grootste getal, aantal cijfers, plaatswaarde)',
+  hexBinary: 'Tweetallig ↔ zestientallig (groepjes van vier)',
+  romanCalc: 'Rekenen met Romeinse cijfers',
   systematicCounting: 'Systematisch tellen (combinaties, handdrukken, volgordes)',
   workingBackwards: 'Terugrekenen (ik denk aan een getal, geld over)',
   guessAndCheck: 'Slim proberen (kippen en konijnen, som en verschil)',
   simplifyProblem: 'Vereenvoudigen (Gauss, tellen, figuurpatronen)',
+  countingCases: 'Systematisch tellen met voorwaarden',
+  backwardsProblems: 'Terugrekenen (lange reeks, in rondes)',
+  twoUnknowns: 'Twee onbekenden (leeftijden, munten, rechthoek)',
+  simplifyDeep: 'Vereenvoudigen (reeks optellen, bladzijden nummeren)',
 };
