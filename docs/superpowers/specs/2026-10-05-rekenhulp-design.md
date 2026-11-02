@@ -539,6 +539,9 @@ The table lists the Opfrisser topics. A set's Verdieping (§12.2) has its own to
 | **Getalbegrip** | `negativeContexts`, `roundingReasoning`, `estimateCalc`, `powerCalc` |
 | **Breuken & kommagetallen** | `mixedNotation`, `fractionProblems`, `decimalProblems`, `betweenNumbers` |
 | **Meetkunde** | `scalingSolids`, `surfaceArea`, `compositeShapes`, `angleReasoning` |
+| **Verbanden & statistiek** | `twoDice`, `statisticsReasoning`, `statisticsProblems`, `formulaProblems` |
+| **Talstelsels** | `baseArithmetic`, `baseReasoning`, `hexBinary`, `romanCalc` |
+| **Heuristieken** | `countingCases`, `backwardsProblems`, `twoUnknowns`, `simplifyDeep` |
 
 The set overview (§3.1) shows the implemented sets in the build order of §12.1 (Tafels, Meten,
 Verhoudingen, Getallen & delers, Bewerkingen, Getalbegrip, Breuken & kommagetallen, …), not in
@@ -605,10 +608,14 @@ Examples with `n = 15`:
 - Verdieping of these three: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics) and
   `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
 - **Verbanden & statistiek:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3
-  is chosen at random.
+  is chosen at random. Verdieping: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics)
+  and `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
 - **Talstelsels:** `r = 13` over 2 topics, so 7 + 6. The topic with 7 is chosen at random.
+  Verdieping: 3 Opfrisser exercises over 2 topics (2 + 1, the topic with 2 chosen at random) and
+  `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
 - **Heuristieken:** `r = 13` over 4 topics, so 4 + 3 + 3 + 3. The topic with 4 is chosen at
-  random.
+  random. Verdieping: 3 Opfrisser exercises over 4 topics (3 random topics get 1, the fourth 0)
+  and `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
 
 ## 5. Topics
 
@@ -3332,6 +3339,321 @@ klok)`. Three forms, each equally likely; suffix `°`, except the number of angl
   4 × 20 = 80`; `grote wijzer: 20 × 6 = 120°, kleine wijzer: 4 × 30 + 20 × 0,5 = 130° → 130 −
   120 = 10`.
 
+### v3 rules for Verbanden & statistiek, Talstelsels and Heuristieken (§5.86–§5.97)
+
+The v3 steps of the last three sets (§12.2 step 4), specified and built together: each gets a
+Verdieping of four topics and no new Opfrisser topics (Verbanden & statistiek has two RWT gaps,
+both Verdieping or multiple choice, §12.3; the other two have none). The rules of §5.53–§5.66
+and §5.67–§5.84 apply (multiple choice via `choice`, no topic tips, the de-duplication key is the
+form, the variant or context and the numbers, money as §8, "nice whole" as §5.12). Also:
+
+- No new infrastructure: every topic uses an existing answer kind (`number`, `fraction`,
+  `choice`, `baseDigits`, `roman`) and existing keys. The card descriptions (§3.1) stay.
+- A value that is not a whole number is a decimal with at most 1 decimal; the exact value is
+  checked with `lib/rational.ts`, never with floats.
+- Prompts are question text without a slot (§3.3); no prompt is longer than 170 characters.
+- An explanation names the way to the answer, with the numbers; the Heuristieken ones start
+  with the name of the heuristic (§5.41–§5.44), plus `Schema maken:` (new, §5.96).
+
+### Verbanden & statistiek v3 (§5.86–§5.89)
+
+### 5.86 Two dice and coins (`twoDice`)
+
+Verdieping (RWT B.11). Label: `Kans (twee dobbelstenen, munten)`. Two forms, 50/50:
+
+| Form  | Example                                                                      | Answer |
+|-------|------------------------------------------------------------------------------|--------|
+| Dice  | `Je gooit met twee dobbelstenen. Hoe groot is de kans op een som van 5?`     | 1/9    |
+| Coins | `Je gooit 3 keer een munt op. Hoe groot is de kans op precies één keer kop?` | 3/8    |
+
+- **Dice:** 36 equally likely outcomes, counted by enumeration. Events, each equally likely, with
+  their number of favourable outcomes:
+
+  | Event                        | Count | Event                   | Count |
+  |------------------------------|-------|-------------------------|-------|
+  | `een som van 5`              | 4     | `twee even getallen`    | 9     |
+  | `een som van 7`              | 6     | `minstens één zes`      | 11    |
+  | `een som van 8`              | 5     | `geen enkele zes`       | 25    |
+  | `een som van 11 of meer`     | 3     | `een even som`          | 18    |
+  | `een som kleiner dan 5`      | 6     | `een product van 12`    | 4     |
+  | `twee dezelfde getallen`     | 6     |                         |       |
+
+- **Coins:** `n ∈ {3, 4}` throws (`Je gooit 3 keer een munt op.`), events, each equally likely:
+  `elke keer kop` (1 outcome), `precies één keer kop` (`n`), `precies twee keer kop`
+  (`n(n − 1) : 2`) and `minstens één keer munt` (`2ⁿ − 1`); the total is `2ⁿ`.
+- The answer is the fraction step of §5.38 (simplest form, decimal allowed): `1/9`, `3/8`,
+  `0,125` are correct, `4/36` is not.
+- Explanations: `36 uitkomsten; een som van 5: 1 + 4, 2 + 3, 3 + 2, 4 + 1 = 4 uitkomsten →
+  4/36 = 1/9` (the sum events list their pairs; `twee dezelfde getallen: 1-1 t/m 6-6`; `geen
+  enkele zes: 5 × 5 = 25`; `minstens één zes: 36 − 25 = 11`; `twee even getallen: 3 × 3 = 9`;
+  `een even som: de helft van 36 = 18`; `een product van 12: 2 × 6, 6 × 2, 3 × 4, 4 × 3`);
+  `2 × 2 × 2 = 8 uitkomsten; precies één keer kop: KMM, MKM, MMK = 3 uitkomsten → 3/8` (the
+  outcomes are listed; `minstens één keer munt: alles behalve KKK → 8 − 1 = 7 → 7/8`). The
+  `= …` simplification is left out when the fraction is already in simplest form.
+- The de-duplication key is the form, the event and `n`.
+
+### 5.87 Statistics concepts (`statisticsReasoning`)
+
+Verdieping (RWT: mean versus median and other concepts), all multiple choice. Label:
+`Statistiek (welke maat: gemiddelde, mediaan, modus)`. Two forms, 50/50:
+
+| Form           | Example                                                                | Answer                                  |
+|----------------|------------------------------------------------------------------------|-----------------------------------------|
+| Unchanged      | `Cijfers: 5, 6, 6, 7, 9. Er komt een 10 bij. Welke maat blijft gelijk?` | `de modus`                              |
+| Mean vs median | `Inkomens in € 1000: 2, 2, 3, 3, 15. Welke uitspraak klopt?`           | `Het gemiddelde is groter dan de mediaan` |
+
+- Measures: `het gemiddelde`, `de mediaan`, `de modus`, `de spreidingsbreedte`.
+- **Unchanged:** 5 to 7 whole values in `[1, 20]`, shown in the drawn order, and one added
+  value in `[1, 25]`. Redraw unless the mode is unique before and after and exactly one of the
+  four measures is equal before and after (exact). Options: the four measures in the order
+  above; the answer is the unchanged one.
+- **Mean vs median:** 5 whole values in `[1, 20]` with a unique mode; contexts `Cijfers:`,
+  `Inkomens in € 1000:`, `Leeftijden:`, each equally likely. Options in this order:
+  `Het gemiddelde is groter dan de mediaan`, `Het gemiddelde is kleiner dan de mediaan`,
+  `Het gemiddelde is gelijk aan de mediaan`, `De modus is gelijk aan het gemiddelde`. Redraw
+  unless the last statement is false (so exactly one of the four is true); the answer is the
+  true one.
+- Explanations: `voor → na: gemiddelde 6,6 → 7,2 (verandert), mediaan 6 → 6,5 (verandert), modus
+  6 → 6 (blijft), spreidingsbreedte 4 → 5 (verandert)`; `gemiddelde 25 : 5 = 5, mediaan 3 →
+  het gemiddelde is groter dan de mediaan`. A mean of `x/2` or `x/6` is shown with a decimal
+  comma and at most 2 decimals; the comparison uses exact values.
+- The de-duplication key is the form, the list and the added value.
+
+### 5.88 Averages in context (`statisticsProblems`)
+
+Verdieping. Label: `Gemiddelde in context (samen, erbij, eraf)`. Three forms, each equally likely, all
+`number` answers:
+
+| Form        | Example                                                                                                                                  | Answer |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------------|--------|
+| Combined    | `In klas A zitten 20 leerlingen met gemiddeld een 6. In klas B zitten 30 leerlingen met gemiddeld een 7. Wat is het gemiddelde van beide klassen samen?` | 6,6 |
+| Added value | `Het gemiddelde van 5 getallen is 6. Er komt een zesde getal bij en het gemiddelde wordt 7. Welk getal is dat?`                           | 12     |
+| Removed     | `Het gemiddelde van 6 getallen is 8. Je haalt het getal 14 weg. Wat is het gemiddelde van de andere 5?`                                  | 6,8    |
+
+- **Combined:** two contexts, 50/50: klassen (`leerlingen met gemiddeld een`, means whole in
+  `[5, 9]`) and groepen (`In groep A zitten 10 kinderen met een gemiddelde leeftijd van 8 jaar`,
+  means whole in `[6, 14]`, suffix `jaar`). Group sizes from `{10, 15, 20, 25, 30, 40}`, the
+  two sizes and the two means different; redraw unless the combined mean has at most 1 decimal.
+- **Added value:** `n ∈ [4, 8]` numbers with a whole mean `m ∈ [5, 9]`; the new mean is `m + 1`
+  or `m − 1` (50%); the added number `(n + 1)(m ± 1) − n·m` is in `[1, 20]` (redraw otherwise).
+- **Removed:** `n ∈ [5, 8]` numbers with a whole mean `m ∈ [6, 12]`; the removed number `r` in
+  `[1, 30]`, `r ≠ m`; redraw unless the new mean `(n·m − r)/(n − 1)` has at most 1 decimal.
+- Explanations: `klas A: 20 × 6 = 120, klas B: 30 × 7 = 210 → samen 120 + 210 = 330 voor 50
+  leerlingen → 330 : 50 = 6,6`; `6 getallen met gemiddelde 7 = 6 × 7 = 42, eerst 5 × 6 = 30 →
+  42 − 30 = 12`; `6 × 8 = 48 → 48 − 14 = 34 → 34 : 5 = 6,8`.
+- The de-duplication key is the form, the context and the numbers.
+
+### 5.89 Formulas and sequences in context (`formulaProblems`)
+
+Verdieping. Label: `Formules en rijen in context (omgekeerd, gelijk, plek)`. Three forms, each equally
+likely, all `number` answers:
+
+| Form       | Example                                                                                                                    | Answer | Suffix  |
+|------------|----------------------------------------------------------------------------------------------------------------------------|--------|---------|
+| Reverse    | `Taxi: kosten in euro = 4 + 2,50 × aantal km. Een rit kost € 29. Hoeveel km is dat?`                                        | 10     | `km`    |
+| Break-even | `Abonnement A kost € 10 per maand plus € 2 per film. Abonnement B kost € 4 per maand plus € 3 per film. Bij hoeveel films kosten ze evenveel?` | 6 | `films` |
+| Position   | `Patroon: 4, 7, 10, 13, … Op welke plek staat 100?`                                                                          | 33     | —       |
+
+- **Reverse:** the three word formulas of §5.36 (taxi, fietsverhuur, kaars) with their ranges;
+  a quantity is drawn and the result given: `Een rit kost € 29. Hoeveel km is dat?`, `Je
+  betaalt € 69 voor de huur. Hoeveel dagen was dat?`, `De kaars is nog 14 cm lang. Hoeveel uur
+  brandt hij al?` (suffixes `km`, `dagen`, `uur`). The quantity is whole.
+- **Break-even:** two offers `start + rate × x` in whole euros, `start₁ > start₂` and
+  `rate₁ < rate₂`; `start₁ − start₂ ∈ [2, 12]`, `rate₂ − rate₁ ∈ [1, 3]` dividing it, the
+  answer `x = (start₁ − start₂) : (rate₂ − rate₁) ∈ [2, 10]`. Two contexts, 50/50: abonnement
+  (`per maand plus € 2 per film`, suffix `films`) and sportschool (`per maand plus € 3 per
+  les`, suffix `lessen`).
+- **Position:** an increasing arithmetic sequence with start in `[1, 20]` and difference in
+  `[2, 9]`, four terms shown and `…`; the asked term is at `n ∈ {20, 25, 30, 40, 50}` and at
+  most 500.
+- Explanations: `4 + 2,50 × aantal km = 29 → 2,50 × aantal km = 29 − 4 = 25 → 25 : 2,50 = 10`;
+  `A is € 6 duurder per maand (10 − 4), B is € 1 duurder per film (3 − 2) → 6 : 1 = 6 films`;
+  `van 4 naar 100 is 96 meer → 96 : 3 = 32 stappen → plek 1 + 32 = 33`.
+- The de-duplication key is the form, the context and the numbers.
+
+### Talstelsels v3 (§5.90–§5.93)
+
+Four Verdieping topics; the answers are `number`, `baseDigits` or `roman` steps (§6), with the
+input and checking rules of §5.39–§5.40 (leading zeros are allowed in a `baseDigits` answer;
+a `roman` answer is correct only when it is the canonical numeral). The base names are those of
+§5.39.
+
+### 5.90 Calculating in other bases (`baseArithmetic`)
+
+Verdieping. Label: `Rekenen in een ander talstelsel`. Two forms, 50/50, the answer a `baseDigits` step in
+the same base:
+
+| Form       | Example                                                                           | Answer |
+|------------|-----------------------------------------------------------------------------------|--------|
+| Sum        | `Tel op in het tweetallig stelsel: 101 + 11. Schrijf je antwoord ook tweetallig.` | 1000   |
+| Times base | `Vermenigvuldig in het vijftallig stelsel: 243 × 10. Schrijf je antwoord ook vijftallig.` | 2430 |
+
+- **Sum:** base 2 (50%) with both terms in `[3, 31]` (decimal values) and base 5 with both in
+  `[6, 60]`; the sum at most 63 (base 2) or 124 (base 5); at least one carry in the column
+  addition; the two terms differ.
+- **Times base:** `× 10` in base 2 or 5 (50% each); the numeral has 2 or 3 digits (value in
+  `[3, 7]`, resp. `[6, 124]`). `10` is the base itself, so every digit moves up one place.
+- Explanations: `tweetallig → gewoon getal: 101 = 5 en 11 = 3 → 5 + 3 = 8 → 8 = 1 × 8 + 0 × 4 +
+  0 × 2 + 0 × 1 → 1000`; `× 10 in het vijftallig stelsel is × 5: elk cijfer schuift een plaats
+  op → 243 wordt 2430`.
+- The de-duplication key is the form, the base and the numbers.
+
+### 5.91 Understanding number systems (`baseReasoning`)
+
+Verdieping. Label: `Talstelsels begrijpen (grootste getal, aantal cijfers, plaatswaarde)`. Three
+forms, each equally likely, all `number` answers (as a plain number):
+
+| Form        | Example                                                                                                              | Answer |
+|-------------|----------------------------------------------------------------------------------------------------------------------|--------|
+| Largest     | `Wat is het grootste getal dat je met 4 cijfers in het tweetallig stelsel kunt schrijven? Geef je antwoord als gewoon getal.` | 15 |
+| Digits      | `Hoeveel cijfers heeft het getal 100 in het tweetallig stelsel?`                                                      | 7      |
+| Place value | `Wat is de waarde van het eerste cijfer in het vijftallige getal 213? Geef je antwoord als gewoon getal.`             | 50     |
+
+- **Largest:** base 2 with `k ∈ [3, 8]` digits (`2ᵏ − 1`), base 5 with `k ∈ [2, 4]` (`5ᵏ − 1`)
+  or base 16 with `k = 2` (255); each base equally likely.
+- **Digits:** the number of digits of a decimal number: base 2 for `N ∈ [10, 255]`, base 5 for
+  `N ∈ [26, 624]`, base 16 for `N ∈ [200, 4000]`; each base equally likely. A hexadecimal count is
+  the number of hexadecimal digits.
+- **Place value:** a numeral of 3 digits (base 5 and base 16) or 4 digits (base 2) with its
+  first digit `d ≠ 0` (base 5: `d ∈ [1, 4]`, base 16: `d ∈ [1, 9]`); the value of `d` at its
+  place. The base 16 numeral contains a letter in its other digits and is written as `3A7`.
+- Explanations: `1111 = 8 + 4 + 2 + 1 = 15, of 2⁴ − 1 = 16 − 1 = 15`; `64 = 2⁶ en 128 = 2⁷ →
+  100 zit tussen 64 en 128 → 7 cijfers`; `het eerste van 3 cijfers staat op de plaats van 5 × 5 =
+  25 → 2 × 25 = 50`.
+- The de-duplication key is the form, the base and the numbers.
+
+### 5.92 Binary and hexadecimal (`hexBinary`)
+
+Verdieping. Label: `Tweetallig ↔ zestientallig (groepjes van vier)`. A direction, each 50%, the answer a
+`baseDigits` step:
+
+| Direction | Example                                                                | Answer |
+|-----------|------------------------------------------------------------------------|--------|
+| To hex    | `Schrijf het tweetallige getal 10110111 in het zestientallig stelsel.` | B7     |
+| To binary | `Schrijf het zestientallige getal 3E in het tweetallig stelsel.`       | 111110 |
+
+- A value in `[32, 255]` whose hexadecimal numeral contains at least one letter `A`–`F`. The
+  binary numeral is shown without leading zeros (5 to 8 digits).
+- Explanations: `groepjes van 4 vanaf rechts: 1011 | 0111 → 1011 = 11 = B en 0111 = 7 → B7`
+  (a short numeral is padded on the left: `0011 | 1110`); `3 = 0011 en E = 14 = 1110 → 0011
+  1110 → 111110`.
+- The de-duplication key is the direction and the value.
+
+### 5.93 Calculating with Roman numerals (`romanCalc`)
+
+Verdieping. Label: `Rekenen met Romeinse cijfers`. Three forms, each equally likely:
+
+| Form       | Example                                                          | Answer | Kind     |
+|------------|------------------------------------------------------------------|--------|----------|
+| Sum        | `Tel op: XIV + XXVIII. Schrijf je antwoord met Romeinse cijfers.`  | XLII   | `roman`  |
+| Difference | `Trek af: XLII − XVIII. Schrijf je antwoord met Romeinse cijfers.` | XXIV   | `roman`  |
+| Years      | `Hoeveel jaar zit er tussen MCMXLV en MMXXV?`                    | 80     | `number` (suffix `jaar`) |
+
+- **Sum:** `a ≠ b` in `[10, 99]`; **Difference:** `a ∈ [20, 99]`, `b ∈ [10, a − 5]`. In both,
+  at least one of the three numerals contains a subtractive pair (§5.40), redraw otherwise.
+- **Years:** a first year in `[1400, 1999]` and a second year `d ∈ [10, 120]` later, at most
+  2030; the gap in years.
+- Explanations: `XIV = 14 en XXVIII = 28 → 14 + 28 = 42 = 40 + 2 = XL + II → XLII`;
+  `MCMXLV = 1945 en MMXXV = 2025 → 2025 − 1945 = 80`.
+- The de-duplication key is the form and the numbers.
+
+### Heuristieken v3 (§5.94–§5.97)
+
+Four Verdieping topics; every answer is a whole `number` step. The explanation starts with the
+name of the heuristic (§5.41–§5.44; the new `Schema maken:` for an unknown found with parts or
+a table).
+
+### 5.94 Counting with conditions (`countingCases`)
+
+Verdieping. Label: `Systematisch tellen met voorwaarden`. Three forms, each equally likely:
+
+| Form             | Example                                                                                                                  | Answer |
+|------------------|--------------------------------------------------------------------------------------------------------------------------|--------|
+| Codes, once      | `Hoeveel getallen van 3 cijfers kun je maken met de cijfers 1, 2, 3 en 4, als elk cijfer hoogstens één keer voorkomt?`   | 24     |
+| Codes, repeating | `Een slot heeft een code van 3 cijfers uit 1, 2, 3, 4 en 5. Een cijfer mag vaker voorkomen. Hoeveel codes zijn er?`       | 125    |
+| Together         | `Op hoeveel manieren kunnen 5 kinderen in een rij staan als Anna en Bram naast elkaar moeten staan?`                      | 48     |
+
+- **Codes, once:** `s ∈ [4, 6]` digits `1` to `s`, length `k ∈ [2, 3]`; the answer
+  `s × (s − 1) × …` (`k` factors).
+- **Codes, repeating:** `s ∈ [3, 5]`, `k ∈ [2, 3]`; the answer `sᵏ`.
+- **Together:** `n ∈ {4, 5}` children, two of them (Anna and Bram, or Chris and Dora, 50/50)
+  next to each other; the answer `(n − 1)! × 2`.
+- Explanations: `Systematisch tellen: 4 keuzes voor het 1e cijfer, 3 voor het 2e, 2 voor het
+  3e → 4 × 3 × 2 = 24`; `5 keuzes voor elk van de 3 cijfers → 5 × 5 × 5 = 125`; `Anna en Bram
+  samen zijn 1 blok → 4 dingen in een rij: 4 × 3 × 2 × 1 = 24 → het blok kan twee kanten op
+  → 24 × 2 = 48`.
+- The de-duplication key is the form and the numbers.
+
+### 5.95 Working backwards, deeper (`backwardsProblems`)
+
+Verdieping. Label: `Terugrekenen (lange reeks, in rondes)`. Two forms, 50/50:
+
+| Form       | Example                                                                                                                  | Answer |
+|------------|--------------------------------------------------------------------------------------------------------------------------|--------|
+| Long chain | `Ik denk aan een getal. Ik trek er 4 af, doe het keer 3, deel de uitkomst door 2 en tel er 9 bij op. Ik kom uit op 24. Aan welk getal dacht ik?` | 14 |
+| Rounds     | `Een bakker verkoopt 's ochtends de helft van de broden en 's middags een derde van de rest. Er blijven 12 broden over. Hoeveel broden waren het eerst?` | 36 |
+
+- **Long chain:** the think-of-a-number form of §5.42 with 4 operations (same operation
+  kinds, phrases and rules); the start in `[2, 20]`, every intermediate value and the result
+  whole and in `[1, 300]`. Reuse the operation drawing and the phrases of §5.42.
+- **Rounds:** a part `p₁` sold in the morning and a part `p₂` of the rest in the afternoon,
+  each from `{de helft, een derde, een kwart}`; `L ∈ [4, 20]` left over; the start
+  `L : ((1 − p₁)(1 − p₂))` is whole and at most 120, and so is the stock after the first round.
+  Contexts, each equally likely: `Een bakker … broden`, `Een kraam … appels`, `Een kassa …
+  kaartjes` (`verkoopt 's ochtends …` in all three).
+- Explanations: `Terugrekenen vanaf 24: 24 − 9 = 15 → 15 × 2 = 30 → 30 : 3 = 10 → 10 + 4 = 14`;
+  `Terugrekenen vanaf 12: na de middag is 2/3 over → 12 : 2 × 3 = 18 → na de ochtend is 1/2
+  over → 18 × 2 = 36` (een kwart: `3/4 over → … : 3 × 4`; de helft: `1/2 over → … × 2`).
+- The de-duplication key is the form and the numbers and operations.
+
+### 5.96 Two unknowns (`twoUnknowns`)
+
+Verdieping. Label: `Twee onbekenden (leeftijden, munten, rechthoek)`. Three forms, each equally likely:
+
+| Form      | Example                                                                                              | Answer | Suffix |
+|-----------|------------------------------------------------------------------------------------------------------|--------|--------|
+| Ages      | `Een vader is 4 keer zo oud als zijn zoon. Samen zijn ze 50 jaar. Hoe oud is de zoon?`                | 10     | `jaar` |
+| Coins     | `Je hebt 12 munten van € 1 en € 2, samen € 20. Hoeveel munten van € 2 heb je?`                        | 8      | —      |
+| Rectangle | `Een rechthoek heeft een omtrek van 36 cm. De lengte is 2 keer de breedte. Hoe groot is de oppervlakte?` | 72  | `cm²`  |
+
+- **Ages:** factor `f ∈ {2, 3, 4, 5}`, the smaller age `s ∈ [4, 20]`, the sum `(f + 1)s` at
+  most 90; vader/zoon or moeder/dochter (50/50); asks the younger or the older (50/50). With
+  `f = 2` the text reads `2 keer zo oud`, as for the other factors.
+- **Coins:** two kinds from `€ 1 en € 2` or `50 cent en € 1` (50/50); a total count in
+  `[6, 15]`, each kind at least 1; the total value is given (`€ 8,50` as §8); asks one of the
+  two kinds (50/50).
+- **Rectangle:** the length is `k` times the width (`k ∈ {2, 3}`, width `[2, 12]`) or `d`
+  cm longer (`d ∈ [2, 8]`, width `[3, 15]`), 50/50; asks the area.
+- Explanations: `Schema maken: zoon 1 deel, vader 4 delen → samen 5 delen = 50 → 1 deel = 10 →
+  de zoon is 10 jaar`; `Slim proberen: stel dat alle 12 munten € 1 zijn: 12 × 1 = € 12 → 20 −
+  12 = € 8 te weinig → elke munt van € 2 is € 1 meer: 8 : 1 = 8` (the division by 1 is left
+  out; for 50 cent and € 1: `… elke euro is € 0,50 meer: 2 : 0,50 = 4`); `Schema maken: halve
+  omtrek 36 : 2 = 18 = lengte + breedte → 2 + 1 = 3 delen → 18 : 3 = 6 = breedte, lengte 12 →
+  12 × 6 = 72` (the `d` cm longer variant: `18 − d = 2 × breedte → …`).
+- The de-duplication key is the form, the variant and the numbers.
+
+### 5.97 Simplify the problem, deeper (`simplifyDeep`)
+
+Verdieping. Label: `Vereenvoudigen (reeks optellen, bladzijden nummeren)`. Three forms, each equally likely:
+
+| Form      | Example                                                                           | Answer |
+|-----------|-----------------------------------------------------------------------------------|--------|
+| Range sum | `Wat is 11 + 12 + 13 + … + 30?`                                                    | 410    |
+| Odd sum   | `Wat is 1 + 3 + 5 + … + 39?`                                                       | 400    |
+| Pages     | `Hoeveel cijfers heb je nodig om de bladzijden 1 tot en met 120 te nummeren?`      | 252    |
+
+- **Range sum:** `a ∈ [2, 30]` to `b` with an even number of terms in `[8, 30]`; the answer
+  `(a + b) × aantal : 2` at most 1500 (redraw otherwise).
+- **Odd sum:** `1 + 3 + … + (2n − 1)`, `n ∈ [10, 30]`; the answer `n × n`.
+- **Pages:** `N ∈ {25, 40, 60, 80, 100, 120, 150, 180}`; `9 + 2 × (N − 9)` up to 99, else
+  `189 + 3 × (N − 99)`.
+- Explanations: `Vereenvoudigen: maak paren van de buitenste getallen: 11 + 30 = 41, 12 + 29 =
+  41, … → 20 getallen zijn 10 paren van 41 → 10 × 41 = 410`; `Vereenvoudigen: 1 = 1 × 1, 1 + 3 =
+  4 = 2 × 2, 1 + 3 + 5 = 9 = 3 × 3 → n getallen geven n × n; 39 is het 20e oneven getal → 20 ×
+  20 = 400`; `Vereenvoudigen: 1 t/m 9: 9 × 1 = 9 cijfers → 10 t/m 99: 90 × 2 = 180 → 100 t/m 120: 21
+  × 3 = 63 → 9 + 180 + 63 = 252` (up to 99 the last part is left out).
+- The de-duplication key is the form and the numbers.
+
 ## 6. Input (keypad)
 
 The keypad is custom. The system keyboard is never opened.
@@ -3680,7 +4002,17 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-None at the moment.
+Drafted 2026-11-02 for the Verdieping of the last three sets (§5.86–§5.97); the user has not
+confirmed these yet. Implementation waits for confirmation; the user may also answer by editing
+the sections.
+
+1. **Topic lists:** four Verdieping topics for each of Verbanden & statistiek, Talstelsels and
+   Heuristieken, as in §4.1. Open: is four per set right (twelve topics in total), or fewer?
+2. **Heuristic name:** `Schema maken:` joins the four heuristic names of §5.41–§5.44 for the
+   parts method (ages, rectangle, §5.96).
+3. **Realism:** the ranges of §5.86–§5.97 (for example a range sum up to 1500, 8-bit
+   hexadecimal conversions, 4-digit hexadecimal digit counts) are a first reading; adjust them
+   if they are too heavy for mental arithmetic (CLAUDE.md, domain rules).
 
 ## 12. Roadmap (not in v1)
 
@@ -3804,6 +4136,11 @@ Built in steps, each its own session and only when the user says so:
    together, Getalbegrip (§5.67–§5.72), Breuken & kommagetallen (§5.73–§5.79) and Meetkunde
    (§5.80–§5.84).
 
+   The last three sets, Verbanden & statistiek (§5.86–§5.89), Talstelsels (§5.90–§5.93) and
+   Heuristieken (§5.94–§5.97), are built together and in parallel under an orchestrator, as
+   one topic per cheap agent, with the plan `docs/superpowers/plans/2026-11-02-last-three-verdieping.md`.
+   After them every set except Tafels has a Verdieping.
+
 The lesstof (lesstof spec) is not split by level.
 
 ### 12.3 v3 — multiple choice and the RWT gaps
@@ -3859,7 +4196,7 @@ follow separately (lesstof spec §2).
     Verdieping.
   - C.10: the surface area of a pyramid from given parts (`9 + 4 × 7,5`). Verdieping.
   - C.1: the names of solids (prisma, kegel, piramide). MC.
-- **Verbanden & statistiek**
+- **Verbanden & statistiek** — specified in §5.86–§5.89
   - B.11: probability with two dice. Verdieping.
   - Mean versus median and other concepts. MC.
 
