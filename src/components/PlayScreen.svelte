@@ -2,6 +2,9 @@
   import { untrack } from 'svelte';
   import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
   import { formatDuration } from '../lib/format';
+  import { LESSONS } from '../lib/lessons';
+  import { lessonLinksFor } from '../lib/lessons/links';
+  import type { Lesson, LessonTopic } from '../lib/lessons/types';
   import { createRng, randomSeed } from '../lib/random';
   import { isCorrect, type QuestionRecord, type StepAttempt } from '../lib/results';
   import { EMPTY_NOTES, showsScratchpad } from '../lib/scratchpad';
@@ -10,15 +13,18 @@
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
   import Icon from './Icon.svelte';
+  import LessonSheet from './LessonSheet.svelte';
   import QuestionView from './QuestionView.svelte';
 
   interface Props {
     set: PracticeSet;
     questions: readonly Question[];
     onfinish: (records: QuestionRecord[], totalMs: number) => void;
+    /** Tests pass a fixture; the app uses the registry. */
+    lessons?: readonly Lesson[];
   }
 
-  let { set, questions, onfinish }: Props = $props();
+  let { set, questions, onfinish, lessons = LESSONS }: Props = $props();
 
   interface QueueEntry {
     question: Question;
@@ -55,6 +61,21 @@
   );
   const step = $derived(question.steps[stepIndex]!);
   const scratchpad = $derived(showsScratchpad(question.topic, step.kind));
+  const lessonLinks = $derived(lessonLinksFor(question.topic, lessons));
+
+  // The lesson sheet lies over the session, which stays as it is (lesstof spec §3.1).
+  let openLesson = $state.raw<LessonTopic | null>(null);
+  let lessonOpener: HTMLButtonElement | undefined;
+
+  function showLesson(topic: LessonTopic, button: HTMLButtonElement) {
+    lessonOpener = button;
+    openLesson = topic;
+  }
+
+  function closeLesson() {
+    openLesson = null;
+    lessonOpener?.focus();
+  }
 
   const announcement = $derived(
     feedback === null
@@ -166,12 +187,16 @@
       prefix={step.prefix}
       suffix={step.suffix}
       onnext={handleNext}
+      lessons={lessonLinks}
+      onlesson={showLesson}
     />
   {:else}
     {#key `${questionIndex}-${stepIndex}`}
       <QuestionView {step} {scratchpad} bind:notes onanswer={handleAnswer} />
     {/key}
   {/if}
+
+  {#if openLesson}<LessonSheet topic={openLesson} onclose={closeLesson} />{/if}
 </main>
 
 <style>

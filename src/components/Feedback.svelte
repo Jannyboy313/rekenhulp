@@ -2,8 +2,10 @@
   import { displayAnswer } from '../lib/inputModels';
   import { promptSize } from '../lib/promptSize';
   import { hasSlot } from '../lib/slot';
+  import type { LessonTopic } from '../lib/lessons/types';
   import type { AnswerKind, CheckResult } from '../lib/types';
   import Icon from './Icon.svelte';
+  import LessonLinks from './LessonLinks.svelte';
   import MathText from './MathText.svelte';
 
   interface Props {
@@ -15,9 +17,22 @@
     prefix?: string;
     suffix?: string;
     onnext: () => void;
+    /** Lesson topics of the exercise's topic; PlayScreen opens them in a sheet (lesstof §3.1). */
+    lessons?: readonly LessonTopic[];
+    onlesson?: (topic: LessonTopic, button: HTMLButtonElement) => void;
   }
 
-  let { prompt, kind, input, result, prefix, suffix, onnext }: Props = $props();
+  let {
+    prompt,
+    kind,
+    input,
+    result,
+    prefix,
+    suffix,
+    onnext,
+    lessons = [],
+    onlesson = () => {},
+  }: Props = $props();
 
   let nextButton: HTMLButtonElement | undefined = $state();
 
@@ -31,10 +46,15 @@
     {text}
   />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
 
-{#snippet block(label: string, text: string, scrolls: boolean)}
+{#snippet links()}
+  <div class="lesson-links"><LessonLinks topics={lessons} onopen={onlesson} /></div>
+{/snippet}
+
+{#snippet block(label: string, text: string, scrolls: boolean, withLinks: boolean)}
   <div class="block" class:scrolls>
     <p class="block-label"><Icon name="bulb" size={16} stroke={2} />{label}</p>
     <p class="block-body"><MathText {text} /></p>
+    {#if withLinks}{@render links()}{/if}
   </div>
 {/snippet}
 
@@ -65,8 +85,13 @@
         <p class="tile-value">{@render value(result.expected)}</p>
       </div>
     </div>
-    {#if result.tip}{@render block('Tip', result.tip, false)}{/if}
-    {#if result.explanation}{@render block('Uitleg', result.explanation, true)}{/if}
+    <!-- The lesson link sits in the Tip block, or on its own in its place (lesstof §3.1). -->
+    {#if result.tip}
+      {@render block('Tip', result.tip, false, lessons.length > 0)}
+    {:else if lessons.length > 0}
+      {@render links()}
+    {/if}
+    {#if result.explanation}{@render block('Uitleg', result.explanation, true, false)}{/if}
     <button type="button" class="primary next" bind:this={nextButton} onclick={onnext}
       >Verder</button
     >
@@ -232,6 +257,10 @@
     font-size: 16px;
     line-height: 24px;
     white-space: pre-line;
+  }
+
+  .block .lesson-links {
+    margin-top: 8px;
   }
 
   .next {

@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
 import { fromInteger, rational } from '../lib/rational';
 import { isCorrect, type QuestionRecord } from '../lib/results';
-import { TABLES_SET } from '../lib/sets';
+import { NUMBERS_SET, TABLES_SET } from '../lib/sets';
 import { SLOT } from '../lib/slot';
 import { booleanStep, choiceStep, numberStep } from '../lib/steps';
 import { propertyQuestion } from '../lib/topics/properties';
@@ -390,5 +390,51 @@ describe('PlayScreen', () => {
     await press('5', 'OK', 'Verder', 'Stoppen');
     expect(onfinish).toHaveBeenCalledOnce();
     expect(onfinish.mock.calls[0]![0].map(isCorrect)).toEqual([false]);
+  });
+
+  describe('lesson link (lesstof spec §3.1)', () => {
+    // jsdom has no modal dialogs.
+    beforeAll(() => {
+      HTMLDialogElement.prototype.showModal = function (this: HTMLDialogElement) {
+        this.setAttribute('open', '');
+      };
+    });
+
+    const lcm: Question = {
+      key: 'kgv',
+      topic: 'lcm',
+      steps: [numberStep({ prompt: `KGV van 4 en 6 = ${SLOT}`, answer: fromInteger(12) })],
+    };
+
+    it('reads the lesson in a sheet and comes back to the same panel and session', async () => {
+      const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
+      render(PlayScreen, { props: { set: NUMBERS_SET, questions: [lcm], onfinish } });
+      await press('2', '4', 'OK');
+
+      await press('Les: KGV');
+      expect(document.querySelector('dialog')?.open).toBe(true);
+      expect(document.querySelector('dialog h2')?.textContent).toBe('KGV');
+      // The clock keeps running while the sheet is open.
+      await vi.advanceTimersByTimeAsync(5000);
+      expect(screen.getByText('0:05')).toBeTruthy();
+
+      await press('Sluiten');
+      expect(document.querySelector('dialog')).toBeNull();
+      expect(screen.getByText('Niet goed')).toBeTruthy();
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Les: KGV' }));
+
+      // Nothing was answered again: the repeat follows, then the session ends.
+      await press('Verder', '1', '2', 'OK');
+      await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
+      expect(onfinish).toHaveBeenCalledOnce();
+      expect(onfinish.mock.calls[0]![0].map(isCorrect)).toEqual([false]);
+    });
+
+    it('shows no link for a topic without lesson topics', async () => {
+      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+      await press('5', 'OK');
+      expect(screen.getByText('Niet goed')).toBeTruthy();
+      expect(screen.queryByRole('button', { name: /^Les: / })).toBeNull();
+    });
   });
 });

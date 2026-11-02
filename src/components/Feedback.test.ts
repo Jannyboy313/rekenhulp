@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
+import { FIXTURE_LESSON } from '../lib/lessons/fixture';
+import type { LessonTopic } from '../lib/lessons/types';
 import { SLOT } from '../lib/slot';
 import type { AnswerKind, CheckResult } from '../lib/types';
 import Feedback from './Feedback.svelte';
@@ -14,6 +16,8 @@ function renderFeedback(
     prefix?: string;
     suffix?: string;
     onnext?: () => void;
+    lessons?: readonly LessonTopic[];
+    onlesson?: (topic: LessonTopic, button: HTMLButtonElement) => void;
   } = {},
 ) {
   return render(Feedback, {
@@ -193,5 +197,56 @@ describe('Feedback', () => {
   ])('sizes the sum %j in steps (%s)', (prompt, size) => {
     renderFeedback({ prompt });
     expect(document.querySelector('.prompt')!.classList).toContain(size);
+  });
+
+  describe('lesson link (lesstof spec §3.1)', () => {
+    const [SPLITTING, HALVES] = FIXTURE_LESSON.topics;
+
+    function lessonButtons(): string[] {
+      return screen
+        .getAllByRole('button')
+        .map((b) => b.textContent ?? '')
+        .filter((text) => text.startsWith('Les: '));
+    }
+
+    it('shows no link without lesson topics', () => {
+      renderFeedback({ result: { correct: false, expected: '13', tip: 'Kijk goed.' } });
+      expect(lessonButtons()).toEqual([]);
+    });
+
+    it('puts the link inside the Tip block, under the tip text', () => {
+      const { container } = renderFeedback({
+        result: { correct: false, expected: '13', tip: 'Kijk goed.', explanation: '13 × 7 = 91' },
+        lessons: [SPLITTING!],
+      });
+      const blocks = [...container.querySelectorAll('.block')];
+      expect(blocks[0]!.querySelector('.block-body + .lesson-links .link')).toBeTruthy();
+      expect(blocks[1]!.querySelector('.link')).toBeNull();
+    });
+
+    it('stands on its own above Uitleg without a tip', () => {
+      const { container } = renderFeedback({
+        result: { correct: false, expected: '13', explanation: '13 × 7 = 91' },
+        lessons: [SPLITTING!],
+      });
+      const links = container.querySelector('.tiles + .lesson-links + .block');
+      expect(links).toBeTruthy();
+      expect(container.querySelector('.block .link')).toBeNull();
+    });
+
+    it('keeps Verder last and focused', () => {
+      renderFeedback({ lessons: [SPLITTING!] });
+      const buttons = screen.getAllByRole('button');
+      expect(buttons.at(-1)?.textContent).toBe('Verder');
+      expect(document.activeElement?.textContent).toBe('Verder');
+    });
+
+    it('opens the tapped lesson topic', async () => {
+      const onlesson = vi.fn();
+      renderFeedback({ lessons: [SPLITTING!, HALVES!], onlesson });
+      expect(lessonButtons()).toEqual(['Les: Grote tafels splitsen', 'Les: Halveren']);
+      await fireEvent.click(screen.getByRole('button', { name: 'Les: Halveren' }));
+      expect(onlesson).toHaveBeenCalledWith(HALVES, expect.any(HTMLButtonElement));
+    });
   });
 });

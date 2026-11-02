@@ -150,6 +150,7 @@
     <PlayScreen
       {set}
       {questions}
+      lessons={allLessons}
       onfinish={(records, totalMs) => finishSession(set, records, totalMs)}
     />
   {/key}
