@@ -3352,8 +3352,9 @@ form, the variant or context and the numbers, money as §8, "nice whole" as §5.
 
 - No new infrastructure: every topic uses an existing answer kind (`number`, `fraction`,
   `choice`, `baseDigits`, `roman`) and existing keys. The card descriptions (§3.1) stay.
-- A value that is not a whole number is a decimal with at most 1 decimal; the exact value is
-  checked with `lib/rational.ts`, never with floats.
+- A value that is not a whole number is a decimal with at most 1 decimal, unless its section
+  says otherwise (money with 2 decimals, a mean shown in §5.87, a probability typed as a decimal
+  in §5.86); the exact value is checked with `lib/rational.ts`, never with floats.
 - Prompts are question text without a slot (§3.3); no prompt is longer than 170 characters.
 - An explanation names the way to the answer, with the numbers; the Heuristieken ones start
   with the name of the heuristic (§5.41–§5.44), plus `Schema maken:` (new, §5.96).
@@ -3406,20 +3407,20 @@ Verdieping (RWT: mean versus median and other concepts), all multiple choice. La
 | Mean vs median | `Inkomens in € 1000: 2, 2, 3, 3, 15. Welke uitspraak klopt?`           | `Het gemiddelde is groter dan de mediaan` |
 
 - Measures: `het gemiddelde`, `de mediaan`, `de modus`, `de spreidingsbreedte`.
-- **Unchanged:** 5 to 7 whole values in `[1, 20]`, shown in the drawn order, and one added
-  value in `[1, 25]`. Redraw unless the mode is unique before and after and exactly one of the
+- **Unchanged:** always the context `Cijfers:`, 5 to 7 whole values in `[1, 10]`, shown in the
+  drawn order, and one added value in `[1, 10]`. Redraw unless the mode is unique before and after and exactly one of the
   four measures is equal before and after (exact). Options: the four measures in the order
   above; the answer is the unchanged one.
-- **Mean vs median:** 5 whole values in `[1, 20]` with a unique mode; contexts `Cijfers:`,
-  `Inkomens in € 1000:`, `Leeftijden:`, each equally likely. Options in this order:
+- **Mean vs median:** 5 whole values with a unique mode; contexts `Cijfers:` (values in
+  `[1, 10]`), `Inkomens in € 1000:` and `Leeftijden:` (values in `[1, 20]`), each equally likely. Options in this order:
   `Het gemiddelde is groter dan de mediaan`, `Het gemiddelde is kleiner dan de mediaan`,
   `Het gemiddelde is gelijk aan de mediaan`, `De modus is gelijk aan het gemiddelde`. Redraw
   unless the last statement is false (so exactly one of the four is true); the answer is the
   true one.
-- Explanations: `voor → na: gemiddelde 6,6 → 7,2 (verandert), mediaan 6 → 6,5 (verandert), modus
+- Explanations: `voor → na: gemiddelde 6,6 → 7,17 (verandert), mediaan 6 → 6,5 (verandert), modus
   6 → 6 (blijft), spreidingsbreedte 4 → 5 (verandert)`; `gemiddelde 25 : 5 = 5, mediaan 3 →
-  het gemiddelde is groter dan de mediaan`. A mean of `x/2` or `x/6` is shown with a decimal
-  comma and at most 2 decimals; the comparison uses exact values.
+  het gemiddelde is groter dan de mediaan`. A mean that is not whole is shown with a decimal
+  comma, rounded half up to at most 2 decimals (`43/6 → 7,17`); the comparison uses exact values.
 - The de-duplication key is the form, the list and the added value.
 
 ### 5.88 Averages in context (`statisticsProblems`)
@@ -3435,12 +3436,14 @@ Verdieping. Label: `Gemiddelde in context (samen, erbij, eraf)`. Three forms, ea
 
 - **Combined:** two contexts, 50/50: klassen (`leerlingen met gemiddeld een`, means whole in
   `[5, 9]`) and groepen (`In groep A zitten 10 kinderen met een gemiddelde leeftijd van 8 jaar`,
-  means whole in `[6, 14]`, suffix `jaar`). Group sizes from `{10, 15, 20, 25, 30, 40}`, the
+  means whole in `[6, 14]`, suffix `jaar`, question `Wat is het gemiddelde samen?` to stay
+  within 170 characters). Group sizes from `{10, 15, 20, 25, 30, 40}`, the
   two sizes and the two means different; redraw unless the combined mean has at most 1 decimal.
 - **Added value:** `n ∈ [4, 8]` numbers with a whole mean `m ∈ [5, 9]`; the new mean is `m + 1`
   or `m − 1` (50%); the added number `(n + 1)(m ± 1) − n·m` is in `[1, 20]` (redraw otherwise).
 - **Removed:** `n ∈ [5, 8]` numbers with a whole mean `m ∈ [6, 12]`; the removed number `r` in
-  `[1, 30]`, `r ≠ m`; redraw unless the new mean `(n·m − r)/(n − 1)` has at most 1 decimal.
+  `[1, 30]`, `r ≠ m`; redraw unless the new mean `(n·m − r)/(n − 1)` is at least 1 and has at
+  most 1 decimal.
 - Explanations: `klas A: 20 × 6 = 120, klas B: 30 × 7 = 210 → samen 120 + 210 = 330 voor 50
   leerlingen → 330 : 50 = 6,6`; `6 getallen met gemiddelde 7 = 6 × 7 = 42, eerst 5 × 6 = 30 →
   42 − 30 = 12`; `6 × 8 = 48 → 48 − 14 = 34 → 34 : 5 = 6,8`.
@@ -3467,8 +3470,7 @@ likely, all `number` answers:
   (`per maand plus € 2 per film`, suffix `films`) and sportschool (`per maand plus € 3 per
   les`, suffix `lessen`).
 - **Position:** an increasing arithmetic sequence with start in `[1, 20]` and difference in
-  `[2, 9]`, four terms shown and `…`; the asked term is at `n ∈ {20, 25, 30, 40, 50}` and at
-  most 500.
+  `[2, 9]`, four terms shown and `…`; the asked term is at `n ∈ [10, 60]` and at most 500.
 - Explanations: `4 + 2,50 × aantal km = 29 → 2,50 × aantal km = 29 − 4 = 25 → 25 : 2,50 = 10`;
   `A is € 6 duurder per maand (10 − 4), B is € 1 duurder per film (3 − 2) → 6 : 1 = 6 films`;
   `van 4 naar 100 is 96 meer → 96 : 3 = 32 stappen → plek 1 + 32 = 33`.
@@ -3517,13 +3519,16 @@ forms, each equally likely, all `number` answers (as a plain number):
 - **Digits:** the number of digits of a decimal number: base 2 for `N ∈ [10, 255]`, base 5 for
   `N ∈ [26, 624]`, base 16 for `N ∈ [200, 4000]`; each base equally likely. A hexadecimal count is
   the number of hexadecimal digits.
-- **Place value:** a numeral of 3 digits (base 5 and base 16) or 4 digits (base 2) with its
-  first digit `d ≠ 0` (base 5: `d ∈ [1, 4]`, base 16: `d ∈ [1, 9]`); the value of `d` at its
-  place. The base 16 numeral contains a letter in its other digits and is written as `3A7`.
+- **Place value:** base 5 and base 16: a numeral of 3 digits with its first digit `d ≠ 0`
+  (base 5: `d ∈ [1, 4]`, base 16: `d ∈ [1, 9]`); the value of `d` at its place. The base 16
+  numeral contains a letter in its other digits and is written as `3A7`. Base 2: a numeral of 4
+  digits; the asked digit is a `1` that is not the first (`Wat is de waarde van het derde cijfer
+  in het tweetallige getal 1011?` → 2), so the answer is 1, 2 or 4.
 - Explanations: `1111 = 8 + 4 + 2 + 1 = 15, of 2⁴ − 1 = 16 − 1 = 15`; `64 = 2⁶ en 128 = 2⁷ →
   100 zit tussen 64 en 128 → 7 cijfers`; `het eerste van 3 cijfers staat op de plaats van 5 × 5 =
-  25 → 2 × 25 = 50`.
-- The de-duplication key is the form, the base and the numbers.
+  25 → 2 × 25 = 50`; `het derde van 4 cijfers staat op de plaats van 2 → 1 × 2 = 2`.
+- The de-duplication key is the form, the base and the numbers (for base 2 also the asked
+  position).
 
 ### 5.92 Binary and hexadecimal (`hexBinary`)
 
@@ -3536,7 +3541,7 @@ Verdieping. Label: `Tweetallig ↔ zestientallig (groepjes van vier)`. A directi
 | To binary | `Schrijf het zestientallige getal 3E in het tweetallig stelsel.`       | 111110 |
 
 - A value in `[32, 255]` whose hexadecimal numeral contains at least one letter `A`–`F`. The
-  binary numeral is shown without leading zeros (5 to 8 digits).
+  binary numeral is shown without leading zeros (6 to 8 digits).
 - Explanations: `groepjes van 4 vanaf rechts: 1011 | 0111 → 1011 = 11 = B en 0111 = 7 → B7`
   (a short numeral is padded on the left: `0011 | 1110`); `3 = 0011 en E = 14 = 1110 → 0011
   1110 → 111110`.
@@ -3593,7 +3598,7 @@ Verdieping. Label: `Terugrekenen (lange reeks, in rondes)`. Two forms, 50/50:
 
 | Form       | Example                                                                                                                  | Answer |
 |------------|--------------------------------------------------------------------------------------------------------------------------|--------|
-| Long chain | `Ik denk aan een getal. Ik trek er 4 af, doe het keer 3, deel de uitkomst door 2 en tel er 9 bij op. Ik kom uit op 24. Aan welk getal dacht ik?` | 14 |
+| Long chain | `Ik denk aan een getal. Ik trek er 4 van af, doe het keer 3, deel de uitkomst door 2 en tel er 9 bij op. Ik kom uit op 24. Aan welk getal dacht ik?` | 14 |
 | Rounds     | `Een bakker verkoopt 's ochtends de helft van de broden en 's middags een derde van de rest. Er blijven 12 broden over. Hoeveel broden waren het eerst?` | 36 |
 
 - **Long chain:** the think-of-a-number form of §5.42 with 4 operations (same operation
