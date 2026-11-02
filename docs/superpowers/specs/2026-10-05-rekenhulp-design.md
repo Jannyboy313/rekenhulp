@@ -3071,14 +3071,16 @@ Opfrisser (RWT B.2). Label: `Kommagetallen in woorden (tiende t/m miljardste)`. 
 - Explanations: `duizendste = 0,001 → 8 × 0,001 = 0,008`; `0,007: de 7 staat op de plek van de
   duizendsten → zeven duizendste`.
 
-### 5.74 Comparing fractions and decimals (`compareFractions`)
+### 5.74 Comparing fractions, decimals, percentages and ratios (`compareFractions`)
 
-Opfrisser (RWT B.4). Label: `Vergelijken (breuken en kommagetallen)`. Two forms, 50/50:
+Opfrisser (RWT B.4). Label: `Vergelijken (breuken, kommagetallen, procenten)`. Three forms, each
+picked with equal probability:
 
 | Form    | Example                                          | Answer                       | Answer kind |
 |---------|--------------------------------------------------|------------------------------|-------------|
 | Extreme | `Welk getal is het grootst: 3/5, 0,58 of 5/8?`   | `5/8`                        | fraction, any equal value |
 | Order   | `Welke rij klopt?`                               | `0,58 < 3/5 < 5/8 < 0,65`    | choice      |
+| Mixed   | `Welke is het grootst?`                          | `5 op de 8` (options `3/5`, `0,58`, `62%`, `5 op de 8`) | choice |
 
 - Fractions are proper with `q ∈ {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 20, 25}` (the denominators
   of B.4); decimals have 1 to 3 decimals; all values in `(0, 1)` and distinct.
@@ -3088,8 +3090,15 @@ Opfrisser (RWT B.4). Label: `Vergelijken (breuken en kommagetallen)`. Two forms,
   expected answer is the number as written in the prompt.
 - **Order:** four numbers, two fractions and two decimals, in either direction (50/50); options
   in random order: the right chain and the three chains that each swap one neighbouring pair.
+- **Mixed:** four numbers, one of each notation: a fraction, a decimal, a percentage and a ratio;
+  `grootst` or `kleinst` (50/50); the options are the four numbers in random order. Percentages
+  are whole, in `[1, 99]` (`62%`). A ratio is part of a whole, written `p op de q` (`5 op de 8`),
+  with `p/q` drawn like a fraction (same denominators, `gcd(p, q) = 1`). The spread and gap rules
+  of Extreme hold. Percentages and ratios appear only here: the keypad has no `%` key, and
+  `op de` is not a typed notation.
 - Explanation: every number as a decimal (thirds and the like with `…`: `1/3 = 0,33…`), then the
-  conclusion: `3/5 = 0,6 en 5/8 = 0,625 → 0,58 < 0,6 < 0,625 → 5/8`.
+  conclusion: `3/5 = 0,6 en 5/8 = 0,625 → 0,58 < 0,6 < 0,625 → 5/8`. Mixed converts the
+  percentage and the ratio in the same way (`62% = 0,62`, `5 op de 8 = 0,625`).
 
 ### 5.75 Fraction concepts (`fractionConcepts`)
 
@@ -4274,7 +4283,8 @@ wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§
   - A.4a: division with a remainder (`23 : 7 = 3 rest 2`) is Verdieping only (`remainders`,
     `multiStepProblems`), while A.4 is also hoofdrekenen. Opfrisser.
   - B.4: comparing percentages and ratios together with fractions and decimals;
-    `compareFractions` has fractions and decimals only. Opfrisser.
+    `compareFractions` has fractions and decimals only. Opfrisser. Closed by the Mixed form of
+    §5.74.
   - D.4: a formula with a decimal factor, such as Celsius ↔ Fahrenheit (`F = 32 + 1,8 × C`).
     Verdieping.
   - C.1: the terms horizontaal, verticaal, grootheid and eenheid. A.1: cijfer versus getal
