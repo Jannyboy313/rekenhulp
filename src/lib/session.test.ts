@@ -7,6 +7,7 @@ import {
   generatorsFor,
   insertRepeat,
   MAX_UNIQUE_ATTEMPTS,
+  mistakeSession,
   shareCount,
 } from './session';
 import { DEEP_FIXTURE_SET } from './setFixture';
@@ -512,5 +513,50 @@ describe('buildSession for Verdieping', () => {
 
   it('has no Opfrisser share below 10 and splits 5 by largest remainder', () => {
     expect(counts(5)).toEqual({ lcm: 3, gcd: 2, prime: 0, tables: 0, total: 5 });
+  });
+});
+
+describe('mistakeSession', () => {
+  it('is empty without mistakes', () => {
+    expect(mistakeSession([], createRng(1))).toEqual([]);
+  });
+
+  it('gives three new exercises per wrong question, of its topic', () => {
+    const rng = createRng(2);
+    const mistakes = [
+      GENERATORS.percentages(rng),
+      GENERATORS.scale(rng),
+      GENERATORS.percentages(rng),
+    ];
+    const topics = mistakeSession(mistakes, createRng(3)).map((q) => q.topic);
+    expect(topics).toHaveLength(9);
+    expect(topics.filter((t) => t === 'percentages')).toHaveLength(6);
+    expect(topics.filter((t) => t === 'scale')).toHaveLength(3);
+  });
+
+  it('never repeats a wrong question as is', () => {
+    // A pool of four: after one mistake exactly the other three remain.
+    const pool = [1, 2, 3, 4].map(
+      (n): Question => ({
+        key: `q${n}`,
+        topic: 'lcm',
+        steps: [numberStep({ prompt: `p${n}`, answer: fromInteger(n) })],
+      }),
+    );
+    // Cycles through the pool, so the redraws are deterministic (de-duplication is best effort).
+    let next = 0;
+    const generators = { ...GENERATORS, lcm: () => pool[next++ % pool.length]! };
+    const keys = mistakeSession([pool[0]!], createRng(7), generators).map((q) => q.key);
+    expect(keys.sort()).toEqual(['q2', 'q3', 'q4']);
+  });
+
+  it('keeps the table choice of the Tafels set', () => {
+    const mistake = generatorsFor(TABLES_SET, [7]).tables(createRng(5));
+    const questions = mistakeSession([mistake], createRng(6), generatorsFor(TABLES_SET, [7]));
+    for (const question of questions) {
+      const numbers = [...question.steps[0]!.prompt.matchAll(/\d+/g)].map((m) => Number(m[0]));
+      numbers.push(Number(question.steps[0]!.check('').expected));
+      expect(numbers.sort((x, y) => x - y).slice(0, 2)).toContain(7);
+    }
   });
 });

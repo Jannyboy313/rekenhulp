@@ -108,6 +108,26 @@ export function buildSession(
   return shuffle(rng, questions);
 }
 
+export const EXERCISES_PER_MISTAKE = 3;
+
+/**
+ * Fouten oefenen (spec §3.5): three new exercises per wrong question, of its topic. The wrong
+ * questions count as used, so none of them comes back as is.
+ */
+export function mistakeSession(
+  mistakes: readonly Question[],
+  rng: Rng,
+  generators: Record<Topic, Generator> = GENERATORS,
+): Question[] {
+  const used = new Set(mistakes.flatMap(identities));
+  const questions = mistakes.flatMap(({ topic }) =>
+    Array.from({ length: EXERCISES_PER_MISTAKE }, () =>
+      generateUnique(generators[topic], rng, used),
+    ),
+  );
+  return shuffle(rng, questions);
+}
+
 /**
  * A question is a duplicate when its key or its first prompt was used: two topics can ask the
  * same thing under different keys (`10⁻³ = ?`, spec §4.2).
