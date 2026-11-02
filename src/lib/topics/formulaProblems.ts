@@ -52,6 +52,25 @@ export function reverseQuestion(
   };
 }
 
+/** Fahrenheit = 32 + 1,8 × Celsius with the Fahrenheit value given; celsius is a multiple of 5. */
+export function temperatureQuestion(celsius: number): Question {
+  const product = (celsius / 5) * 9;
+  const fahrenheit = 32 + product;
+  const unit = 'graden Celsius';
+  return {
+    key: `formulaProblems:reverse:temperatuur:${celsius}`,
+    topic: 'formulaProblems',
+    steps: [
+      numberStep({
+        prompt: `Temperatuur: graden Fahrenheit = 32 + 1,8 × ${unit}. Het is ${f(fahrenheit)} °F. Hoeveel °C is dat?`,
+        answer: fromInteger(celsius),
+        suffix: '°C',
+        explanation: `32 + 1,8 × ${unit} = ${f(fahrenheit)} → 1,8 × ${unit} = ${f(fahrenheit)} ${MINUS} 32 = ${f(product)} → ${f(product)} : 1,8 = ${f(celsius)}`,
+      }),
+    ],
+  };
+}
+
 const BREAK_EVEN: Readonly<
   Record<BreakEvenContext, { name: string; noun: string; plural: string }>
 > = {
@@ -103,10 +122,16 @@ export function positionQuestion(start: number, diff: number, n: number): Questi
   };
 }
 
-const REVERSE_CONTEXTS = ['taxi', 'fietsverhuur', 'kaars'] as const;
+const REVERSE_CONTEXTS = ['taxi', 'fietsverhuur', 'kaars', 'temperatuur'] as const;
+
+/** A nonzero multiple of 5 in [−20, 40]. */
+const CELSIUS = range(-4, 8)
+  .filter((n) => n !== 0)
+  .map((n) => n * 5);
 
 function drawReverse(rng: Rng): Question {
   const context = pick(rng, REVERSE_CONTEXTS);
+  if (context === 'temperatuur') return temperatureQuestion(pick(rng, CELSIUS));
   const { starts, rates, inputRange } = WORD_FORMULAS[context];
   const { start, rate, input } = drawUntil(() => {
     const start = pick(rng, starts);

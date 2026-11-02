@@ -9,6 +9,7 @@ import {
   generateFormulaProblems,
   positionQuestion,
   reverseQuestion,
+  temperatureQuestion,
 } from './formulaProblems';
 import { answerOf, decimal, stepOf, typed } from './testHelpers';
 
@@ -61,6 +62,28 @@ describe('formulaProblems: spec examples', () => {
     const step = stepOf(reverseQuestion('taxi', fromInteger(3), decimal('2,50'), 3));
     expect(step.prompt).toContain(`Een rit kost €${NBSP}10,50. `);
     expect(step.check('3').correct).toBe(true);
+  });
+
+  it('reverse: 77 °F is 25 °C', () => {
+    const step = stepOf(temperatureQuestion(25));
+    expect(step.prompt).toBe(
+      'Temperatuur: graden Fahrenheit = 32 + 1,8 × graden Celsius. Het is 77 °F. Hoeveel °C is dat?',
+    );
+    expect(step.suffix).toBe('°C');
+    expect(step.check('25').correct).toBe(true);
+    expect(step.check('25').explanation).toBe(
+      `32 + 1,8 × graden Celsius = 77 → 1,8 × graden Celsius = 77 ${MINUS} 32 = 45 → 45 : 1,8 = 25`,
+    );
+  });
+
+  it('reverse: −4 °F is −20 °C', () => {
+    const step = stepOf(temperatureQuestion(-20));
+    expect(step.prompt).toContain(`Het is ${MINUS}4 °F. `);
+    expect(step.check(`${MINUS}20`).correct).toBe(true);
+    expect(step.check('20').correct).toBe(false);
+    expect(step.check(`${MINUS}20`).explanation).toBe(
+      `32 + 1,8 × graden Celsius = ${MINUS}4 → 1,8 × graden Celsius = ${MINUS}4 ${MINUS} 32 = ${MINUS}36 → ${MINUS}36 : 1,8 = ${MINUS}20`,
+    );
   });
 
   it('break-even: € 10 + € 2 per film against € 4 + € 3 per film is 6 films', () => {
@@ -139,9 +162,38 @@ describe('formulaProblems: all forms', () => {
 
 describe('formulaProblems: reverse', () => {
   const rows = withForm('reverse');
+  const isTemperature = (question: Question) => question.key.split(':')[2] === 'temperatuur';
+
+  it('uses the four contexts equally', () => {
+    const contexts = new Map<string, number>();
+    for (const question of rows) {
+      const context = question.key.split(':')[2]!;
+      contexts.set(context, (contexts.get(context) ?? 0) + 1);
+    }
+    expect([...contexts.keys()].sort()).toEqual(['fietsverhuur', 'kaars', 'taxi', 'temperatuur']);
+    for (const [context, count] of contexts) {
+      expect(count / rows.length, context).toBeGreaterThan(0.21);
+      expect(count / rows.length, context).toBeLessThan(0.29);
+    }
+  });
+
+  it('asks a whole Celsius value: a nonzero multiple of 5 in [−20, 40]', () => {
+    const values = new Set<number>();
+    for (const question of rows.filter(isTemperature)) {
+      const celsius = Number(question.key.split(':')[3]);
+      expect(Number.isInteger(celsius / 5)).toBe(true);
+      expect(celsius).not.toBe(0);
+      expect(celsius).toBeGreaterThanOrEqual(-20);
+      expect(celsius).toBeLessThanOrEqual(40);
+      expect(stepOf(question).suffix).toBe('°C');
+      expect(answerOf(question)).toEqual(fromInteger(celsius));
+      values.add(celsius);
+    }
+    expect(values.size).toBe(12);
+  });
 
   it('asks a whole quantity within the word formula ranges', () => {
-    for (const question of rows) {
+    for (const question of rows.filter((question) => !isTemperature(question))) {
       const [, , context, startText, rateText, inputText] = question.key.split(':');
       const formula = WORD_FORMULAS[context as WordContext];
       const input = Number(inputText);
