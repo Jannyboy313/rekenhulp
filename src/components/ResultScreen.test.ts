@@ -76,6 +76,14 @@ describe('ResultScreen', () => {
     expect(heading.compareDocumentPosition(mistakes)).toBe(following);
   });
 
+  it('collapses the score per topic by default and expands it on the heading', async () => {
+    renderResults([recordOf(product, '56', 3000, 'lcm'), recordOf(product, '56', 3000, 'scale')]);
+    const details = document.querySelector('details.topic-details') as HTMLDetailsElement;
+    expect(details.open).toBe(false);
+    await fireEvent.click(details.querySelector('summary')!);
+    expect(details.open).toBe(true);
+  });
+
   it('hides the score per topic with a single topic', () => {
     renderResults([recordOf(product, '56'), recordOf(product, '54')]);
     expect(screen.queryByRole('heading', { name: 'Per onderwerp' })).toBeNull();

@@ -69,16 +69,21 @@
         </dl>
       </section>
 
-      <!-- With one topic the card would repeat the score (spec §3.5). -->
+      <!-- With one topic the card would repeat the score; collapsed by default (spec §3.5). -->
       {#if summary.topics.length > 1}
-        <h2>Per onderwerp</h2>
-        <ul class="card topic-card">
-          {#each summary.topics as { name, correct, answered } (name)}
-            <li class="topic-row">
-              <span>{name}</span><span class="topic-score">{correct} / {answered}</span>
-            </li>
-          {/each}
-        </ul>
+        <details class="topic-details">
+          <summary>
+            <h2>Per onderwerp</h2>
+            <span class="chevron"><Icon name="chevron-right" size={20} /></span>
+          </summary>
+          <ul class="card topic-card">
+            {#each summary.topics as { name, correct, answered } (name)}
+              <li class="topic-row">
+                <span>{name}</span><span class="topic-score">{correct} / {answered}</span>
+              </li>
+            {/each}
+          </ul>
+        </details>
       {/if}
 
       {#if failedSteps.length > 0}
@@ -251,9 +256,37 @@
     font-weight: 700;
   }
 
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    margin: -11px 0;
+    list-style: none;
+    cursor: pointer;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary h2 {
+    margin: 0;
+  }
+
+  .chevron {
+    display: flex;
+    color: var(--muted);
+    transition: transform 0.15s;
+  }
+
+  .topic-details[open] .chevron {
+    transform: rotate(90deg);
+  }
+
   .topic-card {
     list-style: none;
-    margin: 0;
+    margin: 23px 0 0;
     padding: 6px 16px;
     border-radius: 16px;
     box-shadow: var(--shadow-card);
