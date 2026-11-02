@@ -145,7 +145,7 @@ function drawRemoved(rng: Rng): Question {
     const n = randomInt(rng, 5, 8);
     const m = randomInt(rng, 6, 12);
     const r = randomInt(rng, 1, 30);
-    if (r === m) return null;
+    if (r === m || n * m - r < n - 1) return null;
     return hasAtMostDecimals(rational(BigInt(n * m - r), BigInt(n - 1)), 1) ? { n, m, r } : null;
   });
   return removedQuestion(drawn.n, drawn.m, drawn.r);

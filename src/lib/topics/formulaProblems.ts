@@ -92,8 +92,6 @@ export function breakEvenQuestion(
   };
 }
 
-const POSITIONS = [20, 25, 30, 40, 50] as const;
-
 /** An increasing sequence with four terms shown; asks the place n of the term start + (n − 1) × diff. */
 export function positionQuestion(start: number, diff: number, n: number): Question {
   const steps = n - 1;
@@ -144,7 +142,13 @@ function drawBreakEven(rng: Rng): Question {
 }
 
 function drawPosition(rng: Rng): Question {
-  return positionQuestion(randomInt(rng, 1, 20), randomInt(rng, 2, 9), pick(rng, POSITIONS));
+  const { start, diff, n } = drawUntil(() => {
+    const start = randomInt(rng, 1, 20);
+    const diff = randomInt(rng, 2, 9);
+    const n = randomInt(rng, 10, 60);
+    return start + (n - 1) * diff <= 500 ? { start, diff, n } : null;
+  });
+  return positionQuestion(start, diff, n);
 }
 
 /** Reverse word formula, break-even of two offers, or position in a sequence, each 1/3. */

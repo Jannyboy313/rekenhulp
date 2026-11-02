@@ -214,11 +214,14 @@ describe('formulaProblems: position', () => {
       expect(start).toBeLessThanOrEqual(20);
       expect(diff).toBeGreaterThanOrEqual(2);
       expect(diff).toBeLessThanOrEqual(9);
-      expect([20, 25, 30, 40, 50]).toContain(n);
+      expect(n).toBeGreaterThanOrEqual(10);
+      expect(n).toBeLessThanOrEqual(60);
       expect(value).toBeLessThanOrEqual(500);
       expect(answer(question)).toBe(n);
       expect(stepOf(question).prompt).toContain(`Op welke plek staat ${value}?`);
     }
     expect(rows.length / SAMPLES).toBeGreaterThan(0.3);
+    const places = new Set(rows.map((question) => Number(question.key.split(':')[4])));
+    expect(places.has(33) || places.has(37) || places.has(11)).toBe(true);
   });
 });

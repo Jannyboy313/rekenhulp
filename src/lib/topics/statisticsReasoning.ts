@@ -119,8 +119,8 @@ export function meanMedianQuestion(context: string, values: readonly number[]): 
 
 function randomUnchanged(rng: Rng): Question {
   const [values, added] = drawUntil(() => {
-    const values = Array.from({ length: randomInt(rng, 5, 7) }, () => randomInt(rng, 1, 20));
-    const added = randomInt(rng, 1, 25);
+    const values = Array.from({ length: randomInt(rng, 5, 7) }, () => randomInt(rng, 1, 10));
+    const added = randomInt(rng, 1, 10);
     const after = [...values, added];
     const [modeBefore, modeAfter] = [uniqueMode(values), uniqueMode(after)];
     if (modeBefore === null || modeAfter === null) return null;
@@ -137,8 +137,9 @@ function randomUnchanged(rng: Rng): Question {
 
 function randomMeanMedian(rng: Rng): Question {
   const context = pick(rng, CONTEXTS);
+  const max = context === 'Cijfers:' ? 10 : 20;
   const values = drawUntil(() => {
-    const values = Array.from({ length: 5 }, () => randomInt(rng, 1, 20));
+    const values = Array.from({ length: 5 }, () => randomInt(rng, 1, max));
     const mode = uniqueMode(values);
     return mode !== null && !equals(rational(BigInt(mode)), mean(values)) ? values : null;
   });
