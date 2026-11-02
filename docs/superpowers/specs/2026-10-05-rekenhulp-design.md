@@ -2392,7 +2392,7 @@ picked with equal probability:
   | temperatuur | graad Celsius                     |
 
   Two variants, 50/50; options in random order:
-  - *unit:* `Bij welke grootheid hoort de eenheid liter?`, one of the 14 units, each equally
+  - *unit:* `Bij welke grootheid hoort de eenheid liter?`, one of the 13 units, each equally
     likely; the options are its grootheid and three other grootheden.
   - *which:* `Welk woord is een grootheid?`; the options are one grootheid and three units of
     three other grootheden.
