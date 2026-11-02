@@ -85,9 +85,9 @@ was. Only the wrong-answer panel links; the results screen does not.
   second line and the button grows; nothing is cut off. The accessible name is the label
   (`Les: Procenten`); the icons are `aria-hidden`. The title comes from the lesson data, never
   hard-coded.
-- **Place:** with a tip, inside the grey Tip block (`--bg`, radius 14 px, padding 14/16 px),
-  below the tip text, margin-top 8 px. Without a tip, on its own at the same place: under the
-  answer tiles, above the Uitleg block. It sits above **Verder** and never replaces it: Verder
+- **Place:** with an explanation, inside the grey Uitleg block (`--bg`, radius 14 px, padding
+  14/16 px), below the explanation text, margin-top 8 px. Without an explanation, on its own at
+  the same place: under the answer tiles and the Tip block. It sits above **Verder** and never replaces it: Verder
   stays the primary action. Shown only in the wrong-answer panel, never in the correct state.
 - **Several lesson topics:** the buttons are pages of a row that swipes horizontally, each page
   full width (scroll snap per page, no scrollbar). Under the row a dot per page (2 or 3),
