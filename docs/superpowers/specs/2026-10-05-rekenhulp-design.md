@@ -155,7 +155,9 @@ The app is a state machine in `App.svelte` with four states:
   segment is greyed out and `disabled`, with no hint text; the arrow keys skip it. The level is
   shown only here, not on the play screen (§3.3) or the results (§3.5).
 - A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count
-  (the number in a lighter yellow). There is no caption above it.
+  (the number in a lighter yellow). There is no caption above it. When the options do not fit on
+  the screen they scroll above the button; a fade from transparent to the background colour above
+  the button hints that more content (e.g. Niveau) is hidden below.
 - The chosen count and table choice are kept in memory only while the app stays open; nothing is
   persisted. **Opnieuw** reuses them and the level.
 
