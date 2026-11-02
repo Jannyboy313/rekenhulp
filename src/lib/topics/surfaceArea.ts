@@ -87,6 +87,21 @@ export function cylinderQuestion(
   });
 }
 
+const PI = rational(314n, 100n);
+
+/** `Een bol heeft een straal van 5 cm. …` with the formula `4 × π × straal × straal` given. */
+export function sphereQuestion(r: number, given: 'radius' | 'diameter'): Question {
+  const square = 4 * r * r;
+  const area = multiply(PI, fromInteger(square));
+  const fromDiameter = given === 'diameter' ? `straal = ${2 * r} : 2 = ${r} → ` : '';
+  return surfaceQuestion(`sphere:${given}:${r}`, {
+    prompt: `Een bol heeft een ${given === 'radius' ? `straal van ${r}` : `diameter van ${2 * r}`} cm. De oppervlakte van een bol is 4 × π × straal × straal. Neem π = 3,14. Hoe groot is de oppervlakte?`,
+    answer: area,
+    suffix: 'cm²',
+    explanation: `${fromDiameter}4 × ${r} × ${r} = ${square} → ${square} × 3,14 = ${formatRational(area)}`,
+  });
+}
+
 const CYLINDER_CONTEXTS: readonly CylinderContext[] = ['blik', 'koker', 'ton'];
 
 function drawPyramid(rng: Rng): Question {
@@ -109,7 +124,9 @@ const drawCylinder = (rng: Rng) =>
   cylinderQuestion(pick(rng, CYLINDER_CONTEXTS), drawTenths(rng, 5, 80), drawTenths(rng, 50, 500));
 
 export function generateSurfaceArea(rng: Rng): Question {
-  switch (pick(rng, ['pyramid', 'prism', 'cylinder'] as const)) {
+  switch (pick(rng, ['pyramid', 'prism', 'cylinder', 'sphere'] as const)) {
+    case 'sphere':
+      return sphereQuestion(pick(rng, [1, 2, 5, 10]), rng() < 0.5 ? 'radius' : 'diameter');
     case 'pyramid':
       return drawPyramid(rng);
     case 'prism':

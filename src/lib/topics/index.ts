@@ -278,7 +278,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   symmetry: 'Symmetrie (assen, draaien, puntsymmetrie)',
   solidNames: 'Ruimtefiguren en lijnen (namen, vlakken, begrippen)',
   scalingSolids: 'Kwadratisch en kubisch vergroten',
-  surfaceArea: 'Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)',
+  surfaceArea: 'Oppervlakte van ruimtefiguren (piramide, prisma, cilinder, bol)',
   compositeShapes: 'Samengestelde figuren (hoek eruit, pad, hectare)',
   angleReasoning: 'Redeneren met hoeken (buitenhoek, verhouding, klok)',
   shapeProperties: 'Eigenschappen van vierhoeken en driehoeken (ja/nee)',

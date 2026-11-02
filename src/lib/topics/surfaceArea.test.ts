@@ -7,6 +7,7 @@ import {
   generateSurfaceArea,
   prismQuestion,
   pyramidQuestion,
+  sphereQuestion,
   TRIPLES,
 } from './surfaceArea';
 import { answerOf, decimal, stepOf } from './testHelpers';
@@ -69,6 +70,30 @@ describe('question text', () => {
       'dm²',
       '500 + 2 × 80 = 660',
     ],
+    [
+      'bol, straal 5',
+      () => sphereQuestion(5, 'radius'),
+      'Een bol heeft een straal van 5 cm. De oppervlakte van een bol is 4 × π × straal × straal. Neem π = 3,14. Hoe groot is de oppervlakte?',
+      '314',
+      'cm²',
+      '4 × 5 × 5 = 100 → 100 × 3,14 = 314',
+    ],
+    [
+      'bol, diameter 10',
+      () => sphereQuestion(5, 'diameter'),
+      'Een bol heeft een diameter van 10 cm. De oppervlakte van een bol is 4 × π × straal × straal. Neem π = 3,14. Hoe groot is de oppervlakte?',
+      '314',
+      'cm²',
+      'straal = 10 : 2 = 5 → 4 × 5 × 5 = 100 → 100 × 3,14 = 314',
+    ],
+    [
+      'bol, straal 2',
+      () => sphereQuestion(2, 'radius'),
+      'Een bol heeft een straal van 2 cm. De oppervlakte van een bol is 4 × π × straal × straal. Neem π = 3,14. Hoe groot is de oppervlakte?',
+      '50,24',
+      'cm²',
+      '4 × 2 × 2 = 16 → 16 × 3,14 = 50,24',
+    ],
   ])('%s', (_label, make, prompt, answer, suffix, explanation) => {
     const step = stepOf(make());
     expect(step.kind).toBe('number');
@@ -86,6 +111,7 @@ describe('question text', () => {
     expect(cylinderQuestion('blik', decimal('25,1'), decimal('225,3')).key).toBe(
       'surfaceArea:cylinder:blik:25,1:225,3',
     );
+    expect(sphereQuestion(5, 'diameter').key).toBe('surfaceArea:sphere:diameter:5');
     expect(pyramidQuestion(3, 5, 'm', 'height').topic).toBe('surfaceArea');
   });
 });
@@ -108,10 +134,27 @@ describe('generateSurfaceArea', () => {
     }
   });
 
-  it('uses pyramid, prism and cylinder about a third each', () => {
-    for (const form of ['pyramid', 'prism', 'cylinder']) {
-      expect(Math.abs(of(form).length / questions.length - 1 / 3), form).toBeLessThan(0.04);
+  it('uses pyramid, prism, cylinder and sphere about a quarter each', () => {
+    for (const form of ['pyramid', 'prism', 'cylinder', 'sphere']) {
+      expect(Math.abs(of(form).length / questions.length - 1 / 4), form).toBeLessThan(0.04);
     }
+  });
+
+  it('draws spheres with r in {1, 2, 5, 10}, radius or diameter 50/50, answer 4 × 3,14 × r²', () => {
+    const seen = new Set<string>();
+    for (const question of of('sphere')) {
+      const [, given, rText] = parts(question);
+      const r = Number(rText);
+      expect([1, 2, 5, 10]).toContain(r);
+      expect(['radius', 'diameter']).toContain(given);
+      expect(answerOf(question), question.key).toEqual(
+        multiply(decimal('3,14'), fromInteger(4 * r * r)),
+      );
+      seen.add(`${given}:${r}`);
+    }
+    expect(seen.size).toBe(8);
+    const diameters = of('sphere').filter((question) => parts(question)[1] === 'diameter');
+    expect(Math.abs(diameters.length / of('sphere').length - 0.5)).toBeLessThan(0.07);
   });
 
   it('draws pyramids with z in [2, 12], h in [z, 20], 50% side area given, m and cm 50/50', () => {
