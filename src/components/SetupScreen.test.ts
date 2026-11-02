@@ -6,7 +6,6 @@ import {
   DEFAULT_SESSION_SIZE,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
-  RELATIONS_SET,
   TABLES_SET,
 } from '../lib/sets';
 import { TABLE_FACTORS } from '../lib/topics/tables';
@@ -146,8 +145,8 @@ describe('SetupScreen', () => {
 });
 
 describe('SetupScreen level', () => {
-  it('shows Niveau below the count, on Opfrisser, with Verdieping disabled for a real set', () => {
-    renderSetup(RELATIONS_SET);
+  it('shows Niveau below the count, on Opfrisser, with Verdieping disabled for a set without one', () => {
+    renderSetup({ ...DEEP_FIXTURE_SET, deep: [] });
     const groups = screen.getAllByRole('radiogroup');
     expect(groups.map((group) => group.getAttribute('aria-labelledby'))).toEqual([
       'size-heading',
@@ -207,7 +206,7 @@ describe('SetupScreen level', () => {
   });
 
   it('skips a disabled Verdieping with the arrow keys', async () => {
-    renderSetup(RELATIONS_SET);
+    renderSetup({ ...DEEP_FIXTURE_SET, deep: [] });
     await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });
     expect(levelRadio('Opfrisser').getAttribute('aria-checked')).toBe('true');
   });
