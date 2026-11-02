@@ -137,6 +137,32 @@ describe('generateTables with chosen tables', () => {
     expect([...others].sort((x, y) => x - y)).toEqual(TABLE_FACTORS);
   });
 
+  it('never asks for a single chosen table in division and missing-factor forms', () => {
+    for (const chosen of [[15], [7, 10]]) {
+      const table = chosen[0]!;
+      const rng = createRng(4);
+      let checked = 0;
+      for (let i = 0; i < SAMPLES; i++) {
+        const question = generateTables(rng, chosen);
+        const [a, b] = factorsOf(question);
+        if (question.key.startsWith('tables:product:') || a === b) continue;
+        expect(Number(expectedOf(question))).not.toBe(table);
+        checked++;
+      }
+      expect(checked).toBeGreaterThan(400);
+    }
+  });
+
+  it('still asks for either factor when several tables are chosen', () => {
+    const rng = createRng(4);
+    const answers = new Set<number>();
+    for (let i = 0; i < SAMPLES; i++) {
+      const question = generateTables(rng, [7, 8]);
+      if (!question.key.startsWith('tables:product:')) answers.add(Number(expectedOf(question)));
+    }
+    expect(answers.has(7) && answers.has(8)).toBe(true);
+  });
+
   it('rejects a choice without any table', () => {
     expect(() => generateTables(createRng(1), [])).toThrow(RangeError);
     expect(() => generateTables(createRng(1), [10])).toThrow(RangeError);

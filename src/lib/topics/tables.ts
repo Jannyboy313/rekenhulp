@@ -63,6 +63,11 @@ export function generateTables(rng: Rng, chosen: readonly number[] = TABLE_FACTO
   const product = a * b;
   const [fa, fb, fp] = [formatInteger(a), formatInteger(b), formatInteger(product)];
   const fact = `${fa} × ${fb} = ${fp}`;
+  const valid = chosen.filter((table) => TABLE_FACTORS.includes(table));
+  const single = valid.length === 1 ? valid[0] : undefined;
+  /** [unknown, known]; a single chosen table is always the known factor, else it is the answer. */
+  const orient = (unknown: number, known: number): [number, number] =>
+    unknown === single ? [known, unknown] : [unknown, known];
 
   switch (pick(rng, FORMS)) {
     case 'product':
@@ -72,30 +77,36 @@ export function generateTables(rng: Rng, chosen: readonly number[] = TABLE_FACTO
         product,
         neighbourRowTip(a, b),
       );
-    case 'division':
+    case 'division': {
+      const [answer, known] = orient(a, b);
       return tableQuestion(
-        `division:${product}:${b}`,
-        `${fp} : ${fb} = ${SLOT}`,
-        a,
-        productCheckTip(b, product, a, true),
+        `division:${product}:${known}`,
+        `${fp} : ${formatInteger(known)} = ${SLOT}`,
+        answer,
+        productCheckTip(known, product, answer, true),
         fact,
       );
-    case 'missingFactor':
-      return rng() < 0.5
-        ? tableQuestion(
-            `missingLeft:${b}:${product}`,
-            `${SLOT} × ${fb} = ${fp}`,
-            a,
-            productCheckTip(b, product, a, true),
-            fact,
-          )
-        : tableQuestion(
-            `missingRight:${a}:${product}`,
-            `${fa} × ${SLOT} = ${fp}`,
-            b,
-            productCheckTip(a, product, b, false),
-            fact,
-          );
+    }
+    case 'missingFactor': {
+      if (rng() < 0.5) {
+        const [answer, known] = orient(a, b);
+        return tableQuestion(
+          `missingLeft:${known}:${product}`,
+          `${SLOT} × ${formatInteger(known)} = ${fp}`,
+          answer,
+          productCheckTip(known, product, answer, true),
+          fact,
+        );
+      }
+      const [answer, known] = orient(b, a);
+      return tableQuestion(
+        `missingRight:${known}:${product}`,
+        `${formatInteger(known)} × ${SLOT} = ${fp}`,
+        answer,
+        productCheckTip(known, product, answer, false),
+        fact,
+      );
+    }
   }
 }
 
