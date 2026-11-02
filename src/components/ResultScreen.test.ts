@@ -6,11 +6,16 @@ import { TABLES_SET } from '../lib/sets';
 import { fromInteger } from '../lib/rational';
 import { SLOT } from '../lib/slot';
 import { choiceStep, factorizationStep, numberStep } from '../lib/steps';
-import type { Question, Step } from '../lib/types';
+import type { Question, Step, Topic } from '../lib/types';
 import ResultScreen from './ResultScreen.svelte';
 
-function recordOf(step: Step, input: string, durationMs = 3000): QuestionRecord {
-  const question: Question = { key: step.prompt, topic: 'tables', steps: [step] };
+function recordOf(
+  step: Step,
+  input: string,
+  durationMs = 3000,
+  topic: Topic = 'tables',
+): QuestionRecord {
+  const question: Question = { key: step.prompt, topic, steps: [step] };
   return { question, attempts: [{ input, result: step.check(input) }], durationMs };
 }
 
@@ -43,6 +48,31 @@ describe('ResultScreen', () => {
     expect(screen.getByRole('progressbar').getAttribute('aria-valuenow')).toBe('80');
     expect(screen.getByText('Resultaat')).toBeTruthy();
     expect(screen.getByText('Tafels')).toBeTruthy();
+  });
+
+  it('shows the score per topic, weakest first, between the score card and the mistakes', () => {
+    renderResults([
+      recordOf(product, '56', 3000, 'lcm'),
+      recordOf(product, '54', 3000, 'scale'),
+      recordOf(product, '56', 3000, 'scale'),
+    ]);
+    const heading = screen.getByRole('heading', { name: 'Per onderwerp' });
+    const rows = [...document.querySelectorAll('.topic-row')].map((row) =>
+      [...row.children].map((cell) => cell.textContent),
+    );
+    expect(rows).toEqual([
+      ['Schaal', '1 / 2'],
+      ['KGV', '1 / 1'],
+    ]);
+    const following = Node.DOCUMENT_POSITION_FOLLOWING;
+    const mistakes = screen.getByRole('heading', { name: 'Fouten · 1' });
+    expect(document.querySelector('.score-card')!.compareDocumentPosition(heading)).toBe(following);
+    expect(heading.compareDocumentPosition(mistakes)).toBe(following);
+  });
+
+  it('hides the score per topic with a single topic', () => {
+    renderResults([recordOf(product, '56'), recordOf(product, '54')]);
+    expect(screen.queryByRole('heading', { name: 'Per onderwerp' })).toBeNull();
   });
 
   it('formats the total time and the average over first attempts as m:ss and seconds', () => {

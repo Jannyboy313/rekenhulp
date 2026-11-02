@@ -21,6 +21,7 @@ export interface SessionSummary {
   totalMs: number;
   averageMs: number;
   mistakes: QuestionRecord[];
+  topics: TopicScore[];
 }
 
 /** A step answered wrongly, as the result screen lists it. */
@@ -92,5 +93,6 @@ export function summarize(records: readonly QuestionRecord[], totalMs: number): 
     totalMs,
     averageMs: answered === 0 ? 0 : durationSum / answered,
     mistakes: records.filter((record) => !isCorrect(record)),
+    topics: topicScores(records),
   };
 }

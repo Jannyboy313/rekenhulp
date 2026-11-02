@@ -66,6 +66,18 @@
         </dl>
       </section>
 
+      <!-- With one topic the card would repeat the score (spec §3.5). -->
+      {#if summary.topics.length > 1}
+        <h2>Per onderwerp</h2>
+        <ul class="card topic-card">
+          {#each summary.topics as { name, correct, answered } (name)}
+            <li class="topic-row">
+              <span>{name}</span><span class="topic-score">{correct} / {answered}</span>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+
       {#if failedSteps.length > 0}
         <h2>Fouten · {failedSteps.length}</h2>
         <ul class="mistakes">
@@ -226,6 +238,33 @@
     margin: 0;
     font-size: 20px;
     font-weight: 700;
+  }
+
+  .topic-card {
+    list-style: none;
+    margin: 0;
+    padding: 6px 16px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+  }
+
+  .topic-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .topic-row + .topic-row {
+    border-top: 1px solid var(--border);
+  }
+
+  .topic-score {
+    flex-shrink: 0;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
   }
 
   .mistakes {

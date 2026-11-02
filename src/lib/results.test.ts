@@ -81,6 +81,7 @@ describe('summarize', () => {
       totalMs: 12_000,
       averageMs: 3000,
       mistakes: [wrong],
+      topics: [{ name: 'Tafels van 2 t/m 15', correct: 2, answered: 3 }],
     });
   });
 
@@ -92,6 +93,7 @@ describe('summarize', () => {
       totalMs: 5000,
       averageMs: 0,
       mistakes: [],
+      topics: [],
     });
   });
 });
