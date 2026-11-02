@@ -61,13 +61,16 @@ export function firstDigitValue(value: number, base: Base): number {
   return Math.floor(value / place) * place;
 }
 
+const ORDINALS = ['', 'eerste', 'tweede', 'derde', 'vierde'];
+
 /** `het eerste van 3 cijfers staat op de plaats van 5 × 5 = 25 → 2 × 25 = 50` */
-export function placeValueExplanation(value: number, base: Base): string {
+export function placeValueExplanation(value: number, base: Base, position = 1): string {
   const digits = toBase(value, base).length;
-  const place = base ** (digits - 1);
-  const chain = Array.from({ length: digits - 1 }, () => base).join(' × ');
-  const first = Math.floor(value / place);
-  return `het eerste van ${digits} cijfers staat op de plaats van ${chain} = ${place} → ${first} × ${place} = ${firstDigitValue(value, base)}`;
+  const exponent = digits - position;
+  const place = base ** exponent;
+  const chain = exponent < 2 ? `${place}` : `${Array.from({ length: exponent }, () => base).join(' × ')} = ${place}`;
+  const digit = Math.floor(value / place) % base;
+  return `het ${ORDINALS[position]} van ${digits} cijfers staat op de plaats van ${chain} → ${digit} × ${place} = ${digit * place}`;
 }
 
 function generateLargest(rng: Rng): Question {
@@ -108,16 +111,22 @@ function generatePlace(rng: Rng): Question {
   const [min, max] = PLACE_RANGES[base];
   const value = drawUntil(() => {
     const drawn = randomInt(rng, min, max);
-    return base === 16 && !/[A-F]/.test(toBase(drawn, 16)) ? null : drawn;
+    if (base === 16) return /[A-F]/.test(toBase(drawn, 16)) ? drawn : null;
+    // Base 2 asks a 1 that is not the first digit, so 1000 has none.
+    return base === 2 && drawn === 8 ? null : drawn;
   });
+  const numeral = toBase(value, base);
+  const position =
+    base === 2 ? pick(rng, [2, 3, 4].filter((candidate) => numeral[candidate - 1] === '1')) : 1;
+  const answer = base === 2 ? 2 ** (4 - position) : firstDigitValue(value, base);
   return {
-    key: `baseReasoning:place:${base}:${value}`,
+    key: `baseReasoning:place:${base}:${value}${base === 2 ? `:${position}` : ''}`,
     topic: 'baseReasoning',
     steps: [
       numberStep({
-        prompt: `Wat is de waarde van het eerste cijfer in het ${NAMES[base]}e getal ${toBase(value, base)}? Geef je antwoord als gewoon getal.`,
-        answer: fromInteger(firstDigitValue(value, base)),
-        explanation: placeValueExplanation(value, base),
+        prompt: `Wat is de waarde van het ${ORDINALS[position]} cijfer in het ${NAMES[base]}e getal ${numeral}? Geef je antwoord als gewoon getal.`,
+        answer: fromInteger(answer),
+        explanation: placeValueExplanation(value, base, position),
       }),
     ],
   };

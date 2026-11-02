@@ -1,7 +1,7 @@
 import { drawUntil, pick, randomInt, type Rng } from '../random';
 import { textStep } from '../steps';
 import type { Question } from '../types';
-import { toBase } from './numberSystems';
+import { stripLeadingZeros, toBase } from './numberSystems';
 
 // Calculating in other bases (spec §5.90).
 type SumBase = 2 | 5;
@@ -21,8 +21,6 @@ const TIMES_RANGES: Record<SumBase, { min: number; max: number }> = {
   2: { min: 3, max: 7 },
   5: { min: 6, max: 124 },
 };
-
-const stripLeadingZeros = (input: string) => input.replace(/^0+(?=.)/, '');
 
 /** The number of carries in the column addition of two decimal values in the base. */
 export function carries(a: number, b: number, base: SumBase): number {

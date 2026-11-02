@@ -150,8 +150,35 @@ describe('baseReasoning: digits', () => {
 describe('baseReasoning: place value', () => {
   const rows = withForm('place');
 
+  it('asks a non-first 1 in a 4-digit binary numeral, answer 1, 2 or 4, keyed by position', () => {
+    const answers = new Set<number>();
+    const binary = rows.filter((question) => question.key.split(':')[2] === '2');
+    expect(binary.length).toBeGreaterThan(100);
+    for (const question of binary) {
+      const [, , , valueText, positionText] = question.key.split(':');
+      const value = Number(valueText);
+      const position = Number(positionText);
+      const numeral = value.toString(2);
+      expect(numeral).toHaveLength(4);
+      expect(position).toBeGreaterThanOrEqual(2);
+      expect(position).toBeLessThanOrEqual(4);
+      expect(numeral[position - 1]).toBe('1');
+      const ordinal = ['', 'eerste', 'tweede', 'derde', 'vierde'][position];
+      expect(stepOf(question).prompt).toBe(
+        `Wat is de waarde van het ${ordinal} cijfer in het tweetallige getal ${numeral}? Geef je antwoord als gewoon getal.`,
+      );
+      const expected = 2 ** (4 - position);
+      answers.add(expected);
+      expectSound(question, expected);
+    }
+    expect([...answers].sort((a, b) => a - b)).toEqual([1, 2, 4]);
+    expect(placeValueExplanation(11, 2, 3)).toBe(
+      'het derde van 4 cijfers staat op de plaats van 2 → 1 × 2 = 2',
+    );
+  });
+
   it('uses a first digit at its place with a letter in base 16 and gives d × place', () => {
-    for (const question of rows) {
+    for (const question of rows.filter((q) => q.key.split(':')[2] !== '2')) {
       const [, , baseText, valueText] = question.key.split(':');
       const base = Number(baseText);
       const value = Number(valueText);
@@ -160,7 +187,7 @@ describe('baseReasoning: place value', () => {
       expect(value).toBeLessThanOrEqual(max);
       const numeral = value.toString(base).toUpperCase();
       const length = digitCount(value, base);
-      expect(length).toBe(base === 2 ? 4 : 3);
+      expect(length).toBe(3);
       const place = base ** (length - 1);
       const first = Math.floor(value / place);
       expect(first).toBeGreaterThanOrEqual(1);
