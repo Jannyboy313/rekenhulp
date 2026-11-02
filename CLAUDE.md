@@ -79,7 +79,8 @@ The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScr
 lesson data through to `LessonLinks` and `LessonSheet`.
 
 Next steps (spec §12.2–§12.6), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
-check the sets against the toetsmatrijs (§12.7) before v4. v4 practises across sets. v5 holds only persistent memory in IndexedDB.
+the toetsmatrijs check of 2026-11-02 (§12.7) is done: close its RWT gaps before v4, one small
+round per set; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is decided in v4. v4 practises across sets. v5 holds only persistent memory in IndexedDB.
 
 | Step                                                                                    | New infrastructure   |
 | --------------------------------------------------------------------------------------- | -------------------- |

@@ -4239,6 +4239,9 @@ the current session.
 Comes after v3. A session that mixes exercises from more than one set. The form (the user picks
 sets, or a fixed mixed set) is decided in its own spec iteration.
 
+Open decision for v4: whether the written algorithms of LKT 3.3 (kolomsgewijs, cijferen) are in
+scope (§12.7).
+
 ### 12.6 v4 — practice test (oefentoets)
 
 Comes after mixed categories (§12.5), whose mixing it reuses. A session in the style of a PABO
@@ -4261,8 +4264,9 @@ distribution per domain and part in §3.3 (table 1), the eindtermen with H/NH pe
 ch. 6. Not tied to a version: it is done between versions, and each later version checks its
 scope against it. The check of 2026-10-26 gave the RWT gaps of §12.3.
 
-**Check of 2026-11-02** (after v3, against §5): the gaps of §12.3 are closed. Remaining gaps,
-not yet assigned to a version:
+**Check of 2026-11-02** (after v3, against §5): the gaps of §12.3 are closed. Remaining gaps
+(decided 2026-11-02): the RWT gaps are closed before v4, one small round per set; the LKT gaps
+wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§12.5).
 
 - RWT
   - C.10b: the surface area of a sphere with the formula given (`4 × π × r²`). Meetkunde,
@@ -4284,7 +4288,7 @@ not yet assigned to a version:
   - 2.5: angle types by size (scherp, recht, stomp, gestrekt). Meetkunde, Opfrisser MC.
   - 2.1.c: the gulden snede (≈ 1,618). Verhoudingen, MC.
   - 3.3: written algorithms (kolomsgewijs, cijferen) are not mental arithmetic with one typed
-    answer; in or out of scope is open.
+    answer; in or out of scope is decided in v4.
 
 The distribution of table 1 needs no change to the sets; it matters for the practice test
 (§12.6).
