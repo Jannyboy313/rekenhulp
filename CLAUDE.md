@@ -54,7 +54,8 @@ and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`, `si
   (§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
   `measureSense`, `timeCalc`, `estimating`, `proportionConcepts`, `compareRatios`,
   `numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
-  `fractionConcepts` and `solidNames`).
+  `fractionConcepts` and `solidNames`), and the score per topic on the results screen (§3.5,
+§12.4: `topicScores` in `lib/results.ts`).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -83,7 +84,6 @@ across sets. v5 holds only persistent memory in IndexedDB.
 | Step                                                                                    | New infrastructure   |
 | --------------------------------------------------------------------------------------- | -------------------- |
 | v3: practise mistakes (§12.4), a new session with the topics of the mistakes            | —                    |
-| v3: score per topic on the results screen (§12.4)                                       | —                    |
 | v4: mixed categories (§12.5), form decided in its spec iteration                        | sessions across sets |
 | v4: practice test (§12.6), after mixed categories                                       | test session         |
 | v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB            |
