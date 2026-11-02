@@ -36,6 +36,14 @@ orchestrator. Goal of this plan: low token cost, no long handovers, no merge con
 3. `git status` clean on `main`. Agent worktrees branch from `origin/main`, not local `main`,
    so every agent starts with `git merge --no-ff main` (step 3 below makes this necessary).
 
+4. State 2026-11-02: §1 and §2 are done (`0808490`, `63a6271`). The first dispatch failed: the
+   repo has no `origin`, worktrees started at `b48639d` and every agent was denied
+   `git merge --no-ff main`, even after `Bash(git merge --no-ff main)` was added to
+   `.claude/settings.json`. Before dispatching 7, dispatch one agent and confirm its merge works.
+   Seven stale clean worktrees under `.claude/worktrees/` (branches `worktree-agent-*`) still need
+   `git worktree remove` + `git branch -d`. In the brief, drop the "load skill" line
+   (`honey:hive-builder` has no Skill tool) and say "run exactly `git merge --no-ff main`, no -m".
+
 ## 2. Scaffold (one Haiku agent, no worktree, runs alone, then one commit)
 
 Goal: after this commit each topic agent edits only its own two files, so branches never conflict.
