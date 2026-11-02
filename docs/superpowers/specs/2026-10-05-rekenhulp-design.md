@@ -4005,17 +4005,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-Drafted 2026-11-02 for the Verdieping of the last three sets (§5.86–§5.97); the user has not
-confirmed these yet. Implementation waits for confirmation; the user may also answer by editing
-the sections.
-
-1. **Topic lists:** four Verdieping topics for each of Verbanden & statistiek, Talstelsels and
-   Heuristieken, as in §4.1. Open: is four per set right (twelve topics in total), or fewer?
-2. **Heuristic name:** `Schema maken:` joins the four heuristic names of §5.41–§5.44 for the
-   parts method (ages, rectangle, §5.96).
-3. **Realism:** the ranges of §5.86–§5.97 (for example a range sum up to 1500, 8-bit
-   hexadecimal conversions, 4-digit hexadecimal digit counts) are a first reading; adjust them
-   if they are too heavy for mental arithmetic (CLAUDE.md, domain rules).
+No open assumptions.
 
 ## 12. Roadmap (not in v1)
 
