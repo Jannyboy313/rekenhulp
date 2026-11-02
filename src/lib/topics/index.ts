@@ -251,7 +251,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   mentalOperations: 'Hoofdrekenen met grote getallen (ook delen met rest)',
   negativeNumbers: 'Negatieve getallen (ook temperatuur)',
   numberOrder: 'Ordenen (negatief, kommagetal, getallenlijn)',
-  arithmeticWords: 'Rekentaal (som, verschil, product, bijna, ruim)',
+  arithmeticWords: 'Rekentaal (som, verschil, bijna, ruim, cijfer)',
   negativeContexts: 'Negatief in context (rood staan, tekort, NAP)',
   roundingReasoning: 'Afronden redeneren (grenzen, contant betalen)',
   estimateCalc: 'Schatten (uitkomst ongeveer)',

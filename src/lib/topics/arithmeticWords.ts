@@ -1,9 +1,9 @@
 import { formatInteger as f, NO_BREAK_SPACE } from '../format';
-import { drawUntil, pick, randomInt, range, type Rng } from '../random';
+import { drawUntil, pick, randomInt, range, shuffle, type Rng } from '../random';
 import { choiceStep } from '../steps';
 import type { Question } from '../types';
 
-// Words of arithmetic (spec §5.68): som, verschil, product, quotiënt, and bijna / ruim.
+// Words of arithmetic (spec §5.68): som, verschil, product, quotiënt, bijna / ruim, and cijfer.
 export const ARITHMETIC_WORDS = ['som', 'verschil', 'product', 'quotiënt'] as const;
 export type ArithmeticWord = (typeof ARITHMETIC_WORDS)[number];
 
@@ -83,6 +83,48 @@ export function approximationQuestion(
   };
 }
 
+/** The places from the right; index i holds the digit worth 10^i. */
+export const PLACES = [
+  'eenheden',
+  'tientallen',
+  'honderdtallen',
+  'duizendtallen',
+  'tienduizendtallen',
+  'honderdduizendtallen',
+] as const;
+export type Place = (typeof PLACES)[number];
+
+/** `Welk cijfer staat op de plaats van de duizendtallen in 207 458?`; `others` are three other digits of the number. */
+export function digitQuestion(place: Place, number: number, others: readonly number[]): Question {
+  const digits = [...String(number)].reverse().map(Number);
+  const index = PLACES.indexOf(place);
+  const answer = digits[index]!;
+  const steps = PLACES.slice(0, index + 1).map((name, i) => `${digits[i]} ${name}`);
+  return {
+    key: `arithmeticWords:digit:${place}:${number}`,
+    topic: 'arithmeticWords',
+    steps: [
+      choiceStep({
+        prompt: `Welk cijfer staat op de plaats van de ${place} in ${f(number)}?`,
+        options: [answer, ...others].sort((x, y) => x - y).map(String),
+        answer: String(answer),
+        explanation: `${f(number)}: ${steps.join(', ')} → ${answer}`,
+      }),
+    ],
+  };
+}
+
+function digit(rng: Rng): Question {
+  const number = drawUntil(() => {
+    const candidate = randomInt(rng, 100000, 999999);
+    return new Set(String(candidate)).size === 6 ? candidate : null;
+  });
+  const index = randomInt(rng, 0, PLACES.length - 1);
+  const digits = [...String(number)].reverse().map(Number);
+  const others = shuffle(rng, digits.filter((_, i) => i !== index)).slice(0, 3);
+  return digitQuestion(PLACES[index]!, number, others);
+}
+
 function operation(rng: Rng): Question {
   const word = pick(rng, ARITHMETIC_WORDS);
   const { a, b } = drawUntil(() => {
@@ -106,7 +148,7 @@ function approximation(rng: Rng): Question {
   );
 }
 
-/** One of two forms, 50/50 (spec §5.68). */
+/** One of three forms, each equally likely (spec §5.68). */
 export function generateArithmeticWords(rng: Rng): Question {
-  return pick(rng, [operation, approximation])(rng);
+  return pick(rng, [operation, approximation, digit])(rng);
 }

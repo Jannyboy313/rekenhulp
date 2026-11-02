@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
+import { GROUP_SEPARATOR } from '../format';
 import { createRng } from '../random';
 import type { Question } from '../types';
 import {
   approximationQuestion,
   ARITHMETIC_WORDS,
+  digitQuestion,
   generateArithmeticWords,
+  PLACES,
   operationQuestion,
 } from './arithmeticWords';
 import { stepOf } from './testHelpers';
@@ -83,6 +86,32 @@ describe('approximationQuestion', () => {
   });
 });
 
+describe('digitQuestion', () => {
+  it('asks the digit on the place of the duizendtallen in 207 458', () => {
+    const step = stepOf(digitQuestion('duizendtallen', 207458, [0, 5, 2]));
+    expect(step.prompt).toBe(
+      `Welk cijfer staat op de plaats van de duizendtallen in 207${GROUP_SEPARATOR}458?`,
+    );
+    expect(step.options).toEqual(['0', '2', '5', '7']);
+    expect(step.check('7').correct).toBe(true);
+    expect(step.check('0').correct).toBe(false);
+    expect(step.check('7').explanation).toBe(
+      `207${GROUP_SEPARATOR}458: 8 eenheden, 5 tientallen, 4 honderdtallen, 7 duizendtallen → 7`,
+    );
+  });
+
+  it('explains the eenheden and the honderdduizendtallen', () => {
+    expect(stepOf(digitQuestion('eenheden', 207458, [0, 2, 5])).check('8').explanation).toBe(
+      `207${GROUP_SEPARATOR}458: 8 eenheden → 8`,
+    );
+    expect(
+      stepOf(digitQuestion('honderdduizendtallen', 207458, [0, 5, 7])).check('2').explanation,
+    ).toBe(
+      `207${GROUP_SEPARATOR}458: 8 eenheden, 5 tientallen, 4 honderdtallen, 7 duizendtallen, 0 tienduizendtallen, 2 honderdduizendtallen → 2`,
+    );
+  });
+});
+
 describe('generateArithmeticWords', () => {
   const rng = createRng(41);
   const questions: Question[] = Array.from({ length: SAMPLES }, () => generateArithmeticWords(rng));
@@ -104,9 +133,32 @@ describe('generateArithmeticWords', () => {
     }
   });
 
-  it('splits the two forms 50/50 and uses every word and context', () => {
-    expect(share(questions, (q) => parts(q)[1] === 'operation')).toBeGreaterThan(0.45);
-    expect(share(questions, (q) => parts(q)[1] === 'operation')).toBeLessThan(0.55);
+  it('digit: six different digits, every place, options the answer and three digits of the number', () => {
+    const digits = questions.filter((q) => parts(q)[1] === 'digit');
+    const places = new Set<string>();
+    for (const question of digits) {
+      const [, , place, numberText] = parts(question);
+      const number = Number(numberText);
+      const text = String(number);
+      const step = stepOf(question);
+      const index = PLACES.indexOf(place as (typeof PLACES)[number]);
+      expect(index).toBeGreaterThanOrEqual(0);
+      expect(number).toBeGreaterThanOrEqual(100000);
+      expect(number).toBeLessThanOrEqual(999999);
+      expect(new Set(text).size).toBe(6);
+      expect(step.check('').expected).toBe(text[5 - index]);
+      expect(step.options!.every((option) => text.includes(option))).toBe(true);
+      expect([...step.options!].sort()).toEqual(step.options);
+      places.add(place!);
+    }
+    expect(places.size).toBe(6);
+  });
+
+  it('splits the three forms equally and uses every word and context', () => {
+    for (const form of ['operation', 'approximation', 'digit']) {
+      expect(share(questions, (q) => parts(q)[1] === form), form).toBeGreaterThan(0.29);
+      expect(share(questions, (q) => parts(q)[1] === form), form).toBeLessThan(0.38);
+    }
     for (const word of ARITHMETIC_WORDS) {
       expect(share(operations, (q) => parts(q)[2] === word)).toBeGreaterThan(0.2);
       expect(share(operations, (q) => parts(q)[2] === word)).toBeLessThan(0.3);
