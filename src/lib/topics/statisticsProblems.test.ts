@@ -155,6 +155,10 @@ describe('statisticsProblems: generated questions', () => {
     }
   });
 
+  it('removed: n = 5, m = 6, r = 30 is never drawn (new mean 0)', () => {
+    expect(withForm('removed').some(({ key }) => key.endsWith(':5:6:30'))).toBe(false);
+  });
+
   it('removes r ≠ m from n numbers with whole mean m, the new mean at most 1 decimal', () => {
     for (const question of withForm('removed')) {
       const [, , nText, mText, rText] = question.key.split(':');
@@ -168,6 +172,7 @@ describe('statisticsProblems: generated questions', () => {
       expect(r).toBeGreaterThanOrEqual(1);
       expect(r).toBeLessThanOrEqual(30);
       expect(r).not.toBe(m);
+      expect(n * m - r).toBeGreaterThanOrEqual(n - 1);
       const exact = rational(BigInt(n * m - r), BigInt(n - 1));
       expect(hasAtMostDecimals(exact, 1)).toBe(true);
       expect(answerOf(question)).toEqual(exact);

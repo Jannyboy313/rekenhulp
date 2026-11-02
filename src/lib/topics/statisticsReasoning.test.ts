@@ -81,15 +81,15 @@ describe('statisticsReasoning generator', () => {
     expect(unchanged.length / SAMPLES).toBeLessThan(0.55);
   });
 
-  it('unchanged: 5 to 7 values in [1, 20], one added in [1, 25], measure options in order', () => {
+  it('unchanged: 5 to 7 values in [1, 10], one added in [1, 10], measure options in order', () => {
     for (const question of questions.filter(({ key }) => key.includes(':unchanged:'))) {
       const [, , list, added] = question.key.split(':');
       const values = list!.split(',').map(Number);
       expect(values.length).toBeGreaterThanOrEqual(5);
       expect(values.length).toBeLessThanOrEqual(7);
-      expect(values.every((value) => value >= 1 && value <= 20)).toBe(true);
+      expect(values.every((value) => value >= 1 && value <= 10)).toBe(true);
       expect(Number(added)).toBeGreaterThanOrEqual(1);
-      expect(Number(added)).toBeLessThanOrEqual(25);
+      expect(Number(added)).toBeLessThanOrEqual(10);
       const step = stepOf(question);
       expect(step.options).toEqual([...MEASURES]);
       expect(step.check(step.check('x').expected).explanation!.match(/blijft/g)).toHaveLength(1);
@@ -101,7 +101,8 @@ describe('statisticsReasoning generator', () => {
       const step = stepOf(question);
       const values = question.key.split(':').pop()!.split(',').map(Number);
       expect(values).toHaveLength(5);
-      expect(values.every((value) => value >= 1 && value <= 20)).toBe(true);
+      const max = step.prompt.startsWith('Cijfers:') ? 10 : 20;
+      expect(values.every((value) => value >= 1 && value <= max)).toBe(true);
       expect(step.options).toEqual([...MEAN_MEDIAN_OPTIONS]);
       expect(answerText(question)).not.toBe(MEAN_MEDIAN_OPTIONS[3]);
       expect(
