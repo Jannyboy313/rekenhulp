@@ -9,7 +9,8 @@
 ## 1. Goal
 
 Study material per practice set, to understand and refresh the methods before practising, aimed
-at the LKT and the RWT. It is read on demand, never part of a session.
+at the LKT and the RWT. It is read on demand, never part of a session; a mistake in a session can
+open the lesson topics of its exercise in a sheet (§3.1).
 
 **Several methods.** The reader is a PABO student who will teach children that calculate in
 different ways, so a topic shows **more than one method** wherever a common second method exists
@@ -25,7 +26,8 @@ different ways, so a topic shows **more than one method** wherever a common seco
 - No exercises, interaction, images or network inside a lesson.
 - No didactics (main spec §12.8): the lesstof shows calculation methods, not how to teach them:
   no teaching models or terms, no typical pupils' errors.
-- No link from a session or the feedback panel to a lesson (for now).
+- No link from the setup or results screen to a lesson; the only practice entry point is the
+  wrong-answer panel (§3.1).
 
 ## 2. Build order
 
@@ -49,10 +51,11 @@ sets, in `PRACTICE_SETS` order, with the same glyph, name and description as **O
 with a lesson is a normal row and opens `lessonTopics`; a set without a lesson is shown greyed
 out and disabled (the global disabled style, `disabled` attribute, not focusable).
 
-**Linking is supported, not used yet.** `lessonTopics` carries the screen to return to, so a
-later entry point (e.g. a button on the setup screen) only has to open it with its own screen as
-return target; the lesson screens do not change. No such entry point is built now: the practice
-screens (setup, playing, results) stay untouched.
+**Linking to these screens is supported, not used yet.** `lessonTopics` carries the screen to
+return to, so a later entry point (e.g. a button on the setup screen) only has to open it with
+its own screen as return target; the lesson screens do not change. No such entry point is built
+now. The link from a mistake (§3.1) does not use these states: it opens a sheet on the playing
+screen.
 
 Back:
 
@@ -62,6 +65,85 @@ Back:
 - The **system back** does what Terug does and never closes the app (main spec §3). Because both
   lesson states are off `sets`, the back-guard entry consumed by a `popstate` must be pushed
   again whenever the new screen is still off `sets`.
+
+### 3.1 Lesson link from a mistake
+
+The wrong-answer panel (main spec §3.4) links to the lesson topics that explain the exercise's
+practice topic, so the user reads the method right away and goes on with the session where it
+was. Only the wrong-answer panel links; the results screen does not.
+
+- **Mapping:** `LESSON_LINKS` (§5, §3.2) lists per practice topic the lesson topics that explain
+  it, most relevant first. A ref may point to the lesson of another set (`remainders` →
+  Getalbegrip, Delen met rest). A practice topic without refs gets no button, and so does a ref
+  whose lesson or topic does not exist (it is dropped).
+- **Button:** a light blue button with dark blue text (two new tokens in `app.css`), a book icon
+  (new `Icon` name) on the left, the text **Les: <title of the lesson topic>** and a chevron on
+  the right. The title may wrap to two lines.
+- **Place:** with a tip, inside the grey Tip block, under the tip text. Without a tip, on its own
+  at the same place: under the answer tiles, above the Uitleg block. The rest of the panel does
+  not change.
+- **Several lesson topics:** one row of buttons that scrolls horizontally (scroll snap per
+  button, no scrollbar); with more than one button each is at most 80% of the row wide, so the
+  next one peeks out and the row reads as swipeable.
+- **Sheet:** a tap opens a bottom sheet over the playing screen: a native `<dialog>` opened with
+  `showModal()` (focus trap and inert background for free), about 85% of the viewport height
+  (`dvh`), rounded top corners, a dimmed backdrop, sliding up (static with reduced motion),
+  respecting the bottom safe-area inset. Header: the topic title and a ✕ button with aria-label
+  **Sluiten**. Body: the topic's blocks exactly as on the `lesson` screen (§4, shared
+  rendering), scrolling inside the sheet without scrolling the page behind it. No topic list, no
+  other topics, no navigation to the lesson screens, no drag to close.
+- **Close:** ✕, a tap on the backdrop, Esc or the system back. The system back closes only the
+  sheet; during a session it otherwise stays ignored (main spec §3). After closing, the same
+  wrong-answer panel is shown unchanged and focus returns to the button that opened the sheet.
+- **Session:** stays mounted and unchanged (queue, repeats, records, kladblok, wake lock). The
+  session clock keeps running: the total time is wall clock (main spec §3.5). The time per
+  exercise already stopped at the answer, so reading never counts toward it.
+
+### 3.2 Mapping: practice topic → lesson topics
+
+Refs are `set/topic` ids; a bare id is a topic of the set's own lesson. **—** means no link.
+
+| Set           | Practice topic → lesson topics                                                                 |
+| ------------- | ---------------------------------------------------------------------------------------------- |
+| Tafels        | `tables` —                                                                                     |
+| Meten         | `volume` → `volume`; `area` → `area`; `length`, `mass`, `measureProblems` → `metric`;           |
+|               | `time`, `calendar`, `timeCalc` → `time`; `numberUnits` → `largeNumbers`; `speed` → `speed`;     |
+|               | `compoundUnits` → `speed`, `metersPerSecond`; `dataSize`, `clock`, `measureSense`,              |
+|               | `estimating` —                                                                                 |
+| Verhoudingen  | `percentages` → `percentages`; `ratios` → `ratios`; `percentChange` → `percentChange`;          |
+|               | `scale` → `scale`; `ratioProblems` → `ratioProblems`; `percentProblems` → `priceChange`,        |
+|               | `percentages`; `compareRatios` → `perUnit`, `ratios`; `ratioReasoning` → `ratios`,              |
+|               | `ratioProblems`; `permille`, `proportionConcepts`, `enlargement` —                             |
+| Getallen      | `lcm` → `lcm`; `gcd` → `gcd`; `prime` → `primes`; `factorization`, `divisors` →                 |
+|               | `factorization`; `divisibility` → `digitRules`, `combinedRules`, `chunking`; `missingDigit` →   |
+|               | `digitRules`; `squares` → `squares`; `lcmGcdProblems` → `lcm`, `gcd`; `remainders` →            |
+|               | `getalbegrip/remainder`, `lcm`                                                                 |
+| Bewerkingen   | `orderOfOperations`, `bracketPlacement` → `orderOfOperations`; `properties` → `swapGroup`,      |
+|               | `distributive`; `smartCalculation` → `compensation`, `complement`, `splitting`;                 |
+|               | `derivedFacts`, `smartCalculationDeep` → `distributive`; `multiStepProblems` →                  |
+|               | `getalbegrip/remainder`                                                                        |
+| Getalbegrip   | `mentalOperations` → `mentalOperations`; `negativeNumbers`, `negativeContexts` →                |
+|               | `negativeNumbers`; `rounding`, `roundingReasoning`, `estimateCalc` → `rounding`;                |
+|               | `powersRoots` → `powers`, `negativeExponents`, `roots`; `powerCalc` → `powers`, `roots`,        |
+|               | `scientificNotation`; `scientificNotation` → `scientificNotation`; `numberOrder`,               |
+|               | `arithmeticWords` —                                                                            |
+| Breuken       | `fractionConversion` → `conversion`; `fractionArithmetic` → `addSubtract`, `multiplyDivide`;    |
+|               | `decimalArithmetic`, `decimalProblems` → `decimals`; `compareFractions` → `conversion`,         |
+|               | `knownFractions`; `mixedNotation` → `conversion`, `multiplyDivide`; `fractionProblems` →        |
+|               | `partOf`; `decimalNames`, `fractionConcepts`, `betweenNumbers` —                               |
+| Meetkunde     | `perimeterArea`, `compositeShapes` → `perimeterArea`; `solids` → `solids`; `surfaceArea` →      |
+|               | `solids`, `circle`; `pythagoras` → `pythagoras`; `angles` → `angles`; `angleReasoning` →        |
+|               | `angles`, `clock`; `symmetry` → `symmetry`; `shapeProperties` → `quadrilaterals`,               |
+|               | `triangles`; `solidNames`, `scalingSolids` —                                                   |
+| Verbanden     | `statistics`, `statisticsReasoning` → `mean`, `median`; `statisticsProblems` → `mean`;          |
+|               | `percentagePoints` → `percentagePoints`; `sequences` → `sequences`; `formulas` → `formulas`;    |
+|               | `formulaProblems` → `formulas`, `sequences`; `equations` → `equations`; `probability`,          |
+|               | `twoDice` → `probability`                                                                      |
+| Talstelsels   | `numberSystems` → `toDecimal`, `fromDecimal`; `baseReasoning` → `toDecimal`; `romanNumerals`,   |
+|               | `romanCalc` → `romanNumerals`; `baseArithmetic`, `hexBinary` —                                 |
+| Heuristieken  | `systematicCounting`, `countingCases` → `systematicCounting`; `workingBackwards`,               |
+|               | `backwardsProblems` → `workingBackwards`; `guessAndCheck`, `twoUnknowns` → `guessAndCheck`;     |
+|               | `simplifyProblem` → `simplifySums`, `figurePatterns`; `simplifyDeep` → `simplifySums`          |
 
 ## 4. Screens
 
@@ -76,6 +158,10 @@ Back:
   either list, and the set row (glyph tile, name, description, chevron, `disabled`) used by both
   lists. `App.svelte` stays the single state machine, with the lesson states as their own
   branches.
+- **Exception, the link from a mistake (§3.1):** `Feedback` renders the lesson buttons and
+  `PlayScreen` owns the open sheet; both only pass lesson data through. The lesson UI stays in
+  lesson components: `LessonLinks` (the button row), `LessonSheet` (the dialog) and
+  `LessonBlocks` (the blocks, shared by `LessonView` and the sheet).
 - **`lessonTopics`:** header like the setup screen (back button with aria-label **Terug**, glyph
   tile, set name), then one row per topic with its title and a one-line summary, in the row style
   of the overview. Scrolls when long.
@@ -99,7 +185,16 @@ interface Lesson { setId: string; topics: LessonTopic[] }
 
 const LESSONS: readonly Lesson[];                          // one entry per set in §7
 function lessonFor(set: PracticeSet): Lesson | undefined;
+
+// lib/lessons/links.ts (§3.1, §3.2)
+interface LessonRef { setId: string; topicId: string }
+const LESSON_LINKS: Partial<Record<Topic, readonly LessonRef[]>>;   // missing = no link
+function lessonLinksFor(topic: Topic, lessons: readonly Lesson[]): LessonTopic[];
 ```
+
+- `LESSON_LINKS` is `Partial`, so a new practice topic needs no entry (§6: adding a set never
+  touches lesson code). `lessonLinksFor` resolves the refs in order and drops the ones that do
+  not resolve.
 
 - A lesson belongs to a set by `setId`. Its topics are its own and need not match the set's
   practice topics (Tafels has one practice topic but could have several lesson topics).
@@ -120,6 +215,9 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
 - Text uses no ASCII operators: no `*`, no `x` between numbers, no `/` with spaces around it
   (`km/u` and `3/4` are fine). A `worked` line has no literal `?` and no ASCII `-` as minus.
 - The framework itself is tested with a fixture lesson, independent of the real `LESSONS`.
+- **Links:** every ref in `LESSON_LINKS` resolves against the real `LESSONS` and no topic lists
+  the same ref twice; `lessonLinksFor` is tested with the fixture (order kept, unresolved refs
+  dropped, unknown topic gives none).
 
 ## 7. Content per set
 

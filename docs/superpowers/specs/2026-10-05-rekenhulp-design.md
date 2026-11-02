@@ -200,7 +200,9 @@ Larger counts are deliberate longer sessions.
   and "Goed antwoord" (both with the unit; the given answer is not struck through), an optional
   tip (§3.4.1) and an optional explanation (e.g. `91 = 7 × 13`), each in its own block with the
   label "Tip" or "Uitleg" (only the explanation scrolls, after 220 px), and a **Verder** button.
-  When the prompt has a slot, it is shown as `?` in the wrong colour.
+  When the prompt has a slot, it is shown as `?` in the wrong colour. When the exercise's topic
+  has lesson topics, one or more **Les:** buttons open them in a sheet over the session (lesstof
+  spec §3.1).
 - A prompt without a slot never changes colour: correct and wrong show only in the answer field
   and the panel. For a prompt with a slot the colour is an extra, never the only signal.
 - Each time an exercise is shown, it allows exactly one attempt (one per step for property
@@ -4212,11 +4214,10 @@ the current session.
 2. **Score per topic** — the results screen shows the first-attempt score per topic, so weak
    topics stand out. The practice test (§12.6) reuses it for "on which topics they still need
    to practise".
-3. **Lesson link** — from a mistake to the lesson of its topic, through the existing
-   `openLesson(set, lesson, returnTo)` (`App.svelte`). Open: where the link sits (wrong-answer
-   panel, error card on the results screen, or both), the topic → lesson mapping, and the return
-   to the session. This changes the rule that practice components get no lesson props or
-   branches (CLAUDE.md, lesstof spec).
+3. **Lesson link** — from a mistake in the wrong-answer panel to the lesson topics of its
+   practice topic, read in a sheet over the session (not via `openLesson`). Decided in the
+   lesstof spec §3.1–§3.2 (place, button, sheet, mapping) and §4 (exception to the code
+   separation).
 
 ### 12.5 v4 — mixed categories
 
