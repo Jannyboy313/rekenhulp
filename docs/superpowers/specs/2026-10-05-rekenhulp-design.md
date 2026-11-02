@@ -4281,7 +4281,9 @@ wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§
   - C.10b: the surface area of a sphere with the formula given (`4 × π × r²`). Meetkunde,
     Verdieping. §12.8 drops only the volume of a sphere (C.12b).
   - A.4a: division with a remainder (`23 : 7 = 3 rest 2`) is Verdieping only (`remainders`,
-    `multiStepProblems`), while A.4 is also hoofdrekenen. Opfrisser.
+    `multiStepProblems`), while A.4 is also hoofdrekenen. Opfrisser. Closed by the Remainder
+    form of §5.15 (`mentalOperations`, Opfrisser), missed in this check; the bare form without
+    context needs a two-part answer and is not added.
   - B.4: comparing percentages and ratios together with fractions and decimals;
     `compareFractions` has fractions and decimals only. Opfrisser. Closed by the Mixed form of
     §5.74.
