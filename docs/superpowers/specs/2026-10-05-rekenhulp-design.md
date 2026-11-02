@@ -4132,12 +4132,8 @@ Built in steps, each its own session and only when the user says so:
    picks the next set. Done: Meten (§5.45–§5.52), and, built together, Verhoudingen
    (§5.53–§5.58), Getallen & delers (§5.59–§5.62) and Bewerkingen (§5.63–§5.66), and, built
    together, Getalbegrip (§5.67–§5.72), Breuken & kommagetallen (§5.73–§5.79) and Meetkunde
-   (§5.80–§5.84).
-
-   The last three sets, Verbanden & statistiek (§5.86–§5.89), Talstelsels (§5.90–§5.93) and
-   Heuristieken (§5.94–§5.97), are built together and in parallel under an orchestrator, as
-   one topic per cheap agent, with the plan `docs/superpowers/plans/2026-11-02-last-three-verdieping.md`.
-   After them every set except Tafels has a Verdieping.
+   (§5.80–§5.84), and, built together, Verbanden & statistiek (§5.86–§5.89), Talstelsels
+   (§5.90–§5.93) and Heuristieken (§5.94–§5.97). Every set except Tafels now has a Verdieping.
 
 The lesstof (lesstof spec) is not split by level.
 

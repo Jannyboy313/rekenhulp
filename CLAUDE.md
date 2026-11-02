@@ -40,13 +40,15 @@ Getalbegrip (v3: Opfrisser `numberOrder`, `arithmeticWords` and Verdieping
 `mixedNotation`, `fractionProblems`, `decimalProblems`, `betweenNumbers`), Meetkunde
 (`perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties` + v3:
 Opfrisser `solidNames` and Verdieping `scalingSolids`, `surfaceArea`, `compositeShapes`,
-`angleReasoning`) and Verbanden & statistiek (`statistics`, `percentagePoints`,
-`sequences`, `formulas`, `equations`, `probability`), Talstelsels (`numberSystems`,
-`romanNumerals`) and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`,
-`simplifyProblem`), plus stacked fractions, the kladblok (§3.6), repeat until correct
+`angleReasoning`), Verbanden & statistiek (`statistics`, `percentagePoints`,
+`sequences`, `formulas`, `equations`, `probability` + v3 Verdieping: `twoDice`,
+`statisticsReasoning`, `statisticsProblems`, `formulaProblems`), Talstelsels (`numberSystems`,
+`romanNumerals` + v3 Verdieping: `baseArithmetic`, `baseReasoning`, `hexBinary`, `romanCalc`)
+and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`
++ v3 Verdieping: `countingCases`, `backwardsProblems`, `twoUnknowns`, `simplifyDeep`), plus stacked fractions, the kladblok (§3.6), repeat until correct
 (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
 Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
-(§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; every set except Tafels, Verbanden & statistiek, Talstelsels and Heuristieken has a Verdieping, the
+(§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; every set except Tafels has a Verdieping, the
 fixture set `lib/setFixture.ts` still tests the framework), and the multiple-choice framework
 (§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
 `measureSense`, `timeCalc`, `estimating`, `proportionConcepts`, `compareRatios`,
@@ -68,13 +70,12 @@ notation and that every `worked` line is a true equality chain. Keep lesson code
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 
-Next steps (spec §12.2–§12.6), one at a time and only when the user says so. The user picks the
-next v3 step (a set or one of the §12.4 features). v4 practises across sets. v5 holds only
-persistent memory in IndexedDB.
+Next steps (spec §12.2–§12.6), one at a time and only when the user says so. The per-set v3 step
+(§12.2 step 4) is done; the user picks the next v3 step among the §12.4 features. v4 practises
+across sets. v5 holds only persistent memory in IndexedDB.
 
 | Step                                                                                            | New infrastructure   |
 | ----------------------------------------------------------------------------------------------- | -------------------- |
-| v3: per set (§12.2 step 4): Verdieping + RWT gaps (§12.3), the user picks the order; not Tafels | —                    |
 | v3: practise mistakes (§12.4), a new session with the topics of the mistakes                    | —                    |
 | v3: score per topic on the results screen (§12.4)                                               | —                    |
 | v3: lesson link from a mistake (§12.4), via `openLesson`                                        | practice → lesstof   |
