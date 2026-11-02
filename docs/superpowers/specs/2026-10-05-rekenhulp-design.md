@@ -2920,13 +2920,14 @@ Two forms, 50/50:
 
 ### 5.68 Words of arithmetic (`arithmeticWords`)
 
-Opfrisser (RWT A.2), all multiple choice. Label: `Rekentaal (som, verschil, product, bijna,
-ruim)`. Two forms, 50/50:
+Opfrisser (RWT A.2, and A.1 for cijfer versus getal), all multiple choice. Label: `Rekentaal
+(som, verschil, bijna, ruim, cijfer)`. Three forms, each equally likely:
 
-| Form        | Example                                    | Answer |
-|-------------|--------------------------------------------|--------|
-| Operation   | `Wat is het verschil van 48 en 12?`        | `36`   |
-| Bijna, ruim | `Welk bedrag is ruim € 50?`                | `€ 53` |
+| Form        | Example                                                        | Answer |
+|-------------|----------------------------------------------------------------|--------|
+| Operation   | `Wat is het verschil van 48 en 12?`                            | `36`   |
+| Bijna, ruim | `Welk bedrag is ruim € 50?`                                    | `€ 53` |
+| Digit       | `Welk cijfer staat op de plaats van de duizendtallen in 207 458?` | `7`  |
 
 - **Operation:** the word is `som`, `verschil`, `product` or `quotiënt` (each 25%); `a ∈ [12, 99]`,
   `b ∈ [2, 12]`, `a` a multiple of `b`. Options in ascending order: `a + b`, `a − b`, `a × b`,
@@ -2939,6 +2940,12 @@ ruim)`. Two forms, 50/50:
 - Explanations: `verschil = aftrekken: 48 − 12 = 36`, `som = optellen`, `product =
   vermenigvuldigen`, `quotiënt = delen`; `ruim € 50 = iets meer dan € 50`, `bijna 100 km = iets
   minder dan 100 km`.
+- **Digit** (A.1): a number in `[100 000, 999 999]` with six different digits, and one of the
+  six places (`eenheden`, `tientallen`, `honderdtallen`, `duizendtallen`, `tienduizendtallen`,
+  `honderdduizendtallen`), each equally likely. The options are the digit on that place and
+  three other digits of the number, in ascending order. Explanation: the places from the right
+  up to the asked one, `207 458: 8 eenheden, 5 tientallen, 4 honderdtallen, 7 duizendtallen → 7`.
+  The de-duplication key is the place and the number.
 
 ### 5.69 Negative numbers in context (`negativeContexts`)
 
