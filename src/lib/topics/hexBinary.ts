@@ -1,13 +1,13 @@
 import { drawUntil, randomInt, type Rng } from '../random';
 import { textStep } from '../steps';
 import type { Question } from '../types';
+import { stripLeadingZeros } from './numberSystems';
 
 // Binary and hexadecimal (spec §5.92). Values in [32, 255] have a binary numeral of 6 to 8 digits
 // and a two-digit hex numeral, so both groups of four bits are always there.
 
 const hexOf = (value: number) => value.toString(16).toUpperCase();
 const binaryOf = (value: number) => value.toString(2);
-const stripLeadingZeros = (input: string) => input.replace(/^0+(?=.)/, '');
 
 /** `groepjes van 4 vanaf rechts: 1011 | 0111 → 1011 = 11 = B en 0111 = 7 → B7` */
 function toHexExplanation(value: number): string {

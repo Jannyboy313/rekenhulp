@@ -25,7 +25,7 @@ export function fromBase(digits: string, base: Base): number {
   return parseInt(digits, base);
 }
 
-const stripLeadingZeros = (input: string) => input.replace(/^0+(?=.)/, '');
+export const stripLeadingZeros = (input: string) => input.replace(/^0+(?=.)/, '');
 
 /** `Schrijf het tweetallige getal 1011 als gewoon getal.` or `Schrijf 180 in het zestientallig stelsel.` */
 export function generateNumberSystems(rng: Rng): Question {
