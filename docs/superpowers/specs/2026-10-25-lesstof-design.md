@@ -76,15 +76,24 @@ was. Only the wrong-answer panel links; the results screen does not.
   it, most relevant first. A ref may point to the lesson of another set (`remainders` →
   Getalbegrip, Delen met rest). A practice topic without refs gets no button, and so does a ref
   whose lesson or topic does not exist (it is dropped).
-- **Button:** a light blue button with dark blue text (two new tokens in `app.css`), a book icon
-  (new `Icon` name) on the left, the text **Les: <title of the lesson topic>** and a chevron on
-  the right. The title may wrap to two lines.
-- **Place:** with a tip, inside the grey Tip block, under the tip text. Without a tip, on its own
-  at the same place: under the answer tiles, above the Uitleg block. The rest of the panel does
-  not change.
-- **Several lesson topics:** one row of buttons that scrolls horizontally (scroll snap per
-  button, no scrollbar); with more than one button each is at most 80% of the row wide, so the
-  next one peeks out and the row reads as swipeable.
+- **Button (`LessonLink`, design V2 option A, `LesA.dc.html`):** one full-width `<button>`,
+  min-height 44 px (the tap target), padding `0 12px`, radius 12 px, no border, background
+  `--sky-tint`, text and icons `--sky-text` (the colour of the "Tip" label). Left to right,
+  vertically centred, gap 10 px: a book icon of 20 px (stroke 2, `currentColor`, new `Icon`
+  name `book`), the label **Les: <title of the lesson topic>** (flex 1, left-aligned, 15 px,
+  weight 700) and `chevron-right` of 18 px (stroke 2.2). A title that does not fit wraps to a
+  second line and the button grows; nothing is cut off. The accessible name is the label
+  (`Les: Procenten`); the icons are `aria-hidden`. The title comes from the lesson data, never
+  hard-coded.
+- **Place:** with a tip, inside the grey Tip block (`--bg`, radius 14 px, padding 14/16 px),
+  below the tip text, margin-top 8 px. Without a tip, on its own at the same place: under the
+  answer tiles, above the Uitleg block. It sits above **Verder** and never replaces it: Verder
+  stays the primary action. Shown only in the wrong-answer panel, never in the correct state.
+- **Several lesson topics:** the buttons are pages of a row that swipes horizontally, each page
+  full width (scroll snap per page, no scrollbar). Under the row a dot per page (2 or 3),
+  centred, the dot of the visible page in `--sky-text`, the others in `--sky-tint`; the dots
+  are decorative (`aria-hidden`), every button stays reachable by keyboard and focusing one
+  scrolls it into view. With one lesson topic: no row behaviour and no dots.
 - **Sheet:** a tap opens a bottom sheet over the playing screen: a native `<dialog>` opened with
   `showModal()` (focus trap and inert background for free), about 85% of the viewport height
   (`dvh`), rounded top corners, a dimmed backdrop, sliding up (static with reduced motion),
