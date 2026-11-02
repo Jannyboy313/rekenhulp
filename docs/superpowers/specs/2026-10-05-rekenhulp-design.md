@@ -4325,7 +4325,8 @@ ch. 6. Not tied to a version: it is done between versions, and each later versio
 scope against it. The check of 2026-10-26 gave the RWT gaps of §12.3.
 
 **Check of 2026-11-02** (after v3, against §5): the gaps of §12.3 are closed. Remaining gaps
-(decided 2026-11-02): the RWT gaps are closed before v4, one small round per set; the LKT gaps
+(decided 2026-11-02): the RWT gaps are closed before v4, one small round per set (all closed
+2026-11-02); the LKT gaps
 wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§12.5).
 
 - RWT
