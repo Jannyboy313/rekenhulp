@@ -303,7 +303,7 @@ describe('describeSetTopicRows per set', () => {
       'Rekenen met breuken (ook gemengde getallen en deel van een getal)',
       'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
       'Kommagetallen in woorden (tiende t/m miljardste)',
-      'Vergelijken (breuken en kommagetallen)',
+      'Vergelijken (breuken, kommagetallen, procenten)',
       'Breukbegrippen (teller, stambreuk, gelijkwaardig)',
       '15% tafels',
     ]);

@@ -15,7 +15,10 @@ import {
   generateCompareFractions,
   MAX_SPREAD,
   MIN_GAP,
+  mixedQuestion,
   orderQuestion,
+  percentShown,
+  ratioShown,
 } from './compareFractions';
 import { decimalShown, fractionShown } from './fractionNotation';
 import { decimal, stepOf } from './testHelpers';
@@ -105,10 +108,35 @@ describe('orderQuestion', () => {
   });
 });
 
+describe('mixedQuestion', () => {
+  const numbers = [fractionShown(3, 5), dec('0,58'), percentShown(62), ratioShown(5, 8)];
+
+  it('offers the four numbers and asks for the largest', () => {
+    const step = stepOf(mixedQuestion('grootst', numbers, createRng(1)));
+    expect(step.kind).toBe('choice');
+    expect(step.prompt).toBe('Welke is het grootst?');
+    expect([...step.options!].sort()).toEqual(['0,58', '3/5', '5 op de 8', '62%'].sort());
+    expect(step.check('5 op de 8')).toMatchObject({
+      correct: true,
+      expected: '5 op de 8',
+      explanation:
+        '3/5 = 0,6 en 62% = 0,62 en 5 op de 8 = 0,625 → 0,58 < 0,6 < 0,62 < 0,625 → 5 op de 8',
+    });
+    expect(step.check('62%').correct).toBe(false);
+  });
+
+  it('asks for the smallest', () => {
+    const step = stepOf(mixedQuestion('kleinst', numbers, createRng(2)));
+    expect(step.prompt).toBe('Welke is het kleinst?');
+    expect(step.check('0,58').correct).toBe(true);
+  });
+});
+
 describe('generateCompareFractions', () => {
   const questions = sample();
   const extremes = questions.filter((q) => q.key.startsWith('compareFractions:extreme:'));
   const orders = questions.filter((q) => q.key.startsWith('compareFractions:order:'));
+  const mixed = questions.filter((q) => q.key.startsWith('compareFractions:mixed:'));
 
   /** The numbers of a prompt or an option, as texts. */
   const parts = (text: string, separator: string) => text.split(separator);
@@ -131,10 +159,53 @@ describe('generateCompareFractions', () => {
     }
   }
 
-  it('splits 50/50 between the extreme and the order form', () => {
-    expect(extremes.length + orders.length).toBe(SAMPLES);
-    expect(extremes.length / SAMPLES).toBeGreaterThan(0.45);
-    expect(extremes.length / SAMPLES).toBeLessThan(0.55);
+  it('splits equally between the extreme, the order and the mixed form', () => {
+    expect(extremes.length + orders.length + mixed.length).toBe(SAMPLES);
+    for (const form of [extremes, orders, mixed]) {
+      expect(form.length / SAMPLES).toBeGreaterThan(0.29);
+      expect(form.length / SAMPLES).toBeLessThan(0.38);
+    }
+  });
+
+  it('draws one number per notation for the mixed form, close but apart', () => {
+    const asked = new Set<string>();
+    for (const question of mixed) {
+      const step = stepOf(question);
+      const extreme = /^Welke is het (grootst|kleinst)\?$/.exec(step.prompt)![1]!;
+      asked.add(extreme);
+      const options = step.options!;
+      const percents = options.filter((text) => text.endsWith('%'));
+      const ratios = options.filter((text) => text.includes(' op de '));
+      const plain = options.filter((text) => !percents.includes(text) && !ratios.includes(text));
+      expect(percents).toHaveLength(1);
+      expect(ratios).toHaveLength(1);
+      checkNumbers(plain);
+      expect(plain.filter((text) => text.includes('/'))).toHaveLength(1);
+      const percent = Number(percents[0]!.slice(0, -1));
+      expect(Number.isInteger(percent) && percent >= 1 && percent <= 99).toBe(true);
+      const [p, q] = ratios[0]!.split(' op de ').map(Number) as [number, number];
+      checkNumbers([`${p}/${q}`]);
+      const valueOfOption = (text: string) =>
+        text.endsWith('%')
+          ? rational(BigInt(percent), 100n)
+          : text.includes(' op de ')
+            ? rational(BigInt(p), BigInt(q))
+            : valueOf(text);
+      const values = options.map(valueOfOption).sort((a, b) => compare(a, b));
+      expect(compare(subtract(values[3]!, values[0]!), MAX_SPREAD)).toBeLessThanOrEqual(0);
+      for (let index = 1; index < 4; index++) {
+        expect(
+          compare(subtract(values[index]!, values[index - 1]!), MIN_GAP),
+        ).toBeGreaterThanOrEqual(0);
+      }
+      const answer = extreme === 'grootst' ? values[3]! : values[0]!;
+      expect(compare(valueOfOption(step.check('').expected), answer)).toBe(0);
+    }
+    expect([...asked].sort()).toEqual(['grootst', 'kleinst']);
+    const positions = new Set(
+      mixed.map((q) => stepOf(q).options!.indexOf(stepOf(q).check('').expected)),
+    );
+    expect([...positions].sort()).toEqual([0, 1, 2, 3]);
   });
 
   it('sets the topic and accepts the expected answer', () => {

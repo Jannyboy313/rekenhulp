@@ -264,7 +264,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   decimalArithmetic: 'Rekenen met kommagetallen (0,3 × 0,4, 2,5 : 0,05)',
   fractionConversion: 'Omzetten tussen breuk, kommagetal en procent',
   decimalNames: 'Kommagetallen in woorden (tiende t/m miljardste)',
-  compareFractions: 'Vergelijken (breuken en kommagetallen)',
+  compareFractions: 'Vergelijken (breuken, kommagetallen, procenten)',
   fractionConcepts: 'Breukbegrippen (teller, stambreuk, gelijkwaardig)',
   mixedNotation: 'Gemengd rekenen (breuk, kommagetal, procent)',
   fractionProblems: 'Breuken in context (deel, rest, geheel)',

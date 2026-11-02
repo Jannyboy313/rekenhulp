@@ -14,6 +14,18 @@ export const MIN_GAP = rational(1n, 100n);
 export type Extreme = 'grootst' | 'kleinst';
 export type Direction = '<' | '>';
 
+/** `62%`; only in the mixed form. */
+export const percentShown = (percent: number): Shown => ({
+  ...decimalShown(rational(BigInt(percent), 100n)),
+  text: `${percent}%`,
+});
+
+/** `5 op de 8`, a part of a whole; only in the mixed form. */
+export const ratioShown = (p: number, q: number): Shown => ({
+  ...fractionShown(p, q),
+  text: `${p} op de ${q}`,
+});
+
 const byValue = (a: Shown, b: Shown) => compare(a.value, b.value);
 
 const truncate = (value: Rational, decimals: number): Rational => {
@@ -53,7 +65,7 @@ function explanationOf(
   const texts = decimalTexts(numbers);
   const sorted = [...numbers].sort(byValue);
   const converted = sorted
-    .filter(({ fraction }) => fraction)
+    .filter((shown) => texts.get(shown) !== shown.text)
     .map((shown) => `${shown.text} = ${texts.get(shown)}`)
     .join(' en ');
   if (direction === '>') sorted.reverse();
@@ -121,13 +133,33 @@ export function orderQuestion(direction: Direction, numbers: readonly Shown[], r
   };
 }
 
-function randomFraction(rng: Rng): Shown {
+/** `Welke is het grootst?` with the four numbers as options. */
+export function mixedQuestion(extreme: Extreme, numbers: readonly Shown[], rng: Rng): Question {
+  const sorted = [...numbers].sort(byValue);
+  const answer = extreme === 'grootst' ? sorted[sorted.length - 1]! : sorted[0]!;
+  return {
+    key: `compareFractions:mixed:${extreme}:${keyOf(numbers)}`,
+    topic: 'compareFractions',
+    steps: [
+      choiceStep({
+        prompt: `Welke is het ${extreme}?`,
+        options: shuffle(rng, numbers.map(({ text }) => text)),
+        answer: answer.text,
+        explanation: explanationOf(numbers, '<', answer.text),
+      }),
+    ],
+  };
+}
+
+function randomTerms(rng: Rng): [number, number] {
   const q = pick(rng, DENOMINATORS);
   const options = Array.from({ length: q - 1 }, (_, index) => index + 1).filter(
     (p) => gcd(p, q) === 1,
   );
-  return fractionShown(pick(rng, options), q);
+  return [pick(rng, options), q];
 }
+
+const randomFraction = (rng: Rng) => fractionShown(...randomTerms(rng));
 
 /** 1 to 3 decimals, the last one not 0, in (0, 1). */
 function randomDecimal(rng: Rng): Shown {
@@ -151,15 +183,35 @@ const distinct = (numbers: readonly Shown[], gap: Rational) =>
     numbers.every((b, j) => i === j || compare(absDifference(a.value, b.value), gap) >= 0),
   );
 
+/** Apart by at least MIN_GAP, and the largest and smallest within MAX_SPREAD. */
+function close(numbers: readonly Shown[]): boolean {
+  const values = [...numbers].sort(byValue);
+  const spread = subtract(values[values.length - 1]!.value, values[0]!.value);
+  return distinct(numbers, MIN_GAP) && compare(spread, MAX_SPREAD) <= 0;
+}
+
+const randomExtremeWord = (rng: Rng) => pick(rng, ['grootst', 'kleinst'] as const);
+
 function randomExtreme(rng: Rng): Question {
   const fractions = randomInt(rng, 1, 2);
   const numbers = drawUntil(() => {
     const candidate = randomNumbers(rng, fractions, 3 - fractions);
-    const values = [...candidate].sort(byValue);
-    const spread = subtract(values[2]!.value, values[0]!.value);
-    return distinct(candidate, MIN_GAP) && compare(spread, MAX_SPREAD) <= 0 ? candidate : null;
+    return close(candidate) ? candidate : null;
   });
-  return extremeQuestion(pick(rng, ['grootst', 'kleinst'] as const), numbers);
+  return extremeQuestion(randomExtremeWord(rng), numbers);
+}
+
+function randomMixed(rng: Rng): Question {
+  const numbers = drawUntil(() => {
+    const candidate = [
+      randomFraction(rng),
+      randomDecimal(rng),
+      percentShown(randomInt(rng, 1, 99)),
+      ratioShown(...randomTerms(rng)),
+    ];
+    return close(candidate) ? candidate : null;
+  });
+  return mixedQuestion(randomExtremeWord(rng), numbers, rng);
 }
 
 function randomOrder(rng: Rng): Question {
@@ -171,5 +223,5 @@ function randomOrder(rng: Rng): Question {
 }
 
 export function generateCompareFractions(rng: Rng): Question {
-  return rng() < 0.5 ? randomExtreme(rng) : randomOrder(rng);
+  return pick(rng, [randomExtreme, randomOrder, randomMixed])(rng);
 }
