@@ -179,6 +179,12 @@ export const RELATIONS_SET: PracticeSet = {
     { topic: 'probability', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'twoDice', weight: 1 },
+    { topic: 'statisticsReasoning', weight: 1 },
+    { topic: 'statisticsProblems', weight: 1 },
+    { topic: 'formulaProblems', weight: 1 },
+  ],
 };
 
 export const NUMBER_SYSTEMS_SET: PracticeSet = {
@@ -190,6 +196,12 @@ export const NUMBER_SYSTEMS_SET: PracticeSet = {
     { topic: 'romanNumerals', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'baseArithmetic', weight: 1 },
+    { topic: 'baseReasoning', weight: 1 },
+    { topic: 'hexBinary', weight: 1 },
+    { topic: 'romanCalc', weight: 1 },
+  ],
 };
 
 export const HEURISTICS_SET: PracticeSet = {
@@ -203,6 +215,12 @@ export const HEURISTICS_SET: PracticeSet = {
     { topic: 'simplifyProblem', weight: 1 },
   ],
   tablesPercent: 15,
+  deep: [
+    { topic: 'countingCases', weight: 1 },
+    { topic: 'backwardsProblems', weight: 1 },
+    { topic: 'twoUnknowns', weight: 1 },
+    { topic: 'simplifyDeep', weight: 1 },
+  ],
 };
 
 /** Implemented sets in roadmap order. Later plans append their set here (spec §4.1). */
