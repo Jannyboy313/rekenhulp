@@ -96,12 +96,24 @@ export type Topic =
   | 'formulas'
   | 'equations'
   | 'probability'
+  | 'twoDice'
+  | 'statisticsReasoning'
+  | 'statisticsProblems'
+  | 'formulaProblems'
   | 'numberSystems'
   | 'romanNumerals'
+  | 'baseArithmetic'
+  | 'baseReasoning'
+  | 'hexBinary'
+  | 'romanCalc'
   | 'systematicCounting'
   | 'workingBackwards'
   | 'guessAndCheck'
-  | 'simplifyProblem';
+  | 'simplifyProblem'
+  | 'countingCases'
+  | 'backwardsProblems'
+  | 'twoUnknowns'
+  | 'simplifyDeep';
 
 export interface CheckResult {
   correct: boolean;
