@@ -11,16 +11,21 @@
 
   let { topics, onopen }: Props = $props();
 
+  const ROW_GAP = 8; // keep equal to the .row.multi gap
+
   let page = $state(0);
 
   function handleScroll(event: Event) {
     const row = event.currentTarget as HTMLElement;
-    if (row.clientWidth > 0) page = Math.round(row.scrollLeft / row.clientWidth);
+    const first = row.firstElementChild as HTMLElement | null;
+    if (!first) return;
+    const atEnd = row.scrollLeft + row.clientWidth >= row.scrollWidth - 1;
+    page = atEnd ? topics.length - 1 : Math.round(row.scrollLeft / (first.offsetWidth + ROW_GAP));
   }
 </script>
 
 <div class="links">
-  <div class="row" onscroll={handleScroll}>
+  <div class="row" class:multi={topics.length > 1} onscroll={handleScroll}>
     {#each topics as topic (topic.id)}
       <!-- Inline markup is whitespace-sensitive: keep the tags tight (CLAUDE.md). -->
       <!-- prettier-ignore -->
@@ -49,6 +54,15 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scrollbar-width: none;
+  }
+
+  /* Pages narrower than the row: the next one peeks out as a swipe hint. */
+  .row.multi {
+    gap: 8px;
+  }
+
+  .row.multi .link {
+    flex-basis: 88%;
   }
 
   .row::-webkit-scrollbar {
