@@ -1,3 +1,4 @@
+import { TOPIC_LABELS } from './topics';
 import type { AnswerKind, CheckResult, Question } from './types';
 
 export interface StepAttempt {
@@ -54,6 +55,29 @@ export function isCorrect(record: QuestionRecord): boolean {
   return (
     record.attempts.length === record.question.steps.length &&
     record.attempts.every((attempt) => attempt.result.correct)
+  );
+}
+
+export interface TopicScore {
+  /** The topic label up to its first " (" (spec §3.5); topics sharing it share one score. */
+  name: string;
+  correct: number;
+  answered: number;
+}
+
+/** First-attempt score per topic, weakest first (spec §3.5). */
+export function topicScores(records: readonly QuestionRecord[]): TopicScore[] {
+  const scores = new Map<string, TopicScore>();
+  for (const record of records) {
+    const name = TOPIC_LABELS[record.question.topic].split(' (')[0]!;
+    const score = scores.get(name) ?? { name, correct: 0, answered: 0 };
+    score.answered++;
+    if (isCorrect(record)) score.correct++;
+    scores.set(name, score);
+  }
+  // Cross-multiplied to compare the fractions exactly; the stable sort keeps first appearance.
+  return [...scores.values()].sort(
+    (a, b) => a.correct * b.answered - b.correct * a.answered || b.answered - a.answered,
   );
 }
 

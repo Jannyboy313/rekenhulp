@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { fromInteger } from './rational';
-import { isCorrect, summarize, wrongSteps, type QuestionRecord } from './results';
+import { isCorrect, summarize, topicScores, wrongSteps, type QuestionRecord } from './results';
+import type { Topic } from './types';
 import { numberStep } from './steps';
 
 function record(stepResults: boolean[], durationMs: number, answeredSteps = stepResults.length) {
@@ -92,5 +93,66 @@ describe('summarize', () => {
       averageMs: 0,
       mistakes: [],
     });
+  });
+});
+
+describe('topicScores', () => {
+  function topicRecord(topic: Topic, correct: boolean): QuestionRecord {
+    return {
+      question: {
+        key: `${topic}${correct}`,
+        topic,
+        steps: [numberStep({ prompt: 'p', answer: fromInteger(1) })],
+      },
+      attempts: [{ input: '1', result: { correct, expected: '1' } }],
+      durationMs: 1000,
+    };
+  }
+
+  it('is empty without records', () => {
+    expect(topicScores([])).toEqual([]);
+  });
+
+  it('counts first attempts per topic under its short name, weakest first', () => {
+    const scores = topicScores([
+      topicRecord('percentages', true),
+      topicRecord('scale', false),
+      topicRecord('percentages', false),
+      topicRecord('lcm', true),
+    ]);
+    expect(scores).toEqual([
+      { name: 'Schaal', correct: 0, answered: 1 },
+      { name: 'Procenten', correct: 1, answered: 2 },
+      { name: 'KGV', correct: 1, answered: 1 },
+    ]);
+  });
+
+  it('keeps a label without a parenthesis whole', () => {
+    expect(topicScores([topicRecord('missingDigit', true)])).toEqual([
+      { name: 'Ontbrekend cijfer en deelbaarheid', correct: 1, answered: 1 },
+    ]);
+  });
+
+  it('merges topics with the same short name', () => {
+    expect(topicScores([topicRecord('probability', true), topicRecord('twoDice', false)])).toEqual(
+      [{ name: 'Kans', correct: 1, answered: 2 }],
+    );
+  });
+
+  it('counts a partly answered two-step question as wrong', () => {
+    const partial = record([true, true], 1000, 1);
+    expect(topicScores([partial])).toEqual([
+      { name: 'Tafels van 2 t/m 15', correct: 0, answered: 1 },
+    ]);
+  });
+
+  it('sorts a tied percentage by the larger count, then by first appearance', () => {
+    const scores = topicScores([
+      topicRecord('lcm', true),
+      topicRecord('gcd', true),
+      topicRecord('scale', true),
+      topicRecord('scale', true),
+    ]);
+    expect(scores.map(({ name }) => name)).toEqual(['Schaal', 'KGV', 'GGD']);
   });
 });
