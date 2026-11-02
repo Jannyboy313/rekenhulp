@@ -4261,6 +4261,34 @@ distribution per domain and part in §3.3 (table 1), the eindtermen with H/NH pe
 ch. 6. Not tied to a version: it is done between versions, and each later version checks its
 scope against it. The check of 2026-10-26 gave the RWT gaps of §12.3.
 
+**Check of 2026-11-02** (after v3, against §5): the gaps of §12.3 are closed. Remaining gaps,
+not yet assigned to a version:
+
+- RWT
+  - C.10b: the surface area of a sphere with the formula given (`4 × π × r²`). Meetkunde,
+    Verdieping. §12.8 drops only the volume of a sphere (C.12b).
+  - A.4a: division with a remainder (`23 : 7 = 3 rest 2`) is Verdieping only (`remainders`,
+    `multiStepProblems`), while A.4 is also hoofdrekenen. Opfrisser.
+  - B.4: comparing percentages and ratios together with fractions and decimals;
+    `compareFractions` has fractions and decimals only. Opfrisser.
+  - D.4: a formula with a decimal factor, such as Celsius ↔ Fahrenheit (`F = 32 + 1,8 × C`).
+    Verdieping.
+  - C.1: the terms horizontaal, verticaal, grootheid and eenheid. A.1: cijfer versus getal
+    (`45 bestaat uit de cijfers 4 en 5`). MC.
+- LKT, provisional: the version of the kennisbasis
+  (`docs/references/lkt-kennisbasis-concept.md`) is unconfirmed.
+  - 2.3: meetniveaus (nominaal, ordinaal, interval, ratio), correlatie versus causaliteit, and
+    generalisatie and betrouwbaarheid (a sample). Verbanden & statistiek, MC.
+  - 2.2: other measurement systems with the rate given (inch ↔ cm, mijl ↔ km), and
+    meetnauwkeurigheid (`op hele cm gemeten: 14 cm` lies between 13,5 and 14,5 cm). Meten.
+  - 2.5: angle types by size (scherp, recht, stomp, gestrekt). Meetkunde, Opfrisser MC.
+  - 2.1.c: the gulden snede (≈ 1,618). Verhoudingen, MC.
+  - 3.3: written algorithms (kolomsgewijs, cijferen) are not mental arithmetic with one typed
+    answer; in or out of scope is open.
+
+The distribution of table 1 needs no change to the sets; it matters for the practice test
+(§12.6).
+
 ### 12.8 Out of scope until further notice
 
 - Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at

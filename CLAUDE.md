@@ -21,7 +21,7 @@ not all of it:
   next to it is leading
 - LKT scope (year-3 kennistoets, not yet in the spec): `docs/references/lkt-kennisbasis-concept.md`,
   an excerpt of the concept kennisbasis of 10voordeleraar ("Qua eigen vaardigheid" items only); the
-  version is unconfirmed and no gap check against the sets has been done yet
+  version is unconfirmed; its gaps (check of 2026-11-02, §12.7) are provisional
 - ideas (feature ideas that are not specced or planned): `docs/ideas.md`; add new ideas there,
   not to the spec
 
