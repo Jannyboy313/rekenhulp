@@ -90,7 +90,8 @@ was. Only the wrong-answer panel links; the results screen does not.
   the same place: under the answer tiles and the Tip block. It sits above **Verder** and never replaces it: Verder
   stays the primary action. Shown only in the wrong-answer panel, never in the correct state.
 - **Several lesson topics:** the buttons are pages of a row that swipes horizontally, each page
-  full width (scroll snap per page, no scrollbar). Under the row a dot per page (2 or 3),
+  88% of the row width with an 8 px gap, so the next button peeks out as a swipe hint (scroll
+  snap per page, no scrollbar). Under the row a dot per page (2 or 3),
   centred, the dot of the visible page in `--sky-text`, the others in `--sky-tint`; the dots
   are decorative (`aria-hidden`), every button stays reachable by keyboard and focusing one
   scrolls it into view. With one lesson topic: no row behaviour and no dots.
