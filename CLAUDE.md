@@ -61,7 +61,10 @@ content checks, back guard). Lessons done: every set except Tafels (`lib/lessons
 lesstof is developed separately from the practice sets and is not part of the roadmap below: no
 fixed order, content only when the user asks for it (iterate its spec §7 first). Linking from
 other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not used
-yet.
+yet. The lesson link from a mistake is done (lesstof spec §3.1–§3.2): `Les:` buttons
+(`LessonLinks`) in the wrong-answer panel open a `LessonSheet` over the session, via
+`LESSON_LINKS` in `lib/lessons/links.ts` (practice topic → lesson topics; a new practice topic
+needs no entry).
 
 To add a lesson: write its topics in the lesstof spec §7 first, with a second method wherever
 one exists (lesstof spec §1), then add `lib/lessons/<set>.ts`
@@ -70,6 +73,8 @@ one exists (lesstof spec §1), then add `lib/lessons/<set>.ts`
 notation and that every `worked` line is a true equality chain. Keep lesson code separate from
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
+The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScreen` only pass
+lesson data through to `LessonLinks` and `LessonSheet`.
 
 Next steps (spec §12.2–§12.6), one at a time and only when the user says so. The per-set v3 step
 (§12.2 step 4) is done; the user picks the next v3 step among the §12.4 features. v4 practises
@@ -79,7 +84,6 @@ across sets. v5 holds only persistent memory in IndexedDB.
 | --------------------------------------------------------------------------------------- | -------------------- |
 | v3: practise mistakes (§12.4), a new session with the topics of the mistakes            | —                    |
 | v3: score per topic on the results screen (§12.4)                                       | —                    |
-| v3: lesson link from a mistake (§12.4), via `openLesson`                                | practice → lesstof   |
 | v4: mixed categories (§12.5), form decided in its spec iteration                        | sessions across sets |
 | v4: practice test (§12.6), after mixed categories                                       | test session         |
 | v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB            |
@@ -208,7 +212,8 @@ src/
                         lesson (lesstof)
   components/           SetOverview (shell: header + Oefenen/Lesstof tabs, a snippet per tab),
                         PracticeSetList, LessonSetList, SetRow (shared row), LessonTopicList,
-                        LessonView (renders lesson blocks), SetupScreen, PlayScreen (question
+                        LessonView, LessonBlocks (renders lesson blocks), LessonLinks +
+                        LessonSheet (lesson link from a mistake), SetupScreen, PlayScreen (question
                         queue incl. repeats, auto-advance timer), QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
