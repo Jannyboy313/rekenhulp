@@ -213,7 +213,7 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 8px 16px 16px;
+    padding: 8px 16px 32px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -333,7 +333,20 @@
   }
 
   footer {
+    position: relative;
     padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
+  }
+
+  /* Fades scrolled content into the background above the button (hints at more below). */
+  footer::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 100%;
+    height: 32px;
+    background: linear-gradient(transparent, var(--bg));
+    pointer-events: none;
   }
 
   .start {
