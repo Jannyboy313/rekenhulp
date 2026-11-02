@@ -11,10 +11,13 @@ import {
   orderingOptions,
   orderingQuestion,
   ORDER_UNITS,
+  QUANTITY_UNITS,
   REFERENCES,
   referenceQuestion,
   UNIT_ITEMS,
   unitQuestion,
+  unitQuantityQuestion,
+  whichQuantityQuestion,
   type Length,
 } from './measureSense';
 import { decimal, stepOf } from './testHelpers';
@@ -176,16 +179,74 @@ describe('orderingQuestion', () => {
   });
 });
 
+describe('quantities', () => {
+  const quantities = Object.keys(QUANTITY_UNITS);
+  const units = Object.values(QUANTITY_UNITS).flat();
+  const quantityOf = (unit: string) => quantities.find((q) => QUANTITY_UNITS[q]!.includes(unit));
+
+  it('has the seven Cito grootheden and 13 units', () => {
+    expect(quantities).toEqual([
+      'lengte',
+      'oppervlakte',
+      'inhoud',
+      'gewicht',
+      'tijd',
+      'snelheid',
+      'temperatuur',
+    ]);
+    expect(new Set(units).size).toBe(13);
+  });
+
+  it('asks the grootheid of liter', () => {
+    const step = stepOf(unitQuantityQuestion('liter', createRng(1)));
+    expect(step.prompt).toBe('Bij welke grootheid hoort de eenheid liter?');
+    expect(step.check('inhoud').correct).toBe(true);
+    expect(step.check('lengte').correct).toBe(false);
+    expect(step.check('inhoud').explanation).toBe('Liter is een eenheid van inhoud.');
+  });
+
+  it('offers the grootheid of the unit and three other grootheden', () => {
+    const rng = createRng(2);
+    for (const unit of units) {
+      const step = stepOf(unitQuantityQuestion(unit, rng));
+      expect(step.options).toHaveLength(4);
+      expect(new Set(step.options).size).toBe(4);
+      expect(step.options!.every((option) => quantities.includes(option))).toBe(true);
+      expect(step.check('').expected).toBe(quantityOf(unit));
+    }
+  });
+
+  it('asks which word is a grootheid among three units of other grootheden', () => {
+    const rng = createRng(3);
+    for (const quantity of quantities) {
+      const step = stepOf(whichQuantityQuestion(quantity, rng));
+      expect(step.prompt).toBe('Welk woord is een grootheid?');
+      expect(step.check('').expected).toBe(quantity);
+      const others = step.options!.filter((option) => option !== quantity);
+      expect(others).toHaveLength(3);
+      const owners = others.map(quantityOf);
+      expect(owners).not.toContain(quantity);
+      expect(new Set(owners).size).toBe(3);
+      const [a, b, c] = others;
+      expect(step.check(quantity).explanation).toBe(
+        `${quantity[0]!.toUpperCase()}${quantity.slice(1)} is een grootheid; ${a}, ${b} en ${c} zijn eenheden.`,
+      );
+    }
+  });
+});
+
 describe('generateMeasureSense', () => {
   const rng = createRng(3);
   const questions = Array.from({ length: SAMPLES }, () => generateMeasureSense(rng));
   const form = (name: string) => questions.filter((q) => q.key.startsWith(`measureSense:${name}:`));
 
-  it('uses the four forms about equally often and always four unique options', () => {
-    for (const name of ['reference', 'instrument', 'unit', 'order']) {
-      expect(form(name).length / SAMPLES).toBeGreaterThan(0.19);
-      expect(form(name).length / SAMPLES).toBeLessThan(0.31);
+  it('uses the five forms about equally often and always four unique options', () => {
+    for (const name of ['reference', 'instrument', 'unit', 'order', 'quantity']) {
+      expect(form(name).length / SAMPLES, name).toBeGreaterThan(0.15);
+      expect(form(name).length / SAMPLES, name).toBeLessThan(0.25);
     }
+    const variants = new Set(form('quantity').map((q) => q.key.split(':')[2]));
+    expect(variants).toEqual(new Set(['unit', 'which']));
     for (const question of questions) {
       const step = question.steps[0]!;
       expect(question.topic).toBe('measureSense');

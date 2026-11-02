@@ -258,7 +258,7 @@ describe('describeSetTopicRows per set', () => {
       'Kalender (etmaal t/m millennium)',
       'Geheugen (kB t/m TB)',
       'Klok (kijken en tijdsduur)',
-      'Maatgevoel (referenties, meetinstrumenten, eenheden)',
+      'Maatgevoel (referenties, meetinstrumenten, eenheden, grootheden)',
       '15% tafels',
     ]);
   });

@@ -271,6 +271,65 @@ export function instrumentQuestion(index: number, rng: Rng): Question {
   };
 }
 
+/** The Cito grootheden with their units written as words (spec §5.48, C.1). */
+export const QUANTITY_UNITS: Readonly<Record<string, readonly string[]>> = {
+  lengte: ['meter', 'kilometer'],
+  oppervlakte: ['vierkante meter', 'hectare'],
+  inhoud: ['liter', 'kubieke meter'],
+  gewicht: ['gram', 'kilogram', 'ton'],
+  tijd: ['seconde', 'minuut'],
+  snelheid: ['kilometer per uur'],
+  temperatuur: ['graad Celsius'],
+};
+
+const QUANTITIES = Object.keys(QUANTITY_UNITS);
+const QUANTITY_UNIT_LIST = Object.values(QUANTITY_UNITS).flat();
+const quantityOf = (unit: string) => QUANTITIES.find((q) => QUANTITY_UNITS[q]!.includes(unit))!;
+
+/** `Bij welke grootheid hoort de eenheid liter?` with three other grootheden. */
+export function unitQuantityQuestion(unit: string, rng: Rng): Question {
+  const answer = quantityOf(unit);
+  const others = shuffle(rng, QUANTITIES.filter((q) => q !== answer)).slice(0, 3);
+  return {
+    key: `measureSense:quantity:unit:${unit}`,
+    topic: 'measureSense',
+    steps: [
+      choiceStep({
+        prompt: `Bij welke grootheid hoort de eenheid ${unit}?`,
+        options: shuffle(rng, [answer, ...others]),
+        answer,
+        explanation: `${capitalize(unit)} is een eenheid van ${answer}.`,
+      }),
+    ],
+  };
+}
+
+/** `Welk woord is een grootheid?` with one unit of each of three other grootheden. */
+export function whichQuantityQuestion(quantity: string, rng: Rng): Question {
+  const owners = shuffle(rng, QUANTITIES.filter((q) => q !== quantity)).slice(0, 3);
+  const units = owners.map((owner) => pick(rng, QUANTITY_UNITS[owner]!));
+  const options = shuffle(rng, [quantity, ...units]);
+  const [a, b, c] = options.filter((option) => option !== quantity);
+  return {
+    key: `measureSense:quantity:which:${quantity}`,
+    topic: 'measureSense',
+    steps: [
+      choiceStep({
+        prompt: 'Welk woord is een grootheid?',
+        options,
+        answer: quantity,
+        explanation: `${capitalize(quantity)} is een grootheid; ${a}, ${b} en ${c} zijn eenheden.`,
+      }),
+    ],
+  };
+}
+
+function randomQuantity(rng: Rng): Question {
+  return rng() < 0.5
+    ? unitQuantityQuestion(pick(rng, QUANTITY_UNIT_LIST), rng)
+    : whichQuantityQuestion(pick(rng, QUANTITIES), rng);
+}
+
 export const ORDER_UNITS: readonly string[] = ['mm', 'cm', 'dm', 'm'];
 
 /** Millimetres per unit. */
@@ -385,7 +444,9 @@ function randomOrdering(rng: Rng): Question {
 }
 
 export function generateMeasureSense(rng: Rng): Question {
-  switch (pick(rng, ['reference', 'instrument', 'unit', 'order'] as const)) {
+  switch (pick(rng, ['reference', 'instrument', 'unit', 'order', 'quantity'] as const)) {
+    case 'quantity':
+      return randomQuantity(rng);
     case 'reference':
       return referenceQuestion(randomInt(rng, 0, REFERENCES.length - 1));
     case 'instrument':

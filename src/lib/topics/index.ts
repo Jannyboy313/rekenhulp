@@ -215,7 +215,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   calendar: 'Kalender (etmaal t/m millennium)',
   dataSize: 'Geheugen (kB t/m TB)',
   clock: 'Klok (kijken en tijdsduur)',
-  measureSense: 'Maatgevoel (referenties, meetinstrumenten, eenheden)',
+  measureSense: 'Maatgevoel (referenties, meetinstrumenten, eenheden, grootheden)',
   compoundUnits: 'Samengestelde grootheden (snelheid, dichtheid, debiet, verbruik)',
   measureProblems: 'Rekenen met maten (omrekenen in contexten)',
   timeCalc: 'Rekenen met tijd (aankomst, vertrek, duur)',
