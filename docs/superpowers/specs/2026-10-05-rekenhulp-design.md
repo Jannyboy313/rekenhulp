@@ -399,10 +399,10 @@ already names the mistake.
   correct answer and the tip and explanation; a correct step of a two-step exercise is left
   out. These are the first-attempt mistakes, also when a repeat was correct. Without mistakes:
   "Alles goed!"
-- Buttons **Opnieuw** (new session with the same set, count, level and table choice) and
-  **Menu**
-- With at least one first-attempt mistake, a primary full-width button **Fouten oefenen · n**
-  above them (§12.4); Opnieuw is then secondary. It starts a session with three new exercises
+- Buttons **Menu** (neutral grey) and **Opnieuw** (primary, right; new session with the same
+  set, count, level and table choice). Opnieuw is always the primary button.
+- With at least one first-attempt mistake, a full-width button **Fouten oefenen · n** above
+  them (§12.4), tonal (violet tint, violet text): between Opnieuw and Menu in weight. It starts a session with three new exercises
   per wrong question, of that question's topic, so `n` is three times the number of wrong
   questions (a two-step question counts once), without a maximum. "New" means freshly
   generated and de-duplicated as in §4.2, with the wrong questions themselves counted as
