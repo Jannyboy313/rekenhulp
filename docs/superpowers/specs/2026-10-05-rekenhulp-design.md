@@ -3336,14 +3336,15 @@ likely:
 
 ### 5.82 Surface area of solids (`surfaceArea`)
 
-Verdieping (RWT C.10). Label: `Oppervlakte van ruimtefiguren (piramide, prisma, cilinder)`.
-Three forms, each equally likely:
+Verdieping (RWT C.10, C.10b for the sphere). Label: `Oppervlakte van ruimtefiguren (piramide,
+prisma, cilinder, bol)`. Four forms, each equally likely:
 
 | Form     | Example                                                                                                                      | Answer | Suffix |
 |----------|------------------------------------------------------------------------------------------------------------------------------|--------|--------|
 | Pyramid  | `Een piramide heeft een vierkant grondvlak van 3 m bij 3 m. Elk zijvlak is een driehoek met een basis van 3 m en een hoogte van 5 m. Hoe groot is de totale oppervlakte?` | 39 | `m²` |
 | Prism    | `Een tent is een prisma. De voorkant en achterkant zijn driehoeken met zijden van 3 m, 4 m en 5 m en een rechte hoek. De tent is 6 m lang. Hoe groot is de totale oppervlakte?` | 84 | `m²` |
 | Cylinder | `Een blik heeft een grondvlak van 25,1 cm² en een mantel van 225,3 cm². Hoe groot is de totale oppervlakte?`                  | 275,5  | `cm²`  |
+| Sphere   | `Een bol heeft een straal van 5 cm. De oppervlakte van een bol is 4 × π × straal × straal. Neem π = 3,14. Hoe groot is de oppervlakte?` | 314 | `cm²` |
 
 - **Pyramid:** a square base `z ∈ [2, 12]`, the height of a side triangle `h ∈ [z, 20]`; in 50%
   the area of a side is given instead (`Elk van de vier zijvlakken heeft een oppervlakte van
@@ -3353,9 +3354,13 @@ Three forms, each equally likely:
   `(3, 4, 5)`, `(6, 8, 10)` or `(5, 12, 13)` cm and a length in `[5, 20]` cm.
 - **Cylinder:** the base area and the mantle given with 1 decimal, base `[5, 80]`, mantle
   `[50, 500]` cm²; total `mantel + 2 × grondvlak`. Contexts: `blik`, `koker`, `ton` (`dm²`).
+- **Sphere** (C.10b, the formula given): radius `r ∈ {1, 2, 5, 10}` cm, so `4 × r × r` is 4, 16,
+  100 or 400; given as the radius or (50%) as the diameter (`Een bol heeft een diameter van
+  10 cm.`). The answer is `4 × 3,14 × r × r` (12,56, 50,24, 314 or 1256).
 - Explanations: `grondvlak 3 × 3 = 9, zijvlak 3 × 5 : 2 = 7,5 → 9 + 4 × 7,5 = 39`;
   `2 driehoeken: 2 × (3 × 4 : 2) = 12, 3 rechthoeken: (3 + 4 + 5) × 6 = 72 → 12 + 72 = 84`;
-  `225,3 + 2 × 25,1 = 275,5`.
+  `225,3 + 2 × 25,1 = 275,5`; `4 × 5 × 5 = 100 → 100 × 3,14 = 314` (diameter given: `straal =
+  10 : 2 = 5 → …`).
 
 ### 5.83 Composite shapes (`compositeShapes`)
 
@@ -4325,7 +4330,8 @@ wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§
 
 - RWT
   - C.10b: the surface area of a sphere with the formula given (`4 × π × r²`). Meetkunde,
-    Verdieping. §12.8 drops only the volume of a sphere (C.12b).
+    Verdieping. §12.8 drops only the volume of a sphere (C.12b). Closed by the Sphere form of
+    §5.82 (`π = 3,14`).
   - A.4a: division with a remainder (`23 : 7 = 3 rest 2`) is Verdieping only (`remainders`,
     `multiStepProblems`), while A.4 is also hoofdrekenen. Opfrisser. Closed by the Remainder
     form of §5.15 (`mentalOperations`, Opfrisser), missed in this check; the bare form without
