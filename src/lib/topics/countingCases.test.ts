@@ -111,12 +111,13 @@ describe('countingCases: generated questions', () => {
     }
   });
 
-  it('keeps the together form at n in {4, 5} with the names as a pair', () => {
+  it('keeps the together form at n in {4, 5} and leaves the names out of the key', () => {
     for (const question of withForm('together')) {
-      const [, , nText, names] = question.key.split(':');
+      const [, , nText, ...rest] = question.key.split(':');
       const n = Number(nText);
       expect([4, 5]).toContain(n);
-      expect([`Anna-Bram`, `Chris-Dora`]).toContain(names);
+      expect(rest).toEqual([]);
+      expect(question.key).not.toMatch(/Anna|Bram|Chris|Dora/);
       expect(answer(question)).toBe(factorial(n - 1) * 2);
     }
   });
@@ -148,14 +149,19 @@ describe('countingCases: generated questions', () => {
     }
   });
 
-  it('maps each dedup key to one prompt and sees many keys', () => {
+  it('maps each non-together dedup key to one prompt and sees many keys', () => {
     const promptsByKey = new Map<string, Set<string>>();
     for (const question of questions) {
       const prompts = promptsByKey.get(question.key) ?? new Set<string>();
       prompts.add(stepOf(question).prompt);
       promptsByKey.set(question.key, prompts);
     }
-    for (const [key, prompts] of promptsByKey) expect(prompts.size, key).toBe(1);
+    for (const [key, prompts] of promptsByKey) {
+      if (key.startsWith('countingCases:together:')) continue;
+      expect(prompts.size, key).toBe(1);
+    }
     expect(promptsByKey.size).toBeGreaterThanOrEqual(12);
+    const togetherKeys = [...promptsByKey.keys()].filter((key) => key.includes(':together:'));
+    expect(togetherKeys.sort()).toEqual(['countingCases:together:4', 'countingCases:together:5']);
   });
 });

@@ -66,7 +66,7 @@ export function togetherQuestion(n: number, pair: readonly [string, string]): Qu
   const answer = arrangements * 2;
   const factors = range(1, n - 1).reverse().join(' × ');
   return question(
-    `together:${n}:${a}-${b}`,
+    `together:${n}`,
     `Op hoeveel manieren kunnen ${n} kinderen in een rij staan als ${a} en ${b} naast elkaar moeten staan?`,
     answer,
     `${a} en ${b} samen zijn 1 blok → ${n - 1} dingen in een rij: ${factors} = ${f(arrangements)} → het blok kan twee kanten op → ${f(arrangements)} × 2 = ${f(answer)}`,
