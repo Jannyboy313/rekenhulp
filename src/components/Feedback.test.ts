@@ -214,23 +214,22 @@ describe('Feedback', () => {
       expect(lessonButtons()).toEqual([]);
     });
 
-    it('puts the link inside the Tip block, under the tip text', () => {
+    it('puts the link inside the Uitleg block, under the explanation text', () => {
       const { container } = renderFeedback({
         result: { correct: false, expected: '13', tip: 'Kijk goed.', explanation: '13 × 7 = 91' },
         lessons: [SPLITTING!],
       });
       const blocks = [...container.querySelectorAll('.block')];
-      expect(blocks[0]!.querySelector('.block-body + .lesson-links .link')).toBeTruthy();
-      expect(blocks[1]!.querySelector('.link')).toBeNull();
+      expect(blocks[0]!.querySelector('.link')).toBeNull();
+      expect(blocks[1]!.querySelector('.block-body + .lesson-links .link')).toBeTruthy();
     });
 
-    it('stands on its own above Uitleg without a tip', () => {
+    it('stands on its own under the Tip block without an explanation', () => {
       const { container } = renderFeedback({
-        result: { correct: false, expected: '13', explanation: '13 × 7 = 91' },
+        result: { correct: false, expected: '13', tip: 'Kijk goed.' },
         lessons: [SPLITTING!],
       });
-      const links = container.querySelector('.tiles + .lesson-links + .block');
-      expect(links).toBeTruthy();
+      expect(container.querySelector('.tiles + .block + .lesson-links')).toBeTruthy();
       expect(container.querySelector('.block .link')).toBeNull();
     });
 

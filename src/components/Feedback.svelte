@@ -85,13 +85,13 @@
         <p class="tile-value">{@render value(result.expected)}</p>
       </div>
     </div>
-    <!-- The lesson link sits in the Tip block, or on its own in its place (lesstof §3.1). -->
-    {#if result.tip}
-      {@render block('Tip', result.tip, false, lessons.length > 0)}
+    {#if result.tip}{@render block('Tip', result.tip, false, false)}{/if}
+    <!-- The lesson link sits in the Uitleg block, or on its own in its place (lesstof §3.1). -->
+    {#if result.explanation}
+      {@render block('Uitleg', result.explanation, true, lessons.length > 0)}
     {:else if lessons.length > 0}
       {@render links()}
     {/if}
-    {#if result.explanation}{@render block('Uitleg', result.explanation, true, false)}{/if}
     <button type="button" class="primary next" bind:this={nextButton} onclick={onnext}
       >Verder</button
     >
