@@ -10,7 +10,8 @@
       "Bash(sed -n:*)",
       "Bash(git init:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git merge --no-ff main)"
     ]
   }
 }
