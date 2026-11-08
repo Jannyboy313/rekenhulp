@@ -1,8 +1,8 @@
 import { randomInt, shuffle, type Rng } from './random';
-import { choosesTables, MIN_SIZE_FOR_MIXED_TABLES } from './sets';
+import { choosesTables, MIN_SIZE_FOR_MIXED_TABLES, QUICK_SHARE_PERCENT } from './sets';
 import { GENERATORS } from './topics';
 import { generateTables } from './topics/tables';
-import type { Generator, PracticeSet, Question, Topic } from './types';
+import type { Generator, Level, PracticeSet, Question, Topic, TopicWeight } from './types';
 
 export const MAX_UNIQUE_ATTEMPTS = 20;
 
@@ -86,23 +86,65 @@ export function buildSession(
 ): Question[] {
   const tables = shareCount(set.tablesPercent, size);
   const quick = set.quickShare ? shareCount(set.quickShare.percent, size) : 0;
-  const plan: Topic[] = Array.from({ length: tables }, (): Topic => 'tables');
   // Step 3 of the quota algorithm applies to each group separately (spec §4.2).
-  const groups = [
-    { topics: set.quickShare?.topics ?? [], total: quick },
-    { topics: set.topics, total: size - tables - quick },
+  const plan: Topic[] = [
+    ...repeat('tables', tables),
+    ...planTopics(set.quickShare?.topics ?? [], quick, rng),
+    ...planTopics(set.topics, size - tables - quick, rng),
   ];
-  for (const { topics, total } of groups) {
-    const quotas = allocateQuotas(
-      topics.map(({ topic, weight }) => ({ key: topic, weight })),
-      total,
-      rng,
-    );
-    for (const [topic, count] of quotas) {
-      for (let i = 0; i < count; i++) plan.push(topic);
-    }
-  }
+  return generatePlan(plan, rng, generators);
+}
 
+/**
+ * Gemengd (spec §4.2): every counting set gets an equal count, which it spreads over its own
+ * topics; Tafels gives table exercises. At Verdieping the Opfrisser share is spread the same
+ * way, independently.
+ */
+export function buildMixedSession(
+  sets: readonly PracticeSet[],
+  level: Level,
+  size: number,
+  rng: Rng,
+  generators: Record<Topic, Generator> = GENERATORS,
+): Question[] {
+  const quick = level === 'deep' ? shareCount(QUICK_SHARE_PERCENT, size) : 0;
+  const plan: Topic[] = [];
+  for (const [set, count] of perSet(sets, size - quick, rng)) {
+    if (level === 'deep') plan.push(...planTopics(set.deep ?? [], count, rng));
+    else if (choosesTables(set)) plan.push(...repeat('tables', count));
+    else plan.push(...planTopics(set.topics, count, rng));
+  }
+  for (const [set, count] of perSet(sets, quick, rng)) {
+    plan.push(...planTopics(set.topics, count, rng));
+  }
+  return generatePlan(plan, rng, generators);
+}
+
+/** Equal counts per set: step 2 with weight 1 for every set (spec §4.2, Gemengd). */
+function perSet(sets: readonly PracticeSet[], total: number, rng: Rng) {
+  return allocateQuotas(sets.map((set) => ({ key: set, weight: 1 })), total, rng);
+}
+
+function repeat(topic: Topic, count: number): Topic[] {
+  return Array.from({ length: count }, () => topic);
+}
+
+/** Steps 2–3 of the quota algorithm for one group of topics (spec §4.2). */
+function planTopics(topics: readonly TopicWeight[], total: number, rng: Rng): Topic[] {
+  const quotas = allocateQuotas(
+    topics.map(({ topic, weight }) => ({ key: topic, weight })),
+    total,
+    rng,
+  );
+  return [...quotas].flatMap(([topic, count]) => repeat(topic, count));
+}
+
+/** Steps 4–5: generate without duplicates, then shuffle the whole list (spec §4.2). */
+function generatePlan(
+  plan: readonly Topic[],
+  rng: Rng,
+  generators: Record<Topic, Generator>,
+): Question[] {
   const used = new Set<string>();
   const questions = plan.map((topic) => generateUnique(generators[topic], rng, used));
   return shuffle(rng, questions);

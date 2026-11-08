@@ -3,6 +3,7 @@ import { createRng } from './random';
 import { fromInteger } from './rational';
 import {
   allocateQuotas,
+  buildMixedSession,
   buildSession,
   generatorsFor,
   insertRepeat,
@@ -12,15 +13,18 @@ import {
 } from './session';
 import { DEEP_FIXTURE_SET } from './setFixture';
 import {
+  choosesTables,
   forLevel,
   FRACTIONS_SET,
   GEOMETRY_SET,
+  hasDeep,
   HEURISTICS_SET,
   MEASUREMENT_SET,
   NUMBER_SENSE_SET,
   NUMBER_SYSTEMS_SET,
   NUMBERS_SET,
   OPERATIONS_SET,
+  PRACTICE_SETS,
   PROPORTIONS_SET,
   RELATIONS_SET,
   SESSION_SIZES,
@@ -28,7 +32,7 @@ import {
 } from './sets';
 import { numberStep } from './steps';
 import { GENERATORS } from './topics';
-import type { Generator, Question } from './types';
+import type { Generator, Level, PracticeSet, Question, Topic } from './types';
 
 describe('shareCount', () => {
   it.each([
@@ -558,5 +562,152 @@ describe('mistakeSession', () => {
       numbers.push(Number(question.steps[0]!.check('').expected));
       expect(numbers.sort((x, y) => x - y).slice(0, 2)).toContain(7);
     }
+  });
+});
+
+describe('buildMixedSession (spec §4.2, Gemengd)', () => {
+  type Kind = 'quick' | 'deep';
+  const entry = (topic: Topic, set: PracticeSet, kind: Kind) => ({ topic, set: set.id, kind });
+  const entries = PRACTICE_SETS.flatMap((set) => [
+    ...(choosesTables(set) ? [entry('tables', set, 'quick')] : []),
+    ...set.topics.map(({ topic }) => entry(topic, set, 'quick')),
+    ...(set.deep ?? []).map(({ topic }) => entry(topic, set, 'deep')),
+  ]);
+  const owner = new Map(entries.map((entry) => [entry.topic, entry]));
+  const ownersOf = (questions: readonly Question[]) => questions.map((q) => owner.get(q.topic)!);
+  /** Exercises per set, in the order of `sets` (zeros included). */
+  const perSet = (questions: readonly Question[], sets: readonly PracticeSet[], kind?: Kind) => {
+    const owners = ownersOf(questions).filter((o) => kind === undefined || o.kind === kind);
+    return sets.map((set) => owners.filter((o) => o.set === set.id).length);
+  };
+  const sorted = (counts: number[]) => [...counts].sort((x, y) => y - x);
+
+  /** Fast generators with a unique key per call, for the distribution tests over many seeds. */
+  function stubGenerators(): Record<Topic, Generator> {
+    let n = 0;
+    const entries = Object.keys(GENERATORS).map((topic) => [
+      topic,
+      (): Question => ({ key: `${topic}-${n++}`, topic: topic as Topic, steps: [] }),
+    ]);
+    return Object.fromEntries(entries) as Record<Topic, Generator>;
+  }
+  const SEEDS = Array.from({ length: 200 }, (_, i) => i + 1);
+  const build = (sets: readonly PracticeSet[], level: Level, size: number, seed: number) =>
+    buildMixedSession(sets, level, size, createRng(seed), stubGenerators());
+
+  const all = PRACTICE_SETS;
+  const deepSets = PRACTICE_SETS.filter(hasDeep);
+
+  it('relies on every topic belonging to one set only', () => {
+    expect(owner.size).toBe(entries.length);
+  });
+
+  it('gives all 11 sets at Opfrisser 15 exercises: four sets 2, seven 1, no Verdieping topics', () => {
+    for (const seed of SEEDS) {
+      const questions = build(all, 'quick', 15, seed);
+      expect(questions).toHaveLength(15);
+      expect(sorted(perSet(questions, all))).toEqual([2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1]);
+      expect(ownersOf(questions).every((o) => o.kind === 'quick')).toBe(true);
+    }
+  });
+
+  it('builds real exercises with the default generators', () => {
+    const questions = buildMixedSession(all, 'quick', 15, createRng(4));
+    expect(questions).toHaveLength(15);
+    expect(sorted(perSet(questions, all))).toEqual([2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1]);
+  });
+
+  it('gives 5 random sets 1 exercise at size 5', () => {
+    const chosen = new Set<string>();
+    for (const seed of SEEDS) {
+      const counts = perSet(build(all, 'quick', 5, seed), all);
+      expect(sorted(counts)).toEqual([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]);
+      all.forEach((set, i) => counts[i] && chosen.add(set.id));
+    }
+    expect(chosen.size).toBe(all.length);
+  });
+
+  it('splits Tafels and Meten 8 + 7 with no tables share inside Meten', () => {
+    const sets = [TABLES_SET, MEASUREMENT_SET];
+    for (const seed of SEEDS) {
+      const questions = build(sets, 'quick', 15, seed);
+      expect(sorted(perSet(questions, sets))).toEqual([8, 7]);
+      const tables = questions.filter((q) => q.topic === 'tables').length;
+      expect(tables).toBe(perSet(questions, sets)[0]);
+    }
+  });
+
+  it('mixes no tables into a set on its own', () => {
+    for (const seed of SEEDS.slice(0, 50)) {
+      const owners = ownersOf(build([MEASUREMENT_SET], 'quick', 15, seed));
+      expect(owners.every((o) => o.set === 'meten' && o.kind === 'quick')).toBe(true);
+    }
+  });
+
+  it('follows the Bewerkingen weights for its one exercise: never properties', () => {
+    const seen = new Set<Topic>();
+    const index = all.indexOf(OPERATIONS_SET);
+    for (const seed of SEEDS) {
+      const questions = build(all, 'quick', 15, seed);
+      if (perSet(questions, all)[index] !== 1) continue;
+      const topic = questions.find((q) => owner.get(q.topic)!.set === OPERATIONS_SET.id)!.topic;
+      seen.add(topic);
+    }
+    expect([...seen].sort()).toEqual(['orderOfOperations', 'smartCalculation']);
+  });
+
+  it('gives the 10 Verdieping sets 3 Opfrisser exercises from 3 sets and splits 12 as 2 + 2 + 1 × 8', () => {
+    for (const seed of SEEDS) {
+      const questions = build(deepSets, 'deep', 15, seed);
+      expect(questions.some((q) => q.topic === 'tables')).toBe(false);
+      expect(sorted(perSet(questions, deepSets, 'quick'))).toEqual([1, 1, 1, 0, 0, 0, 0, 0, 0, 0]);
+      expect(sorted(perSet(questions, deepSets, 'deep'))).toEqual([2, 2, 1, 1, 1, 1, 1, 1, 1, 1]);
+    }
+  });
+
+  it('gives Meten and Verhoudingen at Verdieping 10: 1 Opfrisser each and every Verdieping topic once', () => {
+    const sets = [MEASUREMENT_SET, PROPORTIONS_SET];
+    const deepTopics = sets.flatMap((set) => (set.deep ?? []).map((t) => t.topic)).sort();
+    for (const seed of SEEDS) {
+      const questions = build(sets, 'deep', 10, seed);
+      expect(perSet(questions, sets, 'quick')).toEqual([1, 1]);
+      const deep = questions.filter((q) => owner.get(q.topic)!.kind === 'deep');
+      expect(deep.map((q) => q.topic).sort()).toEqual(deepTopics);
+    }
+  });
+
+  it('has no Opfrisser share below 10 at Verdieping', () => {
+    for (const seed of SEEDS.slice(0, 50)) {
+      const questions = build([MEASUREMENT_SET], 'deep', 5, seed);
+      expect(perSet(questions, [MEASUREMENT_SET], 'quick')).toEqual([0]);
+      const topics = questions.map((q) => q.topic);
+      const counts = (MEASUREMENT_SET.deep ?? []).map(
+        ({ topic }) => topics.filter((t) => t === topic).length,
+      );
+      expect(sorted(counts)).toEqual([2, 1, 1, 1]);
+    }
+  });
+
+  it('mixes 10 Opfrisser exercises into 50 at Verdieping', () => {
+    const questions = build([MEASUREMENT_SET], 'deep', 50, 3);
+    expect(perSet(questions, [MEASUREMENT_SET], 'quick')).toEqual([10]);
+    expect(perSet(questions, [MEASUREMENT_SET], 'deep')).toEqual([40]);
+  });
+
+  it('keeps the counts per set within 1 of each other at 50', () => {
+    for (const seed of SEEDS.slice(0, 50)) {
+      const counts = perSet(build(all, 'quick', 50, seed), all);
+      expect(counts.reduce((sum, c) => sum + c, 0)).toBe(50);
+      expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('throws without sets', () => {
+    expect(() => buildMixedSession([], 'quick', 15, createRng(1))).toThrow(RangeError);
+  });
+
+  it('is deterministic for a seed', () => {
+    const keys = () => buildMixedSession(all, 'quick', 15, createRng(9)).map((q) => q.key);
+    expect(keys()).toEqual(keys());
   });
 });

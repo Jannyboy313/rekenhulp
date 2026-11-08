@@ -145,7 +145,7 @@ export interface Question {
 
 export type Generator = (rng: Rng) => Question;
 
-interface TopicWeight {
+export interface TopicWeight {
   topic: Topic;
   weight: number;
 }
