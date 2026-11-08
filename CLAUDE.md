@@ -79,11 +79,11 @@ The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScr
 lesson data through to `LessonLinks` and `LessonSheet`.
 
 Next steps (spec §12.2–§12.6), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
-the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is decided in v4. v4 practises across sets. v5 holds only persistent memory in IndexedDB.
+the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). v4 practises across sets. v5 holds only persistent memory in IndexedDB.
 
 | Step                                                                                    | New infrastructure   |
 | --------------------------------------------------------------------------------------- | -------------------- |
-| v4: mixed categories (§12.5), form decided in its spec iteration                        | sessions across sets |
+| v4: mixed categories (§12.5), specified: row Gemengd with a set choice (§3.2, §4.2)     | sessions across sets |
 | v4: practice test (§12.6), after mixed categories                                       | test session         |
 | v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB            |
 

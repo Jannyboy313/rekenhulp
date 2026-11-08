@@ -33,8 +33,8 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- v1 and v2 are done: all sets in §4 are implemented. v3 and v4 are on the roadmap (§12), and the
-  architecture must make adding it cheap.
+- v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 is on the roadmap
+  (§12), and the architecture must make adding it cheap.
 
 ## 2. Platform & stack
 
@@ -107,7 +107,7 @@ The app is a state machine in `App.svelte` with four states:
 
 - "Terug" moves from `setup` back to `sets`.
 - "Opnieuw" moves from `results` back to `playing`, with the same set, count, level and table
-  choice.
+  choice (Gemengd: set choice, §3.2).
 - "Menu" moves from `results` to `sets`.
 - The system back action (Android back button or gesture, iOS swipe back) never closes the app
   from another screen. On `setup` and `results` it moves to `sets`, like Terug and Menu. On
@@ -127,6 +127,11 @@ The app is a state machine in `App.svelte` with four states:
   one-line description of its topics. The list scrolls when the screen is short.
 - Tapping a card opens the setup screen for that set.
 - Sets whose topics are not implemented yet (v2/v3) are not shown.
+- **Gemengd** (§12.5): the last row, after the sets, mixes exercises from several sets in one
+  session. Its description is "Opgaven uit meerdere sets door elkaar", and its glyph is a 2 × 2
+  grid of small rounded tiles in violet, amber, blue and violet. Tapping it opens its setup
+  (§3.2). It is not a set of its own: it has no topics, and the **Lesstof** tab has no row for
+  it.
 
 ### 3.2 Setup screen
 
@@ -145,6 +150,15 @@ The app is a state machine in `App.svelte` with four states:
   Geen clears all. With no table selected, **Start** is disabled. The choice applies only to
   the Tafels set; the 15% tables in the other sets always use all tables. The heading reads
   "Welke tafels?" (no count), and the toggles are pills with `aria-pressed`.
+- **Set choice (Gemengd only, §12.5):** instead of the topic list, Gemengd shows the heading
+  "Welke sets?" with the small buttons **Alle** and **Geen**, and one pill per set (`aria-pressed`)
+  with the set's name, in the order of the overview (Tafels first). The pills wrap to as many
+  per row as fit, because the names differ in length. By default all sets are selected. At level
+  Verdieping the Tafels pill is greyed out and `disabled` (Tafels has no Verdieping): it keeps
+  its pressed state, which counts again at Opfrisser, but it does not count at Verdieping; Alle
+  and Geen still set it. **Start** is disabled when no counting set is selected: none at all, or
+  only Tafels at Verdieping. The Tafels pill practises all tables; the table choice applies to
+  the Tafels set only. Gemengd has no "Wat zit erin" list and no "20% opfrisser" row.
 - **Count:** 5, 10, 15, 25 or 50 exercises, shown as one segmented control (a radio group of 5
   equal segments). The default is 15, at both levels: the user picks a smaller count for
   Verdieping when they want.
@@ -153,21 +167,22 @@ The app is a state machine in `App.svelte` with four states:
   Every time a set's setup opens from the overview, the level is Opfrisser: unlike the count,
   the choice is not carried over to another set. While a set has no Verdieping (§12.2), its
   segment is greyed out and `disabled`, with no hint text; the arrow keys skip it. The level is
-  shown only here, not on the play screen (§3.3) or the results (§3.5).
+  shown only here, not on the play screen (§3.3) or the results (§3.5). Gemengd has both levels
+  and resets to Opfrisser like a set.
 - A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count
   (the number in a lighter yellow). There is no caption above it. When the options do not fit on
   the screen they scroll above the button; a fade from transparent to the background colour above
   the button hints that more content (e.g. Niveau) is hidden below.
-- The chosen count and table choice are kept in memory only while the app stays open; nothing is
-  persisted. **Opnieuw** reuses them and the level.
+- The chosen count, table choice and set choice are kept in memory only while the app stays
+  open; nothing is persisted. **Opnieuw** reuses them and the level.
 
 Note: the 3-minute target of Opfrisser corresponds to roughly 15 exercises (~12 s each).
 Larger counts are deliberate longer sessions.
 
 ### 3.3 Playing
 
-- The header shows the set name, progress (`7 / 15`, or **Herhaling** while a repeated exercise
-  is shown, §3.4), the elapsed time (`mm:ss`, counting up, no time limit) and a **Stop**
+- The header shows the set name (for Gemengd "Gemengd"), progress (`7 / 15`, or **Herhaling**
+  while a repeated exercise is shown, §3.4), the elapsed time (`mm:ss`, counting up, no time limit) and a **Stop**
   button, a ✕ at the top left (aria-label "Stoppen"). Under the set name and the counter sits a
   progress bar over the first attempts. A repeat shows a yellow "Herhaling" label instead of
   the number; the counter text keeps the original total.
@@ -400,7 +415,8 @@ already names the mistake.
   out. These are the first-attempt mistakes, also when a repeat was correct. Without mistakes:
   "Alles goed!"
 - Buttons **Menu** (neutral grey) and **Opnieuw** (primary, right; new session with the same
-  set, count, level and table choice). Opnieuw is always the primary button.
+  set, count, level and table choice, or for Gemengd the same set choice). Opnieuw is always the
+  primary button.
 - With at least one first-attempt mistake, a full-width button **Fouten oefenen · n** above
   them (§12.4), tonal (violet tint, violet text): between Opnieuw and Menu in weight. It starts a session with three new exercises
   per wrong question, of that question's topic, so `n` is three times the number of wrong
@@ -569,6 +585,10 @@ The set overview (§3.1) shows the implemented sets in the build order of §12.1
 Verhoudingen, Getallen & delers, Bewerkingen, Getalbegrip, Breuken & kommagetallen, …), not in
 the order of this table.
 
+**Gemengd** (§12.5) is not a set in this table: it combines the sets the user selects (§3.2),
+each with its own topics and weights from the tables above. It has no tables share of its own;
+the tables come in only through the Tafels set, as one of the selected sets (§4.2).
+
 ### 4.2 Quota algorithm
 
 Given a set and a session size `n`:
@@ -638,6 +658,36 @@ Examples with `n = 15`:
 - **Heuristieken:** `r = 13` over 4 topics, so 4 + 3 + 3 + 3. The topic with 4 is chosen at
   random. Verdieping: 3 Opfrisser exercises over 4 topics (3 random topics get 1, the fourth 0)
   and `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
+
+**Gemengd (§12.5).** The counting sets are the selected sets, without Tafels at Verdieping
+(§3.2). Every counting set weighs the same, however many topics it has: first the sets get
+their counts, then each set spreads its count over its own topics.
+
+1. **Opfrisser:** the `n` exercises are distributed over the counting sets, all weight 1, with
+   the largest remainder method of step 2 (ties broken by the session RNG). With `n` at least
+   the number of sets, every set gets at least 1; with fewer, random sets get 1 and the rest 0.
+2. Each set spreads its count over its Opfrisser topics with steps 2–3 (its weights), without
+   its tables share. The count of Tafels is all table exercises, from all tables (§5.1).
+3. **Verdieping:** `quickCount = Math.round(20 × n / 100)`, only from `n = 10`, as for a set.
+   The `n − quickCount` exercises are distributed over the counting sets as in step 1 and each
+   set spreads them over its Verdieping topics. The `quickCount` exercises are distributed over
+   the same sets as in step 1, independently, and each set spreads them over its Opfrisser
+   topics (its weights, without the tables share).
+4. Steps 4–5 (shuffle, de-duplication) run over the whole list, as for a set.
+
+Examples:
+
+- **Opfrisser, `n = 15`, all 11 sets:** 15 over 11 sets, so 4 random sets get 2 and the other 7
+  get 1. Meten with 2 gives 1 each to 2 random topics of its 11; Tafels with 2 gives 2 table
+  exercises; Bewerkingen with 1 gives `orderOfOperations` or `smartCalculation` (shares
+  0,4 / 0,2 / 0,4, the tie broken at random).
+- **Opfrisser, `n = 5`, all 11 sets:** 5 random sets get 1 exercise, the other 6 get 0.
+- **Opfrisser, `n = 15`, Tafels and Meten:** 8 + 7, the set with 8 chosen at random.
+- **Verdieping, `n = 15`, all sets:** 10 counting sets (Tafels does not count). 3 Opfrisser
+  exercises go to 3 random sets (1 each, one of their Opfrisser topics); `n − 3 = 12` over 10
+  sets, so 2 random sets get 2 and the other 8 get 1, each over its 4 Verdieping topics.
+- **Verdieping, `n = 10`, Meten and Verhoudingen:** 2 Opfrisser exercises, 1 per set; `8` over
+  2 sets, so 4 + 4, which is 1 per Verdieping topic.
 
 ## 5. Topics
 
@@ -4300,11 +4350,20 @@ the current session.
 
 ### 12.5 v4 — mixed categories
 
-Comes after v3. A session that mixes exercises from more than one set. The form (the user picks
-sets, or a fixed mixed set) is decided in its own spec iteration.
+Comes after v3. A session that mixes exercises from more than one set. Decided 2026-11-08,
+specified in §3.1 (the row **Gemengd**), §3.2 (set choice), §4.1 and §4.2 (distribution):
 
-Open decision for v4: whether the written algorithms of LKT 3.3 (kolomsgewijs, cijferen) are in
-scope (§12.7).
+- One row **Gemengd** on the overview; its setup has a pill per set (default all), plus the
+  count and the level. No fixed mixed set and no multi-select on the overview: the set choice
+  covers both "everything mixed" and "a few sets of my choice".
+- Every selected set weighs the same, then its own topic weights apply. The alternative, one
+  pool of all topics, lets Meten (11 topics) outweigh Talstelsels (2).
+- Tafels is a selectable set like the others, with all tables; Gemengd has no separate tables
+  share. At Verdieping the Tafels pill is disabled, because Tafels has no Verdieping.
+- No new session infrastructure beyond the quota of §4.2: play, repeats, results, Opnieuw and
+  Fouten oefenen work as for a set. The practice test (§12.6) reuses the distribution.
+
+LKT 3.3 (written algorithms) is out of scope (§12.8, decided 2026-11-08).
 
 ### 12.6 v4 — practice test (oefentoets)
 
@@ -4331,7 +4390,7 @@ scope against it. The check of 2026-10-26 gave the RWT gaps of §12.3.
 **Check of 2026-11-02** (after v3, against §5): the gaps of §12.3 are closed. Remaining gaps
 (decided 2026-11-02): the RWT gaps are closed before v4, one small round per set (all closed
 2026-11-02); the LKT gaps
-wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§12.5).
+wait until the version of the kennisbasis is confirmed; 3.3 is out of scope (§12.8).
 
 - RWT
   - C.10b: the surface area of a sphere with the formula given (`4 × π × r²`). Meetkunde,
@@ -4359,7 +4418,7 @@ wait until the version of the kennisbasis is confirmed; 3.3 is decided in v4 (§
   - 2.5: angle types by size (scherp, recht, stomp, gestrekt). Meetkunde, Opfrisser MC.
   - 2.1.c: the gulden snede (≈ 1,618). Verhoudingen, MC.
   - 3.3: written algorithms (kolomsgewijs, cijferen) are not mental arithmetic with one typed
-    answer; in or out of scope is decided in v4.
+    answer. Out of scope (§12.8, decided 2026-11-08).
 
 The distribution of table 1 needs no change to the sets; it matters for the practice test
 (§12.6).
@@ -4375,6 +4434,8 @@ The distribution of table 1 needs no change to the sets; it matters for the prac
   - symmetry of pictured figures (letters, patterns) and coordinates
   - measuring angles
 - Didactics (part of the LKT).
+- Written algorithms (LKT 3.3: kolomsgewijs, cijferen): not mental arithmetic with one typed
+  answer, and they would need a column input of their own.
 
 ### 12.9 Optional later
 
