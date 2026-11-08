@@ -2,7 +2,14 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { DEEP_FIXTURE_SET } from '../lib/setFixture';
-import { DEFAULT_SESSION_SIZE, MEASUREMENT_SET, NUMBER_SENSE_SET, TABLES_SET } from '../lib/sets';
+import {
+  DEFAULT_SESSION_SIZE,
+  MEASUREMENT_SET,
+  MIXED_SET,
+  NUMBER_SENSE_SET,
+  PRACTICE_SETS,
+  TABLES_SET,
+} from '../lib/sets';
 import { TABLE_FACTORS } from '../lib/topics/tables';
 import type { Level, PracticeSet } from '../lib/types';
 import SetupScreen from './SetupScreen.svelte';
@@ -14,11 +21,12 @@ function renderSetup(
     tables = [...TABLE_FACTORS],
     size = DEFAULT_SESSION_SIZE,
     level = 'quick' as Level,
+    chosenSets = PRACTICE_SETS.map((s) => s.id),
     onstart = vi.fn(),
     onback = vi.fn(),
   } = {},
 ) {
-  render(SetupScreen, { props: { set, size, level, tables, onstart, onback } });
+  render(SetupScreen, { props: { set, size, level, tables, chosenSets, onstart, onback } });
 }
 
 function levelRadio(name: 'Opfrisser' | 'Verdieping'): HTMLButtonElement {
@@ -204,5 +212,78 @@ describe('SetupScreen level', () => {
     renderSetup({ ...DEEP_FIXTURE_SET, deep: [] });
     await fireEvent.keyDown(levelRadio('Opfrisser'), { key: 'ArrowRight' });
     expect(levelRadio('Opfrisser').getAttribute('aria-checked')).toBe('true');
+  });
+});
+
+describe('SetupScreen Gemengd (spec §3.2)', () => {
+  const setPill = (name: string) => screen.getByRole<HTMLButtonElement>('button', { name });
+  const pressedSets = () =>
+    pills()
+      .filter((pill) => pill.getAttribute('aria-pressed') === 'true')
+      .map((pill) => pill.textContent);
+  const allNames = PRACTICE_SETS.map((set) => set.name);
+
+  it('offers every set as a pressed pill under "Welke sets?", instead of the topic list', () => {
+    renderSetup(MIXED_SET);
+    expect(screen.getByRole('heading', { name: 'Welke sets?', level: 2 })).toBeTruthy();
+    expect(screen.getByRole('group', { name: 'Welke sets?' })).toBeTruthy();
+    expect(pills().map((pill) => pill.textContent)).toEqual(allNames);
+    expect(pressedSets()).toEqual(allNames);
+    expect(screen.queryByRole('heading', { name: 'Wat zit erin' })).toBeNull();
+    expect(rowNames()).toEqual([]);
+  });
+
+  it('shows Gemengd and its glyph in the header', () => {
+    renderSetup(MIXED_SET);
+    expect(screen.getByRole('heading', { name: 'Gemengd', level: 1 })).toBeTruthy();
+    expect(document.querySelector('header svg')).toBeTruthy();
+  });
+
+  it('toggles a set with its pill and keeps the overview order', async () => {
+    renderSetup(MIXED_SET);
+    await fireEvent.click(setPill('Meten'));
+    expect(pressedSets()).toEqual(allNames.filter((name) => name !== 'Meten'));
+    await fireEvent.click(setPill('Meten'));
+    expect(pressedSets()).toEqual(allNames);
+  });
+
+  it('clears and restores the choice with Geen and Alle, and disables Start without a set', async () => {
+    renderSetup(MIXED_SET);
+    await fireEvent.click(screen.getByRole('button', { name: 'Geen' }));
+    expect(pressedSets()).toEqual([]);
+    expect(startButton().disabled).toBe(true);
+    await fireEvent.click(screen.getByRole('button', { name: 'Alle' }));
+    expect(pressedSets()).toEqual(allNames);
+    expect(startButton().disabled).toBe(false);
+  });
+
+  it('enables Verdieping and then disables the Tafels pill, which stays pressed', async () => {
+    renderSetup(MIXED_SET);
+    expect(levelRadio('Verdieping').disabled).toBe(false);
+    await fireEvent.click(levelRadio('Verdieping'));
+    expect(setPill('Tafels').disabled).toBe(true);
+    expect(setPill('Tafels').getAttribute('aria-pressed')).toBe('true');
+    expect(pills().filter((pill) => pill.disabled)).toHaveLength(1);
+  });
+
+  it('starts with only Tafels at Opfrisser, not at Verdieping', async () => {
+    renderSetup(MIXED_SET, { chosenSets: ['tafels'] });
+    expect(startButton().disabled).toBe(false);
+    await fireEvent.click(levelRadio('Verdieping'));
+    expect(startButton().disabled).toBe(true);
+    await fireEvent.click(levelRadio('Opfrisser'));
+    expect(startButton().disabled).toBe(false);
+  });
+
+  it('presses the disabled Tafels pill with Alle at Verdieping', async () => {
+    renderSetup(MIXED_SET, { chosenSets: [], level: 'deep' });
+    await fireEvent.click(screen.getByRole('button', { name: 'Alle' }));
+    expect(setPill('Tafels').getAttribute('aria-pressed')).toBe('true');
+  });
+
+  it('keeps the topic list for a normal set', () => {
+    renderSetup(MEASUREMENT_SET);
+    expect(screen.queryByRole('heading', { name: 'Welke sets?' })).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Wat zit erin' })).toBeTruthy();
   });
 });

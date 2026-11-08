@@ -1,9 +1,12 @@
 <script lang="ts">
   import {
     choosesTables,
+    countingSets,
     describeSetTopicRows,
     forLevel,
     hasDeep,
+    isMixed,
+    PRACTICE_SETS,
     SESSION_SIZES,
   } from '../lib/sets';
   import { TABLE_FACTORS } from '../lib/topics/tables';
@@ -18,6 +21,10 @@
     level?: Level;
     /** Chosen tables; used by the Tafels set only (spec §3.2). */
     tables: number[];
+    /** Sets offered by Gemengd; the app passes its sets (spec §3.2). */
+    pool?: readonly PracticeSet[];
+    /** Chosen set ids, in pool order; used by Gemengd only (spec §3.2). */
+    chosenSets?: string[];
     onstart: () => void;
     onback: () => void;
   }
@@ -27,6 +34,8 @@
     size = $bindable(),
     level = $bindable('quick'),
     tables = $bindable(),
+    pool = PRACTICE_SETS,
+    chosenSets = $bindable([]),
     onstart,
     onback,
   }: Props = $props();
@@ -36,11 +45,23 @@
     { value: 'deep', label: 'Verdieping' },
   ];
 
-  const canStart = $derived(!choosesTables(set) || tables.length > 0);
-  const enabledLevels = $derived<Level[]>(hasDeep(set) ? ['quick', 'deep'] : ['quick']);
+  const canStart = $derived(
+    isMixed(set)
+      ? countingSets(pool, chosenSets, level).length > 0
+      : !choosesTables(set) || tables.length > 0,
+  );
+  const enabledLevels = $derived<Level[]>(
+    hasDeep(set) || isMixed(set) ? ['quick', 'deep'] : ['quick'],
+  );
 
   function toggleTable(table: number) {
     tables = TABLE_FACTORS.filter((t) => (t === table ? !tables.includes(t) : tables.includes(t)));
+  }
+
+  function toggleSet(id: string) {
+    chosenSets = pool
+      .map((s) => s.id)
+      .filter((s) => (s === id ? !chosenSets.includes(s) : chosenSets.includes(s)));
   }
 
   /** Arrow keys step through the enabled options of a radio group (disabled ones are skipped). */
@@ -92,6 +113,28 @@
               class="pill"
               aria-pressed={tables.includes(table)}
               onclick={() => toggleTable(table)}>{table}</button
+            >
+          {/each}
+        </div>
+      </section>
+    {:else if isMixed(set)}
+      <section>
+        <div class="section-header">
+          <h2 id="sets-heading">Welke sets?</h2>
+          <button type="button" class="link" onclick={() => (chosenSets = pool.map((s) => s.id))}>
+            Alle
+          </button>
+          <button type="button" class="link" onclick={() => (chosenSets = [])}>Geen</button>
+        </div>
+        <!-- A set without a Verdieping (Tafels) keeps its choice but does not count there. -->
+        <div class="sets" role="group" aria-labelledby="sets-heading">
+          {#each pool as option (option.id)}
+            <button
+              type="button"
+              class="pill set-pill"
+              aria-pressed={chosenSets.includes(option.id)}
+              disabled={level === 'deep' && !hasDeep(option)}
+              onclick={() => toggleSet(option.id)}>{option.name}</button
             >
           {/each}
         </div>
@@ -289,6 +332,19 @@
     border: 1.5px solid var(--border-key);
     font-size: 18px;
     font-weight: 600;
+  }
+
+  /* Set names differ in length, so the set pills wrap instead of a fixed grid. */
+  .sets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .set-pill {
+    height: 44px;
+    padding: 0 16px;
+    font-size: 15px;
   }
 
   .pill[aria-pressed='true'] {
