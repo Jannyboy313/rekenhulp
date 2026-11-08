@@ -21,6 +21,7 @@
     'verbanden',
     'talstelsels',
     'heuristieken',
+    'gemengd',
   ];
 </script>
 
@@ -98,6 +99,11 @@
       />
       <circle cx="14" cy="13" r="6" class="fv" />
       <rect x="10.5" y="20" width="7" height="5" rx="1.4" class="fb" />
+    {:else if id === 'gemengd'}
+      <rect x="3" y="3" width="10" height="10" rx="2.5" class="fv" />
+      <rect x="15" y="3" width="10" height="10" rx="2.5" class="fa" />
+      <rect x="3" y="15" width="10" height="10" rx="2.5" class="fb" />
+      <rect x="15" y="15" width="10" height="10" rx="2.5" class="fv" />
     {/if}
   </svg>
 {:else}
