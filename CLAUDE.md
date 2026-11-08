@@ -56,7 +56,9 @@ and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`, `si
   `numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
   `fractionConcepts` and `solidNames`), and the score per topic on the results screen (§3.5,
 §12.4: `topicScores` in `lib/results.ts`) and Fouten oefenen (§3.5, §12.4: `mistakeSession`
-in `lib/session.ts`, three new exercises per wrong question).
+in `lib/session.ts`, three new exercises per wrong question), and Gemengd (v4 mixed categories,
+§12.5: the pseudo set `MIXED_SET` with a set choice on the setup screen; `countingSets` in
+`lib/sets.ts` and `buildMixedSession` in `lib/session.ts`, an equal share per set).
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -78,13 +80,12 @@ props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.s
 The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScreen` only pass
 lesson data through to `LessonLinks` and `LessonSheet`.
 
-Next steps (spec §12.2–§12.6), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
-the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). v4 practises across sets. v5 holds only persistent memory in IndexedDB.
+Next steps (spec §12.6), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
+the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). v4 practises across sets: mixed categories (§12.5) are done. v5 holds only persistent memory in IndexedDB.
 
 | Step                                                                                    | New infrastructure   |
 | --------------------------------------------------------------------------------------- | -------------------- |
-| v4: mixed categories (§12.5), specified: row Gemengd with a set choice (§3.2, §4.2)     | sessions across sets |
-| v4: practice test (§12.6), after mixed categories                                       | test session         |
+| v4: practice test (§12.6), reuses `buildMixedSession`; form in its own spec             | test session         |
 | v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB            |
 
 Between versions: check the sets against the toetsmatrijs (§12.7).
@@ -212,7 +213,8 @@ src/
   components/           SetOverview (shell: header + Oefenen/Lesstof tabs, a snippet per tab),
                         PracticeSetList, LessonSetList, SetRow (shared row), LessonTopicList,
                         LessonView, LessonBlocks (renders lesson blocks), LessonLinks +
-                        LessonSheet (lesson link from a mistake), SetupScreen, PlayScreen (question
+                        LessonSheet (lesson link from a mistake), SetupScreen (topic list, table
+                        choice or Gemengd set choice), PlayScreen (question
                         queue incl. repeats, auto-advance timer), QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
@@ -242,10 +244,11 @@ src/
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary
     sets.ts             practice sets (config): topics + weights + tables share, optional `deep`
-                        (Verdieping); hasDeep, forLevel
+                        (Verdieping); hasDeep, forLevel; Gemengd: MIXED_SET (pseudo set, not in
+                        PRACTICE_SETS), isMixed, countingSets
     setFixture.ts       test-only set with a Verdieping
     session.ts          quotas, shuffle, de-duplication, table choice (generatorsFor),
-                        repeats (insertRepeat)
+                        repeats (insertRepeat), Gemengd (buildMixedSession)
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
     wakeLock.ts         keeps the screen on while PlayScreen is mounted
     update.ts           update prompt state (waiting version, Later) and shouldPrompt (screens)

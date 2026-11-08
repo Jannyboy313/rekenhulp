@@ -4348,7 +4348,7 @@ the current session.
    lesstof spec §3.1–§3.2 (place, button, sheet, mapping) and §4 (exception to the code
    separation).
 
-### 12.5 v4 — mixed categories
+### 12.5 v4 — mixed categories (done)
 
 Comes after v3. A session that mixes exercises from more than one set. Decided 2026-11-08,
 specified in §3.1 (the row **Gemengd**), §3.2 (set choice), §4.1 and §4.2 (distribution):
