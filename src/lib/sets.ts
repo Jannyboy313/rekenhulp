@@ -265,6 +265,34 @@ export function forLevel(set: PracticeSet, level: Level): PracticeSet {
   };
 }
 
+/**
+ * Gemengd (spec §3.1, §12.5): not a practice set but a choice of sets. It has no topics of its
+ * own; the app builds its session from the chosen sets (`countingSets`).
+ */
+export const MIXED_SET: PracticeSet = {
+  id: 'gemengd',
+  name: 'Gemengd',
+  description: 'Opgaven uit meerdere sets door elkaar',
+  topics: [],
+  tablesPercent: 0,
+};
+
+export function isMixed(set: PracticeSet): boolean {
+  return set.id === MIXED_SET.id;
+}
+
+/**
+ * The chosen sets that count at a level, in pool order: a set without a Verdieping (Tafels) does
+ * not count at Verdieping (spec §3.2, §4.2).
+ */
+export function countingSets(
+  pool: readonly PracticeSet[],
+  chosen: readonly string[],
+  level: Level,
+): PracticeSet[] {
+  return pool.filter((set) => chosen.includes(set.id) && (level === 'quick' || hasDeep(set)));
+}
+
 /** Sessions below this size get no mixed-in table or Opfrisser exercises (spec §4.2). */
 export const MIN_SIZE_FOR_MIXED_TABLES = 10;
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   choosesTables,
+  countingSets,
   DEFAULT_SESSION_SIZE,
   describeSetTopicRows,
   forLevel,
@@ -8,7 +9,9 @@ import {
   GEOMETRY_SET,
   hasDeep,
   HEURISTICS_SET,
+  isMixed,
   MEASUREMENT_SET,
+  MIXED_SET,
   NUMBER_SENSE_SET,
   NUMBER_SYSTEMS_SET,
   NUMBERS_SET,
@@ -667,5 +670,30 @@ describe('levels', () => {
       describeSetTopicRows(forLevel(DEEP_FIXTURE_SET, level), 15).map((row) => row.name);
     expect(names('quick')).toEqual(['Priemgetal of niet', '15% tafels']);
     expect(names('deep')).toEqual(['KGV', 'GGD', '20% opfrisser']);
+  });
+});
+
+describe('Gemengd (spec §3.2, §4.2)', () => {
+  const allIds = PRACTICE_SETS.map((set) => set.id);
+
+  it('is a pseudo set outside the practice sets', () => {
+    expect(MIXED_SET.name).toBe('Gemengd');
+    expect(MIXED_SET.description).toBe('Opgaven uit meerdere sets door elkaar');
+    expect(PRACTICE_SETS).not.toContain(MIXED_SET);
+    expect(allIds).not.toContain(MIXED_SET.id);
+    expect(isMixed(MIXED_SET)).toBe(true);
+    expect(isMixed(MEASUREMENT_SET)).toBe(false);
+  });
+
+  it.each<[string, readonly string[], Level, readonly PracticeSet[]]>([
+    ['all sets at Opfrisser', allIds, 'quick', PRACTICE_SETS],
+    ['all sets at Verdieping, without Tafels', allIds, 'deep', PRACTICE_SETS.slice(1)],
+    ['only Tafels at Verdieping', ['tafels'], 'deep', []],
+    ['only Tafels at Opfrisser', ['tafels'], 'quick', [TABLES_SET]],
+    ['pool order, not input order', ['meten', 'tafels'], 'quick', [TABLES_SET, MEASUREMENT_SET]],
+    ['an unknown id ignored', ['meten', 'onbekend'], 'quick', [MEASUREMENT_SET]],
+    ['nothing chosen', [], 'quick', []],
+  ])('counts %s', (_, chosen, level, expected) => {
+    expect(countingSets(PRACTICE_SETS, chosen, level)).toEqual(expected);
   });
 });
