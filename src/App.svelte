@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import LessonSetList from './components/LessonSetList.svelte';
   import LessonTopicList from './components/LessonTopicList.svelte';
   import LessonView from './components/LessonView.svelte';
@@ -12,8 +13,15 @@
   import type { Lesson, LessonTopic } from './lib/lessons/types';
   import { createRng, randomSeed } from './lib/random';
   import { summarize, type QuestionRecord, type SessionSummary } from './lib/results';
-  import { buildSession, generatorsFor, mistakeSession } from './lib/session';
-  import { DEFAULT_SESSION_SIZE, forLevel, PRACTICE_SETS } from './lib/sets';
+  import { buildMixedSession, buildSession, generatorsFor, mistakeSession } from './lib/session';
+  import {
+    countingSets,
+    DEFAULT_SESSION_SIZE,
+    forLevel,
+    isMixed,
+    MIXED_SET,
+    PRACTICE_SETS,
+  } from './lib/sets';
   import { TABLE_FACTORS } from './lib/topics/tables';
   import type { Level, PracticeSet, Question } from './lib/types';
   import { shouldPrompt, type UpdateState, type Updates } from './lib/update';
@@ -56,6 +64,8 @@
   let tables = $state([...TABLE_FACTORS]);
   // Unlike the count, every set opens on Opfrisser (spec §12.2); Opnieuw reuses the level.
   let level = $state<Level>('quick');
+  // Gemengd starts with every set chosen (spec §3.2); the initial value is meant, `sets` is fixed.
+  let chosenSets = $state(untrack(() => sets.map((set) => set.id)));
 
   // A system back never closes the app from another screen (spec §3).
   const backGuard = createBackGuard(history);
@@ -94,12 +104,10 @@
   }
 
   function startSession(set: PracticeSet) {
-    const questions = buildSession(
-      forLevel(set, level),
-      size,
-      createRng(randomSeed()),
-      generatorsFor(set, tables),
-    );
+    const rng = createRng(randomSeed());
+    const questions = isMixed(set)
+      ? buildMixedSession(countingSets(sets, chosenSets, level), level, size, rng)
+      : buildSession(forLevel(set, level), size, rng, generatorsFor(set, tables));
     screen = { name: 'playing', set, questions };
   }
 
@@ -123,7 +131,7 @@
 {#if screen.name === 'sets'}
   <SetOverview {tab} ontab={(next) => (tab = next)}>
     {#snippet practice()}
-      <PracticeSetList {sets} onselect={showSetup} />
+      <PracticeSetList sets={[...sets, MIXED_SET]} onselect={showSetup} />
     {/snippet}
     {#snippet lessons()}
       <LessonSetList
@@ -150,6 +158,8 @@
     bind:size
     bind:level
     bind:tables
+    pool={sets}
+    bind:chosenSets
     onstart={() => startSession(set)}
     onback={showSets}
   />

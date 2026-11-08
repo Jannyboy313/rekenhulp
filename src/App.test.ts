@@ -340,4 +340,68 @@ describe('App', () => {
       expect(checked('Opfrisser')).toBe(true);
     });
   });
+
+  describe('Gemengd (spec §3.1, §3.2, §12.5)', () => {
+    const pressed = () =>
+      [...document.querySelectorAll('.pill')]
+        .filter((pill) => pill.getAttribute('aria-pressed') === 'true')
+        .map((pill) => pill.textContent);
+    const checked = (name: string) =>
+      screen.getByRole('radio', { name }).getAttribute('aria-checked') === 'true';
+
+    it('is the last row on Oefenen, and not on Lesstof', async () => {
+      render(App);
+      const rows = screen.getAllByRole('button');
+      expect(rows).toHaveLength(PRACTICE_SETS.length + 1);
+      expect(rows.at(-1)!.textContent).toContain('Gemengd');
+      expect(rows.at(-1)!.textContent).toContain('Opgaven uit meerdere sets door elkaar');
+
+      await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+      expect(screen.queryByRole('button', { name: /Gemengd/ })).toBeNull();
+    });
+
+    it('opens with every set on Opfrisser, plays as Gemengd and starts again with Opnieuw', async () => {
+      render(App);
+      await click(/^Gemengd/);
+      expect(screen.getByRole('heading', { name: 'Welke sets?' })).toBeTruthy();
+      expect(pressed()).toEqual(PRACTICE_SETS.map((set) => set.name));
+      expect(checked('Opfrisser')).toBe(true);
+
+      await click(/^Start/);
+      expect(screen.getByText('Gemengd')).toBeTruthy();
+      expect(screen.getByText('1 / 15')).toBeTruthy();
+      await click('Stoppen');
+      expect(screen.getByText('Gemengd')).toBeTruthy();
+      await click('Opnieuw');
+      expect(screen.getByText('Gemengd')).toBeTruthy();
+      expect(screen.getByText('1 / 15')).toBeTruthy();
+    });
+
+    it('keeps the set choice in memory, but opens on Opfrisser again', async () => {
+      render(App);
+      await click(/^Gemengd/);
+      await click('Geen');
+      await click('Meten');
+      await fireEvent.click(screen.getByRole('radio', { name: 'Verdieping' }));
+      await click('Terug');
+      await click(/^Gemengd/);
+      expect(pressed()).toEqual(['Meten']);
+      expect(checked('Opfrisser')).toBe(true);
+    });
+
+    it('builds the session from the chosen sets at the chosen level, also after Opnieuw', async () => {
+      const isDeep = () => /^(KGV|GGD) van/.test(document.querySelector('.prompt')!.textContent!);
+      render(App, { props: { sets: [DEEP_FIXTURE_SET] } });
+      await click(/^Gemengd/);
+      expect(pressed()).toEqual([DEEP_FIXTURE_SET.name]);
+      await fireEvent.click(screen.getByRole('radio', { name: 'Verdieping' }));
+      // Below 10 exercises Verdieping mixes in no Opfrisser share, so every question is deep.
+      await fireEvent.click(screen.getByRole('radio', { name: '5' }));
+      await click(/^Start/);
+      expect(isDeep()).toBe(true);
+      await click('Stoppen');
+      await click('Opnieuw');
+      expect(isDeep()).toBe(true);
+    });
+  });
 });
