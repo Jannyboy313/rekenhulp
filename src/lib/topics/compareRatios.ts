@@ -1,4 +1,4 @@
-import { capitalize, formatEuro } from '../format';
+import { capitalize, formatEuro, formatRational } from '../format';
 import { gcd, lcm } from '../primes';
 import { drawUntil, pick, randomInt, range, shuffle, type Rng } from '../random';
 import { rational } from '../rational';
@@ -133,6 +133,62 @@ export function relativeQuestion(context: string, a: Group, b: Group): Question 
   };
 }
 
+export interface ThreeGroupContext {
+  labels: readonly [string, string, string];
+  prompt(groups: readonly [Group, Group, Group]): string;
+}
+
+export const THREE_GROUP_CONTEXTS: Readonly<Record<string, ThreeGroupContext>> = {
+  politiecontrole: {
+    labels: ['dag 1', 'dag 2', 'dag 3'],
+    prompt: ([a, b, c]) =>
+      `Bij een politiecontrole rijden op dag 1 ${a.part} van de ${a.whole} automobilisten onder invloed. Op dag 2 zijn het er ${b.part} van de ${b.whole}, op dag 3 ${c.part} van de ${c.whole}. Op welke dag rijden naar verhouding de meeste automobilisten onder invloed?`,
+  },
+  school: {
+    labels: ['school A', 'school B', 'school C'],
+    prompt: ([a, b, c]) =>
+      `Op school A komen ${a.part} van de ${a.whole} leerlingen op de fiets. Op school B zijn het er ${b.part} van de ${b.whole}, op school C ${c.part} van de ${c.whole}. Op welke school komen naar verhouding de meeste leerlingen op de fiets?`,
+  },
+};
+
+export const THREE_GROUP_WHOLES = [120, 125, 150, 160, 175, 200, 210, 240, 250, 300] as const;
+
+/** `13/125 = 10,4%`, or `22/210 ≈ 10,48%` when rounded to 2 decimals. */
+function shareText({ part, whole }: Group): string {
+  const exact = (part * 10000) % whole === 0;
+  const hundredths = Math.round((part * 10000) / whole);
+  const percent = formatRational(rational(BigInt(hundredths), 100n));
+  return `${part}/${whole} ${exact ? '=' : '≈'} ${percent}%`;
+}
+
+/** Positive when `a` has the larger share. */
+const compareShares = (a: Group, b: Group) => a.part * b.whole - b.part * a.whole;
+
+/** `Bij een politiecontrole rijden op dag 1 13 van de 125 automobilisten onder invloed. …` */
+export function threeGroupsQuestion(
+  context: string,
+  groups: readonly [Group, Group, Group],
+): Question {
+  const { labels, prompt } = THREE_GROUP_CONTEXTS[context]!;
+  const best = [1, 2].reduce(
+    (top, index) => (compareShares(groups[index]!, groups[top]!) > 0 ? index : top),
+    0,
+  );
+  const answer = labels[best]!;
+  return {
+    key: `compareRatios:three:${context}:${groups.map(({ part, whole }) => `${part}/${whole}`).join(':')}`,
+    topic: 'compareRatios',
+    steps: [
+      choiceStep({
+        prompt: prompt(groups),
+        options: [...labels, UNKNOWN],
+        answer,
+        explanation: `${groups.map(shareText).join(', ')} → ${answer}`,
+      }),
+    ],
+  };
+}
+
 const RATIO_TERMS = range(1, 6);
 
 function randomRecipe(rng: Rng): Question {
@@ -199,8 +255,44 @@ function randomRelative(rng: Rng): Question {
   return relativeQuestion(context, a, b);
 }
 
+/**
+ * Shares in [5%, 25%], pairwise at least 0,02 and at most 1,5 percentage point apart; 70% with
+ * the absolute trap (the largest share does not have the largest part).
+ */
+function randomThreeGroups(rng: Rng): Question {
+  const context = pick(rng, Object.keys(THREE_GROUP_CONTEXTS));
+  const trap = rng() < 0.7;
+  const groups = drawUntil(() => {
+    const wholes = shuffle(rng, THREE_GROUP_WHOLES).slice(0, 3);
+    const partsOf = (whole: number) => range(Math.ceil(whole / 20), Math.floor(whole / 4));
+    const first: Group = { part: pick(rng, partsOf(wholes[0]!)), whole: wholes[0]! };
+    // The others within 1,5 percentage point of the first, so the full check below rarely fails.
+    const near = (whole: number) =>
+      partsOf(whole).filter(
+        (part) => Math.abs(compareShares({ part, whole }, first)) * 200 <= 3 * whole * first.whole,
+      );
+    const [second, third] = [near(wholes[1]!), near(wholes[2]!)];
+    if (second.length === 0 || third.length === 0) return null;
+    const groups: [Group, Group, Group] = [
+      first,
+      { part: pick(rng, second), whole: wholes[1]! },
+      { part: pick(rng, third), whole: wholes[2]! },
+    ];
+    for (const [i, j] of [[0, 1], [0, 2], [1, 2]] as const) {
+      const [a, b] = [groups[i], groups[j]];
+      const gap = Math.abs(compareShares(a, b));
+      if (gap * 5000 < a.whole * b.whole || gap * 200 > 3 * a.whole * b.whole) return null;
+    }
+    const best = groups.reduce((top, group) => (compareShares(group, top) > 0 ? group : top));
+    return groups.some(({ part }) => part > best.part) === trap ? groups : null;
+  });
+  return threeGroupsQuestion(context, groups);
+}
+
 export function generateCompareRatios(rng: Rng): Question {
-  switch (pick(rng, ['recipe', 'offer', 'relative'] as const)) {
+  switch (pick(rng, ['recipe', 'offer', 'relative', 'three'] as const)) {
+    case 'three':
+      return randomThreeGroups(rng);
     case 'recipe':
       return randomRecipe(rng);
     case 'offer':

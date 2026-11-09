@@ -16,6 +16,9 @@ import {
   RELATIVE_CONTEXTS,
   RELATIVE_WHOLES,
   shareOf,
+  THREE_GROUP_CONTEXTS,
+  THREE_GROUP_WHOLES,
+  threeGroupsQuestion,
   UNKNOWN,
 } from './compareRatios';
 import { stepOf } from './testHelpers';
@@ -100,6 +103,43 @@ describe('compareRatios fixed cases', () => {
     expect(step.options).toEqual(['park A', 'park B', 'evenveel', 'niet te zeggen']);
     expect(step.check('evenveel').correct).toBe(true);
   });
+
+  it('three groups: 13/125, 21/200, 22/210 → dag 2', () => {
+    const step = stepOf(
+      threeGroupsQuestion('politiecontrole', [
+        { part: 13, whole: 125 },
+        { part: 21, whole: 200 },
+        { part: 22, whole: 210 },
+      ]),
+    );
+    expect(step.prompt).toBe(
+      'Bij een politiecontrole rijden op dag 1 13 van de 125 automobilisten onder invloed. Op dag 2 zijn het er 21 van de 200, op dag 3 22 van de 210. Op welke dag rijden naar verhouding de meeste automobilisten onder invloed?',
+    );
+    expect(step.options).toEqual(['dag 1', 'dag 2', 'dag 3', 'niet te zeggen']);
+    expect(step.check('dag 2')).toEqual({
+      correct: true,
+      expected: 'dag 2',
+      explanation: '13/125 = 10,4%, 21/200 = 10,5%, 22/210 ≈ 10,48% → dag 2',
+    });
+  });
+
+  it('three groups: school context', () => {
+    const step = stepOf(
+      threeGroupsQuestion('school', [
+        { part: 30, whole: 150 },
+        { part: 33, whole: 160 },
+        { part: 49, whole: 240 },
+      ]),
+    );
+    expect(step.prompt).toBe(
+      'Op school A komen 30 van de 150 leerlingen op de fiets. Op school B zijn het er 33 van de 160, op school C 49 van de 240. Op welke school komen naar verhouding de meeste leerlingen op de fiets?',
+    );
+    expect(step.options).toEqual(['school A', 'school B', 'school C', 'niet te zeggen']);
+    expect(step.check('school B')).toMatchObject({
+      correct: true,
+      explanation: '30/150 = 20%, 33/160 ≈ 20,63%, 49/240 ≈ 20,42% → school B',
+    });
+  });
 });
 
 describe('generateCompareRatios', () => {
@@ -116,12 +156,48 @@ describe('generateCompareRatios', () => {
     }
   });
 
-  it('uses the three forms with equal probability', () => {
-    for (const form of ['recipe', 'offer', 'relative']) {
+  it('uses the four forms with equal probability', () => {
+    for (const form of ['recipe', 'offer', 'relative', 'three']) {
       const share = ofForm(questions, form).length / SAMPLES;
-      expect(share, form).toBeGreaterThan(0.29);
-      expect(share, form).toBeLessThan(0.38);
+      expect(share, form).toBeGreaterThan(0.21);
+      expect(share, form).toBeLessThan(0.29);
     }
+  });
+
+  it('three groups: listed distinct wholes, shares in [5%, 25%], close but distinct, 70% trap', () => {
+    const three = ofForm(questions, 'three');
+    const contexts = new Set<string>();
+    let trap = 0;
+    for (const question of three) {
+      const [, , context, ...texts] = question.key.split(':') as string[];
+      contexts.add(context!);
+      const groups = texts.map((text) => {
+        const [part, whole] = text.split('/').map(Number) as [number, number];
+        return { part, whole };
+      });
+      expect(groups).toHaveLength(3);
+      expect(new Set(groups.map(({ whole }) => whole)).size).toBe(3);
+      const shares = groups.map(({ part, whole }) => {
+        expect(THREE_GROUP_WHOLES).toContain(whole);
+        expect(part * 100).toBeGreaterThanOrEqual(5 * whole);
+        expect(part * 100).toBeLessThanOrEqual(25 * whole);
+        return (part * 100) / whole;
+      });
+      for (let i = 0; i < 3; i++) {
+        for (let j = i + 1; j < 3; j++) {
+          expect(Math.abs(shares[i]! - shares[j]!)).toBeGreaterThanOrEqual(0.02 - 1e-9);
+        }
+      }
+      expect(Math.max(...shares) - Math.min(...shares)).toBeLessThanOrEqual(1.5 + 1e-9);
+      const best = shares.indexOf(Math.max(...shares));
+      if (groups.some(({ part }) => part > groups[best]!.part)) trap++;
+      const { labels } = THREE_GROUP_CONTEXTS[context!]!;
+      expect(question.steps[0]!.options).toEqual([...labels, UNKNOWN]);
+      expect(answerText(question)).toBe(labels[best]);
+    }
+    expect([...contexts].sort()).toEqual(['politiecontrole', 'school']);
+    expect(trap / three.length).toBeGreaterThan(0.62);
+    expect(trap / three.length).toBeLessThan(0.78);
   });
 
   it('recipe: terms in [1, 6], a ≠ c, common apples at most 12, pears at most 30', () => {
