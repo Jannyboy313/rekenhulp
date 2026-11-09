@@ -122,8 +122,9 @@ Refs are `set/topic` ids; a bare id is a topic of the set's own lesson. **—** 
 |               | `estimating` —                                                                                 |
 | Verhoudingen  | `percentages` → `percentages`; `ratios` → `ratios`; `percentChange` → `percentChange`;          |
 |               | `scale` → `scale`; `ratioProblems` → `ratioProblems`; `percentProblems` → `priceChange`,        |
-|               | `percentages`; `compareRatios` → `perUnit`, `ratios`; `ratioReasoning` → `ratios`,              |
-|               | `ratioProblems`; `permille`, `proportionConcepts`, `enlargement` —                             |
+|               | `percentages`; `compareRatios` → `perUnit`, `compareShares`, `ratios`;                          |
+|               | `ratioReasoning` → `ratios`, `ratioProblems`; `permille`, `proportionConcepts`,                 |
+|               | `enlargement` —                                                                                |
 | Getallen      | `lcm` → `lcm`; `gcd` → `gcd`; `prime` → `primes`; `factorization`, `divisors` →                 |
 |               | `factorization`; `divisibility` → `digitRules`, `combinedRules`, `chunking`; `missingDigit` →   |
 |               | `digitRules`; `squares` → `squares`; `lcmGcdProblems` → `lcm`, `gcd`; `remainders` →            |
@@ -398,8 +399,8 @@ hold numbers only; the units go in the title.
 
 ### 7.3 Verhoudingen (`verhoudingen`)
 
-Seven topics: percentages first (they come back in every later topic), then ratios, ratio
-stories, the step via a unit and scale. The methods match the explanations of main spec §5.12,
+Eight topics: percentages first (they come back in every later topic), then ratios, ratio
+stories, comparing shares, the step via a unit and scale. The methods match the explanations of main spec §5.12,
 §5.13 and §5.23–§5.25; the tips repeat or generalise their tip texts (§3.4.1). Worked lines hold
 numbers only (no `%`, no `€`); percentages and units go in the title and the text.
 
@@ -445,6 +446,13 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
      via a step both numbers reach (here 2).
    - Worked `Verdeel 60 in de verhouding 2 : 3`: `2 + 3 = 5`, `60 : 5 = 12`, `3 × 12 = 36`, with
      text: 5 delen, 1 deel = 12, het grootste deel is 3 delen.
+   - Worked `Rosa : Merel = 7 : 2 en Merel : Suzan = 3 : 2`: `7 : 2 = 21 : 6`, `3 : 2 = 6 : 4`,
+     with text: Merel staat in beide verhoudingen; maak haar getal gelijk, het kleinste getal
+     waar 2 en 3 in passen is 6. Dan is Rosa : Merel : Suzan = 21 : 6 : 4.
+   - Table `Rosa | Merel | Suzan`: `7 | 2 | –`, `21 | 6 | –`, `– | 3 | 2`, `– | 6 | 4`,
+     `21 | 6 | 4`, with text: the same in a ratio table (× 3 and × 2).
+   - Tip: "Plak twee verhoudingen niet aan elkaar: maak eerst het getal van de persoon in het
+     midden gelijk."
    - Tip: "Bij een verhouding vermenigvuldig of deel je beide getallen met hetzelfde getal; het
      verschil blijft niet gelijk."
 5. **`ratioProblems` — Deel van het geheel en mengen** (summary: `Tel eerst de delen op`)
@@ -455,7 +463,19 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
      `50 ml | 300 ml | 350 ml` (× 50).
    - Worked `Cement : zand = 2 : 5, zand bij 100 kg cement`: `100 : 2 = 50`, `5 × 50 = 250`.
    - Tip: "2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5."
-6. **`perUnit` — Prijs per eenheid** (summary: `Een tussenstap via 100 g, 1 L of 1 uur`)
+6. **`compareShares` — Naar verhouding vergelijken** (summary: `Deel : geheel, niet het grootste
+   aantal`)
+   - Text: which group has relatively the most is about part : whole, not about the largest
+     part. Example: dag 1 13 van de 125, dag 2 21 van de 200, dag 3 22 van de 210.
+   - Worked `Dag 1 en dag 2, per 1000`: `13/125 = 104/1000`, `21/200 = 105/1000`, with text:
+     10,4% and 10,5%, so dag 2 is more.
+   - Worked `Dag 2 of dag 3, kruislings`: `21 × 210 = 4410`, `22 × 200 = 4400`, with text:
+     compare 21/200 and 22/210 by multiplying crosswise; 4410 is more, so 21/200 is the larger
+     share and dag 2 has relatively the most, although dag 3 has the largest part.
+   - Worked `Dag 3 via 10,5%`: `105/1000 × 210 = 22,05`, with text: at 10,5% dag 3 would have
+     22,05; it has 22, so its share is just below 10,5%.
+   - Tip: "Het grootste aantal is niet altijd het grootste deel: vergelijk deel : geheel."
+7. **`perUnit` — Prijs per eenheid** (summary: `Een tussenstap via 100 g, 1 L of 1 uur`)
    - Text: when neither amount is a multiple of the other, step via a convenient unit.
    - Table `Kaas | Prijs`: `1,5 kg | € 12`, `100 g | € 0,80`, `400 g | € 3,20`.
    - Worked `1,5 kg kost € 12, wat kost 400 g`: `12 : 15 = 0,80`, `4 × 0,80 = 3,20`, with text:
@@ -463,7 +483,7 @@ numbers only (no `%`, no `€`); percentages and units go in the title and the t
    - Text and table `Kaas | Prijs`, in small steps (: 3, : 5, × 4): `1,5 kg | € 12`,
      `500 g | € 4`, `100 g | € 0,80`, `400 g | € 3,20`.
    - Tip: "Controleer de richting: 400 g is minder dan 1,5 kg, dus het kost minder dan € 12."
-7. **`scale` — Schaal** (summary: `1 cm op de kaart is … in het echt`)
+8. **`scale` — Schaal** (summary: `1 cm op de kaart is … in het echt`)
    - Text: schaal 1 : 25 000 means 1 cm on the map is 25 000 cm in reality; convert to m or km
      (1 m = 100 cm, 1 km = 100 000 cm).
    - Table `Schaal | 1 cm is`: `1 : 100 | 1 m`, `1 : 1000 | 10 m`, `1 : 25 000 | 250 m`,

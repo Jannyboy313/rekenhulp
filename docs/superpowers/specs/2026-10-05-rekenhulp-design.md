@@ -2719,13 +2719,14 @@ Verdieping (RWT B.10). One dimension per exercise. Label: `Vergroten en verklein
 ### 5.57 Comparing ratios (`compareRatios`)
 
 Verdieping (RWT B.4, B.1), all multiple choice. Label: `Verhoudingen vergelijken (meer,
-voordeliger, naar verhouding)`. There are three forms, each picked with equal probability:
+voordeliger, naar verhouding)`. There are four forms, each picked with equal probability:
 
 | Form     | Example                                                                                                                                | Answer   |
 |----------|----------------------------------------------------------------------------------------------------------------------------------------|----------|
 | Recipe   | `Jack bakt met appels : peren = 1 : 2, Jasmijn met 3 : 4. Ze gebruiken allebei 3 appels. Wie gebruikt de meeste peren?`                 | `Jack`   |
 | Offer    | `Welke aanbieding is het voordeligst?`                                                                                                 | `5 voor € 3,75` |
 | Relative | `Klas A: 6 van de 24 leerlingen zijn ziek. Klas B: 8 van de 40. Waar is naar verhouding het meest ziek?`                               | `klas A` |
+| Three groups | `Bij een politiecontrole rijden op dag 1 13 van de 125 automobilisten onder invloed. Op dag 2 zijn het er 21 van de 200, op dag 3 22 van de 210. Op welke dag rijden naar verhouding de meeste automobilisten onder invloed?` | `dag 2` |
 
 - **Recipe:** name pairs `Jack/Jasmijn`, `Sam/Noor`, `Daan/Lotte`; ratios `a : b` and `c : d`
   with terms in `[1, 6]` and `a ≠ c`. The common apples `A` is a multiple of `a` and `c`, at
@@ -2743,19 +2744,31 @@ voordeliger, naar verhouding)`. There are three forms, each picked with equal pr
   part (the absolute trap); in 15% the shares are equal. Contexts: `klas` (ziek), `club`
   (leden die meedoen), `vakantiepark` (huisjes bezet). Options: `klas A`, `klas B`, `evenveel`,
   `niet te zeggen` (with the context's own nouns).
+- **Three groups:** the PABO-test version of Relative (after a Cito example): three groups with
+  awkward wholes and close shares. Three distinct wholes from
+  `{120, 125, 150, 160, 175, 200, 210, 240, 250, 300}`; each share (part : whole) in `[5%, 25%]`;
+  the shares differ pairwise by at least 0,02 percentage point, and the largest and the
+  smallest by at most 1,5 percentage point, so a quick look does not settle it. In 70% the
+  group with the largest share does not have the largest part (the absolute trap). Contexts,
+  each equally likely: `politiecontrole` (`dag 1`–`dag 3`, automobilisten onder invloed) and
+  `school` (`school A`–`school C`, leerlingen die op de fiets komen). Options: the three groups
+  in order, then `niet te zeggen`.
 - Explanations: `Jack: 3 appels → 6 peren, Jasmijn: 3 appels → 4 peren → Jack`; per item
-  `€ 0,80 – € 0,75 – … → 5 voor € 3,75`; `6/24 = 25%, 8/40 = 20% → klas A`.
+  `€ 0,80 – € 0,75 – … → 5 voor € 3,75`; `6/24 = 25%, 8/40 = 20% → klas A`;
+  `13/125 = 10,4%, 21/200 = 10,5%, 22/210 ≈ 10,48% → dag 2` (each share in % with at most 2
+  decimals, `≈` when rounded).
 
 ### 5.58 Ratio reasoning (`ratioReasoning`)
 
 Verdieping (RWT B.5, B.9). Label: `Redeneren met verhoudingen (verschil, herschalen,
-aanvullen)`. There are three forms, each picked with equal probability:
+aanvullen, samenvoegen)`. There are four forms, each picked with equal probability:
 
 | Form       | Example                                                                                                           | Answer | Suffix     |
 |------------|-------------------------------------------------------------------------------------------------------------------|--------|------------|
 | Difference | `Anna en Bas verdelen geld in de verhouding 3 : 5. Bas krijgt € 12 meer dan Anna. Hoeveel krijgt Anna?`            | 18     | `€` prefix |
 | Rescale    | `Voor 4 personen heb je 300 g pasta nodig. Hoeveel kg is dat voor 30 personen?`                                   | 2,25   | `kg`       |
 | Top up     | `In een zak zitten 30 knikkers, rood : blauw = 2 : 3. Hoeveel rode knikkers moet je erbij doen om 1 : 1 te krijgen?` | 6   | `knikkers` |
+| Combine    | `Rosa, Merel en Suzan verdelen een prijs naar verhouding van hun inleg. Rosa : Merel = 7 : 2 en Merel : Suzan = 3 : 2. Wat is Rosa : Merel : Suzan?` | `21 : 6 : 4` (multiple choice) | — |
 
 - **Difference:** a simplified ratio `a : b`, `a < b`, terms in `[1, 9]`; one part `u ∈ [2, 50]`;
   the prompt gives the difference `(b − a) × u` and asks for the smaller share, the larger share
@@ -2767,9 +2780,16 @@ aanvullen)`. There are three forms, each picked with equal probability:
   most 60; a target ratio `c : d` from `{1 : 1, 2 : 1, 1 : 2, 3 : 2, 2 : 3, 3 : 1, 1 : 3}` that
   is reached by adding only the asked colour (an integer count of at least 1). Contexts:
   `knikkers` (rood : blauw), `kralen` (wit : zwart).
+- **Combine** (after a Cito example), multiple choice (`choice`, §6, no tip): two simplified
+  ratios `a : b` (first : middle) and `c : d` (middle : last), terms in `[1, 9]`, `b ≠ c`. With
+  `m = lcm(b, c)` the answer is `a × m/b : m : d × m/c`, simplified; every term at most 50.
+  Name triples, each equally likely: `Rosa/Merel/Suzan`, `Anna/Bas/Noor`, `Daan/Lotte/Sam`.
+  Distractors: `a : b : d` and `a : c : d` (the ratios glued together) and `a × c : b × c : d`
+  (the last person not scaled). Redraw when two options are equal ratios. Options in random
+  order.
 - Explanations: `5 − 3 = 2 delen = € 12 → 1 deel = € 6 → Anna = 3 × 6 = 18`;
   `4 → 300 g, 2 → 150 g, 30 → 2250 g = 2,25 kg`; `rood 12, blauw 18 → 1 : 1 → rood 18 → 18 −
-  12 = 6 erbij`.
+  12 = 6 erbij`; `Merel 2 en 3 → 6: 7 : 2 = 21 : 6, 3 : 2 = 6 : 4 → 21 : 6 : 4`.
 
 ### Getallen & delers v3 (§5.59–§5.62)
 
