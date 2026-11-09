@@ -7,11 +7,14 @@ import { hasSlot } from '../slot';
 import type { Question } from '../types';
 import { hasAtMostTwoSignificantDigits } from './percentages';
 import {
+  combineOptions,
+  combineQuestion,
   DIFFERENCE_ASKED,
   DIFFERENCE_CONTEXTS,
   differenceQuestion,
   generateRatioReasoning,
   NAME_PAIRS,
+  NAME_TRIPLES,
   rescaleQuestion,
   RESCALE_CONTEXTS,
   TARGET_RATIOS,
@@ -110,28 +113,95 @@ describe('ratioReasoning fixed cases', () => {
     expect(topUpCount([4, 8], [3, 2], 0)).toBe(8);
     expect(topUpCount([5, 7], [3, 2], 0)).toBeNull();
   });
+
+  it('combine: 7 : 2 and 3 : 2 → 21 : 6 : 4', () => {
+    const step = stepOf(combineQuestion(['Rosa', 'Merel', 'Suzan'], [7, 2], [3, 2]));
+    expect(step.kind).toBe('choice');
+    expect(step.prompt).toBe(
+      'Rosa, Merel en Suzan verdelen een prijs naar verhouding van hun inleg. Rosa : Merel = 7 : 2 en Merel : Suzan = 3 : 2. Wat is Rosa : Merel : Suzan?',
+    );
+    expect(step.options).toEqual(['21 : 6 : 4', '7 : 2 : 2', '7 : 3 : 2', '21 : 6 : 2']);
+    expect(step.check('21 : 6 : 4')).toEqual({
+      correct: true,
+      expected: '21 : 6 : 4',
+      explanation: 'Merel 2 en 3 → 6: 7 : 2 = 21 : 6, 3 : 2 = 6 : 4 → 21 : 6 : 4',
+    });
+  });
+
+  it('combine: the options follow the given order', () => {
+    const step = stepOf(combineQuestion(['Rosa', 'Merel', 'Suzan'], [7, 2], [3, 2], [3, 1, 0, 2]));
+    expect(step.options).toEqual(['21 : 6 : 2', '7 : 2 : 2', '21 : 6 : 4', '7 : 3 : 2']);
+  });
+
+  it('combineOptions is null when two options are equal ratios', () => {
+    expect(combineOptions([7, 2], [3, 2])).toEqual([
+      '21 : 6 : 4',
+      '7 : 2 : 2',
+      '7 : 3 : 2',
+      '21 : 6 : 2',
+    ]);
+    // b = 1: a × c : b × c : d is the answer itself.
+    expect(combineOptions([3, 1], [2, 5])).toBeNull();
+  });
 });
 
 describe('generateRatioReasoning', () => {
   const questions = sample();
 
-  it('is a single number step that accepts its expected answer', () => {
+  it('is a single number step that accepts its expected answer (combine: a choice step)', () => {
     for (const question of questions) {
       expect(question.topic).toBe('ratioReasoning');
       expect(question.steps).toHaveLength(1);
       const step = question.steps[0]!;
+      if (question.key.startsWith('ratioReasoning:combine:')) {
+        expect(step.kind).toBe('choice');
+        continue;
+      }
       expect(step.kind).toBe('number');
       expect(step.check(typed(answerOf(question))).correct, step.prompt).toBe(true);
       expect(step.check('987654').correct).toBe(false);
     }
   });
 
-  it('uses the three forms with equal probability', () => {
-    for (const form of ['difference', 'rescale', 'topUp']) {
+  it('uses the four forms with equal probability', () => {
+    for (const form of ['difference', 'rescale', 'topUp', 'combine']) {
       const share = ofForm(questions, form).length / SAMPLES;
-      expect(share, form).toBeGreaterThan(0.29);
-      expect(share, form).toBeLessThan(0.38);
+      expect(share, form).toBeGreaterThan(0.21);
+      expect(share, form).toBeLessThan(0.29);
     }
+  });
+
+  it('combine: simplified ratios in [1, 9], b ≠ c, terms at most 50, four unequal ratios', () => {
+    const names = new Set<string>();
+    const firstOptions = new Set<string>();
+    const normal = (text: string) => {
+      const terms = text.split(' : ').map(Number);
+      const g = terms.reduce((x, y) => gcd(x, y));
+      return terms.map((term) => term / g).join(':');
+    };
+    for (const question of ofForm(questions, 'combine')) {
+      const [, , name, a, b, c, d] = question.key.split(':') as string[];
+      const [na, nb, nc, nd] = [a, b, c, d].map(Number) as [number, number, number, number];
+      names.add(name!);
+      for (const term of [na, nb, nc, nd]) {
+        expect(term).toBeGreaterThanOrEqual(1);
+        expect(term).toBeLessThanOrEqual(9);
+      }
+      expect(gcd(na, nb)).toBe(1);
+      expect(gcd(nc, nd)).toBe(1);
+      expect(nb).not.toBe(nc);
+      const step = stepOf(question);
+      const answer = step.options!.find((option) => step.check(option).correct)!;
+      const terms = answer.split(' : ').map(Number) as [number, number, number];
+      expect(Math.max(...terms)).toBeLessThanOrEqual(50);
+      expect(terms[0] * nb).toBe(terms[1] * na);
+      expect(terms[1] * nd).toBe(terms[2] * nc);
+      expect(gcd(gcd(terms[0], terms[1]), terms[2])).toBe(1);
+      expect(new Set(step.options!.map(normal)).size).toBe(4);
+      firstOptions.add(step.options![0]!);
+    }
+    expect([...names].sort()).toEqual(NAME_TRIPLES.map(([first]) => first).sort());
+    expect(firstOptions.size).toBeGreaterThan(10);
   });
 
   it('difference: simplified a : b with a < b, parts in [2, 50], every context and asked kind', () => {

@@ -230,7 +230,7 @@ export const TOPIC_LABELS: Record<Topic, string> = {
   percentProblems: 'Procentenproblemen (stapelkorting, extra inhoud, promille)',
   enlargement: 'Vergroten en verkleinen (kopieerapparaat)',
   compareRatios: 'Verhoudingen vergelijken (meer, voordeliger, naar verhouding)',
-  ratioReasoning: 'Redeneren met verhoudingen (verschil, herschalen, aanvullen)',
+  ratioReasoning: 'Redeneren met verhoudingen (verschil, herschalen, aanvullen, samenvoegen)',
   lcm: 'KGV (kleinste gemene veelvoud)',
   gcd: 'GGD (grootste gemene deler)',
   prime: 'Priemgetal of niet (11 t/m 199)',

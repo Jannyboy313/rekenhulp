@@ -1,8 +1,8 @@
 import { formatEuro, formatInteger, formatMoney, formatRational, MINUS } from '../format';
-import { gcd } from '../primes';
-import { drawUntil, pick, randomInt, range, type Rng } from '../random';
+import { gcd, lcm } from '../primes';
+import { drawUntil, pick, randomInt, range, shuffle, type Rng } from '../random';
 import { fromInteger, hasAtMostDecimals, rational } from '../rational';
-import { numberStep } from '../steps';
+import { choiceStep, numberStep } from '../steps';
 import type { Question } from '../types';
 import { hasAtMostTwoSignificantDigits } from './percentages';
 
@@ -191,6 +191,63 @@ export function topUpQuestion(
   };
 }
 
+export const NAME_TRIPLES = [
+  ['Rosa', 'Merel', 'Suzan'],
+  ['Anna', 'Bas', 'Noor'],
+  ['Daan', 'Lotte', 'Sam'],
+] as const;
+
+type Ratio = readonly [number, number];
+type Triple = readonly [number, number, number];
+
+const tripleText = (terms: Triple) => terms.join(' : ');
+const MAX_COMBINED_TERM = 50;
+
+/** `first` (a : b, first : middle) and `second` (c : d, middle : last) with the middle made equal. */
+function combined([a, b]: Ratio, [c, d]: Ratio): Triple {
+  const middle = lcm(b, c);
+  return [(a * middle) / b, middle, (d * middle) / c];
+}
+
+/**
+ * The answer, then the distractors a : b : d, a : c : d (glued) and a × c : b × c : d (the last
+ * not scaled); null when two of them are equal ratios.
+ */
+export function combineOptions(first: Ratio, second: Ratio): string[] | null {
+  const [a, b] = first;
+  const [c, d] = second;
+  const triples: Triple[] = [combined(first, second), [a, b, d], [a, c, d], [a * c, b * c, d]];
+  const normal = (terms: Triple) => {
+    const common = gcd(gcd(terms[0], terms[1]), terms[2]);
+    return terms.map((term) => term / common).join(':');
+  };
+  return new Set(triples.map(normal)).size === 4 ? triples.map(tripleText) : null;
+}
+
+/** `Rosa, Merel en Suzan verdelen een prijs naar verhouding van hun inleg. Rosa : Merel = 7 : 2 …` */
+export function combineQuestion(
+  names: readonly [string, string, string],
+  first: Ratio,
+  second: Ratio,
+  order: readonly number[] = [0, 1, 2, 3],
+): Question {
+  const options = combineOptions(first, second)!;
+  const answer = combined(first, second);
+  const [n0, n1, n2] = names;
+  return {
+    key: `ratioReasoning:combine:${n0}:${first.join(':')}:${second.join(':')}`,
+    topic: 'ratioReasoning',
+    steps: [
+      choiceStep({
+        prompt: `${n0}, ${n1} en ${n2} verdelen een prijs naar verhouding van hun inleg. ${n0} : ${n1} = ${first[0]} : ${first[1]} en ${n1} : ${n2} = ${second[0]} : ${second[1]}. Wat is ${n0} : ${n1} : ${n2}?`,
+        options: order.map((index) => options[index]!),
+        answer: options[0]!,
+        explanation: `${n1} ${first[1]} en ${second[0]} → ${answer[1]}: ${first[0]} : ${first[1]} = ${answer[0]} : ${answer[1]}, ${second[0]} : ${second[1]} = ${answer[1]} : ${answer[2]} → ${options[0]}`,
+      }),
+    ],
+  };
+}
+
 const TERMS = range(1, 9);
 
 function randomDifference(rng: Rng): Question {
@@ -249,8 +306,21 @@ function randomTopUp(rng: Rng): Question {
   return topUpQuestion(context, ratio, unit, target, added);
 }
 
+function randomCombine(rng: Rng): Question {
+  const [first, second] = drawUntil(() => {
+    const first = [pick(rng, TERMS), pick(rng, TERMS)] as const;
+    const second = [pick(rng, TERMS), pick(rng, TERMS)] as const;
+    if (gcd(...first) !== 1 || gcd(...second) !== 1 || first[1] === second[0]) return null;
+    if (Math.max(...combined(first, second)) > MAX_COMBINED_TERM) return null;
+    return combineOptions(first, second) === null ? null : ([first, second] as const);
+  });
+  return combineQuestion(pick(rng, NAME_TRIPLES), first, second, shuffle(rng, [0, 1, 2, 3]));
+}
+
 export function generateRatioReasoning(rng: Rng): Question {
-  switch (pick(rng, ['difference', 'rescale', 'topUp'] as const)) {
+  switch (pick(rng, ['difference', 'rescale', 'topUp', 'combine'] as const)) {
+    case 'combine':
+      return randomCombine(rng);
     case 'difference':
       return randomDifference(rng);
     case 'rescale':
