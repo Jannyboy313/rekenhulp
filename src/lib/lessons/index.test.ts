@@ -51,6 +51,7 @@ describe('lessonFor', () => {
       'percentChange',
       'ratios',
       'ratioProblems',
+      'compareShares',
       'perUnit',
       'scale',
     ]);

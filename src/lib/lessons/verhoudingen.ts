@@ -184,6 +184,31 @@ export const PROPORTIONS_LESSON: Lesson = {
           text: 'Samen 5 delen, 1 deel is 12; het grootste deel is 3 delen.',
         },
         {
+          type: 'worked',
+          title: 'Rosa : Merel = 7 : 2 en Merel : Suzan = 3 : 2',
+          lines: ['7 : 2 = 21 : 6', '3 : 2 = 6 : 4'],
+        },
+        {
+          type: 'text',
+          text: 'Merel staat in beide verhoudingen. Maak haar getal gelijk: het kleinste getal waar 2 en 3 in passen is 6. Dan is Rosa : Merel : Suzan = 21 : 6 : 4.',
+        },
+        {
+          type: 'table',
+          head: ['Rosa', 'Merel', 'Suzan'],
+          rows: [
+            ['7', '2', '–'],
+            ['21', '6', '–'],
+            ['–', '3', '2'],
+            ['–', '6', '4'],
+            ['21', '6', '4'],
+          ],
+        },
+        { type: 'text', text: 'Hetzelfde in een verhoudingstabel: × 3 en × 2.' },
+        {
+          type: 'tip',
+          text: 'Plak twee verhoudingen niet aan elkaar: maak eerst het getal van de persoon in het midden gelijk.',
+        },
+        {
           type: 'tip',
           text: 'Bij een verhouding vermenigvuldig of deel je beide getallen met hetzelfde getal; het verschil blijft niet gelijk.',
         },
@@ -229,6 +254,45 @@ export const PROPORTIONS_LESSON: Lesson = {
         {
           type: 'tip',
           text: '2 : 3 is jongens tegenover meisjes. Het geheel is 2 + 3 = 5 delen, dus 2/5.',
+        },
+      ],
+    },
+    {
+      id: 'compareShares',
+      title: 'Naar verhouding vergelijken',
+      summary: 'Deel : geheel, niet het grootste aantal',
+      blocks: [
+        {
+          type: 'text',
+          text: 'Wie naar verhouding het meest heeft, hangt af van deel : geheel, niet van het grootste aantal. Bij een politiecontrole rijden op dag 1 13 van de 125 automobilisten onder invloed, op dag 2 21 van de 200 en op dag 3 22 van de 210.',
+        },
+        {
+          type: 'worked',
+          title: 'Dag 1 en dag 2, per 1000',
+          lines: ['13/125 = 104/1000', '21/200 = 105/1000'],
+        },
+        { type: 'text', text: 'Dat is 10,4% en 10,5%, dus op dag 2 naar verhouding meer.' },
+        {
+          type: 'worked',
+          title: 'Dag 2 of dag 3, kruislings',
+          lines: ['21 × 210 = 4410', '22 × 200 = 4400'],
+        },
+        {
+          type: 'text',
+          text: 'Vergelijk 21/200 en 22/210 door kruislings te vermenigvuldigen. 4410 is meer, dus 21/200 is het grotere deel: dag 2 heeft naar verhouding de meeste, al heeft dag 3 het grootste aantal.',
+        },
+        {
+          type: 'worked',
+          title: 'Dag 3 via 10,5%',
+          lines: ['105/1000 × 210 = 22,05'],
+        },
+        {
+          type: 'text',
+          text: 'Bij 10,5% zouden het op dag 3 22,05 automobilisten zijn. Het zijn er 22, dus het deel is net minder dan 10,5%.',
+        },
+        {
+          type: 'tip',
+          text: 'Het grootste aantal is niet altijd het grootste deel: vergelijk deel : geheel.',
         },
       ],
     },

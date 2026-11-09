@@ -46,7 +46,7 @@ export const LESSON_LINKS: Partial<Record<Topic, readonly LessonRef[]>> = {
   scale: verhoudingen('scale'),
   ratioProblems: verhoudingen('ratioProblems'),
   percentProblems: verhoudingen('priceChange', 'percentages'),
-  compareRatios: verhoudingen('perUnit', 'ratios'),
+  compareRatios: verhoudingen('perUnit', 'compareShares', 'ratios'),
   ratioReasoning: verhoudingen('ratios', 'ratioProblems'),
 
   lcm: getallen('lcm'),
