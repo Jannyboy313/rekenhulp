@@ -287,3 +287,20 @@ describe('SetupScreen Gemengd (spec §3.2)', () => {
     expect(screen.getByRole('heading', { name: 'Wat zit erin' })).toBeTruthy();
   });
 });
+
+describe('SetupScreen order (v4 spec §9)', () => {
+  const headings = () => [...document.querySelectorAll('h2')].map((h2) => h2.textContent?.trim());
+
+  it('puts the settings before the topic list', () => {
+    renderSetup(MEASUREMENT_SET);
+    expect(headings()).toEqual(['Aantal opgaven', 'Niveau', 'Wat zit erin']);
+  });
+
+  it('keeps the selection first for Tafels and Gemengd', () => {
+    renderSetup(TABLES_SET);
+    expect(headings()).toEqual(['Welke tafels?', 'Aantal opgaven']);
+    document.body.innerHTML = '';
+    renderSetup(MIXED_SET);
+    expect(headings()).toEqual(['Welke sets?', 'Aantal opgaven', 'Niveau']);
+  });
+});

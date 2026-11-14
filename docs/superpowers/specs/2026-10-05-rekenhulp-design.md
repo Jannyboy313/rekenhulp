@@ -145,7 +145,9 @@ The app is a state machine in `App.svelte` with four states:
 
 - The header shows a back button (aria-label **Terug**), the set's glyph in a small tile and the
   set name.
-- Below it is the section "Wat zit erin": a list of the set's topics, display-only. Each row has
+- Order (v4 spec §9): the count, the level, then "Wat zit erin", so the settings are reachable
+  without scrolling. Tafels and Gemengd start with their selection instead, and have no list.
+- The section "Wat zit erin" is a list of the set's topics, display-only. Each row has
   the topic name on the left and its detail on the right, both taken from `TOPIC_LABELS`: a
   label is a `name` with an optional `detail`.
   For every set except Tafels, the list includes "15% tafels", except when the selected session
@@ -180,7 +182,7 @@ The app is a state machine in `App.svelte` with four states:
 - A **Start** button, pinned to the bottom, labelled "Start · n opgaven" with the live count
   (the number in a lighter yellow). There is no caption above it. When the options do not fit on
   the screen they scroll above the button; a fade from transparent to the background colour above
-  the button hints that more content (e.g. Niveau) is hidden below.
+  the button hints that more content (e.g. the topic list) is hidden below.
 - The chosen count, table choice and set choice are kept in memory only while the app stays
   open; nothing is persisted. **Opnieuw** reuses them and the level.
 

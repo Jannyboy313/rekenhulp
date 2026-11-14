@@ -139,18 +139,6 @@
           {/each}
         </div>
       </section>
-    {:else}
-      <section>
-        <div class="section-header"><h2>Wat zit erin</h2></div>
-        <ul class="info">
-          {#each describeSetTopicRows(forLevel(set, level), size) as row (row.name)}
-            <li>
-              <span class="row-name">{row.name}</span>
-              {#if row.detail}<span class="row-detail">{row.detail}</span>{/if}
-            </li>
-          {/each}
-        </ul>
-      </section>
     {/if}
 
     <section>
@@ -197,6 +185,21 @@
             >
           {/each}
         </div>
+      </section>
+    {/if}
+
+    <!-- Informational, so it comes after the settings (v4 spec §9). -->
+    {#if !choosesTables(set) && !isMixed(set)}
+      <section class="topics">
+        <div class="section-header"><h2>Wat zit erin</h2></div>
+        <ul class="info">
+          {#each describeSetTopicRows(forLevel(set, level), size) as row (row.name)}
+            <li>
+              <span class="row-name">{row.name}</span>
+              {#if row.detail}<span class="row-detail">{row.detail}</span>{/if}
+            </li>
+          {/each}
+        </ul>
       </section>
     {/if}
   </div>
