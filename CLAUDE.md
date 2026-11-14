@@ -87,13 +87,16 @@ the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are close
 | --------------------------------------------------------------------------------------- | ------------------ |
 | v4: tablet support (§12.10); form in its own spec                                       | wide layout        |
 | v5: practice test (§12.6), reuses `buildMixedSession`; form in its own spec             | test session       |
-| v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
-| v6: calculator problems (§12.11); form in its own spec                                  | open               |
+| v6: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
+| v7: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)                   | open               |
+| v8: print button for the practice test (§12.12)                                         | print stylesheet   |
+| v9: streak of practice days (§12.13), builds on v6                                      | none (uses v6)     |
+| v10: visual improvements to the exercises (§12.14); decide the principle first          | open               |
 
 Between versions: check the sets against the toetsmatrijs (§12.7).
 
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
-§12.8) until v6 (§12.11).
+§12.8) until v7 (§12.11).
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in

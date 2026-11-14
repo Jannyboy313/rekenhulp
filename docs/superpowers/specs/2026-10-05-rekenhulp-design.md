@@ -29,11 +29,11 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
   the app.
-- No problems that need a calculator, at either level, until v6 (§12.8, §12.11). Verdieping is harder through
+- No problems that need a calculator, at either level, until v7 (§12.8, §12.11). Verdieping is harder through
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 to v6 are on the
+- v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 to v10 are on the
   roadmap (§12), and the architecture must make adding them cheap.
 
 ## 2. Platform & stack
@@ -4174,9 +4174,13 @@ v3 deepens practice within a set: levels (§12.2) and multiple choice with the R
 categories (§12.5) are done. The order after that (decided 2026-11-14):
 
 - v4: tablet support (§12.10).
-- v5: the practice test (§12.6) and persistent memory in IndexedDB. Persistent memory has no
-  section yet; the non-goals of §1 change when that work starts.
-- v6: problems where a calculator is allowed (§12.11).
+- v5: the practice test (§12.6).
+- v6: persistent memory in IndexedDB. No section yet; the non-goals of §1 change when that work
+  starts.
+- v7: problems where a calculator is allowed (§12.11).
+- v8: a print button for the practice test (§12.12).
+- v9: a streak of practice days (§12.13).
+- v10: visual improvements to the exercises (§12.14).
 
 The check against the toetsmatrijs (§12.7) is not tied to a version.
 
@@ -4452,9 +4456,9 @@ The distribution of table 1 needs no change to the sets; it matters for the prac
 ### 12.8 Out of scope until further notice
 
 - Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at
-  the Verdieping level, until v6 (§12.11). Until then the app is for mental arithmetic and ways
+  the Verdieping level, until v7 (§12.11). Until then the app is for mental arithmetic and ways
   of thinking.
-- Anything that needs pictures:
+- Anything that needs pictures, until v10 decides what is allowed (§12.14):
   - reading graphs, tables and diagrams
   - spatial geometry: views, nets and cube buildings
   - symmetry of pictured figures (letters, patterns) and coordinates
@@ -4473,9 +4477,34 @@ Decided 2026-11-14. The app is phone-first (§2: portrait, 360–430 px wide); v
 on a tablet. Its form (landscape or portrait only, layout and keypad size on wide screens, the
 manifest `orientation`) is decided in its own spec iteration; §2 changes then.
 
-### 12.11 v6 — calculator problems
+### 12.11 v7 — calculator problems
 
-Decided 2026-11-14; reverses the drop of calculator problems in §12.8. Problems where a
-calculator is allowed, such as the RWT calculator part and the LKT part 2. Its form (which
-problems, ranges, whether the app offers a calculator, how it relates to the sets and levels) is
-decided in its own spec iteration; §1 and §12.8 change when that work starts.
+Decided 2026-11-14; reverses the drop of calculator problems in §12.8. The foundation: exercises
+marked as "rekenmachine toegestaan", as Cito marks them, such as the RWT calculator part and the
+LKT part 2. How and what (which problems, ranges, how the mark is shown, whether the app offers a
+calculator, how it relates to the sets and levels) is decided in its own spec iteration; §1 and
+§12.8 change when that work starts.
+
+### 12.12 v8 — print the practice test
+
+Decided 2026-11-14. Print the practice test (§12.6) to paper or PDF. Printing through the browser
+(`window.print()` with a print stylesheet) needs no new infrastructure or network calls. Open:
+what to print (questions only, answers, or both).
+
+### 12.13 v9 — streak
+
+Decided 2026-11-14. Track a streak of consecutive practice days. Builds on the persistent memory
+of v6; streaks are a non-goal in §1 and "Out of scope" in `CLAUDE.md` until that work starts.
+
+### 12.14 v10 — visual improvements to the exercises
+
+Decided 2026-11-14. Exercises that show more than text. First decide the principle, not one-off
+exceptions to "no pictures" (§12.8): for example text-like visuals (tables) allowed, while
+figures and graphs stay out, or more.
+
+A first candidate (discussed 2026-10-29): a 2×2 ratio table with one unknown cell, instead of the
+text form `3 : 5 = 12 : ${SLOT}`, for `ratios` and `ratioProblems`. Answer checking, tips and
+keypad stay the same (one number step); new are an optional `table` field on `Step` with `SLOT`
+in one cell, a table component, and a branch in `QuestionView`. The table costs height, and the
+kladblok hides rows below 816 px viewport height (§3.6). Open: only 2×2, or also 3 columns with
+an intermediate step.
