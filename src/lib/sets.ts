@@ -1,4 +1,4 @@
-import { TOPIC_LABELS } from './topics';
+import { TOPIC_LABELS, type TopicLabel } from './topics';
 import type { Level, PracticeSet } from './types';
 
 export const SESSION_SIZES: readonly number[] = [5, 10, 15, 25, 50];
@@ -296,24 +296,12 @@ export function countingSets(
 /** Sessions below this size get no mixed-in table or Opfrisser exercises (spec §4.2). */
 export const MIN_SIZE_FOR_MIXED_TABLES = 10;
 
-export interface TopicRow {
-  name: string;
-  detail?: string;
-}
-
-/** Splits `Name (detail)` at the first ' (' when the label ends with ')'. */
-export function splitTopicLabel(label: string): TopicRow {
-  const open = label.indexOf(' (');
-  if (open === -1 || !label.endsWith(')')) return { name: label };
-  return { name: label.slice(0, open), detail: label.slice(open + 2, -1) };
-}
-
 export function describeSetTopicRows(
   set: PracticeSet,
   size = MIN_SIZE_FOR_MIXED_TABLES,
-): TopicRow[] {
-  if (choosesTables(set)) return [splitTopicLabel(TOPIC_LABELS.tables)];
-  const rows = set.topics.map(({ topic }) => splitTopicLabel(TOPIC_LABELS[topic]));
+): TopicLabel[] {
+  if (choosesTables(set)) return [TOPIC_LABELS.tables];
+  const rows = set.topics.map(({ topic }) => TOPIC_LABELS[topic]);
   if (size < MIN_SIZE_FOR_MIXED_TABLES) return rows;
   if (set.tablesPercent > 0) rows.push({ name: `${set.tablesPercent}% tafels` });
   if (set.quickShare) rows.push({ name: `${set.quickShare.percent}% opfrisser` });

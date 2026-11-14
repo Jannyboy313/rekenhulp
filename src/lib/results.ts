@@ -1,4 +1,3 @@
-import { splitTopicLabel } from './sets';
 import { TOPIC_LABELS } from './topics';
 import type { AnswerKind, CheckResult, Question } from './types';
 
@@ -61,7 +60,7 @@ export function isCorrect(record: QuestionRecord): boolean {
 }
 
 export interface TopicScore {
-  /** The topic label up to its first " (" (spec §3.5); topics sharing it share one score. */
+  /** The name of the topic label (spec §3.5); topics sharing it share one score. */
   name: string;
   correct: number;
   answered: number;
@@ -71,7 +70,7 @@ export interface TopicScore {
 export function topicScores(records: readonly QuestionRecord[]): TopicScore[] {
   const scores = new Map<string, TopicScore>();
   for (const record of records) {
-    const { name } = splitTopicLabel(TOPIC_LABELS[record.question.topic]);
+    const { name } = TOPIC_LABELS[record.question.topic];
     const score = scores.get(name) ?? { name, correct: 0, answered: 0 };
     score.answered++;
     if (isCorrect(record)) score.correct++;

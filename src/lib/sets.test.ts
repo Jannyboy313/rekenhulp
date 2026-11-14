@@ -20,39 +20,30 @@ import {
   PROPORTIONS_SET,
   RELATIONS_SET,
   SESSION_SIZES,
-  splitTopicLabel,
   TABLES_SET,
 } from './sets';
 import { DEEP_FIXTURE_SET } from './setFixture';
 import { TOPIC_LABELS } from './topics';
 import type { Level, PracticeSet } from './types';
 
-describe('splitTopicLabel', () => {
+describe('TOPIC_LABELS', () => {
   it.each([
-    ['Lengte (mm t/m km)', { name: 'Lengte', detail: 'mm t/m km' }],
-    [
-      'Machten en wortels (2⁵, 0,3², 10⁻³, ∛64)',
-      { name: 'Machten en wortels', detail: '2⁵, 0,3², 10⁻³, ∛64' },
-    ],
-    [
-      'Procenten (deel, percentage, korting/verhoging, terug naar 100%)',
-      { name: 'Procenten', detail: 'deel, percentage, korting/verhoging, terug naar 100%' },
-    ],
-    [
-      'Omzetten tussen breuk, kommagetal en procent',
-      { name: 'Omzetten tussen breuk, kommagetal en procent' },
-    ],
-    ['KGV (kleinste gemene veelvoud)', { name: 'KGV', detail: 'kleinste gemene veelvoud' }],
-    ['Tafels van 2 t/m 15 (zonder 10)', { name: 'Tafels van 2 t/m 15', detail: 'zonder 10' }],
-  ])('splits %s', (label, expected) => {
-    expect(splitTopicLabel(label)).toEqual(expected);
+    ['length', { name: 'Lengte', detail: 'mm t/m km' }],
+    ['powersRoots', { name: 'Machten en wortels', detail: '2⁵, 0,3², 10⁻³, ∛64' }],
+    ['fractionConversion', { name: 'Omzetten tussen breuk, kommagetal en procent' }],
+    ['tables', { name: 'Tafels van 2 t/m 15', detail: 'zonder 10' }],
+  ] as const)('gives %s a name and a detail', (topic, expected) => {
+    expect(TOPIC_LABELS[topic]).toEqual(expected);
   });
 
-  it('gives every topic label a name and no leftover opening parenthesis', () => {
-    for (const label of Object.values(TOPIC_LABELS)) {
-      const { name, detail } = splitTopicLabel(label);
+  it('gives every topic a name, and a detail that is not empty or wrapped in parentheses', () => {
+    for (const { name, detail } of Object.values(TOPIC_LABELS)) {
       expect(name.length).toBeGreaterThan(0);
-      expect(detail ?? '').not.toContain(' (');
+      expect(name).not.toContain(' (');
+      if (detail !== undefined) {
+        expect(detail.length).toBeGreaterThan(0);
+        expect(detail).not.toMatch(/^\(|\)$/);
+      }
     }
   });
 });
