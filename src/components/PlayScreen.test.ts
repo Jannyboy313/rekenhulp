@@ -10,7 +10,6 @@ import { booleanStep, choiceStep, numberStep } from '../lib/steps';
 import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
 import PlayScreen from './PlayScreen.svelte';
-import { stubMatchMedia } from './testMatchMedia';
 
 function question(prompt: string, answer: number): Question {
   return {
@@ -26,7 +25,6 @@ async function press(...names: string[]) {
 
 beforeEach(() => {
   vi.useFakeTimers();
-  stubMatchMedia();
 });
 afterEach(() => {
   vi.useRealTimers();

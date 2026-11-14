@@ -4,16 +4,12 @@
   import type { KeypadKey } from '../lib/keypadInput';
   import { choiceFor } from '../lib/physicalKeys';
   import { promptSize } from '../lib/promptSize';
-  import {
-    applyNoteKey,
-    EMPTY_NOTES,
-    SHORT_SCREENS,
-    type ScratchpadInput,
-  } from '../lib/scratchpad';
+  import { applyNoteKey, EMPTY_NOTES, visibleCells, type ScratchpadInput } from '../lib/scratchpad';
   import { hasSlot } from '../lib/slot';
   import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
   import KeypadAnswer from './KeypadAnswer.svelte';
+  import { viewport } from './layout.svelte';
   import MathText from './MathText.svelte';
   import Scratchpad from './Scratchpad.svelte';
 
@@ -39,18 +35,11 @@
   // This view is keyed per step, so every step starts with the answer field active.
   let activeNote = $state<number | null>(null);
 
-  // A shorter screen (split screen) can hide the active cell; keys then go to the answer field.
+  // The cells the layout has room for (v4 spec §5.2). A shorter screen or a rotation can hide the
+  // active cell; keys then go to the answer field.
+  const cells = $derived(visibleCells(viewport.shown, viewport.height));
   $effect(() => {
-    if (!scratchpad) return;
-    const removers = SHORT_SCREENS.map(({ query, visibleCells }) => {
-      const list = matchMedia(query);
-      const onchange = () => {
-        if (list.matches && activeNote !== null && activeNote >= visibleCells) activeNote = null;
-      };
-      list.addEventListener('change', onchange);
-      return () => list.removeEventListener('change', onchange);
-    });
-    return () => removers.forEach((remove) => remove());
+    if (activeNote !== null && activeNote >= cells) activeNote = null;
   });
 
   const scratch: ScratchpadInput | undefined = $derived(
@@ -102,6 +91,7 @@
   {#if scratchpad || reserved}
     <Scratchpad
       {notes}
+      {cells}
       active={activeNote}
       disabled={locked}
       hidden={!scratchpad}

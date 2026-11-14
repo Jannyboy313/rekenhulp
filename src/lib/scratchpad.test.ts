@@ -10,7 +10,9 @@ import {
   NOTE_KEYS,
   sessionUsesScratchpad,
   showsScratchpad,
+  visibleCells,
 } from './scratchpad';
+import type { Layout } from './layout';
 import type { AnswerKind, Question, Topic } from './types';
 
 function typeInto(index: number, keys: KeypadKey[]): readonly string[] {
@@ -193,5 +195,20 @@ describe('sessionUsesScratchpad (v4 spec §5.1)', () => {
     ['no questions', [], false],
   ])('%s', (_name, questions, expected) => {
     expect(sessionUsesScratchpad(questions)).toBe(expected);
+  });
+});
+
+describe('visibleCells (v4 spec §5.2)', () => {
+  it.each<[Layout, number, number]>([
+    ['phone', 816, 6],
+    ['phone', 815, 4],
+    ['phone', 760, 4],
+    ['phone', 759, 2],
+    ['phone', Number.POSITIVE_INFINITY, 6],
+    ['tablet-portrait', 960, 6],
+    ['tablet-landscape', 800, 6],
+    ['tablet-landscape-compact', 552, 4],
+  ])('%s at a height of %d shows %i cells', (layout, height, expected) => {
+    expect(visibleCells(layout, height)).toBe(expected);
   });
 });

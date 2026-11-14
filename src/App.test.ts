@@ -3,7 +3,6 @@ import { fireEvent, render, screen } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
-import { stubMatchMedia } from './components/testMatchMedia';
 import { FIXTURE_LESSON } from './lib/lessons/fixture';
 import { DEEP_FIXTURE_SET } from './lib/setFixture';
 import type { PracticeSet } from './lib/types';
@@ -43,7 +42,6 @@ describe('App', () => {
   // A real history.back() fires a popstate later, which could leak into the next test.
   beforeEach(() => {
     vi.spyOn(history, 'back').mockImplementation(() => {});
-    stubMatchMedia();
     // jsdom's window is 1024 × 768, a landscape tablet (v4 spec §3.1); these tests are the phone's.
     resize(360, 780);
   });

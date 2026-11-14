@@ -2,15 +2,17 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { NOTE_FRACTION_END } from '../lib/format';
-import { SHORT_SCREENS } from '../lib/scratchpad';
 import Scratchpad from './Scratchpad.svelte';
-import source from './Scratchpad.svelte?raw';
 
 describe('Scratchpad', () => {
-  it('hides the cells in CSS exactly as SHORT_SCREENS lists them', () => {
-    for (const { query, visibleCells } of SHORT_SCREENS) {
-      expect(source).toContain(`@media ${query} {\n    .cell:nth-child(n + ${visibleCells + 1})`);
-    }
+  it('renders only the first `cells` notes, in order', () => {
+    render(Scratchpad, {
+      props: { notes: ['1', '2', '3', '4', '5', '6'], cells: 4, active: null, onselect: vi.fn() },
+    });
+    const labels = screen
+      .getAllByRole('button', { name: /^Kladblok vak/ })
+      .map((button) => button.getAttribute('aria-label'));
+    expect(labels).toEqual([1, 2, 3, 4].map((n) => `Kladblok vak ${n}: ${n}`));
   });
 
   it('hints at tapping while no cell is active and drops the hint when one is', () => {

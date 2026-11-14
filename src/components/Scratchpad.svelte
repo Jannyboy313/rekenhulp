@@ -6,8 +6,10 @@
   import { press } from './press';
 
   interface Props {
-    /** The cells to show, in reading order. */
+    /** The notes, in reading order. */
     notes: readonly string[];
+    /** How many of them the layout shows; the rest keep their text (v4 spec §5.2). */
+    cells?: number;
     /** The active cell; null while the answer field is active. */
     active: number | null;
     /** The notes are final (correct state): the cells stay visible but cannot be tapped. */
@@ -17,7 +19,14 @@
     onselect: (index: number) => void;
   }
 
-  let { notes, active, disabled = false, hidden = false, onselect }: Props = $props();
+  let {
+    notes,
+    cells = notes.length,
+    active,
+    disabled = false,
+    hidden = false,
+    onselect,
+  }: Props = $props();
 
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
@@ -61,7 +70,7 @@
     {#if active === null}Kladblok · tik om te noteren{:else}Kladblok{/if}
   </p>
   <div class="cells">
-    {#each notes as note, index (index)}
+    {#each notes.slice(0, cells) as note, index (index)}
       {@const segments = splitNoteFractions(formatNote(note))}
       {@const open = index === active && inFraction(note)}
       <button
@@ -184,20 +193,5 @@
     margin-left: 1px;
     vertical-align: middle;
     background: var(--sky);
-  }
-
-  /* Shorter screens drop rows from the bottom, so the keypad stays on screen. Each row costs
-     56 px; the thresholds were checked on a phone on 2026-10-22 (spec §3.6). Keep them in sync
-     with SHORT_SCREENS: QuestionView uses it to leave a cell that gets hidden. */
-  @media (max-height: 815px) {
-    .cell:nth-child(n + 5) {
-      display: none;
-    }
-  }
-
-  @media (max-height: 759px) {
-    .cell:nth-child(n + 3) {
-      display: none;
-    }
   }
 </style>

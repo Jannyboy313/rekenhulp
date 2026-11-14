@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
+import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fromInteger, rational } from '../lib/rational';
 import {
@@ -13,7 +14,7 @@ import {
 import { SLOT } from '../lib/slot';
 import type { Step } from '../lib/types';
 import QuestionView from './QuestionView.svelte';
-import { stubMatchMedia } from './testMatchMedia';
+import { viewport, type ShownLayout } from './layout.svelte';
 
 const step = numberStep({ prompt: `3 × 4 = ${SLOT}`, answer: fromInteger(12) });
 
@@ -437,41 +438,47 @@ describe('QuestionView', () => {
         .map((button) => button.getAttribute('aria-label') ?? '');
     }
 
-    let media: ReturnType<typeof stubMatchMedia>;
-    beforeEach(() => {
-      media = stubMatchMedia();
-    });
-    afterEach(() => vi.unstubAllGlobals());
+    // The cell count follows the shared viewport state (v4 spec §5.2); App keeps it up to date.
+    async function resize(height: number, layout: ShownLayout = 'phone') {
+      viewport.shown = layout;
+      viewport.height = height;
+      await tick();
+    }
+    afterEach(() => resize(Number.POSITIVE_INFINITY));
 
     it('activates the answer field when a shorter screen hides the active cell', async () => {
       render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
       await press(/^Kladblok vak 5:/, '7');
-      media.change('(max-height: 815px)', true);
+      await resize(815);
+      expect(cellLabels()).toHaveLength(4);
       await press('8');
+      expect(answerText()).toBe('8');
+      // The note is kept, and the cell is not active when it comes back.
+      await resize(816);
       expect(cell(5).getAttribute('aria-label')).toBe('Kladblok vak 5: 7');
       expect(cell(5).getAttribute('aria-pressed')).toBe('false');
-      expect(answerText()).toBe('8');
     });
 
     it('keeps the active cell while it stays visible', async () => {
       render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
       await press(/^Kladblok vak 3:/, '1');
-      media.change('(max-height: 815px)', true);
+      await resize(815);
       await press('2');
       expect(cell(3).getAttribute('aria-label')).toBe('Kladblok vak 3: 12');
-      media.change('(max-height: 759px)', true);
+      await resize(759);
+      expect(cellLabels()).toHaveLength(2);
       await press('3');
-      expect(cell(3).getAttribute('aria-label')).toBe('Kladblok vak 3: 12');
       expect(answerText()).toBe('3');
     });
 
-    it('stops listening to the screen height when it is removed', () => {
-      const { unmount } = render(QuestionView, {
-        props: { step, scratchpad: true, onanswer: vi.fn() },
-      });
-      expect(media.listenerCount()).toBe(2);
-      unmount();
-      expect(media.listenerCount()).toBe(0);
+    it('keeps the typed answer and shows the cells of the layout after a rotation', async () => {
+      render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+      await press('1');
+      await resize(552, 'tablet-landscape-compact');
+      expect(cellLabels()).toHaveLength(4);
+      await resize(800, 'tablet-landscape');
+      expect(cellLabels()).toHaveLength(6);
+      expect(answerText()).toBe('1');
     });
 
     it('is hidden unless the step shows it', () => {
@@ -651,14 +658,8 @@ describe('QuestionView letter input', () => {
 });
 
 describe('QuestionView physical keyboard (v4 spec §6)', () => {
-  beforeEach(() => {
-    stubMatchMedia();
-    vi.useFakeTimers();
-  });
-  afterEach(() => {
-    vi.useRealTimers();
-    vi.unstubAllGlobals();
-  });
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
 
   const type = async (...keys: string[]) => {
     for (const key of keys) await fireEvent.keyDown(window, { key });

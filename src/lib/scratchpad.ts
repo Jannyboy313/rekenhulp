@@ -1,19 +1,28 @@
 import { NOTE_FRACTION_END } from './format';
 import { MAX_INPUT_LENGTH, type KeypadKey } from './keypadInput';
 import { keyDefs, type KeyDef } from './keys';
+import type { Layout } from './layout';
 import type { AnswerKind, Question, Topic } from './types';
 
 /** Kladblok cells in a grid of 2 columns and 3 rows, in reading order (spec §3.6). */
 export const NOTE_COUNT = 6;
 
 /**
- * The media queries with which Scratchpad.svelte hides the cells after the first `visibleCells`
- * on short screens (spec §3.6). CSS cannot import them; a test keeps both in sync.
+ * How many cells the kladblok shows (v4 spec §5.2). A tablet has a fixed count. On the phone,
+ * shorter screens drop rows from the bottom so the keypad stays on screen: each row costs 56 px,
+ * and the thresholds were checked on a phone on 2026-10-22 (spec §3.6).
  */
-export const SHORT_SCREENS: readonly { query: string; visibleCells: number }[] = [
-  { query: '(max-height: 815px)', visibleCells: 4 },
-  { query: '(max-height: 759px)', visibleCells: 2 },
-];
+export function visibleCells(layout: Layout, height: number): number {
+  switch (layout) {
+    case 'tablet-portrait':
+    case 'tablet-landscape':
+      return NOTE_COUNT;
+    case 'tablet-landscape-compact':
+      return 4;
+    default:
+      return height >= 816 ? NOTE_COUNT : height >= 760 ? 4 : 2;
+  }
+}
 
 /** A cell holds a few short sums; it clips on the left, so this only bounds the string. */
 export const MAX_NOTE_LENGTH = 40;

@@ -449,9 +449,10 @@ in the place of OK.
 - **Layout:** 6 cells in a grid of 2 columns and 3 rows, each 48 px high, between the header
   and the prompt. The size is fixed: cells never grow, wrap to more lines or scroll.
 - **Short screens:** rows are dropped from the bottom so the keypad does not end up below the
-  screen edge: 3 rows from 816 px viewport height, 2 rows (4 cells) from 760 px
-  (`max-height: 815px`), and only the top row (2 cells) below that (`max-height: 759px`).
-  A hidden cell cannot be tapped. When the viewport height changes while a cell is active (for
+  screen edge: 3 rows from 816 px viewport height, 2 rows (4 cells) from 760 px, and only the
+  top row (2 cells) below that. This is the phone layout; a tablet has a fixed count per layout
+  (v4 spec §5.2), and `visibleCells` in `lib/scratchpad.ts` is the one source for both.
+  A hidden cell is not rendered and keeps its note. When the viewport height changes while a cell is active (for
   example in split screen) and that cell gets hidden, the answer field becomes active again, so
   keys never go to a hidden cell; a cell that stays visible stays active. The thresholds
   come from a height estimate (56 px per row) and were checked on a phone (2026-10-22).
