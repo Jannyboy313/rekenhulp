@@ -112,12 +112,13 @@ needs no lesson.
    spec.
 3. Write a light plan `docs/superpowers/plans/<date>-<set>.md`: per task the files, the
    signatures and types, the test cases as a table (input → expected, incl. edge cases) and the
-   tips. No complete code. TDD, one commit per task. Stop for the user's review.
+   tips. No complete code. TDD, one commit per task. Commit the plan, then stop for the user's
+   review.
 4. After approval, execute inline in the same session (no subagents): per task tests first,
    then the code, `npm test` + `npm run check`, commit. At a checkpoint after each task bundle,
    reread its diff against the spec and the plan and give the user a short status. Finish with a
    final review that also checks `dist/sw.js`.
-5. Update the Status above and delete the plan file (git keeps it).
+5. Update the Status above and delete the plan file with `git rm` (`rm` is denied; git keeps it).
 
 **Small feature or fix:** no plan document and no review rounds. State assumptions briefly, ask
 only the real choices, update and commit the spec, then implement directly with TDD and commit.
