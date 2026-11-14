@@ -5,8 +5,10 @@ students (rekentoetsen RWT and LKT). No accounts, no tracking, no network traffi
 first load.
 
 Practice sets: **Tafels**, **Meten**, **Verhoudingen**, **Getallen & delers**,
-**Bewerkingen**, **Getalbegrip**, **Breuken & kommagetallen** and **Meetkunde**. The design and
-roadmap are in `docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
+**Bewerkingen**, **Getalbegrip**, **Breuken & kommagetallen**, **Meetkunde**,
+**Verbanden & statistiek**, **Talstelsels** and **Heuristieken**, plus **Gemengd** (a mix of
+chosen sets). Most sets have two levels (Opfrisser and Verdieping) and study material (Lesstof).
+The design and roadmap are in `docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
 
 ## Development
 
@@ -24,7 +26,12 @@ npm run smoke   # build + offline smoke test (needs: npx playwright install chro
 
 ## Hosting
 
-`npm run build` produces a fully static `dist/` folder. Upload its contents to any static host.
+The app is hosted on Vercel, linked to this repository: every push to `main` deploys. The build
+command in `vercel.json` runs the tests and the type check first, so a failure blocks the deploy
+and the previous version stays live. Vercel takes the Node version from `engines` in
+`package.json`.
+
+`npm run build` produces a fully static `dist/` folder, so any other static host works too:
 
 - **HTTPS is required.** Service workers (offline mode, install) only work over HTTPS or on
   `localhost`.
@@ -39,5 +46,5 @@ npm run smoke   # build + offline smoke test (needs: npx playwright install chro
 - **iOS (Safari):** Share → "Zet op beginscherm".
 - **Android (Chrome):** menu → "App installeren".
 
-After the first visit the app works in airplane mode. New versions are installed silently and
-become active on the next launch.
+After the first visit the app works in airplane mode. When a new version is deployed, the app
+asks before installing it (on the start and setup screens only, never during a session).
