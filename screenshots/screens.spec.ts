@@ -1,6 +1,6 @@
 // `npm run screenshots`: one PNG per shot in this folder, numbered in list order.
 import { expect, test, type Page } from '@playwright/test';
-import { readdirSync, rmSync } from 'node:fs';
+import { mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
 interface Shot {
@@ -97,9 +97,12 @@ const SHOTS: readonly Shot[] = [
   { id: 'error', scene: 'error' },
 ];
 
-const dir = import.meta.dirname;
+/** One folder per project, so per layout (playwright.config.ts). */
+const dirOf = (project: string) => join(import.meta.dirname, project);
 
-test.beforeAll(() => {
+test.beforeAll(({}, testInfo) => {
+  const dir = dirOf(testInfo.project.name);
+  mkdirSync(dir, { recursive: true });
   for (const file of readdirSync(dir)) {
     if (file.endsWith('.png')) rmSync(join(dir, file));
   }
@@ -113,14 +116,20 @@ test('every scene has a shot', async ({ page }) => {
 });
 
 SHOTS.forEach((shot, index) => {
-  test(shot.id, async ({ page }) => {
+  test(shot.id, async ({ page }, testInfo) => {
+    const project = testInfo.project.name;
     // Frozen timers: the correct state stays on screen (no auto-advance).
     await page.clock.install();
     await page.goto(`/screens.html#${shot.scene}`);
     await page.evaluate(() => document.fonts.ready);
     await shot.steps?.(page);
-    await growToContent(page);
+    // A tablet keeps its viewport: a taller one would be another layout (v4 spec §3.1).
+    if (project === 'phone') await growToContent(page);
     const name = `${String(index + 1).padStart(2, '0')}-${shot.id}.png`;
-    await page.screenshot({ path: join(dir, name), fullPage: true, animations: 'disabled' });
+    await page.screenshot({
+      path: join(dirOf(project), name),
+      fullPage: true,
+      animations: 'disabled',
+    });
   });
 });

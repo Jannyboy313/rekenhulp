@@ -187,7 +187,7 @@ npm test        # run Vitest once
 npm run check   # svelte-check (type check)
 npm run build   # production build incl. service worker, then checks dist/sw.js
 npm run format  # Prettier, writes all files
-npm run screenshots # PNG per screen state at 360×780 into screenshots/ (starts its own Vite)
+npm run screenshots # PNG per screen state and layout into screenshots/<layout>/ (starts its own Vite)
 npm run smoke   # builds, then plays a session offline against vite preview (Playwright, e2e/)
 npm run dev     # dev server
 npm run preview # serve dist/
@@ -271,7 +271,9 @@ src/
                         scenes.ts mounts each screen state with fixed props; questionOfKind
                         picks a seeded question per AnswerKind
 screenshots/            screens.spec.ts (Playwright): the shot list, steps per shot; PNGs land
-                        here (gitignored)
+                        in a folder per layout (gitignored). The layouts are the projects in
+                        playwright.config.ts: phone 360×780, tablet-landscape 1280×800,
+                        tablet-portrait 800×1280, compact 960×552 (play shots only)
 ```
 
 A new screen or screen state also needs a scene in `src/screens/scenes.ts` and a shot in
