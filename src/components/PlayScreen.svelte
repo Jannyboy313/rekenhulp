@@ -215,10 +215,22 @@
     padding: calc(12px + env(safe-area-inset-top)) 16px 8px 8px;
   }
 
+  /* Tablet portrait: one column, the header aligned to it (v4 spec §4.4). The ✕ glyph, not its
+     tap target, lines up with the column edge. */
+  :global([data-layout='tablet-portrait']) .play {
+    --column: 600px;
+    padding-inline: 20px;
+  }
+
+  :global([data-layout='tablet-portrait']) header {
+    padding: calc(16px + env(safe-area-inset-top)) 0 12px;
+    margin-left: -12px;
+  }
+
   .close {
     flex: none;
-    width: 44px;
-    height: 44px;
+    width: var(--play-stop);
+    height: var(--play-stop);
     min-height: 0;
     padding: 0;
     background: none;
@@ -241,7 +253,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: var(--play-meta);
     line-height: 20px;
   }
 
@@ -277,15 +289,15 @@
   }
 
   .track {
-    height: 6px;
-    border-radius: 3px;
+    height: var(--play-track);
+    border-radius: 4px;
     background: var(--border);
     overflow: hidden;
   }
 
   .fill {
     height: 100%;
-    border-radius: 3px;
+    border-radius: 4px;
     background: var(--primary);
     transition: width 200ms ease-out;
   }

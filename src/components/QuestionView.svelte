@@ -112,7 +112,9 @@
         />
       </p>
     {:else}
-      <p class="prompt text"><MathText text={step.prompt} /></p>
+      <p class="prompt text" class:choice-question={step.kind === 'choice'}>
+        <MathText text={step.prompt} />
+      </p>
     {/if}
   </div>
   {#if step.kind === 'boolean'}
@@ -211,30 +213,37 @@
     line-height: 1.2;
   }
 
+  /* The sizes per layout are the --play-* tokens in app.css (v4 spec §4.1). */
   .prompt.sum.large {
-    font-size: 38px;
+    font-size: var(--play-sum-large);
   }
 
   .prompt.sum.medium {
-    font-size: 28px;
+    font-size: var(--play-sum-medium);
   }
 
   .prompt.sum.small {
-    font-size: 22px;
+    font-size: var(--play-sum-small);
   }
 
   /* A sentence without an unknown (word problems, instructions): never truncated. */
   .prompt.text {
     padding: 0 24px;
-    font-size: 22px;
-    line-height: 30px;
+    font-size: var(--play-text);
+    line-height: var(--play-text-line);
     font-weight: 700;
+  }
+
+  /* A multiple-choice question is short: on a tablet it gets more size than a word problem. */
+  .prompt.text.choice-question {
+    font-size: var(--play-choice-text);
+    line-height: var(--play-choice-line);
   }
 
   .prompt.yesno {
     padding: 0 24px;
-    font-size: 34px;
-    line-height: 42px;
+    font-size: var(--play-yesno);
+    line-height: var(--play-yesno-line);
     font-weight: 800;
   }
 
@@ -245,8 +254,14 @@
     padding: 0 16px calc(32px + env(safe-area-inset-bottom));
   }
 
+  :global([data-layout^='tablet']) .choices,
+  :global([data-layout^='tablet']) .options {
+    gap: 16px;
+    padding: 0 0 calc(var(--play-bottom) + env(safe-area-inset-bottom));
+  }
+
   .choice {
-    height: 120px;
+    height: var(--play-yesno-height);
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -263,7 +278,7 @@
 
   /* Ja/Nee: text only, no ✕ or ✓ (v4 spec §9). */
   .choices .choice {
-    font-size: 26px;
+    font-size: var(--play-yesno-label);
     font-weight: 800;
   }
 
@@ -287,6 +302,24 @@
   /* In a kladblok session the options fill the lower keypad: 4 × 67 + 3 × 8 = 292 px. */
   .options.reserved .choice.option {
     height: 67px;
+  }
+
+  /* On a tablet the options are a 2 × 2 grid in reading order (v4 spec §4.1). */
+  :global([data-layout^='tablet']) .options {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  :global([data-layout^='tablet']) .choice.option {
+    height: 104px;
+    border-radius: 20px;
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  :global([data-layout='tablet-landscape-compact']) .choice.option {
+    height: 80px;
+    font-size: 20px;
+    line-height: 24px;
   }
 
   .choice:active:not(:disabled) {

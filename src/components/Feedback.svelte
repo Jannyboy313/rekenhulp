@@ -67,7 +67,9 @@
     {:else if kind === 'boolean'}
       <p class="prompt yesno"><MathText text={prompt} /></p>
     {:else}
-      <p class="prompt text"><MathText text={prompt} /></p>
+      <p class="prompt text" class:choice-question={kind === 'choice'}>
+        <MathText text={prompt} />
+      </p>
     {/if}
   </div>
   <div class="panel" role="status" aria-live="off">
@@ -131,29 +133,34 @@
 
   /* The size steps of the question view (spec §3.3), one step larger: the sum stays the focus. */
   .prompt.sum.large {
-    font-size: 44px;
+    font-size: var(--play-wrong-large);
   }
 
   .prompt.sum.medium {
-    font-size: 32px;
+    font-size: var(--play-wrong-medium);
   }
 
   .prompt.sum.small {
-    font-size: 24px;
+    font-size: var(--play-wrong-small);
   }
 
+  /* The text sizes of the question view, so the text does not jump. */
   .prompt.text {
     padding: 0 24px;
-    font-size: 22px;
-    line-height: 30px;
+    font-size: var(--play-text);
+    line-height: var(--play-text-line);
     font-weight: 700;
   }
 
-  /* The same size as the Ja/Nee question, so the text does not jump. */
+  .prompt.text.choice-question {
+    font-size: var(--play-choice-text);
+    line-height: var(--play-choice-line);
+  }
+
   .prompt.yesno {
     padding: 0 24px;
-    font-size: 34px;
-    line-height: 42px;
+    font-size: var(--play-yesno);
+    line-height: var(--play-yesno-line);
     font-weight: 800;
   }
 
@@ -264,7 +271,13 @@
   }
 
   .next {
+    height: var(--play-button-height);
+    font-size: var(--play-button-text);
     box-shadow: var(--shadow-glow);
+  }
+
+  :global([data-layout^='tablet']) .panel {
+    margin: 0 0 calc(var(--play-bottom) + env(safe-area-inset-bottom));
   }
 
   @keyframes appear {

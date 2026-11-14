@@ -175,9 +175,10 @@
 />
 
 <style>
+  /* Sizes per layout: the --play-* tokens in app.css (v4 spec §4.1). */
   .field {
     position: relative;
-    margin: 0 16px;
+    margin: 0 var(--play-side);
   }
 
   /* The field is always the active one: the kladblok swaps it for a button (spec §3.6). */
@@ -187,7 +188,7 @@
     justify-content: center;
     /* As high as the "Tik hier voor je antwoord" button, so nothing moves when the kladblok
        takes over; an open fraction template is drawn smaller to fit. */
-    height: 56px;
+    height: var(--play-field-height);
     padding: 0 20px;
     font-size: 30px;
     font-weight: 700;
@@ -225,7 +226,7 @@
   /* Takes the place of the error line. Full width without animation (reduced motion). */
   .advance {
     height: 4px;
-    margin: 12px 16px 16px;
+    margin: 12px var(--play-side) 16px;
     border-radius: 2px;
     background: var(--good-track);
     overflow: hidden;
@@ -246,9 +247,9 @@
 
   /* The outlined button that replaces the field while a kladblok cell is active. */
   .to-answer {
-    height: 56px;
+    height: var(--play-field-height);
     min-height: 0;
-    margin: 0 16px;
+    margin: 0 var(--play-side);
     border-radius: 16px;
     border: 1.5px solid var(--border-key);
     background: var(--surface);
@@ -310,7 +311,7 @@
 
   .error {
     min-height: 1.25rem;
-    margin: 4px 16px 8px;
+    margin: 4px var(--play-side) 8px;
     font-size: 1rem;
     text-align: center;
     font-weight: 600;

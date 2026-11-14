@@ -63,6 +63,100 @@
   touch-action: manipulation;
 }
 
+/* The sizes of the play screen per layout (v4 spec §4.1): the phone here, the tablets below.
+   `data-layout` is kept on the root element by components/layout.svelte.ts. */
+:root {
+  --play-side: 16px;
+  --play-bottom: 24px;
+  --play-stop: 44px;
+  --play-meta: 13px;
+  --play-track: 6px;
+  --play-keypad-height: 292px;
+  --play-keypad-height-tall: 312px;
+  --play-key-gap: 8px;
+  --play-key-label: 24px;
+  --play-tray-key: 48px;
+  --play-tray-gap: 6px;
+  --play-field-height: 56px;
+  --play-cell-height: 48px;
+  --play-cell-gap: 8px;
+  --play-cell-text: 18px;
+  --play-sum-large: 38px;
+  --play-sum-medium: 28px;
+  --play-sum-small: 22px;
+  --play-wrong-large: 44px;
+  --play-wrong-medium: 32px;
+  --play-wrong-small: 24px;
+  --play-text: 22px;
+  --play-text-line: 30px;
+  --play-choice-text: 22px;
+  --play-choice-line: 30px;
+  --play-yesno: 34px;
+  --play-yesno-line: 42px;
+  --play-yesno-height: 120px;
+  --play-yesno-label: 26px;
+  --play-button-height: 56px;
+  --play-button-text: 17px;
+}
+
+:root[data-layout='tablet-portrait'],
+:root[data-layout='tablet-landscape'] {
+  --play-side: 0px;
+  --play-bottom: 40px;
+  --play-stop: 48px;
+  --play-meta: 17px;
+  --play-track: 8px;
+  --play-keypad-height: 360px;
+  --play-keypad-height-tall: 360px;
+  --play-key-gap: 10px;
+  --play-key-label: 28px;
+  --play-tray-key: 60px;
+  /* 5 × 60 + 4 × 9 + 2 × 12 padding = 360: the tray is as high as the keypad. */
+  --play-tray-gap: 9px;
+  --play-field-height: 64px;
+  --play-cell-height: 56px;
+  --play-cell-gap: 10px;
+  --play-cell-text: 22px;
+  --play-sum-large: 64px;
+  --play-sum-medium: 56px;
+  --play-sum-small: 44px;
+  --play-wrong-large: 64px;
+  --play-wrong-medium: 48px;
+  --play-wrong-small: 36px;
+  --play-text: 30px;
+  --play-text-line: 40px;
+  --play-choice-text: 44px;
+  --play-choice-line: 54px;
+  --play-yesno: 56px;
+  --play-yesno-line: 66px;
+  --play-yesno-height: 160px;
+  --play-yesno-label: 32px;
+  --play-button-height: 60px;
+  --play-button-text: 19px;
+}
+
+:root[data-layout='tablet-landscape-compact'] {
+  --play-side: 0px;
+  --play-bottom: 20px;
+  --play-meta: 15px;
+  --play-track: 8px;
+  --play-keypad-height-tall: 292px;
+  /* 5 × 48 + 4 × 7 + 2 × 12 padding = 292. */
+  --play-tray-gap: 7px;
+  --play-sum-large: 44px;
+  --play-sum-medium: 32px;
+  --play-sum-small: 24px;
+  --play-wrong-large: 48px;
+  --play-wrong-medium: 36px;
+  --play-wrong-small: 28px;
+  --play-text: 24px;
+  --play-text-line: 32px;
+  --play-choice-text: 28px;
+  --play-choice-line: 36px;
+  --play-yesno: 40px;
+  --play-yesno-line: 48px;
+}
+
 *,
 *::before,
 *::after {
@@ -90,6 +184,18 @@ body {
   margin: 0 auto;
   display: flex;
   flex-direction: column;
+}
+
+/* A tablet fills the window; every screen caps its own column with --column (v4 spec §4, §8).
+   A screen that sets none keeps the phone column. */
+:root[data-layout^='tablet'] #app {
+  max-width: none;
+}
+
+:root[data-layout^='tablet'] #app > main {
+  width: 100%;
+  max-width: var(--column, 30rem);
+  margin-inline: auto;
 }
 
 h1,

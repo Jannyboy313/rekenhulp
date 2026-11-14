@@ -102,8 +102,9 @@
 </div>
 
 <style>
+  /* Sizes per layout: the --play-* tokens in app.css (v4 spec §4.1). */
   .scratchpad {
-    padding: 0 16px;
+    padding: 0 var(--play-side);
   }
 
   .scratchpad.hidden {
@@ -130,17 +131,17 @@
   .cells {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: var(--play-cell-gap);
   }
 
   /* Fixed size: a long number is clipped, never wrapped (spec §3.6). */
   .cell {
-    height: 48px;
+    height: var(--play-cell-height);
     min-height: 0;
     padding: 0 12px;
     border-radius: 12px;
     overflow: hidden;
-    font-size: 18px;
+    font-size: var(--play-cell-text);
     font-weight: 600;
     text-align: left;
     background: var(--surface);

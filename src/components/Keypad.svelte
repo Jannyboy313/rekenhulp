@@ -79,11 +79,13 @@
 </div>
 
 <style>
+  /* Sizes per layout: the --play-* tokens in app.css (v4 spec §4.1). */
   .keypad {
+    --height: var(--play-keypad-height);
     display: grid;
     grid-template-columns: repeat(var(--columns, 3), 1fr);
-    gap: 8px;
-    padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+    gap: var(--play-key-gap);
+    padding: 0 var(--play-side) calc(var(--play-bottom) + env(safe-area-inset-bottom));
   }
 
   .keypad.disabled {
@@ -93,16 +95,16 @@
   /* Every keypad is as high as five rows of 52 px keys (56 px without a kladblok, spec §3.6): a
      keypad with fewer rows gets taller keys (67 px for 4 rows). No shadow but the 1 px line. */
   .key {
-    height: calc((292px - (var(--rows, 5) - 1) * 8px) / var(--rows, 5));
+    height: calc((var(--height) - (var(--rows, 5) - 1) * var(--play-key-gap)) / var(--rows, 5));
     min-height: 0;
     border-radius: 14px;
-    font-size: 24px;
+    font-size: var(--play-key-label);
     font-weight: 500;
     background: var(--key-alt);
   }
 
-  .tall .key {
-    height: calc((312px - (var(--rows, 5) - 1) * 8px) / var(--rows, 5));
+  .keypad.tall {
+    --height: var(--play-keypad-height-tall);
   }
 
   .key.digit {
@@ -119,15 +121,23 @@
      The margin above it keeps the total height equal, so the prompt does not move when the
      kladblok takes over, without the tray itself getting taller. */
   .tray {
-    gap: 6px;
+    gap: var(--play-tray-gap);
     margin-top: 19px;
     padding: 8px 12px calc(24px + env(safe-area-inset-bottom));
     background: var(--tray-bg);
     border-top: 1px solid var(--tray-border);
   }
 
+  /* On a tablet the tray is a card as high as the keypad, in the keypad's place. */
+  :global([data-layout^='tablet']) .tray {
+    margin: 0 0 calc(var(--play-bottom) + env(safe-area-inset-bottom));
+    padding: 12px;
+    border: 1px solid var(--tray-border);
+    border-radius: 20px;
+  }
+
   .tray .key {
-    height: 48px;
+    height: var(--play-tray-key);
     border-radius: 12px;
     background: var(--tray-key-op);
   }
@@ -168,7 +178,7 @@
   .ok {
     background: var(--primary);
     color: var(--primary-text);
-    font-size: 17px;
+    font-size: var(--play-button-text);
     font-weight: 700;
   }
 
