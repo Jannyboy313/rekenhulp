@@ -1513,8 +1513,10 @@ Topic toggles on the setup screen.
 ### 12.10 v4 — tablet support
 
 Decided 2026-11-14. The app is phone-first (§2: portrait, 360–430 px wide); v4 makes it usable
-on a tablet. Its form (landscape or portrait only, layout and keypad size on wide screens, the
-manifest `orientation`) is decided in its own spec iteration; §2 changes then.
+on a tablet. Its form is in its own spec, `2026-11-14-tablet-design.md` (approved
+2026-11-14): layouts for portrait and landscape, the Design V3 phone changes,
+reserved kladblok space and physical keyboard input. §2 and the other sections it lists in its
+§13 change when the work is done.
 
 ### 12.11 v7 — calculator problems
 

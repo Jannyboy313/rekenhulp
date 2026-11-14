@@ -18,6 +18,9 @@ not all of it:
 - expressions: §7; a new set: its entry in §12.1, open assumptions in §11
 - lesstof (study material per set): its own spec, `docs/superpowers/specs/2026-10-25-lesstof-design.md`
   (framework §3–§6, content per set §7); the main spec only holds its entry points
+- tablet layouts and Design V3 (v4): its own spec, `docs/superpowers/specs/2026-11-14-tablet-design.md`
+  (approved 2026-11-14). The designer's handoff (`design-handoff/`) is local only
+  and gitignored
 - RWT scope (gaps in §12.3, check in §12.7): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
   next to it is leading
@@ -89,7 +92,7 @@ the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are close
 
 | Step                                                                                    | New infrastructure |
 | --------------------------------------------------------------------------------------- | ------------------ |
-| v4: tablet support (§12.10); form in its own spec                                       | wide layout        |
+| v4: tablet support (§12.10); spec approved (`2026-11-14-tablet-design.md`), plan next   | wide layout        |
 | v5: practice test (§12.6), reuses `buildMixedSession` and `lib/play.ts`; own spec       | test session       |
 | v6: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
 | v7: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)                   | open               |
