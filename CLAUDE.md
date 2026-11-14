@@ -12,7 +12,9 @@ not all of it:
 
 - always: §1–§4 (goal, platform, session flow incl. tips and kladblok, sets and quotas), §6
   (input) and §8 (conventions)
-- per topic: its §5.x section and its rows in the tips table (§3.4.1)
+- per topic: its §5.x section, in `docs/superpowers/specs/topics/<set id>.md` (one file per set;
+  spec §5 holds the index and the v3 rules that sets share), and its rows in the tips table
+  (§3.4.1)
 - expressions: §7; a new set: its entry in §12.1, open assumptions in §11
 - lesstof (study material per set): its own spec, `docs/superpowers/specs/2026-10-25-lesstof-design.md`
   (framework §3–§6, content per set §7); the main spec only holds its entry points
@@ -27,38 +29,40 @@ not all of it:
 
 ## Status
 
-Done: the sets Tafels, Meten (v1 + v2: `speed` + v3: Opfrisser `calendar`, `dataSize`, `clock`,
-`measureSense` and the first Verdieping `compoundUnits`, `measureProblems`, `timeCalc`,
-`estimating`), Verhoudingen (v1 + v2: `percentChange`, `scale`,
-`ratioProblems` + v3: Opfrisser `permille`, `proportionConcepts` and Verdieping
-`percentProblems`, `enlargement`, `compareRatios`, `ratioReasoning`), Getallen & delers (v3
-Verdieping: `lcmGcdProblems`, `divisors`, `missingDigit`, `remainders`), Bewerkingen (v3
-Verdieping: `bracketPlacement`, `derivedFacts`, `multiStepProblems`, `smartCalculationDeep`),
-Getalbegrip (v3: Opfrisser `numberOrder`, `arithmeticWords` and Verdieping
-`negativeContexts`, `roundingReasoning`, `estimateCalc`, `powerCalc`), Breuken & kommagetallen
-(v3: Opfrisser `decimalNames`, `compareFractions`, `fractionConcepts` and Verdieping
-`mixedNotation`, `fractionProblems`, `decimalProblems`, `betweenNumbers`), Meetkunde
-(`perimeterArea`, `solids`, `pythagoras`, `angles`, `symmetry`, `shapeProperties` + v3:
-Opfrisser `solidNames` and Verdieping `scalingSolids`, `surfaceArea`, `compositeShapes`,
-`angleReasoning`), Verbanden & statistiek (`statistics`, `percentagePoints`,
-`sequences`, `formulas`, `equations`, `probability` + v3 Verdieping: `twoDice`,
-`statisticsReasoning`, `statisticsProblems`, `formulaProblems`), Talstelsels (`numberSystems`,
-`romanNumerals` + v3 Verdieping: `baseArithmetic`, `baseReasoning`, `hexBinary`, `romanCalc`)
-and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`, `simplifyProblem`
+All eleven sets are done. Their topics and weights are in `lib/sets.ts` (`topics` is Opfrisser,
+`deep` is Verdieping); their rules are in the topic file of the set.
 
-- v3 Verdieping: `countingCases`, `backwardsProblems`, `twoUnknowns`, `simplifyDeep`), plus stacked fractions, the kladblok (§3.6), repeat until correct
-  (§3.4), tips (§3.4.1), the table choice for Tafels (§3.2) and the Design V1 UI (violet palette,
-  Inter, glyphs, correct state with auto-advance, wrong-answer panel), and the levels framework
-  (§12.2 step 2: Niveau on setup, `deep` topics plus a 20% Opfrisser share via `forLevel`; every set except Tafels has a Verdieping, the
-  fixture set `lib/setFixture.ts` still tests the framework), and the multiple-choice framework
-  (§12.2 step 3, §6: answer kind `choice`, `choiceStep` with four options; used by `clock`,
-  `measureSense`, `timeCalc`, `estimating`, `proportionConcepts`, `compareRatios`,
-  `numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
-  `fractionConcepts` and `solidNames`), and the score per topic on the results screen (§3.5,
-§12.4: `topicScores` in `lib/results.ts`) and Fouten oefenen (§3.5, §12.4: `mistakeSession`
-in `lib/session.ts`, three new exercises per wrong question), and Gemengd (mixed categories,
-§12.5: the pseudo set `MIXED_SET` with a set choice on the setup screen; `countingSets` in
-`lib/sets.ts` and `buildMixedSession` in `lib/session.ts`, an equal share per set).
+| Set                     | Topic file (`specs/topics/`) | Verdieping |
+| ----------------------- | ---------------------------- | ---------- |
+| Tafels                  | `tafels.md`                  | no         |
+| Meten                   | `meten.md`                   | yes        |
+| Verhoudingen            | `verhoudingen.md`            | yes        |
+| Getallen & delers       | `getallen.md`                | yes        |
+| Bewerkingen             | `bewerkingen.md`             | yes        |
+| Getalbegrip             | `getalbegrip.md`             | yes        |
+| Breuken & kommagetallen | `breuken.md`                 | yes        |
+| Meetkunde               | `meetkunde.md`               | yes        |
+| Verbanden & statistiek  | `verbanden.md`               | yes        |
+| Talstelsels             | `talstelsels.md`             | yes        |
+| Heuristieken            | `heuristieken.md`            | yes        |
+
+Done besides the sets:
+
+- stacked fractions, the kladblok (§3.6), repeat until correct (§3.4), tips (§3.4.1), the table
+  choice for Tafels (§3.2) and the Design V1 UI (violet palette, Inter, glyphs, correct state with
+  auto-advance, wrong-answer panel)
+- the levels framework (§12.2 step 2): Niveau on setup, `deep` topics plus a 20% Opfrisser share
+  via `forLevel`; the fixture set `lib/setFixture.ts` still tests the framework
+- the multiple-choice framework (§12.2 step 3, §6): answer kind `choice`, `choiceStep` with four
+  options (its users: grep `choiceStep` in `lib/topics/`)
+- the score per topic on the results screen (§3.5, §12.4: `topicScores` in `lib/results.ts`)
+- Fouten oefenen (§3.5, §12.4: `mistakeSession` in `lib/session.ts`, three new exercises per
+  wrong question)
+- Gemengd (mixed categories, §12.5): the pseudo set `MIXED_SET` with a set choice on the setup
+  screen; `countingSets` in `lib/sets.ts` and `buildMixedSession` in `lib/session.ts`, an equal
+  share per set
+- the error screen (§3): `ErrorScreen`, for a session that cannot be built or a screen that fails
+  while rendering
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -98,8 +102,9 @@ Between versions: check the sets against the toetsmatrijs (§12.7).
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
 §12.8) until v7 (§12.11).
 
-To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
-`lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in
+To add a set: write its topics in a new `docs/superpowers/specs/topics/<set id>.md` and add them
+to the index in spec §5, widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and
+labels in `lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in
 `SetGlyph.svelte` (multicolour, violet/amber/blue tokens; without one the list shows a letter).
 Write the unknown of a prompt as `${SLOT}` (`lib/slot.ts`), never as a literal `?`: a literal `?`
 is a question mark, and `slot.sweep.test.ts` checks every generator. A new keypad
