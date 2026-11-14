@@ -866,7 +866,8 @@ The keypad is custom. The system keyboard is never opened.
 - The input field shows a pretty-printed version as you type: `×`, `:`, and `^2` rendered as
   a superscript. The feedback and the results show the given answer the same way.
 - `OK` is disabled only while the input is empty. It is a primary-coloured key that fills the rest
-  of the last row. Operator and auxiliary keys have a darker key colour than the digits.
+  of the last row. Disabled, it keeps the `--primary-disabled` fill with a `--primary-dark` label,
+  which stays readable (v4 spec §9). Operator and auxiliary keys have a darker key colour than the digits.
 - `⌫` is always bottom left: the left key of the bottom row of keys, with OK beside it or in a
   row of its own below it (roman), on every keypad and on the kladblok tray (§3.6). A new
   keypad keeps it there; when its keys do not fill a row, a key spans the rest of that row (the
@@ -876,7 +877,8 @@ The keypad is custom. The system keyboard is never opened.
   kladblok); a keypad with fewer rows gets taller keys, `(292 − (rows − 1) × 8) / rows`
   (scientific and roman, 4 rows: 67 px, 72 px without a kladblok). So the prompt never moves
   between answer kinds or when the kladblok tray takes over. The kladblok keypad has 48 px
-  keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right.
+  keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right, with
+  text only (26 px, weight 800): no ✕ or ✓, which mean wrong and correct elsewhere (v4 spec §9).
 - Ja/Nee keeps the layout of a keypad step: the buttons sit at the bottom and the prompt stays at
   the height it has above a number keypad, so it does not jump between questions.
 - Input that cannot be submitted, such as `−`, `25/0` or `2 ×`, gives an inline error and does

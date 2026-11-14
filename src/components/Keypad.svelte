@@ -172,5 +172,7 @@
 
   .ok:disabled {
     background: var(--primary-disabled);
+    /* Readable on the light fill, unlike white (v4 spec §9). */
+    color: var(--primary-dark);
   }
 </style>

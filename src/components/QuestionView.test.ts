@@ -331,6 +331,8 @@ describe('QuestionView', () => {
       'Ja',
     ]);
     expect(document.querySelector('.prompt')?.classList.contains('yesno')).toBe(true);
+    // Text only: ✕ and ✓ mean wrong and correct elsewhere (v4 spec §9).
+    expect(document.querySelector('.choices svg')).toBeNull();
 
     await press('Nee');
     expect(onanswer).toHaveBeenCalledWith(

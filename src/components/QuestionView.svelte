@@ -12,7 +12,6 @@
   import { hasSlot } from '../lib/slot';
   import { NO, YES } from '../lib/steps';
   import type { CheckResult, Step } from '../lib/types';
-  import Icon from './Icon.svelte';
   import KeypadAnswer from './KeypadAnswer.svelte';
   import MathText from './MathText.svelte';
   import Scratchpad from './Scratchpad.svelte';
@@ -115,8 +114,7 @@
           disabled={locked}
           onclick={() => answer(choice)}
         >
-          <Icon name={choice === YES ? 'check' : 'cross'} size={32} stroke={2.6} />
-          <span>{choice}</span>
+          {choice}
         </button>
       {/each}
       {#if locked}
@@ -245,6 +243,12 @@
     box-shadow: var(--shadow-card);
     font-size: 22px;
     font-weight: 700;
+  }
+
+  /* Ja/Nee: text only, no ✕ or ✓ (v4 spec §9). */
+  .choices .choice {
+    font-size: 26px;
+    font-weight: 800;
   }
 
   /* Four options fill the height of a keypad without a kladblok: 4 × 72 + 3 × 8 = 312 px, with
