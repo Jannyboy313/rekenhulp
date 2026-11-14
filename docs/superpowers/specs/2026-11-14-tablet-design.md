@@ -334,8 +334,11 @@ most n wide. Every screen keeps its header on top and its pinned buttons at the 
 - **Overview with fewer rows:** the Lesstof tab has eleven tiles; the grid keeps its 4 × 3 (or
   3 × 4) cells and the last cell stays empty. A greyed-out set is a greyed-out tile.
 - **A list longer than the screen** scrolls inside its column as on the phone (a "Wat zit erin"
-  card on a compact tablet, a long lesson); tiles get a minimum height of 120 and the grid then
-  scrolls.
+  card on a compact tablet, a long lesson). A row of tiles is never lower than its content, with
+  a minimum of 120; when the grid does not fit, it scrolls.
+- **A small tablet in portrait** (narrower than 720): the three tiles per row are too narrow for
+  a name next to the glyph, so the name goes under the glyph (17/22) and the side padding of the
+  overview is 20. Found on the 600 × 960 screenshots: names broke inside a word.
 - **"Per onderwerp"** is open by default when the results screen mounts in a landscape layout
   and closed otherwise; after that the user's choice holds, also through a rotation.
 - Compact landscape uses the landscape column of this table; only the play screen has compact
@@ -374,8 +377,9 @@ screens of the handoff are a redraw, not a redesign.
   area being hidden and inert, a rotation that keeps typed input and an open lesson, Enter and
   digits from the keyboard, Escape closing the lesson pane, the notice keeping the session.
 - `npm run screenshots`: a folder per layout. Phone as today (360 × 780, growing to content).
-  Every shot also at 1280 × 800 and 800 × 1280, and the play shots at 960 × 552, all at a fixed
-  viewport: growing the height would change the layout. A scene for the notice.
+  Every shot also at 1280 × 800, 800 × 1280 and 600 × 960 (the narrowest tablet), and the play
+  shots at 960 × 552, all at a fixed viewport: growing the height would change the layout. A
+  scene for the notice.
 - Final check by eye on the PNGs at 600 × 960, 960 × 600, 800 × 1280 and 1280 × 800, and that
   the phone shots at 360 are unchanged apart from §5 and §9.
 - `npm run smoke` before the push that changes the manifest.

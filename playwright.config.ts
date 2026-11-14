@@ -18,6 +18,8 @@ export default defineConfig({
     { name: 'phone', use: { viewport: { width: 360, height: 780 }, deviceScaleFactor: 3 } },
     { name: 'tablet-landscape', use: { viewport: { width: 1280, height: 800 } } },
     { name: 'tablet-portrait', use: { viewport: { width: 800, height: 1280 } } },
+    // The narrowest tablet: where a tablet layout runs out of width first.
+    { name: 'tablet-portrait-min', use: { viewport: { width: 600, height: 960 } } },
     // An 8" tablet in landscape: only the play screen has compact sizes.
     { name: 'compact', use: { viewport: { width: 960, height: 552 } }, grep: /question-/ },
   ],

@@ -97,6 +97,7 @@
     font-size: 18px;
     line-height: 23px;
     font-weight: 700;
+    overflow-wrap: anywhere;
   }
 
   :global([data-layout^='tablet']) .description {
@@ -108,5 +109,21 @@
 
   :global([data-layout^='tablet']) .chevron {
     display: none;
+  }
+
+  /* A small tablet in portrait (3 tiles in 600 px): the name under the glyph, so it gets the
+     whole width of the tile and does not break inside a word. */
+  @media (max-width: 719px) {
+    :global([data-layout='tablet-portrait']) .row {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto auto 1fr;
+      gap: 10px;
+      padding: 14px;
+    }
+
+    :global([data-layout='tablet-portrait']) .name {
+      font-size: 17px;
+      line-height: 22px;
+    }
   }
 </style>

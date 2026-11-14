@@ -136,6 +136,13 @@
     padding-inline: 40px;
   }
 
+  /* A small tablet in portrait keeps more of its width for the tiles. */
+  @media (max-width: 719px) {
+    :global([data-layout='tablet-portrait']) .overview {
+      padding-inline: 20px;
+    }
+  }
+
   :global([data-layout^='tablet']) header {
     gap: 16px;
     padding: 28px 0 20px;
