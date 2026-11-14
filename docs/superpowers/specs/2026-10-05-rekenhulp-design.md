@@ -418,8 +418,9 @@ already names the mistake.
   session with its Opfrisser share) share one row. Sorted weakest first: lowest percentage, then
   the larger `n`, then the order of first appearance in the session. The card is shown only with
   at least two rows; with one row it would repeat the score. It lists only topics with an
-  answered exercise. The card is collapsible and starts collapsed: the heading "Per onderwerp"
-  with a chevron toggles the rows (a native `<details>`).
+  answered exercise. The card is collapsible and starts collapsed (a native `<details>`): its
+  header, 56 px high with the heading "Per onderwerp" and a chevron that points down, toggles the
+  rows inside the same card; open, the chevron points up (v4 spec §9).
 - A list "Fouten" with one entry per wrong step, each showing the prompt, the user's answer, the
   correct answer and the tip and explanation; a correct step of a two-step exercise is left
   out. These are the first-attempt mistakes, also when a repeat was correct. Without mistakes:

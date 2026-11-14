@@ -80,6 +80,9 @@ describe('ResultScreen', () => {
     renderResults([recordOf(product, '56', 3000, 'lcm'), recordOf(product, '56', 3000, 'scale')]);
     const details = document.querySelector('details.topic-details') as HTMLDetailsElement;
     expect(details.open).toBe(false);
+    // One card with the rows inside it (v4 spec §9).
+    expect(details.classList.contains('card')).toBe(true);
+    expect(details.querySelectorAll('.topic-row')).toHaveLength(2);
     await fireEvent.click(details.querySelector('summary')!);
     expect(details.open).toBe(true);
   });

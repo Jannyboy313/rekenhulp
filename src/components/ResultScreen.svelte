@@ -71,12 +71,12 @@
 
       <!-- With one topic the card would repeat the score; collapsed by default (spec §3.5). -->
       {#if summary.topics.length > 1}
-        <details class="topic-details">
+        <details class="card topic-details">
           <summary>
             <h2>Per onderwerp</h2>
             <span class="chevron"><Icon name="chevron-right" size={20} /></span>
           </summary>
-          <ul class="card topic-card">
+          <ul class="topic-list">
             {#each summary.topics as { name, correct, answered } (name)}
               <li class="topic-row">
                 <span>{name}</span><span class="topic-score">{correct} / {answered}</span>
@@ -253,12 +253,18 @@
     font-weight: 700;
   }
 
+  /* One card: the header toggles the rows inside it (v4 spec §9). */
+  .topic-details {
+    padding: 0 16px 0 20px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-card);
+  }
+
   summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    min-height: 44px;
-    margin: -11px 0;
+    height: 56px;
     list-style: none;
     cursor: pointer;
   }
@@ -271,22 +277,23 @@
     margin: 0;
   }
 
+  /* Points down while closed, up while open. */
   .chevron {
     display: flex;
     color: var(--muted);
+    transform: rotate(90deg);
     transition: transform 0.15s;
   }
 
   .topic-details[open] .chevron {
-    transform: rotate(90deg);
+    transform: rotate(-90deg);
   }
 
-  .topic-card {
+  .topic-list {
     list-style: none;
-    margin: 23px 0 0;
-    padding: 6px 16px;
-    border-radius: 16px;
-    box-shadow: var(--shadow-card);
+    margin: 0;
+    padding: 0 0 6px;
+    border-top: 1px solid var(--border);
   }
 
   .topic-row {
