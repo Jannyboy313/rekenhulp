@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
   import { displayAnswer } from '../lib/inputModels';
   import { promptSize } from '../lib/promptSize';
   import { hasSlot } from '../lib/slot';
@@ -20,6 +21,10 @@
     /** Lesson topics of the exercise's topic; PlayScreen opens them in a sheet (lesstof §3.1). */
     lessons?: readonly LessonTopic[];
     onlesson?: (topic: LessonTopic, button: HTMLButtonElement) => void;
+    /** Passed through to LessonLinks: the lesson that is open next to the panel (v4 spec §7). */
+    opened?: LessonTopic | null;
+    /** Rendered in the place of the prompt: PlayScreen's lesson pane in landscape (v4 spec §7). */
+    pane?: Snippet;
   }
 
   let {
@@ -32,6 +37,8 @@
     onnext,
     lessons = [],
     onlesson = () => {},
+    opened,
+    pane,
   }: Props = $props();
 
   let nextButton: HTMLButtonElement | undefined = $state();
@@ -47,7 +54,7 @@
   />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
 
 {#snippet links()}
-  <div class="lesson-links"><LessonLinks topics={lessons} onopen={onlesson} /></div>
+  <div class="lesson-links"><LessonLinks topics={lessons} onopen={onlesson} {opened} /></div>
 {/snippet}
 
 {#snippet block(label: string, text: string, scrolls: boolean, withLinks: boolean)}
@@ -59,19 +66,23 @@
 {/snippet}
 
 <div class="feedback">
-  <div class="prompt-area">
-    {#if hasSlot(prompt)}
-      <p class="prompt sum {promptSize(prompt)}">
-        <MathText text={prompt} slot={{ tone: 'bad' }} />
-      </p>
-    {:else if kind === 'boolean'}
-      <p class="prompt yesno"><MathText text={prompt} /></p>
-    {:else}
-      <p class="prompt text" class:choice-question={kind === 'choice'}>
-        <MathText text={prompt} />
-      </p>
-    {/if}
-  </div>
+  {#if pane}
+    {@render pane()}
+  {:else}
+    <div class="prompt-area">
+      {#if hasSlot(prompt)}
+        <p class="prompt sum {promptSize(prompt)}">
+          <MathText text={prompt} slot={{ tone: 'bad' }} />
+        </p>
+      {:else if kind === 'boolean'}
+        <p class="prompt yesno"><MathText text={prompt} /></p>
+      {:else}
+        <p class="prompt text" class:choice-question={kind === 'choice'}>
+          <MathText text={prompt} />
+        </p>
+      {/if}
+    </div>
+  {/if}
   <div class="panel" role="status" aria-live="off">
     <div class="verdict">
       <span class="badge"><Icon name="cross" size={22} stroke={2.6} /></span>

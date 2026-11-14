@@ -7,9 +7,14 @@
     /** At least one; several become pages of a swipeable row (lesstof spec §3.1). */
     topics: readonly LessonTopic[];
     onopen: (topic: LessonTopic, button: HTMLButtonElement) => void;
+    /**
+     * Only where the lesson opens next to the buttons (landscape, v4 spec §7): the open topic, or
+     * null. Its button is marked "geopend"; a tap on it closes the lesson again.
+     */
+    opened?: LessonTopic | null;
   }
 
-  let { topics, onopen }: Props = $props();
+  let { topics, onopen, opened }: Props = $props();
 
   const ROW_GAP = 8; // keep equal to the .row.multi gap
 
@@ -29,7 +34,7 @@
     {#each topics as topic (topic.id)}
       <!-- Inline markup is whitespace-sensitive: keep the tags tight (CLAUDE.md). -->
       <!-- prettier-ignore -->
-      <button type="button" class="link" onclick={(event) => onopen(topic, event.currentTarget)}><Icon name="book" size={20} stroke={2} /><span class="label">Les:{' '}<MathText text={topic.title} /></span><Icon name="chevron-right" size={18} stroke={2.2} /></button>
+      <button type="button" class="link" class:opened={topic === opened} aria-expanded={opened === undefined ? undefined : topic === opened} onclick={(event) => onopen(topic, event.currentTarget)}><Icon name="book" size={20} stroke={2} /><span class="label">Les:{' '}<MathText text={topic.title} /></span>{#if topic === opened}<span class="state" aria-hidden="true">geopend</span>{/if}<Icon name="chevron-right" size={18} stroke={2.2} /></button>
     {/each}
   </div>
   {#if topics.length > 1}
@@ -84,6 +89,17 @@
     line-height: 20px;
     font-weight: 700;
     text-align: left;
+  }
+
+  /* The lesson of this button is open next to it. Inset, because the row clips an outline. */
+  .link.opened {
+    box-shadow: inset 0 0 0 2px var(--sky);
+  }
+
+  .state {
+    flex: none;
+    font-size: 13px;
+    font-weight: 600;
   }
 
   /* The row clips an outer outline. */

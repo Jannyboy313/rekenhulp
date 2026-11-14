@@ -522,3 +522,129 @@ describe('PlayScreen rotation (v4 spec §3.1)', () => {
     expect(screen.getByText('2 / 2')).toBeTruthy();
   });
 });
+
+describe('PlayScreen lesson on a tablet (v4 spec §7)', () => {
+  // jsdom has no modal dialogs.
+  beforeAll(() => {
+    HTMLDialogElement.prototype.showModal = function (this: HTMLDialogElement) {
+      this.setAttribute('open', '');
+    };
+  });
+  afterEach(() => {
+    viewport.shown = 'phone';
+  });
+
+  // Divisibility links to three lesson topics of Getallen & delers.
+  const divisible: Question = {
+    key: 'deelbaar',
+    topic: 'divisibility',
+    steps: [numberStep({ prompt: `KGV van 4 en 6 = ${SLOT}`, answer: fromInteger(12) })],
+  };
+  const lessonButtons = () => screen.getAllByRole<HTMLButtonElement>('button', { name: /^Les: / });
+  const pane = () => document.querySelector<HTMLElement>('.lesson-pane');
+  const paneTitle = () => pane()?.querySelector('h2')?.textContent?.trim();
+  /** The lesson topic a button names, without "Les: " and the "geopend" mark. */
+  const titleOf = (button: HTMLButtonElement | undefined) =>
+    button?.querySelector('.label')?.textContent?.replace('Les: ', '');
+
+  async function wrongAnswerIn(layout: typeof viewport.shown) {
+    viewport.shown = layout;
+    const onfinish = vi.fn();
+    render(PlayScreen, {
+      props: { set: NUMBERS_SET, questions: [divisible, divisible], onfinish },
+    });
+    await press('2', '4', 'OK');
+    return onfinish;
+  }
+
+  it('opens the lesson in the left pane in landscape, without a dialog', async () => {
+    await wrongAnswerIn('tablet-landscape');
+    const [first] = lessonButtons();
+    expect(first!.getAttribute('aria-expanded')).toBe('false');
+    await fireEvent.click(first!);
+
+    expect(document.querySelector('dialog')).toBeNull();
+    expect(paneTitle()).toBe(titleOf(first));
+    // The state is `aria-expanded`; the word is for the eye only.
+    expect(first!.querySelector('.state')?.getAttribute('aria-hidden')).toBe('true');
+    expect(pane()?.textContent).toContain('Les · Getallen & delers');
+    expect(pane()?.querySelector('.strip')?.textContent).toContain('Je som');
+    expect(pane()?.querySelector('.strip')?.textContent).toContain('KGV van 4 en 6 = ?');
+    expect(document.activeElement).toBe(pane()?.querySelector('h2'));
+    // The wrong panel stays, with the open lesson marked.
+    expect(screen.getByText('Niet goed')).toBeTruthy();
+    expect(first!.getAttribute('aria-expanded')).toBe('true');
+    expect(first!.textContent).toContain('geopend');
+    expect(document.querySelector('.feedback .prompt-area')).toBeNull();
+  });
+
+  it('closes the pane with the same button, with ✕, with Escape and with a system back', async () => {
+    await wrongAnswerIn('tablet-landscape');
+    const [first] = lessonButtons();
+    const closers = [
+      () => fireEvent.click(first!),
+      () => fireEvent.click(screen.getByRole('button', { name: 'Sluiten' })),
+      () => fireEvent.keyDown(window, { key: 'Escape' }),
+      () => fireEvent(window, new PopStateEvent('popstate')),
+    ];
+    for (const close of closers) {
+      await fireEvent.click(first!);
+      expect(pane()).not.toBeNull();
+      await close();
+      expect(pane()).toBeNull();
+      expect(document.querySelector('.feedback .prompt-area')).not.toBeNull();
+      expect(document.activeElement).toBe(first);
+      expect(first!.textContent).not.toContain('geopend');
+    }
+  });
+
+  it('swaps the lesson with another lesson button and closes it on Verder', async () => {
+    await wrongAnswerIn('tablet-landscape');
+    const [first, second] = lessonButtons();
+    await fireEvent.click(first!);
+    await fireEvent.click(second!);
+    expect(paneTitle()).toBe(titleOf(second));
+    expect(first!.getAttribute('aria-expanded')).toBe('false');
+    // Enter is ignored while a lesson is open (v4 spec §6).
+    await fireEvent.keyDown(document.body, { key: 'Enter' });
+    expect(pane()).not.toBeNull();
+
+    await press('Verder');
+    expect(pane()).toBeNull();
+    expect(screen.queryByText('Niet goed')).toBeNull();
+  });
+
+  it('opens a sheet with the strip and Terug naar de som on a portrait tablet', async () => {
+    await wrongAnswerIn('tablet-portrait');
+    const [first] = lessonButtons();
+    expect(first!.hasAttribute('aria-expanded')).toBe(false);
+    await fireEvent.click(first!);
+    const dialog = document.querySelector('dialog')!;
+    expect(dialog.open).toBe(true);
+    expect(dialog.textContent).toContain('Les · Getallen & delers');
+    expect(dialog.querySelector('.strip')?.textContent).toContain('KGV van 4 en 6 = ?');
+
+    await press('Terug naar de som');
+    expect(document.querySelector('dialog')).toBeNull();
+    expect(document.activeElement).toBe(first);
+  });
+
+  it('keeps the phone sheet as it was: no strip, no extra button', async () => {
+    await wrongAnswerIn('phone');
+    await fireEvent.click(lessonButtons()[0]!);
+    const dialog = document.querySelector('dialog')!;
+    expect(dialog.querySelector('.strip')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Terug naar de som' })).toBeNull();
+    expect(dialog.textContent).not.toContain('Les ·');
+  });
+
+  it('keeps the lesson open through a rotation and swaps its presentation', async () => {
+    await wrongAnswerIn('tablet-landscape');
+    await fireEvent.click(lessonButtons()[0]!);
+    const title = pane()?.querySelector('h2')?.textContent;
+    viewport.shown = 'tablet-portrait';
+    await tick();
+    expect(pane()).toBeNull();
+    expect(document.querySelector('dialog h2')?.textContent).toBe(title);
+  });
+});

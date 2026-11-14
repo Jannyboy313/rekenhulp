@@ -3,7 +3,7 @@ import { PRACTICE_SETS } from '../sets';
 import type { Topic } from '../types';
 import { FIXTURE_LESSON } from './fixture';
 import { LESSONS } from './index';
-import { LESSON_LINKS, lessonLinksFor, type LessonRef } from './links';
+import { LESSON_LINKS, lessonLinksFor, lessonSetName, type LessonRef } from './links';
 
 const entries = Object.entries(LESSON_LINKS) as [Topic, readonly LessonRef[]][];
 
@@ -60,5 +60,17 @@ describe('lessonLinksFor', () => {
 
   it('gives none for a topic without refs', () => {
     expect(lessonLinksFor('lcm', [FIXTURE_LESSON], links)).toEqual([]);
+  });
+});
+
+describe('lessonSetName (v4 spec §7)', () => {
+  it('names the set of the lesson that holds the topic, also for a link to another set', () => {
+    // `remainders` is a Bewerkingen topic that links to lessons of two other sets.
+    const names = lessonLinksFor('remainders').map((topic) => lessonSetName(topic));
+    expect(names).toEqual(['Getalbegrip', 'Getallen & delers']);
+  });
+
+  it('is empty for a topic outside the lessons', () => {
+    expect(lessonSetName({ id: 'x', title: 'X', summary: '', blocks: [] })).toBe('');
   });
 });

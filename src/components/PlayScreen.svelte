@@ -3,7 +3,8 @@
   import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
   import { formatDuration } from '../lib/format';
   import { LESSONS } from '../lib/lessons';
-  import { lessonLinksFor } from '../lib/lessons/links';
+  import { isLandscape, isTablet } from '../lib/layout';
+  import { lessonLinksFor, lessonSetName } from '../lib/lessons/links';
   import type { Lesson, LessonTopic } from '../lib/lessons/types';
   import { createRng, randomSeed } from '../lib/random';
   import {
@@ -22,6 +23,8 @@
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
   import Icon from './Icon.svelte';
+  import { viewport } from './layout.svelte';
+  import LessonPane from './LessonPane.svelte';
   import LessonSheet from './LessonSheet.svelte';
   import QuestionView from './QuestionView.svelte';
 
@@ -62,7 +65,16 @@
   let openLesson = $state.raw<LessonTopic | null>(null);
   let lessonOpener: HTMLButtonElement | undefined;
 
+  // The presentation follows the layout (v4 spec §7): a pane next to the wrong panel in
+  // landscape, otherwise the sheet, with the "Je som" strip on a tablet. A rotation swaps the
+  // presentation; the lesson stays open.
+  const landscape = $derived(isLandscape(viewport.shown));
+  const tablet = $derived(isTablet(viewport.shown));
+  const lessonSet = $derived(openLesson ? lessonSetName(openLesson, lessons) : '');
+
   function showLesson(topic: LessonTopic, button: HTMLButtonElement) {
+    // Next to the panel the button toggles its lesson.
+    if (landscape && topic === openLesson) return closeLesson();
     lessonOpener = button;
     openLesson = topic;
   }
@@ -111,6 +123,8 @@
 
   function handleNext() {
     clearTimeout(advanceTimer);
+    // Verder with a lesson open next to the panel closes it.
+    openLesson = null;
     apply(advance(play, Date.now()));
   }
 
@@ -187,6 +201,8 @@
       onnext={handleNext}
       lessons={lessonLinks}
       onlesson={showLesson}
+      opened={landscape ? openLesson : undefined}
+      pane={landscape && openLesson ? lessonPane : undefined}
     />
   {:else}
     {#key `${questionIndex}-${stepIndex}`}
@@ -194,8 +210,28 @@
     {/key}
   {/if}
 
-  {#if openLesson}<LessonSheet topic={openLesson} onclose={closeLesson} />{/if}
+  {#if openLesson && !landscape}
+    <LessonSheet
+      topic={openLesson}
+      onclose={closeLesson}
+      prompt={tablet ? step.prompt : undefined}
+      setName={tablet ? lessonSet : undefined}
+    />
+  {/if}
 </main>
+
+{#snippet lessonPane()}
+  {#if openLesson}
+    {#key openLesson}
+      <LessonPane
+        topic={openLesson}
+        setName={lessonSet}
+        prompt={step.prompt}
+        onclose={closeLesson}
+      />
+    {/key}
+  {/if}
+{/snippet}
 
 <style>
   /* The page never scrolls while playing (spec §2): #app is exactly one screen high, and the

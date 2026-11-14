@@ -1,4 +1,5 @@
-import type { Topic } from '../types';
+import { PRACTICE_SETS } from '../sets';
+import type { PracticeSet, Topic } from '../types';
 import { LESSONS } from './index';
 import type { Lesson, LessonTopic } from './types';
 
@@ -133,4 +134,14 @@ export function lessonLinksFor(
     const found = lesson?.topics.find((candidate) => candidate.id === ref.topicId);
     return found ? [found] : [];
   });
+}
+
+/** The name of the practice set whose lesson holds `topic`, for "Les · <set>" (v4 spec §7). */
+export function lessonSetName(
+  topic: LessonTopic,
+  lessons: readonly Lesson[] = LESSONS,
+  sets: readonly PracticeSet[] = PRACTICE_SETS,
+): string {
+  const lesson = lessons.find((candidate) => candidate.topics.includes(topic));
+  return sets.find((set) => set.id === lesson?.setId)?.name ?? '';
 }

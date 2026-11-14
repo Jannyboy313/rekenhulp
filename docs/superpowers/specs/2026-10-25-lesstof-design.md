@@ -105,6 +105,12 @@ was. Only the wrong-answer panel links; the results screen does not.
 - **Close:** ✕, a tap on the backdrop, Esc or the system back. The system back closes only the
   sheet; during a session it otherwise stays ignored (main spec §3). After closing, the same
   wrong-answer panel is shown unchanged and focus returns to the button that opened the sheet.
+- **Tablet (v4 spec §7):** the sheet above is the phone's. On a tablet in portrait the sheet is
+  720 px wide and adds the set of the lesson to its header, a strip **Je som** with the exercise
+  and a pinned button **Terug naar de som**. In landscape there is no sheet: the lesson replaces
+  the prompt in the left pane (`LessonPane`, not modal), the wrong-answer panel stays next to it,
+  and the button of the open lesson is marked "geopend" (`aria-expanded`) and closes it again.
+  **Verder** closes the lesson too. A rotation swaps the presentation; the lesson stays open.
 - **Session:** stays mounted and unchanged (queue, repeats, records, kladblok, wake lock). The
   session clock keeps running: the total time is wall clock (main spec §3.5). The time per
   exercise already stopped at the answer, so reading never counts toward it.
@@ -171,8 +177,10 @@ Refs are `set/topic` ids; a bare id is a topic of the set's own lesson. **—** 
   branches.
 - **Exception, the link from a mistake (§3.1):** `Feedback` renders the lesson buttons and
   `PlayScreen` owns the open sheet; both only pass lesson data through. The lesson UI stays in
-  lesson components: `LessonLinks` (the button row), `LessonSheet` (the dialog) and
-  `LessonBlocks` (the blocks, shared by `LessonView` and the sheet).
+  lesson components: `LessonLinks` (the button row), `LessonSheet` (the dialog), `LessonPane`
+  (the landscape presentation, which `Feedback` renders as a snippet in the place of its
+  prompt), `LessonStrip` ("Je som") and `LessonBlocks` (the blocks, shared by `LessonView`, the
+  sheet and the pane).
 - **`lessonTopics`:** header like the setup screen (back button with aria-label **Terug**, glyph
   tile, set name), then one row per topic with its title and a one-line summary, in the row style
   of the overview. Scrolls when long.
