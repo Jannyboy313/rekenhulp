@@ -257,12 +257,13 @@ Rules:
   correct state (the 600 ms before auto-advance) and, except Escape, every key while a lesson is
   open. A held key repeats, except Enter.
 - When a button has keyboard focus, Enter and Space keep their native meaning (activate that
-  button) and are not also handled as OK or spatie.
+  button) and are not also handled as OK or spatie. The exception is a keypad key: a tapped key
+  keeps the focus, and Enter after it is OK, not that key again.
 - The key on screen shows its pressed state for 100 ms, so the input is visible.
 - Code: `lib/physicalKeys.ts`, a pure `keyFor(key, available)` that maps a `KeyboardEvent.key` to
   a `KeypadKey`, `'ok'` or nothing, given the keys of the keypad on screen. `KeypadAnswer` owns
-  the listener for keypad steps, `QuestionView` for Ja/Nee and multiple choice, `Feedback` for
-  Enter. The pressed state is a prop of `Keypad`.
+  the listener for keypad steps, `QuestionView` for Ja/Nee and multiple choice, `PlayScreen`
+  for Enter on the wrong panel and Escape (it knows whether a lesson is open). The pressed state is a prop of `Keypad`.
 
 ## 7. Lesson from a mistake
 
