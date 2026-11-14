@@ -21,7 +21,7 @@
     { id: 'lessons', label: 'Lesstof' },
   ];
 
-  const buttons: HTMLButtonElement[] = [];
+  const buttons: HTMLButtonElement[] = $state([]);
 
   function onTabKey(event: KeyboardEvent) {
     const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
