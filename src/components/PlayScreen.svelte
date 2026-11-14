@@ -6,9 +6,18 @@
   import { lessonLinksFor } from '../lib/lessons/links';
   import type { Lesson, LessonTopic } from '../lib/lessons/types';
   import { createRng, randomSeed } from '../lib/random';
-  import { isCorrect, type QuestionRecord, type StepAttempt } from '../lib/results';
+  import {
+    advance,
+    answer,
+    currentEntry,
+    currentStep,
+    originalNumber,
+    startPlay,
+    stop,
+    type PlayState,
+  } from '../lib/play';
+  import type { QuestionRecord } from '../lib/results';
   import { EMPTY_NOTES, showsScratchpad } from '../lib/scratchpad';
-  import { insertRepeat } from '../lib/session';
   import { keepScreenAwake } from '../lib/wakeLock';
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
@@ -26,40 +35,24 @@
 
   let { set, questions, onfinish, lessons = LESSONS }: Props = $props();
 
-  interface QueueEntry {
-    question: Question;
-    // A wrongly answered question shown again (spec §3.4); it is not recorded again.
-    repeat: boolean;
-  }
-
   const rng = createRng(randomSeed());
-  // App keys this component on `questions`, so reading the prop once is enough.
-  let queue = $state.raw<QueueEntry[]>(
-    untrack(() => questions.map((question) => ({ question, repeat: false }))),
-  );
-
   const sessionStart = Date.now();
   let now = $state(sessionStart);
-  let questionIndex = $state(0);
-  // Questions answered for the first time: what the progress bar shows (a repeat adds nothing).
-  let firstAttempts = $state(0);
-  let stepIndex = $state(0);
-  let feedback = $state.raw<StepAttempt | null>(null);
+  // App keys this component on `questions`, so reading the prop once is enough. The session
+  // itself (queue, repeats, records) is the pure reducer in lib/play.ts.
+  let play = $state.raw(untrack(() => startPlay(questions, sessionStart)));
   // The kladblok belongs to the question: it survives its steps and the feedback in between.
   let notes = $state.raw<readonly string[]>(EMPTY_NOTES);
-
-  // Bookkeeping that the template never reads, so plain variables are enough.
-  let questionStart = sessionStart;
-  let attempts: StepAttempt[] = [];
-  let records: QuestionRecord[] = [];
   let advanceTimer: ReturnType<typeof setTimeout> | undefined;
 
-  const entry = $derived(queue[questionIndex]!);
+  const entry = $derived(currentEntry(play));
   const question = $derived(entry.question);
-  const originalNumber = $derived(
-    queue.slice(0, questionIndex + 1).filter((queued) => !queued.repeat).length,
-  );
-  const step = $derived(question.steps[stepIndex]!);
+  const step = $derived(currentStep(play));
+  const feedback = $derived(play.feedback);
+  const questionIndex = $derived(play.questionIndex);
+  const stepIndex = $derived(play.stepIndex);
+  // Questions answered for the first time: what the progress bar shows (a repeat adds nothing).
+  const firstAttempts = $derived(play.records.length);
   const scratchpad = $derived(showsScratchpad(question.topic, step.kind));
   const lessonLinks = $derived(lessonLinksFor(question.topic, lessons));
 
@@ -95,48 +88,32 @@
     keepScreenAwake('wakeLock' in navigator ? navigator.wakeLock : undefined, document),
   );
 
-  function handleAnswer(input: string, result: CheckResult) {
-    const attempt = { input, result };
-    attempts = [...attempts, attempt];
-    if (attempts.length === question.steps.length) {
-      const record = { question, attempts, durationMs: Date.now() - questionStart };
-      if (!entry.repeat) {
-        records = [...records, record];
-        firstAttempts++;
-      }
-      if (!isCorrect(record)) {
-        queue = insertRepeat(queue, questionIndex, { question, repeat: true }, rng);
-      }
+  /** Every transition goes through here, so onfinish is called once: when the session ends. */
+  function apply(next: PlayState) {
+    const previous = play;
+    play = next;
+    if (next.questionIndex !== previous.questionIndex) notes = EMPTY_NOTES;
+    if (next.finished && !previous.finished) {
+      clearTimeout(advanceTimer);
+      onfinish([...next.records], Date.now() - sessionStart);
     }
-    feedback = attempt;
+  }
+
+  function handleAnswer(input: string, result: CheckResult) {
+    const next = answer(play, { input, result }, Date.now(), rng);
+    if (next === play) return;
+    apply(next);
     // A correct answer moves on by itself; a wrong one waits for Verder.
-    if (attempt.result.correct) advanceTimer = setTimeout(handleNext, CORRECT_FEEDBACK_MS);
+    if (result.correct) advanceTimer = setTimeout(handleNext, CORRECT_FEEDBACK_MS);
   }
 
   function handleNext() {
     clearTimeout(advanceTimer);
-    if (finished) return;
-    feedback = null;
-    if (stepIndex + 1 < question.steps.length) {
-      stepIndex++;
-    } else if (questionIndex + 1 < queue.length) {
-      questionIndex++;
-      stepIndex = 0;
-      attempts = [];
-      notes = EMPTY_NOTES;
-      questionStart = Date.now();
-    } else {
-      finish();
-    }
+    apply(advance(play, Date.now()));
   }
 
-  let finished = false;
-
   function finish() {
-    if (finished) return;
-    finished = true;
-    clearTimeout(advanceTimer);
-    onfinish(records, Date.now() - sessionStart);
+    apply(stop(play));
   }
 
   // A pending auto-advance must not outlive this screen.
@@ -155,7 +132,7 @@
           {#if entry.repeat}
             <span class="repeat-label"><Icon name="repeat" size={12} stroke={2.4} />Herhaling</span>
           {:else}
-            <span>{originalNumber} / {questions.length}</span>
+            <span>{originalNumber(play)} / {questions.length}</span>
           {/if}
           <span aria-hidden="true">·</span>
           <span class="timer">{formatDuration(now - sessionStart)}</span>
