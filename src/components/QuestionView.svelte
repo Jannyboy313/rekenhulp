@@ -87,7 +87,11 @@
 <svelte:window onkeydown={handleKeydown} />
 
 <!-- The bar of the correct state runs as long as PlayScreen's timer (inherited by KeypadAnswer). -->
-<div class="question" style:--advance-ms="{CORRECT_FEEDBACK_MS}ms">
+<div
+  class="question"
+  class:keyless={step.kind === 'boolean' || step.kind === 'choice'}
+  style:--advance-ms="{CORRECT_FEEDBACK_MS}ms"
+>
   {#if scratchpad || reserved}
     <Scratchpad
       {notes}
@@ -202,6 +206,32 @@
     margin: auto;
     text-align: center;
     text-wrap: balance;
+  }
+
+  /* Landscape with a keypad (v4 spec §4.2): the kladblok, the prompt and the answer field in the
+     left pane, the keypad in the right one. KeypadAnswer has no wrapper, so its field, error
+     line and keypad are grid items here; nothing is remounted on a rotation. The empty rows
+     above the prompt and below the field centre the two; a long prompt shrinks and scrolls. */
+  :global([data-layout^='tablet-landscape']) .question {
+    padding: var(--play-body-top) 0 calc(var(--play-body-bottom) + env(safe-area-inset-bottom));
+  }
+
+  :global([data-layout^='tablet-landscape']) .question:not(.keyless) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--play-pane);
+    grid-template-rows: auto minmax(0, 1fr) minmax(0, auto) auto minmax(0, 1fr);
+    grid-template-areas:
+      'pad    keys'
+      '.      keys'
+      'prompt keys'
+      'field  keys'
+      'error  keys';
+    column-gap: var(--play-pane-gap);
+  }
+
+  :global([data-layout^='tablet-landscape']) .question:not(.keyless) .prompt-area {
+    grid-area: prompt;
+    margin: 20px 0 28px;
   }
 
   /* A sum: the unknown is the primary-coloured slot. Longer sums get smaller text, so they do
@@ -320,6 +350,21 @@
     height: 80px;
     font-size: 20px;
     line-height: 24px;
+  }
+
+  /* Landscape without a keypad (v4 spec §4.3): one centred column. The buttons sit at the bottom
+     of a box as high as the keypad, and the reserved kladblok keeps the width of the left pane. */
+  :global([data-layout^='tablet-landscape']) .question.keyless :is(.choices, .options) {
+    align-self: center;
+    align-content: end;
+    width: 720px;
+    max-width: 100%;
+    height: var(--play-keypad-height);
+    padding-bottom: 0;
+  }
+
+  :global([data-layout^='tablet-landscape']) .question.keyless :global(.scratchpad) {
+    width: calc(100% - var(--play-pane) - var(--play-pane-gap));
   }
 
   .choice:active:not(:disabled) {

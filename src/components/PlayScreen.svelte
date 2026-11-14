@@ -227,6 +227,21 @@
     margin-left: -12px;
   }
 
+  /* Landscape: the whole width; the question and the feedback lay out the two panes (§4.2). */
+  :global([data-layout^='tablet-landscape']) .play {
+    --column: none;
+    padding-inline: var(--play-body-side);
+  }
+
+  :global([data-layout^='tablet-landscape']) header {
+    padding: calc(16px + env(safe-area-inset-top)) 0 12px;
+    margin-left: -12px;
+  }
+
+  :global([data-layout='tablet-landscape-compact']) header {
+    padding: calc(10px + env(safe-area-inset-top)) 0 8px;
+  }
+
   .close {
     flex: none;
     width: var(--play-stop);

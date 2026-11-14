@@ -88,6 +88,12 @@
     padding: 0 var(--play-side) calc(var(--play-bottom) + env(safe-area-inset-bottom));
   }
 
+  /* The right pane of the landscape play screen (QuestionView's grid, v4 spec §4.2). */
+  :global([data-layout^='tablet-landscape']) .keypad {
+    grid-area: keys;
+    align-self: end;
+  }
+
   .keypad.disabled {
     opacity: 0.4;
   }

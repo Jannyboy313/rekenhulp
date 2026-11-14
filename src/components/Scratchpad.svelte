@@ -107,6 +107,11 @@
     padding: 0 var(--play-side);
   }
 
+  /* The left pane of the landscape play screen (QuestionView's grid, v4 spec §4.2). */
+  :global([data-layout^='tablet-landscape']) .scratchpad {
+    grid-area: pad;
+  }
+
   .scratchpad.hidden {
     visibility: hidden;
   }

@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
+import { tick } from 'svelte';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
 import { fromInteger, rational } from '../lib/rational';
@@ -9,6 +10,7 @@ import { SLOT } from '../lib/slot';
 import { booleanStep, choiceStep, numberStep } from '../lib/steps';
 import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
+import { viewport } from './layout.svelte';
 import PlayScreen from './PlayScreen.svelte';
 
 function question(prompt: string, answer: number): Question {
@@ -500,5 +502,23 @@ describe('PlayScreen physical keyboard (v4 spec §6)', () => {
     });
     expect(handled).toBe(true);
     expect(screen.getByText('Niet goed')).toBeTruthy();
+  });
+});
+
+describe('PlayScreen rotation (v4 spec §3.1)', () => {
+  afterEach(() => {
+    viewport.shown = 'phone';
+  });
+
+  it('keeps the wrong panel through a layout change, and Verder still works', async () => {
+    const questions = [question('2 × 3 = ?', 6), question('4 × 5 = ?', 20)];
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    await press('7', 'OK');
+    const panel = screen.getByText('Niet goed');
+    viewport.shown = 'tablet-landscape';
+    await tick();
+    expect(screen.getByText('Niet goed')).toBe(panel);
+    await press('Verder');
+    expect(screen.getByText('2 / 2')).toBeTruthy();
   });
 });

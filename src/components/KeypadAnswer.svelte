@@ -181,6 +181,23 @@
     margin: 0 var(--play-side);
   }
 
+  /* Landscape (QuestionView's grid, v4 spec §4.2): the field at a fixed width, centred under the
+     prompt in the left pane, with the error line or the bar under it. */
+  :global([data-layout^='tablet-landscape']) :is(.field, .to-answer) {
+    grid-area: field;
+    justify-self: center;
+    width: var(--play-field-width);
+    max-width: 100%;
+  }
+
+  :global([data-layout^='tablet-landscape']) :is(.error, .advance) {
+    grid-area: error;
+    align-self: start;
+    justify-self: center;
+    width: var(--play-field-width);
+    max-width: 100%;
+  }
+
   /* The field is always the active one: the kladblok swaps it for a button (spec §3.6). */
   .answer {
     display: flex;

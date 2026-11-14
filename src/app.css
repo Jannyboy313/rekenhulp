@@ -135,9 +135,25 @@
   --play-button-text: 19px;
 }
 
+/* Landscape: two panes (v4 spec §4.2). The body has the bottom padding, not the keypad. */
+:root[data-layout^='tablet-landscape'] {
+  --play-bottom: 0px;
+  --play-pane: 440px;
+  --play-pane-gap: 48px;
+  --play-field-width: 440px;
+  --play-body-top: 8px;
+  --play-body-side: 40px;
+  --play-body-bottom: 32px;
+}
+
 :root[data-layout='tablet-landscape-compact'] {
   --play-side: 0px;
-  --play-bottom: 20px;
+  --play-pane: 400px;
+  --play-pane-gap: 32px;
+  --play-field-width: 400px;
+  --play-body-top: 4px;
+  --play-body-side: 32px;
+  --play-body-bottom: 20px;
   --play-meta: 15px;
   --play-track: 8px;
   --play-keypad-height-tall: 292px;

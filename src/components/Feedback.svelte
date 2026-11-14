@@ -280,6 +280,31 @@
     margin: 0 0 calc(var(--play-bottom) + env(safe-area-inset-bottom));
   }
 
+  /* Landscape (v4 spec §4.2): the prompt in the left pane, the panel in the place of the keypad,
+     bottom-aligned and never higher than the pane: the Uitleg block shrinks and scrolls, Verder
+     stays in view. */
+  :global([data-layout^='tablet-landscape']) .feedback {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--play-pane);
+    grid-template-rows: minmax(0, 1fr);
+    column-gap: var(--play-pane-gap);
+    padding: var(--play-body-top) 0 calc(var(--play-body-bottom) + env(safe-area-inset-bottom));
+  }
+
+  :global([data-layout^='tablet-landscape']) .panel {
+    align-self: end;
+    max-height: 100%;
+    min-height: 0;
+  }
+
+  :global([data-layout^='tablet-landscape']) .panel > :not(.scrolls) {
+    flex: none;
+  }
+
+  :global([data-layout^='tablet-landscape']) .block.scrolls {
+    min-height: 72px;
+  }
+
   @keyframes appear {
     from {
       opacity: 0;
