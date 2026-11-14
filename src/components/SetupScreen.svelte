@@ -141,7 +141,7 @@
       </section>
     {/if}
 
-    <section>
+    <section class="size">
       <div class="section-header"><h2 id="size-heading">Aantal opgaven</h2></div>
       <!-- svelte-ignore a11y_interactive_supports_focus -->
       <div
@@ -415,5 +415,144 @@
 
   .start-number {
     color: var(--start-number);
+  }
+
+  /* Tablet (v4 spec §8): the header over the whole width, the options and Start in one centred
+     column. "Wat zit erin" comes first here (everything fits), by `order`: the DOM keeps the
+     phone's order, with the settings first. */
+  :global([data-layout^='tablet']) .setup {
+    --column: none;
+    padding-inline: 40px;
+  }
+
+  :global([data-layout^='tablet']) header {
+    padding: 20px 0 12px;
+    margin-left: -12px;
+  }
+
+  :global([data-layout^='tablet']) .tile {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    margin: 0 14px 0 4px;
+  }
+
+  :global([data-layout^='tablet']) h1 {
+    font-size: 34px;
+    line-height: 40px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  :global([data-layout^='tablet']) :is(.content, footer) {
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+
+  :global([data-layout^='tablet-landscape']) :is(.content, footer) {
+    max-width: 800px;
+  }
+
+  :global([data-layout^='tablet']) footer {
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  }
+
+  :global([data-layout^='tablet']) .start {
+    height: 60px;
+    font-size: 19px;
+  }
+
+  :global([data-layout^='tablet']) .topics {
+    order: -1;
+  }
+
+  /* Landscape: Aantal opgaven and Niveau side by side; a section on its own takes the row. */
+  :global([data-layout^='tablet-landscape']) .content {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    align-content: start;
+    gap: 20px 24px;
+  }
+
+  :global([data-layout^='tablet-landscape']) section:not(.size, .size + section),
+  :global([data-layout^='tablet-landscape']) .size:last-child,
+  :global([data-layout^='tablet-landscape']) .size + .topics {
+    grid-column: 1 / -1;
+  }
+
+  :global([data-layout^='tablet']) h2 {
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+
+  :global([data-layout^='tablet']) .segment {
+    height: 52px;
+    font-size: 18px;
+  }
+
+  /* The topics in columns, the detail under the name; a line between the rows of the grid. */
+  :global([data-layout^='tablet']) .info {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+    padding: 4px 20px;
+    border-radius: 20px;
+  }
+
+  :global([data-layout^='tablet-landscape']) .info {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  :global([data-layout^='tablet']) .info li {
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 2px;
+    padding: 12px 0;
+    border-top: none;
+  }
+
+  /* The line spans the gap to the next column, so it reads as one line per row. */
+  :global([data-layout='tablet-portrait']) .info li:nth-child(n + 3)::before,
+  :global([data-layout^='tablet-landscape']) .info li:nth-child(n + 4)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -12px;
+    right: -12px;
+    border-top: 1px solid var(--list-divider);
+  }
+
+  :global([data-layout^='tablet']) .row-name {
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 700;
+  }
+
+  :global([data-layout^='tablet']) .row-detail {
+    font-size: 14px;
+    line-height: 18px;
+    text-align: left;
+  }
+
+  /* Tafels: larger pills, 7 per row in landscape. */
+  :global([data-layout^='tablet']) .tables .pill {
+    height: 60px;
+    border-radius: 14px;
+    font-size: 24px;
+  }
+
+  :global([data-layout^='tablet-landscape']) .tables {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 10px;
+  }
+
+  :global([data-layout^='tablet']) .set-pill {
+    height: 52px;
+    padding: 0 20px;
+    font-size: 17px;
   }
 </style>
