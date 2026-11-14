@@ -8,3 +8,6 @@ coverage/
 .env
 .env.*
 .claude/settings.local.json
+screenshots/*.png
+test-results/
+playwright-report/

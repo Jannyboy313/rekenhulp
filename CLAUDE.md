@@ -149,6 +149,8 @@ only the real choices, update and commit the spec, then implement directly with 
 - Updates use `registerType: 'prompt'` (spec §2): `dist/sw.js` may only call `skipWaiting` from the
   `SKIP_WAITING` message handler, never on install. `lib/update.ts` holds the state; `main.ts`
   feeds it, `App.svelte` shows `UpdateDialog` on `sets` and `setup` only.
+- `screens.html` is dev-only: never add it to `build.rollupOptions.input`, or the fixture page
+  ships in `dist/` and gets precached.
 
 ## Stack
 
@@ -167,6 +169,7 @@ npm test        # run Vitest once
 npm run check   # svelte-check (type check)
 npm run build   # production build incl. service worker
 npm run format  # Prettier, writes all files
+npm run screenshots # PNG per screen state at 360×780 into screenshots/ (starts its own Vite)
 npm run dev     # dev server (not pre-approved, ask first)
 npm run preview # serve dist/ (not pre-approved, ask first)
 ```
@@ -180,6 +183,8 @@ with the commands below, so work can proceed autonomously. Authorised by the use
 - `npm test`
 - `npm run check`, `npm run build` (authorised 2026-10-05, for autonomous verification)
 - `npm run format` (Prettier, authorised 2026-10-06)
+- `npm run screenshots` (Playwright, authorised 2026-11-14). The Chromium browser is a one-time
+  install the user runs: `npx playwright install chromium`
 - `sed -n` (read-only printing only; `sed -i` and other write forms stay forbidden; authorised
   2026-10-06)
 - `rm docs/superpowers/plans/<file>.md` (plan files only, named explicitly; no `-r`, no `-f`, no
@@ -262,7 +267,16 @@ src/
     topics/             one generator module per topic + index.ts (registry and labels)
     lessons/            lesstof: types, LESSONS registry + lessonFor, validate (structure,
                         notation, equality chains via expr), fixture (tests only)
+  screens/              dev-only fixture page for `npm run screenshots` (served by screens.html):
+                        scenes.ts mounts each screen state with fixed props; questionOfKind
+                        picks a seeded question per AnswerKind
+screenshots/            screens.spec.ts (Playwright): the shot list, steps per shot; PNGs land
+                        here (gitignored)
 ```
+
+A new screen or screen state also needs a scene in `src/screens/scenes.ts` and a shot in
+`screenshots/screens.spec.ts`; the "every scene has a shot" test only catches a scene without a
+shot, not a missing scene.
 
 - A topic generator is a pure function `(rng) => Question`. Each of its steps has a check:
   `Step.check(input)` returns `{ correct, expected, tip?, explanation? }`. Each generator passes

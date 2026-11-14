@@ -12,5 +12,6 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "vite.config.ts", "pwa-assets.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.svelte", "vite.config.ts", "pwa-assets.config.ts",
+    "playwright.config.ts", "screenshots/**/*.ts"]
 }
