@@ -70,4 +70,43 @@
     display: flex;
     color: var(--placeholder);
   }
+
+  /* Tablet (v4 spec §8): a tile. The glyph and the name on one line, the description under
+     them, no chevron. */
+  :global([data-layout^='tablet']) .row {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    align-items: center;
+    gap: 14px 12px;
+    padding: 16px 18px;
+    border-radius: 20px;
+  }
+
+  :global([data-layout^='tablet']) .tile {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+  }
+
+  :global([data-layout^='tablet']) .text {
+    display: contents;
+  }
+
+  :global([data-layout^='tablet']) .name {
+    font-size: 18px;
+    line-height: 23px;
+    font-weight: 700;
+  }
+
+  :global([data-layout^='tablet']) .description {
+    grid-column: 1 / -1;
+    align-self: start;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  :global([data-layout^='tablet']) .chevron {
+    display: none;
+  }
 </style>

@@ -128,4 +128,32 @@
     display: flex;
     flex-direction: column;
   }
+
+  /* Tablet (v4 spec §8): the whole width, a larger header, narrow tabs and the sets as tiles
+     (the grid is `.set-list` in app.css, the tile is SetRow). */
+  :global([data-layout^='tablet']) .overview {
+    --column: none;
+    padding-inline: 40px;
+  }
+
+  :global([data-layout^='tablet']) header {
+    gap: 16px;
+    padding: 28px 0 20px;
+  }
+
+  :global([data-layout^='tablet']) header :global(svg) {
+    width: 56px;
+    height: 56px;
+  }
+
+  :global([data-layout^='tablet']) h1 {
+    font-size: 34px;
+    line-height: 40px;
+  }
+
+  :global([data-layout^='tablet']) .tabs {
+    width: 420px;
+    max-width: 100%;
+    margin: 0 0 16px;
+  }
 </style>

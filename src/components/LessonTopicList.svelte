@@ -132,4 +132,45 @@
     display: flex;
     color: var(--placeholder);
   }
+
+  /* Tablet (v4 spec §8): the whole width, a larger header and the rows in columns. */
+  :global([data-layout^='tablet']) .topics {
+    --column: none;
+    padding-inline: 40px;
+  }
+
+  :global([data-layout^='tablet']) header {
+    padding: 20px 0 12px;
+    margin-left: -12px;
+  }
+
+  :global([data-layout^='tablet']) .tile {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    margin: 0 14px 0 4px;
+  }
+
+  :global([data-layout^='tablet']) h1 {
+    font-size: 34px;
+    line-height: 40px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  :global([data-layout^='tablet']) ul {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: start;
+    gap: 12px;
+    padding: 8px 0 calc(32px + env(safe-area-inset-bottom));
+  }
+
+  :global([data-layout^='tablet-landscape']) ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  :global([data-layout^='tablet']) li {
+    display: flex;
+  }
 </style>
