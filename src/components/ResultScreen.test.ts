@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
 import { fireEvent, render, screen } from '@testing-library/svelte';
-import { describe, expect, it, vi } from 'vitest';
+import { tick } from 'svelte';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { summarize, type QuestionRecord } from '../lib/results';
 import { TABLES_SET } from '../lib/sets';
 import { fromInteger } from '../lib/rational';
 import { SLOT } from '../lib/slot';
 import { choiceStep, factorizationStep, numberStep } from '../lib/steps';
 import type { Question, Step, Topic } from '../lib/types';
+import { viewport } from './layout.svelte';
 import ResultScreen from './ResultScreen.svelte';
 
 function recordOf(
@@ -237,5 +239,42 @@ describe('ResultScreen', () => {
     expect(onpractise).toHaveBeenCalledOnce();
     expect(screen.getByRole('button', { name: 'Opnieuw' }).classList).toContain('primary');
     expect(screen.getByRole('button', { name: 'Fouten oefenen · 6' }).classList).toContain('tonal');
+  });
+});
+
+describe('ResultScreen "Per onderwerp" per layout (v4 spec §8)', () => {
+  afterEach(() => {
+    viewport.shown = 'phone';
+  });
+
+  const twoTopics = () => [
+    recordOf(product, '56', 3000, 'lcm'),
+    recordOf(product, '56', 3000, 'scale'),
+  ];
+  const details = () => document.querySelector('details.topic-details') as HTMLDetailsElement;
+
+  it('starts open when the screen mounts in a landscape layout', () => {
+    viewport.shown = 'tablet-landscape';
+    renderResults(twoTopics());
+    expect(details().open).toBe(true);
+  });
+
+  it('starts closed on a portrait tablet', () => {
+    viewport.shown = 'tablet-portrait';
+    renderResults(twoTopics());
+    expect(details().open).toBe(false);
+  });
+
+  it('keeps the choice of the user through a rotation, both ways', async () => {
+    renderResults(twoTopics());
+    await fireEvent.click(details().querySelector('summary')!);
+    viewport.shown = 'tablet-landscape';
+    await tick();
+    expect(details().open).toBe(true);
+
+    await fireEvent.click(details().querySelector('summary')!);
+    viewport.shown = 'phone';
+    await tick();
+    expect(details().open).toBe(false);
   });
 });

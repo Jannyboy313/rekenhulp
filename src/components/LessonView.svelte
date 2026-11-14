@@ -71,4 +71,48 @@
     font-size: 16px;
     line-height: 24px;
   }
+
+  /* Tablet (v4 spec §8): a reading column of 680 with a larger text; the title is aligned to
+     it. In landscape the back button sits in the left margin. */
+  :global([data-layout^='tablet']) .lesson {
+    --column: none;
+    padding-inline: 40px;
+  }
+
+  :global([data-layout^='tablet']) :is(header, .content) {
+    position: relative;
+    width: 100%;
+    max-width: 680px;
+    margin-inline: auto;
+    padding-inline: 0;
+  }
+
+  :global([data-layout^='tablet']) header {
+    padding-block: 20px 12px;
+    margin-left: auto;
+  }
+
+  :global([data-layout='tablet-portrait']) .back {
+    margin-left: -12px;
+  }
+
+  :global([data-layout^='tablet-landscape']) .back {
+    position: absolute;
+    right: 100%;
+    margin-right: 8px;
+  }
+
+  :global([data-layout^='tablet']) h1 {
+    font-size: 34px;
+    line-height: 40px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  :global([data-layout^='tablet']) .content {
+    padding-block: 12px calc(40px + env(safe-area-inset-bottom));
+    gap: 20px;
+    font-size: 19px;
+    line-height: 29px;
+  }
 </style>

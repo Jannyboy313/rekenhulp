@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { untrack } from 'svelte';
   import { formatDuration, formatSeconds } from '../lib/format';
   import { displayAnswer } from '../lib/inputModels';
+  import { isLandscape } from '../lib/layout';
   import { wrongSteps, type SessionSummary } from '../lib/results';
   import { EXERCISES_PER_MISTAKE } from '../lib/session';
   import type { PracticeSet } from '../lib/types';
   import Icon from './Icon.svelte';
+  import { viewport } from './layout.svelte';
   import MathText from './MathText.svelte';
 
   interface Props {
@@ -19,6 +22,9 @@
   let { set, summary, onrestart, onmenu, onpractise }: Props = $props();
 
   const failedSteps = $derived(wrongSteps(summary.mistakes));
+  // "Per onderwerp" starts open where it has its own column (landscape, v4 spec §8). Read once:
+  // after that the user's choice holds, also through a rotation.
+  const topicsOpen = untrack(() => isLandscape(viewport.shown));
 </script>
 
 <!-- A value with its unit; the percent sign sticks to the number (lib/units.ts). -->
@@ -71,7 +77,7 @@
 
       <!-- With one topic the card would repeat the score; collapsed by default (spec §3.5). -->
       {#if summary.topics.length > 1}
-        <details class="card topic-details">
+        <details class="card topic-details" open={topicsOpen}>
           <summary>
             <h2>Per onderwerp</h2>
             <span class="chevron"><Icon name="chevron-right" size={20} /></span>
@@ -87,7 +93,7 @@
       {/if}
 
       {#if failedSteps.length > 0}
-        <h2>Fouten · {failedSteps.length}</h2>
+        <h2 class="mistakes-heading">Fouten · {failedSteps.length}</h2>
         <ul class="mistakes">
           {#each failedSteps as { prompt, kind, prefix, suffix, attempt }, index (index)}
             <li class="card error-card">
@@ -124,7 +130,7 @@
           {/each}
         </ul>
       {:else}
-        <p>Alles goed!</p>
+        <p class="all-good">Alles goed!</p>
       {/if}
     {/if}
   </div>
@@ -411,5 +417,64 @@
     grid-column: 1 / -1;
     background: var(--primary-tint);
     color: var(--primary);
+  }
+
+  /* Tablet portrait (v4 spec §8): the phone's screen in a centred column of 640. */
+  :global([data-layout='tablet-portrait']) .results {
+    --column: 672px;
+  }
+
+  /* Landscape (v4 spec §8): the score and the buttons in a left column of 400, the mistakes in
+     a scrolling column next to it. `.scroll` gives its children to this grid, so the markup is
+     the phone's. The topic card scrolls inside when the left column is too low for it. */
+  :global([data-layout^='tablet-landscape']) .results {
+    --column: none;
+    display: grid;
+    grid-template-columns: 400px minmax(0, 1fr);
+    grid-template-rows: auto auto minmax(56px, auto) minmax(0, 1fr) auto;
+    gap: 12px 48px;
+    padding: calc(28px + env(safe-area-inset-top)) 40px 0;
+  }
+
+  :global([data-layout^='tablet-landscape']) .scroll {
+    display: contents;
+  }
+
+  :global([data-layout^='tablet-landscape']) :is(header, .score-card, .topic-details, footer) {
+    grid-column: 1;
+  }
+
+  :global([data-layout^='tablet-landscape']) .topic-details {
+    grid-row: 3;
+    overflow-y: auto;
+  }
+
+  :global([data-layout^='tablet-landscape']) footer {
+    grid-row: 5;
+    padding: 0 0 calc(32px + env(safe-area-inset-bottom));
+    border-top: none;
+  }
+
+  :global([data-layout^='tablet-landscape']) .mistakes-heading {
+    grid-area: 1 / 2;
+    align-self: end;
+    margin-bottom: 0;
+  }
+
+  :global([data-layout^='tablet-landscape']) :is(.mistakes, .all-good) {
+    grid-column: 2;
+    grid-row: 2 / -1;
+    max-width: 680px;
+  }
+
+  :global([data-layout^='tablet-landscape']) .mistakes {
+    min-height: 0;
+    overflow-y: auto;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom));
+  }
+
+  :global([data-layout^='tablet']) :is(.primary, .secondary) {
+    height: 60px;
+    font-size: 19px;
   }
 </style>
