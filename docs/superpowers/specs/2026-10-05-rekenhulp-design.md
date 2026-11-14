@@ -45,7 +45,8 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 | PWA        | `vite-plugin-pwa`, `generateSW`, precache all assets, `prompt` update  |
 | Tests      | Vitest (unit), `@testing-library/svelte` for a few component tests     |
 | Quality    | `svelte-check`, Prettier                                               |
-| Hosting    | Self-hosted by the user, as static files                                |
+| Hosting    | Vercel, static files; a push to `main` deploys after tests and checks  |
+| Node       | 26 (latest LTS), pinned in `package.json` `engines` and `.nvmrc`       |
 
 Rationale for not using SvelteKit: the app has four screens driven by a state machine and
 needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface minimal.

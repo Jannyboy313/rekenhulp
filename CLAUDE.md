@@ -165,7 +165,10 @@ only the real choices, update and commit the spec, then implement directly with 
   sizes are tokens in `app.css`; no raw colour values in components (apart from `Logo.svelte`)
 - `vite-plugin-pwa` (generateSW, full precache, works fully offline)
 - Vitest for tests, `svelte-check` for type checking, Prettier for formatting
-- Output is a static `dist/` folder; the user hosts it themselves
+- Output is a static `dist/` folder, hosted on Vercel: every push to `main` deploys. `vercel.json`
+  sets the build command (`npm test`, `npm run check`, `npm run build`), so a failing test or type
+  error blocks the deploy
+- Node 26 (the latest LTS): `engines` in `package.json` (Vercel reads it) and `.nvmrc`
 
 ## Commands
 

@@ -10,7 +10,7 @@ roadmap are in `docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
 
 ## Development
 
-Requires Node.js 22 or newer.
+Requires Node.js 26 (the latest LTS; see `.nvmrc`).
 
 ```bash
 npm install
