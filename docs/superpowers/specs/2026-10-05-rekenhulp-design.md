@@ -146,8 +146,8 @@ The app is a state machine in `App.svelte` with four states:
 - The header shows a back button (aria-label **Terug**), the set's glyph in a small tile and the
   set name.
 - Below it is the section "Wat zit erin": a list of the set's topics, display-only. Each row has
-  the topic name on the left and its detail on the right, both taken from `TOPIC_LABELS`: the
-  label `Naam (detail)` is split at the first ` (`; a label without parentheses has no detail.
+  the topic name on the left and its detail on the right, both taken from `TOPIC_LABELS`: a
+  label is a `name` with an optional `detail`.
   For every set except Tafels, the list includes "15% tafels", except when the selected session
   size is below 10 (§4.2). It shows the topics of the selected level; Verdieping has no tables
   row but ends with one row "20% opfrisser" (no detail) for its Opfrisser share, except when the
@@ -411,7 +411,7 @@ already names the mistake.
 - Total time (wall clock, repeats included), and average time per exercise (first attempts)
 - A card "Per onderwerp" between the score card and "Fouten" (§12.4): one text row per topic
   with its short name and `x / n`, over the same first attempts as the score. The short name is
-  the topic label (§4) up to its first ` (`, so "Procenten", "Schaal", "KGV". Topics with the
+  the `name` of the topic label (§3.2), so "Procenten", "Schaal", "KGV". Topics with the
   same short name in one session (e.g. `probability` and `twoDice`, both "Kans", in a Verdieping
   session with its Opfrisser share) share one row. Sorted weakest first: lowest percentage, then
   the larger `n`, then the order of first appearance in the session. The card is shown only with
@@ -1206,7 +1206,10 @@ categories (§12.5) are done. The order after that (decided 2026-11-14):
 - v4: tablet support (§12.10).
 - v5: the practice test (§12.6).
 - v6: persistent memory in IndexedDB. No section yet; the non-goals of §1 change when that work
-  starts.
+  starts. Input for its spec (architecture analysis of 2026-11-14, not decided): a `Question`
+  cannot be stored (`Step.check` is a closure), so storage gets its own record of plain data
+  (such as topic, key, correct, duration, time) behind an interface in `lib/` with an in-memory
+  variant; the `Topic` id is then a storage format, and the app keeps working without IndexedDB.
 - v7: problems where a calculator is allowed (§12.11).
 - v8: a print button for the practice test (§12.12).
 - v9: a streak of practice days (§12.13).
@@ -1430,6 +1433,12 @@ LKT 3.3 (written algorithms) is out of scope (§12.8, decided 2026-11-08).
 Comes after tablet support (v4, §12.10). It reuses the mixing of mixed categories (§12.5). A session in the style of a PABO
 test. Its form (composition, count, level, the pass mark) is decided in its own spec iteration.
 The non-goals of §1 hold: no stored results or history.
+
+Input for its spec (architecture analysis of 2026-11-14, not decided): `lib/play.ts` always
+repeats a wrong question and always sets feedback, so the test needs a policy on `startPlay`
+(repeat wrong answers, show feedback) and its own screen that reuses `QuestionView`; and the
+test is better a session configuration (set, mixed or test, one build function) than a third
+pseudo set next to `MIXED_SET` and the `tablesPercent === 100` check of Tafels.
 
 Feedback is given only after the test, unlike a practice session (§3.4):
 
