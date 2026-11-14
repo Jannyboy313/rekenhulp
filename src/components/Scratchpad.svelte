@@ -12,10 +12,12 @@
     active: number | null;
     /** The notes are final (correct state): the cells stay visible but cannot be tapped. */
     disabled?: boolean;
+    /** Only keeps its space: a step without a kladblok in a session that has one (v4 spec §5.1). */
+    hidden?: boolean;
     onselect: (index: number) => void;
   }
 
-  let { notes, active, disabled = false, onselect }: Props = $props();
+  let { notes, active, disabled = false, hidden = false, onselect }: Props = $props();
 
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
@@ -46,7 +48,14 @@
       ></span>{/if}{/if}{/snippet}
 
 <!-- The kladblok (spec §3.6): fixed cells for numbers and short sums typed on the keypad. -->
-<div class="scratchpad" role="group" aria-label="Kladblok">
+<div
+  class="scratchpad"
+  class:hidden
+  role="group"
+  aria-label="Kladblok"
+  aria-hidden={hidden || undefined}
+  inert={hidden}
+>
   <p class="label" class:active={active !== null}>
     <Icon name="pen" size={16} stroke={2} />
     {#if active === null}Kladblok · tik om te noteren{:else}Kladblok{/if}
@@ -85,6 +94,10 @@
 <style>
   .scratchpad {
     padding: 0 16px;
+  }
+
+  .scratchpad.hidden {
+    visibility: hidden;
   }
 
   .label {

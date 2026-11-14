@@ -20,12 +20,20 @@
     step: Step;
     /** Whether this step shows the kladblok; PlayScreen decides per step (topic and answer kind) (spec §3.6). */
     scratchpad?: boolean;
+    /** The session has kladblok steps: a step without one keeps its space, empty (v4 spec §5.1). */
+    reserved?: boolean;
     /** The kladblok notes. PlayScreen binds them, so they outlive this step. */
     notes?: readonly string[];
     onanswer: (input: string, result: CheckResult) => void;
   }
 
-  let { step, scratchpad = false, notes = $bindable(EMPTY_NOTES), onanswer }: Props = $props();
+  let {
+    step,
+    scratchpad = false,
+    reserved = false,
+    notes = $bindable(EMPTY_NOTES),
+    onanswer,
+  }: Props = $props();
 
   // This view is keyed per step, so every step starts with the answer field active.
   let activeNote = $state<number | null>(null);
@@ -76,11 +84,12 @@
 
 <!-- The bar of the correct state runs as long as PlayScreen's timer (inherited by KeypadAnswer). -->
 <div class="question" style:--advance-ms="{CORRECT_FEEDBACK_MS}ms">
-  {#if scratchpad}
+  {#if scratchpad || reserved}
     <Scratchpad
       {notes}
       active={activeNote}
       disabled={locked}
+      hidden={!scratchpad}
       onselect={(index) => (activeNote = index)}
     />
   {/if}
@@ -123,7 +132,7 @@
     </div>
   {:else if step.kind === 'choice'}
     <!-- Multiple choice works like Ja/Nee: a tap on an option is the answer (spec §6). -->
-    <div class="options">
+    <div class="options" class:reserved>
       {#each step.options ?? [] as option (option)}
         <button
           type="button"
@@ -147,6 +156,7 @@
       prefix={step.prefix}
       suffix={step.suffix}
       {scratch}
+      tall={!scratchpad && !reserved}
       {locked}
       onsubmit={answer}
     />
@@ -156,6 +166,7 @@
       prefix={step.prefix}
       suffix={step.suffix}
       {scratch}
+      tall={!scratchpad && !reserved}
       {locked}
       onsubmit={answer}
     />
@@ -266,6 +277,11 @@
     font-size: 20px;
     line-height: 24px;
     text-align: center;
+  }
+
+  /* In a kladblok session the options fill the lower keypad: 4 × 67 + 3 × 8 = 292 px. */
+  .options.reserved .choice.option {
+    height: 67px;
   }
 
   .choice:active:not(:disabled) {

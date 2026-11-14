@@ -438,3 +438,45 @@ describe('PlayScreen', () => {
     });
   });
 });
+
+describe('PlayScreen reserved kladblok space (v4 spec §5.1)', () => {
+  const table = question('2 × 3 = ?', 6);
+  const percent: Question = {
+    key: 'percent',
+    topic: 'percentages',
+    steps: [numberStep({ prompt: '50% van 8 = ?', answer: fromInteger(4) })],
+  };
+  const yesNo: Question = {
+    key: 'yes-no',
+    topic: 'prime',
+    steps: [booleanStep({ prompt: 'Is 91 een priemgetal?', answer: false })],
+  };
+  const pad = () => document.querySelector<HTMLElement>('.scratchpad');
+  const keypad = () => document.querySelector<HTMLElement>('.keypad');
+
+  it('keeps a hidden, inert kladblok and the lower keypad on a table step', () => {
+    render(PlayScreen, {
+      props: { set: TABLES_SET, questions: [table, percent], onfinish: vi.fn() },
+    });
+    expect(pad()?.inert).toBe(true);
+    expect(pad()?.getAttribute('aria-hidden')).toBe('true');
+    expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
+    expect(keypad()?.classList.contains('tall')).toBe(false);
+  });
+
+  it('keeps it on a Ja/Nee step, whose buttons still answer', async () => {
+    const onfinish = vi.fn();
+    render(PlayScreen, { props: { set: TABLES_SET, questions: [yesNo, percent], onfinish } });
+    expect(pad()?.inert).toBe(true);
+    await press('Nee');
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
+    expect(pad()?.inert).toBe(false);
+    expect(screen.getByRole('group', { name: 'Kladblok' })).toBeTruthy();
+  });
+
+  it('reserves nothing in a session without a kladblok step', () => {
+    render(PlayScreen, { props: { set: TABLES_SET, questions: [table], onfinish: vi.fn() } });
+    expect(pad()).toBeNull();
+    expect(keypad()?.classList.contains('tall')).toBe(true);
+  });
+});

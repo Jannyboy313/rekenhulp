@@ -14,13 +14,23 @@
     suffix?: string;
     /** Only when the kladblok is shown: while a cell is active, the keypad types there (§3.6). */
     scratch?: ScratchpadInput;
+    /** The higher keypad, for sessions that never show the kladblok (v4 spec §5.1). */
+    tall?: boolean;
     /** The answer was correct: the field turns green, the keypad is dimmed and the bar runs. */
     locked?: boolean;
     /** Called with valid input only; invalid input shows an inline error instead (spec §6). */
     onsubmit: (input: string) => void;
   }
 
-  let { model, prefix, suffix, scratch, locked = false, onsubmit }: Props = $props();
+  let {
+    model,
+    prefix,
+    suffix,
+    scratch,
+    tall = scratch === undefined,
+    locked = false,
+    onsubmit,
+  }: Props = $props();
 
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
@@ -116,7 +126,7 @@
   keys={inNote ? NOTE_KEYS : model.keys}
   columns={inNote ? NOTE_COLUMNS : model.columns}
   canSubmit={model.canSubmit(value)}
-  tall={scratch === undefined}
+  {tall}
   tray={inNote}
   disabled={locked}
   onkey={handleKey}

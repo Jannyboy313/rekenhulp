@@ -17,7 +17,7 @@
     type PlayState,
   } from '../lib/play';
   import type { QuestionRecord } from '../lib/results';
-  import { EMPTY_NOTES, showsScratchpad } from '../lib/scratchpad';
+  import { EMPTY_NOTES, sessionUsesScratchpad, showsScratchpad } from '../lib/scratchpad';
   import { keepScreenAwake } from '../lib/wakeLock';
   import type { CheckResult, PracticeSet, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
@@ -54,6 +54,8 @@
   // Questions answered for the first time: what the progress bar shows (a repeat adds nothing).
   const firstAttempts = $derived(play.records.length);
   const scratchpad = $derived(showsScratchpad(question.topic, step.kind));
+  // A session with a kladblok step keeps its space on every step (v4 spec §5.1).
+  const reserved = untrack(() => sessionUsesScratchpad(questions));
   const lessonLinks = $derived(lessonLinksFor(question.topic, lessons));
 
   // The lesson sheet lies over the session, which stays as it is (lesstof spec §3.1).
@@ -169,7 +171,7 @@
     />
   {:else}
     {#key `${questionIndex}-${stepIndex}`}
-      <QuestionView {step} {scratchpad} bind:notes onanswer={handleAnswer} />
+      <QuestionView {step} {scratchpad} {reserved} bind:notes onanswer={handleAnswer} />
     {/key}
   {/if}
 

@@ -1,7 +1,7 @@
 import { NOTE_FRACTION_END } from './format';
 import { MAX_INPUT_LENGTH, type KeypadKey } from './keypadInput';
 import { keyDefs, type KeyDef } from './keys';
-import type { AnswerKind, Topic } from './types';
+import type { AnswerKind, Question, Topic } from './types';
 
 /** Kladblok cells in a grid of 2 columns and 3 rows, in reading order (spec §3.6). */
 export const NOTE_COUNT = 6;
@@ -100,6 +100,16 @@ export function applyNoteKey(
 /** Tables are practised from memory, and Ja/Nee and choice steps have no keypad (spec §3.6). */
 export function showsScratchpad(topic: Topic, kind: AnswerKind): boolean {
   return topic !== 'tables' && kind !== 'boolean' && kind !== 'choice';
+}
+
+/**
+ * A session with at least one kladblok step keeps the kladblok area on every step, so the prompt
+ * does not jump between exercises (v4 spec §5.1).
+ */
+export function sessionUsesScratchpad(questions: readonly Question[]): boolean {
+  return questions.some(({ topic, steps }) =>
+    steps.some((step) => showsScratchpad(topic, step.kind)),
+  );
 }
 
 /** How KeypadAnswer hands the keypad to the kladblok. */

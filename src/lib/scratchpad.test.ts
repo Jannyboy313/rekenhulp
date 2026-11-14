@@ -8,8 +8,10 @@ import {
   NOTE_COLUMNS,
   NOTE_COUNT,
   NOTE_KEYS,
+  sessionUsesScratchpad,
   showsScratchpad,
 } from './scratchpad';
+import type { AnswerKind, Question, Topic } from './types';
 
 function typeInto(index: number, keys: KeypadKey[]): readonly string[] {
   return keys.reduce((notes, key) => applyNoteKey(notes, index, key), EMPTY_NOTES);
@@ -161,5 +163,35 @@ describe('scratchpad', () => {
 describe('scratchpad letter keys', () => {
   it('ignores letters', () => {
     expect(typeNote(['1', 'A', 'M'])).toBe('1');
+  });
+});
+
+describe('sessionUsesScratchpad (v4 spec §5.1)', () => {
+  const question = (topic: Topic, ...kinds: AnswerKind[]): Question => ({
+    key: `${topic}-${kinds.join('-')}`,
+    topic,
+    steps: kinds.map((kind) => ({
+      kind,
+      prompt: '',
+      check: () => ({ correct: true, expected: '' }),
+    })),
+  });
+
+  it.each<[string, Question[], boolean]>([
+    ['only table questions', [question('tables', 'number')], false],
+    [
+      'only Ja/Nee and choice',
+      [question('prime', 'boolean'), question('statistics', 'choice')],
+      false,
+    ],
+    [
+      'tables plus a number question',
+      [question('tables', 'number'), question('percentages', 'number')],
+      true,
+    ],
+    ['a Ja/Nee step followed by a number step', [question('prime', 'boolean', 'number')], true],
+    ['no questions', [], false],
+  ])('%s', (_name, questions, expected) => {
+    expect(sessionUsesScratchpad(questions)).toBe(expected);
   });
 });

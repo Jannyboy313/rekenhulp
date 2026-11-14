@@ -457,6 +457,10 @@ in the place of OK.
 - **When shown:** for every step that is not Ja/Nee or multiple choice, unless the question is a table exercise
   (topic `tables`, including the tables mixed into other sets). Tables are practised from
   memory.
+- **Reserved space (v4 spec §5.1):** in a session where at least one step shows the kladblok,
+  every step keeps its area at the same height, so the prompt does not jump between exercises.
+  On a step without a kladblok the area is empty, invisible, `inert` and hidden from assistive
+  technology. A session that never shows it (Tafels) reserves nothing.
 - **Focus:** tapping a cell makes it active; tapping the answer field, or a fraction slot in
   it, makes the answer field active again. Tapping is the only way to switch. The active
   cell has a sky-blue border and fill, and its label row turns primary. While a cell is
@@ -876,7 +880,9 @@ The keypad is custom. The system keyboard is never opened.
 - Every keypad is as high as five rows of keys: 5 × 52 + 4 × 8 = 292 px (312 px with 56 px
   keys on screens without a kladblok). A five-row keypad has 52 px keys (56 px without a
   kladblok); a keypad with fewer rows gets taller keys, `(292 − (rows − 1) × 8) / rows`
-  (scientific and roman, 4 rows: 67 px, 72 px without a kladblok). So the prompt never moves
+  (scientific and roman, 4 rows: 67 px, 72 px without a kladblok). "Without a kladblok" is a
+  property of the session, not of the step: a session with a kladblok step uses the 292 px
+  keypad on every step (§3.6, reserved space). So the prompt never moves
   between answer kinds or when the kladblok tray takes over. The kladblok keypad has 48 px
   keys on a separate tray. Ja/Nee are two buttons of 120 px high, Nee left and Ja right, with
   text only (26 px, weight 800): no ✕ or ✓, which mean wrong and correct elsewhere (v4 spec §9).
@@ -968,7 +974,8 @@ The keypad is custom. The system keyboard is never opened.
   - The generator sets the order: shuffled with its rng, or a natural order such as ascending
     when the options are numbers. A repeat (§3.4) keeps the order.
   - The buttons are full width, one per row, and fill the height of a keypad without a
-    kladblok: (312 − 3 × 8) / 4 = 72 px each. So the prompt sits where it does above a
+    kladblok: (312 − 3 × 8) / 4 = 72 px each, or 67 px in a session with a kladblok step
+    (292 px, §3.6). So the prompt sits where it does above a
     keypad, as with Ja/Nee. No letters A–D.
   - Like Ja/Nee: a tap is the answer, acting on release (`click`); there is no kladblok (§3.6)
     and no tip (§3.4.1). A choice step has no prefix or suffix: a unit is part of the option
