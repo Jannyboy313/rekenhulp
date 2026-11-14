@@ -34,11 +34,30 @@ async function systemBack() {
   await fireEvent(window, new PopStateEvent('popstate'));
 }
 
+function resize(width: number, height: number) {
+  window.innerWidth = width;
+  window.innerHeight = height;
+}
+
 describe('App', () => {
   // A real history.back() fires a popstate later, which could leak into the next test.
   beforeEach(() => {
     vi.spyOn(history, 'back').mockImplementation(() => {});
     stubMatchMedia();
+    // jsdom's window is 1024 × 768, a landscape tablet (v4 spec §3.1); these tests are the phone's.
+    resize(360, 780);
+  });
+
+  it('keeps the layout of the viewport on the root element', async () => {
+    render(App);
+    expect(document.documentElement.dataset.layout).toBe('phone');
+    resize(1280, 800);
+    await fireEvent(window, new Event('resize'));
+    expect(document.documentElement.dataset.layout).toBe('tablet-landscape');
+    // Too low: the screen under the notice keeps its layout (v4 spec §3.2).
+    resize(780, 360);
+    await fireEvent(window, new Event('resize'));
+    expect(document.documentElement.dataset.layout).toBe('tablet-landscape');
   });
 
   afterEach(() => {

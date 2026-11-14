@@ -1,6 +1,7 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import ErrorScreen from './components/ErrorScreen.svelte';
+  import { watchViewport } from './components/layout.svelte';
   import LessonSetList from './components/LessonSetList.svelte';
   import LessonTopicList from './components/LessonTopicList.svelte';
   import LessonView from './components/LessonView.svelte';
@@ -68,6 +69,9 @@
   let level = $state<Level>('quick');
   // Gemengd starts with every set chosen (spec §3.2); the initial value is meant, `sets` is fixed.
   let chosenSets = $state(untrack(() => sets.map((set) => set.id)));
+
+  // The layout follows the viewport, also after a rotation (v4 spec §3.2).
+  $effect(() => watchViewport(window, document.documentElement));
 
   // A system back never closes the app from another screen (spec §3).
   const backGuard = createBackGuard(history);
