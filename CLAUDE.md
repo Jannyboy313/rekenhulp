@@ -22,6 +22,8 @@ not all of it:
   `docs/superpowers/specs/2026-11-14-tablet-design.md`; read it for any change to a screen's
   layout. The main spec describes the phone. The designer's handoff (`design-handoff/`) is
   local only and gitignored
+- practice test (v5, draft, not built): its own spec,
+  `docs/superpowers/specs/2026-11-14-oefentoets-design.md`
 - RWT scope (gaps in §12.3, check in §12.7): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
   next to it is leading
