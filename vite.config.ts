@@ -18,7 +18,8 @@ const pwa = VitePWA({
     start_url: '.',
     scope: '.',
     display: 'standalone',
-    orientation: 'portrait',
+    // Tablets are used in both orientations; a phone on its side gets a notice (v4 spec §3).
+    orientation: 'any',
     theme_color: '#5B3FD1',
     background_color: '#F5F6F8',
   },

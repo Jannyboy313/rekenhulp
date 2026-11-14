@@ -18,9 +18,10 @@ not all of it:
 - expressions: §7; a new set: its entry in §12.1, open assumptions in §11
 - lesstof (study material per set): its own spec, `docs/superpowers/specs/2026-10-25-lesstof-design.md`
   (framework §3–§6, content per set §7); the main spec only holds its entry points
-- tablet layouts and Design V3 (v4): its own spec, `docs/superpowers/specs/2026-11-14-tablet-design.md`
-  (approved 2026-11-14). The designer's handoff (`design-handoff/`) is local only
-  and gitignored
+- tablet layouts, the play screen sizes per layout and the physical keyboard (v4): its own spec,
+  `docs/superpowers/specs/2026-11-14-tablet-design.md`; read it for any change to a screen's
+  layout. The main spec describes the phone. The designer's handoff (`design-handoff/`) is
+  local only and gitignored
 - RWT scope (gaps in §12.3, check in §12.7): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
   next to it is leading
@@ -66,6 +67,10 @@ Done besides the sets:
   share per set
 - the error screen (§3): `ErrorScreen`, for a session that cannot be built or a screen that fails
   while rendering
+- v4, tablet support (§12.10, v4 spec): layouts for portrait and landscape tablets
+  (`resolveLayout` in `lib/layout.ts`, `data-layout` on the root element), a notice for a
+  landscape viewport that is too low (`RotateNotice`), reserved kladblok space, physical keyboard
+  input (`lib/physicalKeys.ts`) and the Design V3 phone changes
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -85,14 +90,14 @@ notation and that every `worked` line is a true equality chain. Keep lesson code
 the practice code: lesson components get their own files, practice components get no lesson
 props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.set-list` class.
 The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScreen` only pass
-lesson data through to `LessonLinks` and `LessonSheet`.
+lesson data through to `LessonLinks`, `LessonSheet` and `LessonPane` (the lesson next to the
+wrong-answer panel on a landscape tablet, v4 spec §7).
 
-Next steps (spec §12), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
+Next steps (spec §12), one at a time and only when the user says so. v3 and v4 are done (§12.2–§12.4, §12.10);
 the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). Mixed categories (§12.5) are done. Order decided 2026-11-14.
 
 | Step                                                                                    | New infrastructure |
 | --------------------------------------------------------------------------------------- | ------------------ |
-| v4: tablet support (§12.10); spec approved (`2026-11-14-tablet-design.md`), plan next   | wide layout        |
 | v5: practice test (§12.6), reuses `buildMixedSession` and `lib/play.ts`; own spec       | test session       |
 | v6: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
 | v7: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)                   | open               |
@@ -140,6 +145,20 @@ only the real choices, update and commit the spec, then implement directly with 
 
 - Focus falls back to `body` after a screen or question change, and when the kladblok's "Tik hier
   voor je antwoord" button is activated by keyboard (keyboard/screen-reader users only).
+
+## Layout pitfalls
+
+- A layout change (rotation, resize) must never remount a screen: the typed answer, the active
+  kladblok cell and an open lesson survive it (v4 spec §3.1). Style on `[data-layout='…']`; read
+  `viewport` only to pick a presentation inside a mounted component, never to pick which screen
+  `App.svelte` renders.
+- Sizes of the play screen are the `--play-*` tokens in `app.css`, one block per layout; change a
+  size there, not in a component.
+- In component tests `viewport` is a phone of unlimited height until a test sets
+  `viewport.shown` or `viewport.height` (reset it in `afterEach`). jsdom's window is 1024 × 768,
+  a landscape tablet: a test that mounts `App` sets 360 × 780 first.
+- `npm run screenshots -- --project=<layout> -g <shot>` renders one shot, but first empties that
+  layout's folder.
 
 ## Svelte pitfalls
 
@@ -211,11 +230,19 @@ touches the PWA config, the service worker or `main.ts`.
 src/
   App.svelte            state machine: sets → setup → playing → results, plus lessonTopics and
                         lesson (lesstof) and error (a session that cannot be built, or a
-                        screen that fails while rendering: `svelte:boundary`)
+                        screen that fails while rendering: `svelte:boundary`); keeps the
+                        layout up to date and shows RotateNotice over an inert screen
+  app.css               tokens: colours, shadows, and the play screen sizes per layout
+                        (`--play-*`, v4 spec §4.1). On a tablet a screen caps its own column
+                        with `--column`
   components/           SetOverview (shell: header + Oefenen/Lesstof tabs, a snippet per tab),
-                        PracticeSetList, LessonSetList, SetRow (shared row), LessonTopicList,
-                        LessonView, LessonBlocks (renders lesson blocks), LessonLinks +
-                        LessonSheet (lesson link from a mistake), SetupScreen (topic list, table
+                        PracticeSetList, LessonSetList, SetRow (shared row, a tile on tablet),
+                        LessonTopicList, LessonView, LessonBlocks (renders lesson blocks),
+                        LessonLinks + LessonSheet + LessonPane + LessonStrip (lesson link from a
+                        mistake: sheet, or pane in landscape), layout.svelte.ts (`viewport`
+                        state and watchViewport; components style on `[data-layout]` and read
+                        `viewport` where the presentation differs), RotateNotice,
+                        SetupScreen (topic list, table
                         choice or Gemengd set choice), PlayScreen (runs
                         lib/play.ts, auto-advance timer), QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
@@ -237,7 +264,12 @@ src/
                         sets `span` on its own copy of a key; keyRows sizes the keys (spec §6)
     inputModels.ts      per answer kind: keys, columns, typing state, reducer, validate,
                         display, view
-    scratchpad.ts       kladblok: cell count, keys, typing, when shown
+    scratchpad.ts       kladblok: cell count per layout (visibleCells), keys, typing, when shown
+                        (per step, and per session for the reserved space)
+    layout.ts           resolveLayout(width, height): phone, the tablet layouts or too-low
+                        (v4 spec §3.1); isTablet, isLandscape
+    physicalKeys.ts     physical key → keypad key or OK, given the keypad on screen (keyFor);
+                        j/n and 1–4 for Ja/Nee and multiple choice (choiceFor)
     fractionText.ts     splits text into plain runs, slots and (mixed) fractions for display
     slot.ts             SLOT marker for the unknown of a prompt, hasSlot, plain
     feedback.ts         CORRECT_FEEDBACK_MS (auto-advance after a correct answer)

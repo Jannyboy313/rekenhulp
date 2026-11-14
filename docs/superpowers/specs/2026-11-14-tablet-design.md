@@ -1,6 +1,6 @@
 # Rekenhulp v4 — tablet layouts and Design V3
 
-Date: 2026-11-14. Status: approved 2026-11-14, not built yet. Implements main spec §12.10.
+Date: 2026-11-14. Status: approved and built 2026-11-14. Implements main spec §12.10.
 
 Source: the Design V3 handoff of the designer (`design-handoff/HANDOFF.md` with a PNG and a static
 HTML mock-up per screen). That folder is local only (gitignored, decided 2026-11-14), so this spec

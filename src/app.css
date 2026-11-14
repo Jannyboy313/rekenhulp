@@ -193,11 +193,13 @@ body {
   user-select: none;
 }
 
-/* No padding: every screen sets its own side padding and safe-area insets. */
+/* Every screen sets its own side padding and its top and bottom safe-area insets. The side
+   insets are here: they are only non-zero in landscape (a camera cut-out, v4 spec §3.4). */
 #app {
   height: 100dvh;
   max-width: 30rem;
   margin: 0 auto;
+  padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
   display: flex;
   flex-direction: column;
 }

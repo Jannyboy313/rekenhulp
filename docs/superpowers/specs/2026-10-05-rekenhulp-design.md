@@ -53,7 +53,8 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 
 ### PWA requirements
 
-- Manifest: name `Rekenhulp`, `display: standalone`, `orientation: portrait`, `theme_color`
+- Manifest: name `Rekenhulp`, `display: standalone`, `orientation: any` (tablets are used in
+  both orientations; a phone on its side gets a notice, v4 spec §3.3), `theme_color`
   `#5B3FD1`, `background_color` `#F5F6F8`, icons 192/512 px plus a maskable icon, and an
   `apple-touch-icon` for iOS. The icon is the Design V1 logo (violet gradient square with
   + − × ÷ and two yellow dots). The source is full-bleed (no rounded corners) with the symbols
@@ -81,7 +82,10 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 
 ### Mobile UX requirements
 
-- Portrait layout for 360–430 px wide screens. Respects `env(safe-area-inset-*)`.
+- The phone layout is portrait, for 360–430 px wide screens, and is what this spec describes.
+  Tablets have their own layouts, in portrait and landscape, from 600 px wide: the breakpoints,
+  sizes and screens are in the v4 spec (`2026-11-14-tablet-design.md`). A landscape viewport too
+  low for any layout shows a notice instead. Respects `env(safe-area-inset-*)` on all four edges.
 - `touch-action: manipulation` disables double-tap zoom.
 - The page never scrolls while playing: the play screen is exactly one screen high. When the
   content does not fit, the question view lets only the prompt shrink and scroll (the kladblok
@@ -419,7 +423,8 @@ already names the mistake.
   session with its Opfrisser share) share one row. Sorted weakest first: lowest percentage, then
   the larger `n`, then the order of first appearance in the session. The card is shown only with
   at least two rows; with one row it would repeat the score. It lists only topics with an
-  answered exercise. The card is collapsible and starts collapsed (a native `<details>`): its
+  answered exercise. The card is collapsible and starts collapsed (a native `<details>`; open on a
+  tablet in landscape, where it has its own column, v4 spec §8): its
   header, 56 px high with the heading "Per onderwerp" and a chevron that points down, toggles the
   rows inside the same card; open, the chevron points up (v4 spec §9).
 - A list "Fouten" with one entry per wrong step, each showing the prompt, the user's answer, the
@@ -1524,13 +1529,12 @@ The distribution of table 1 needs no change to the sets; it matters for the prac
 
 Topic toggles on the setup screen.
 
-### 12.10 v4 — tablet support
+### 12.10 v4 — tablet support (done)
 
-Decided 2026-11-14. The app is phone-first (§2: portrait, 360–430 px wide); v4 makes it usable
-on a tablet. Its form is in its own spec, `2026-11-14-tablet-design.md` (approved
-2026-11-14): layouts for portrait and landscape, the Design V3 phone changes,
-reserved kladblok space and physical keyboard input. §2 and the other sections it lists in its
-§13 change when the work is done.
+Decided 2026-11-14, built 2026-11-14. The app is phone-first; v4 makes it usable on a tablet.
+Its form is in its own spec, `2026-11-14-tablet-design.md`: layouts for portrait and
+landscape, the Design V3 phone changes, reserved kladblok space and physical keyboard input.
+The phone rules it changed are in §2, §3.2, §3.5, §3.6 and §6 of this spec.
 
 ### 12.11 v7 — calculator problems
 
