@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
+import { viewport } from './components/layout.svelte';
 import { FIXTURE_LESSON } from './lib/lessons/fixture';
 import { DEEP_FIXTURE_SET } from './lib/setFixture';
 import type { PracticeSet } from './lib/types';
@@ -85,6 +86,9 @@ describe('App', () => {
       const prompt = document.querySelector('.prompt')?.textContent;
       await click('1');
       await rotate(780, 360);
+      // The screen under the notice does not reflow, and a physical key does not reach it.
+      expect(viewport.height).toBe(780);
+      await fireEvent.keyDown(window, { key: '5' });
       await rotate(360, 780);
       expect(document.querySelector('.prompt')?.textContent).toBe(prompt);
       expect(screen.getByLabelText('Jouw antwoord').textContent?.trim()).toBe('1');

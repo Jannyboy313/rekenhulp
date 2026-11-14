@@ -20,8 +20,12 @@ export default defineConfig({
     { name: 'tablet-portrait', use: { viewport: { width: 800, height: 1280 } } },
     // The narrowest tablet: where a tablet layout runs out of width first.
     { name: 'tablet-portrait-min', use: { viewport: { width: 600, height: 960 } } },
-    // An 8" tablet in landscape: only the play screen has compact sizes.
-    { name: 'compact', use: { viewport: { width: 960, height: 552 } }, grep: /question-/ },
+    // The smallest landscape tablet: the play screen and the results have compact sizes.
+    {
+      name: 'compact',
+      use: { viewport: { width: 900, height: 520 } },
+      grep: /question-|results-|lesson-sheet/,
+    },
   ],
   webServer: {
     command: `vite --port ${port} --strictPort`,

@@ -66,6 +66,8 @@
   /** Physical keyboard on a step without a keypad: j/n and 1–4 (v4 spec §6). */
   function handleKeydown(event: KeyboardEvent) {
     if (step.kind !== 'boolean' && step.kind !== 'choice') return;
+    // Under the "too low" notice the screen is inert, but window still gets the keys (§3.3).
+    if (viewport.layout === 'too-low') return;
     if (locked || event.repeat || event.ctrlKey || event.altKey || event.metaKey) return;
     const choices = step.kind === 'boolean' ? [NO, YES] : (step.options ?? []);
     const index = choiceFor(event.key, step.kind, choices.length);
@@ -219,7 +221,7 @@
   :global([data-layout^='tablet-landscape']) .question:not(.keyless) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) var(--play-pane);
-    grid-template-rows: auto minmax(0, 1fr) minmax(0, auto) auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) minmax(96px, auto) auto minmax(0, 1fr);
     grid-template-areas:
       'pad    keys'
       '.      keys'
@@ -339,14 +341,15 @@
     grid-template-columns: 1fr 1fr;
   }
 
-  :global([data-layout^='tablet']) .choice.option {
+  /* `.options` in the selector: these must outrank the phone's `.reserved` height above. */
+  :global([data-layout^='tablet']) .options .choice.option {
     height: 104px;
     border-radius: 20px;
     font-size: 24px;
     line-height: 30px;
   }
 
-  :global([data-layout='tablet-landscape-compact']) .choice.option {
+  :global([data-layout='tablet-landscape-compact']) .options .choice.option {
     height: 80px;
     font-size: 20px;
     line-height: 24px;

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { tick, untrack } from 'svelte';
   import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
   import { formatDuration } from '../lib/format';
   import { LESSONS } from '../lib/lessons';
@@ -81,8 +81,13 @@
 
   function closeLesson() {
     openLesson = null;
-    lessonOpener?.focus();
+    // After the update: behind the open modal sheet the button cannot take the focus.
+    void tick().then(() => lessonOpener?.focus());
   }
+
+  // The sheet is a modal dialog in the top layer: it would lie over the "too low" notice, with
+  // dead buttons. It comes back, on the same lesson, when the notice goes (v4 spec §3.3).
+  const tooLow = $derived(viewport.layout === 'too-low');
 
   const announcement = $derived(
     feedback === null
@@ -138,13 +143,18 @@
    * Enter on a focused button stays that button's.
    */
   function handleKeydown(event: KeyboardEvent) {
+    // Under the "too low" notice the screen is inert, but window still gets the keys (§3.3).
+    if (tooLow) return;
     if (openLesson) {
       if (event.key === 'Escape') closeLesson();
       return;
     }
-    if (event.key !== 'Enter' || event.defaultPrevented || event.repeat) return;
+    if (event.key !== 'Enter' || event.defaultPrevented) return;
     if (event.ctrlKey || event.altKey || event.metaKey) return;
-    if (!feedback || feedback.result.correct || event.target instanceof HTMLButtonElement) return;
+    if (!feedback || feedback.result.correct) return;
+    // A held Enter is one press: without this its repeats would click a focused Verder.
+    if (event.repeat) return event.preventDefault();
+    if (event.target instanceof HTMLButtonElement) return;
     event.preventDefault();
     handleNext();
   }
@@ -210,7 +220,7 @@
     {/key}
   {/if}
 
-  {#if openLesson && !landscape}
+  {#if openLesson && !landscape && !tooLow}
     <LessonSheet
       topic={openLesson}
       onclose={closeLesson}

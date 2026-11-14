@@ -25,8 +25,11 @@ export function watchViewport(win: Window, root: HTMLElement): () => void {
   const update = () => {
     const layout = resolveLayout(win.innerWidth, win.innerHeight);
     viewport.layout = layout;
-    if (layout !== 'too-low') viewport.shown = layout;
-    viewport.height = win.innerHeight;
+    // The screen under the notice does not reflow: it keeps its layout and its height.
+    if (layout !== 'too-low') {
+      viewport.shown = layout;
+      viewport.height = win.innerHeight;
+    }
     root.dataset.layout = viewport.shown;
   };
   update();

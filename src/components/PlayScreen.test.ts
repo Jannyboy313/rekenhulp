@@ -648,3 +648,31 @@ describe('PlayScreen lesson on a tablet (v4 spec §7)', () => {
     expect(document.querySelector('dialog h2')?.textContent).toBe(title);
   });
 });
+
+describe('PlayScreen physical keyboard, review fixes (v4 spec §3.3, §6)', () => {
+  const questions = [question('2 × 3 = ?', 6), question('4 × 5 = ?', 20)];
+  afterEach(() => {
+    viewport.layout = 'phone';
+  });
+
+  it('does not let a held Enter press Verder', async () => {
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    await press('7', 'OK');
+    // Verder has the focus: without this, every auto-repeat would click it natively.
+    const handled = await fireEvent.keyDown(screen.getByRole('button', { name: 'Verder' }), {
+      key: 'Enter',
+      repeat: true,
+    });
+    expect(handled).toBe(false);
+    expect(screen.getByText('Niet goed')).toBeTruthy();
+  });
+
+  it('ignores Enter on the wrong panel under the "too low" notice', async () => {
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    await press('7', 'OK');
+    viewport.layout = 'too-low';
+    await tick();
+    await fireEvent.keyDown(document.body, { key: 'Enter' });
+    expect(screen.getByText('Niet goed')).toBeTruthy();
+  });
+});

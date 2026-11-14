@@ -7,6 +7,7 @@
   import Fraction from './Fraction.svelte';
   import Icon from './Icon.svelte';
   import Keypad from './Keypad.svelte';
+  import { viewport } from './layout.svelte';
   import { press } from './press';
 
   interface Props {
@@ -74,14 +75,24 @@
 
   /** Physical keyboard: the keys of the keypad on screen, and Enter for OK (v4 spec §6). */
   function handleKeydown(event: KeyboardEvent) {
-    if (locked || event.ctrlKey || event.altKey || event.metaKey || isNative(event)) return;
+    // Under the "too low" notice the screen is inert, but window still gets the keys (§3.3).
+    if (viewport.layout === 'too-low' || locked) return;
+    if (event.ctrlKey || event.altKey || event.metaKey || isNative(event)) return;
     const keys = inNote ? NOTE_KEYS : model.keys;
     const action = keyFor(
       event.key,
       keys.map((def) => def.key),
       !inNote,
     );
-    if (action === null) return;
+    if (action === null) {
+      // Enter on a tapped keypad key is never that key again, also where there is no OK (the
+      // kladblok keypad).
+      const { target } = event;
+      if (event.key === 'Enter' && target instanceof HTMLElement && target.dataset.key) {
+        event.preventDefault();
+      }
+      return;
+    }
     event.preventDefault();
     if (action === 'ok') {
       if (event.repeat) return;

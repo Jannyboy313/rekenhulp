@@ -59,7 +59,7 @@ The layout follows from the viewport (CSS px, after system bars), checked in thi
   already capped at 480 and centred. A landscape viewport of 600–899 wide and at least 640 high
   (split screen on a large tablet) gets it.
 - 640 is what the phone column needs for the play screen with a kladblok row: header 64,
-  kladblok 84, prompt 96 (its minimum), field and error line 88, keypad 316.
+  kladblok 76, prompt 96 (its minimum), field and error line 88, keypad 316.
 - The layout is re-evaluated on resize and on orientation change.
 - **Rotation keeps all state:** the answer being typed, the active kladblok cell, the wrong
   panel, an open lesson, scroll positions of lists as far as the browser keeps them. A layout
@@ -330,7 +330,9 @@ most n wide. Every screen keeps its header on top and its pinned buttons at the 
 
 - **Setup order on tablet:** the single column keeps "Wat zit erin" first, then the settings
   (everything fits without scrolling); §9.1 changes the order on the phone only. Portrait
-  follows the landscape order.
+  follows the landscape order. This is a visual order (CSS `order`): the DOM, and so a screen
+  reader, keeps the phone's order with the settings first. The list is not interactive, so the
+  focus order is the same in both.
 - **Overview with fewer rows:** the Lesstof tab has eleven tiles; the grid keeps its 4 × 3 (or
   3 × 4) cells and the last cell stays empty. A greyed-out set is a greyed-out tile.
 - **A list longer than the screen** scrolls inside its column as on the phone (a "Wat zit erin"
@@ -339,10 +341,13 @@ most n wide. Every screen keeps its header on top and its pinned buttons at the 
 - **A small tablet in portrait** (narrower than 720): the three tiles per row are too narrow for
   a name next to the glyph, so the name goes under the glyph (17/22) and the side padding of the
   overview is 20. Found on the 600 × 960 screenshots: names broke inside a word.
-- **"Per onderwerp"** is open by default when the results screen mounts in a landscape layout
-  and closed otherwise; after that the user's choice holds, also through a rotation.
-- Compact landscape uses the landscape column of this table; only the play screen has compact
-  sizes.
+- **"Per onderwerp"** is open by default when the results screen mounts in `tablet-landscape`
+  and closed otherwise (also in compact, where the left column has no height for it); after
+  that the user's choice holds, also through a rotation. When the open card does not fit the
+  left column, it scrolls inside.
+- Compact landscape uses the landscape column of this table. Besides the play screen, only the
+  results have compact sizes: padding 16 32, column gap 32 and buttons of 56, so the left column
+  fits from a height of 520.
 - `SetRow` stays the shared row of both overview lists (lesstof spec §4); the tile is its tablet
   presentation.
 
@@ -377,10 +382,10 @@ screens of the handoff are a redraw, not a redesign.
   area being hidden and inert, a rotation that keeps typed input and an open lesson, Enter and
   digits from the keyboard, Escape closing the lesson pane, the notice keeping the session.
 - `npm run screenshots`: a folder per layout. Phone as today (360 × 780, growing to content).
-  Every shot also at 1280 × 800, 800 × 1280 and 600 × 960 (the narrowest tablet), and the play
-  shots at 960 × 552, all at a fixed viewport: growing the height would change the layout. A
-  scene for the notice.
-- Final check by eye on the PNGs at 600 × 960, 960 × 600, 800 × 1280 and 1280 × 800, and that
+  Every shot also at 1280 × 800, 800 × 1280 and 600 × 960 (the narrowest tablet), and the play,
+  lesson and results shots at 900 × 520 (the lowest landscape tablet), all at a fixed viewport:
+  growing the height would change the layout. A scene for the notice.
+- Final check by eye on the PNGs at 600 × 960, 900 × 520, 800 × 1280 and 1280 × 800, and that
   the phone shots at 360 are unchanged apart from §5 and §9.
 - `npm run smoke` before the push that changes the manifest.
 

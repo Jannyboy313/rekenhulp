@@ -138,7 +138,9 @@
   :global([data-layout^='tablet']) .tray {
     margin: 0 0 calc(var(--play-bottom) + env(safe-area-inset-bottom));
     padding: 12px;
-    border: 1px solid var(--tray-border);
+    /* A shadow, not a border: a border would make the tray 2 px higher than the keypad. */
+    border: none;
+    box-shadow: inset 0 0 0 1px var(--tray-border);
     border-radius: 20px;
   }
 

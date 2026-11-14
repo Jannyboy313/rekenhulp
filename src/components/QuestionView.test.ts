@@ -753,3 +753,42 @@ describe('QuestionView physical keyboard (v4 spec §6)', () => {
     expect(onanswer).toHaveBeenCalledTimes(2);
   });
 });
+
+describe('QuestionView physical keyboard, review fixes (v4 spec §3.3, §6)', () => {
+  afterEach(() => {
+    viewport.layout = 'phone';
+  });
+
+  it('ignores every key under the "too low" notice', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step, onanswer } });
+    viewport.layout = 'too-low';
+    await tick();
+    await fireEvent.keyDown(window, { key: '1' });
+    await fireEvent.keyDown(window, { key: 'Enter' });
+    expect(answerText()).toBe('');
+    expect(onanswer).not.toHaveBeenCalled();
+  });
+
+  it('ignores j and n under the notice', async () => {
+    const onanswer = vi.fn();
+    const prime = booleanStep({ prompt: 'Is 91 een priemgetal?', answer: false });
+    render(QuestionView, { props: { step: prime, onanswer } });
+    viewport.layout = 'too-low';
+    await tick();
+    await fireEvent.keyDown(window, { key: 'n' });
+    expect(onanswer).not.toHaveBeenCalled();
+  });
+
+  it('does not type a focused kladblok key again on Enter', async () => {
+    render(QuestionView, { props: { step, scratchpad: true, onanswer: vi.fn() } });
+    await press(/^Kladblok vak 1:/, '7');
+    const handled = await fireEvent.keyDown(screen.getByRole('button', { name: '7' }), {
+      key: 'Enter',
+    });
+    expect(handled).toBe(false);
+    expect(
+      screen.getByRole('button', { name: /^Kladblok vak 1:/ }).getAttribute('aria-label'),
+    ).toBe('Kladblok vak 1: 7');
+  });
+});

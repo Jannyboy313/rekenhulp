@@ -306,7 +306,8 @@ screenshots/            screens.spec.ts (Playwright): the shot list, steps per s
                         in a folder per layout (gitignored). The layouts are the projects in
                         playwright.config.ts: phone 360×780, tablet-landscape 1280×800,
                         tablet-portrait 800×1280, tablet-portrait-min 600×960 (the narrowest
-                        tablet), compact 960×552 (play shots only)
+                        tablet), compact 900×520 (the lowest landscape tablet; play, lesson and
+                        results shots only)
 ```
 
 A new screen or screen state also needs a scene in `src/screens/scenes.ts` and a shot in

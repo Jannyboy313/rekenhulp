@@ -302,10 +302,12 @@
     padding: var(--play-body-top) 0 calc(var(--play-body-bottom) + env(safe-area-inset-bottom));
   }
 
+  /* The last resort on a low screen with a long tip: the panel itself scrolls. */
   :global([data-layout^='tablet-landscape']) .panel {
     align-self: end;
     max-height: 100%;
     min-height: 0;
+    overflow-y: auto;
   }
 
   :global([data-layout^='tablet-landscape']) .panel > :not(.scrolls) {
@@ -313,7 +315,7 @@
   }
 
   :global([data-layout^='tablet-landscape']) .block.scrolls {
-    min-height: 72px;
+    min-height: 56px;
   }
 
   @keyframes appear {

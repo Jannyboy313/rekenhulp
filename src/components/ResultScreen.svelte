@@ -2,7 +2,6 @@
   import { untrack } from 'svelte';
   import { formatDuration, formatSeconds } from '../lib/format';
   import { displayAnswer } from '../lib/inputModels';
-  import { isLandscape } from '../lib/layout';
   import { wrongSteps, type SessionSummary } from '../lib/results';
   import { EXERCISES_PER_MISTAKE } from '../lib/session';
   import type { PracticeSet } from '../lib/types';
@@ -22,9 +21,10 @@
   let { set, summary, onrestart, onmenu, onpractise }: Props = $props();
 
   const failedSteps = $derived(wrongSteps(summary.mistakes));
-  // "Per onderwerp" starts open where it has its own column (landscape, v4 spec §8). Read once:
-  // after that the user's choice holds, also through a rotation.
-  const topicsOpen = untrack(() => isLandscape(viewport.shown));
+  // "Per onderwerp" starts open where it has its own column and the height for it (landscape,
+  // not compact; v4 spec §8). Read once: after that the user's choice holds, also through a
+  // rotation.
+  const topicsOpen = untrack(() => viewport.shown === 'tablet-landscape');
 </script>
 
 <!-- A value with its unit; the percent sign sticks to the number (lib/units.ts). -->
@@ -476,5 +476,21 @@
   :global([data-layout^='tablet']) :is(.primary, .secondary) {
     height: 60px;
     font-size: 19px;
+  }
+
+  /* Compact (an 8" tablet, from 520 high): less padding and the phone's buttons, so the left
+     column fits with the topic card closed. */
+  :global([data-layout='tablet-landscape-compact']) .results {
+    padding: calc(16px + env(safe-area-inset-top)) 32px 0;
+    column-gap: 32px;
+  }
+
+  :global([data-layout='tablet-landscape-compact']) footer {
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+  }
+
+  :global([data-layout='tablet-landscape-compact']) :is(.primary, .secondary) {
+    height: 56px;
+    font-size: 17px;
   }
 </style>

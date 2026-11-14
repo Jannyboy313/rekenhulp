@@ -57,8 +57,9 @@
         <Icon name="close" size={22} stroke={2.2} />
       </button>
     </header>
+    <!-- Above the scrolling blocks, so the exercise stays in view (v4 spec §7). -->
+    {#if prompt !== undefined}<div class="strip-row"><LessonStrip {prompt} /></div>{/if}
     <div class="content">
-      {#if prompt !== undefined}<LessonStrip {prompt} />{/if}
       <LessonBlocks blocks={topic.blocks} />
     </div>
     {#if prompt !== undefined}
@@ -124,6 +125,12 @@
     font-size: 20px;
     line-height: 26px;
     font-weight: 700;
+  }
+
+  .strip-row {
+    flex: none;
+    padding: 16px 32px 0;
+    background: var(--bg);
   }
 
   footer {
