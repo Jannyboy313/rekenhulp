@@ -170,37 +170,11 @@ npm run check   # svelte-check (type check)
 npm run build   # production build incl. service worker
 npm run format  # Prettier, writes all files
 npm run screenshots # PNG per screen state at 360×780 into screenshots/ (starts its own Vite)
-npm run dev     # dev server (not pre-approved, ask first)
-npm run preview # serve dist/ (not pre-approved, ask first)
+npm run dev     # dev server
+npm run preview # serve dist/
 ```
 
-## Command allowlist override (this project only)
-
-The user's global allowlist (`~/.claude/rules/allowlist.md`) is extended **for this repository only**
-with the commands below, so work can proceed autonomously. Authorised by the user on 2026-10-05.
-
-- `npm install` (incl. adding packages)
-- `npm test`
-- `npm run check`, `npm run build` (authorised 2026-10-05, for autonomous verification)
-- `npm run format` (Prettier, authorised 2026-10-06)
-- `npm run screenshots` (Playwright, authorised 2026-11-14). The Chromium browser is a one-time
-  install the user runs: `npx playwright install chromium`
-- `sed -n` (read-only printing only; `sed -i` and other write forms stay forbidden; authorised
-  2026-10-06)
-- `rm docs/superpowers/plans/<file>.md` (plan files only, named explicitly; no `-r`, no `-f`, no
-  globs, no other paths; authorised 2026-10-25)
-- `rm src/<path>/<file>` (files inside `src/` only, named explicitly; no `-r`, no `-f`, no globs,
-  no directories, no paths outside `src/`; authorised 2026-10-25)
-- `git merge --no-ff <branch>` (merging agent worktree branches into `main`, and `main` into an
-  agent worktree branch to update its base; no other merge forms; authorised 2026-11-01)
-- `git worktree remove <path>` and `git branch -d <branch>` (cleanup of merged agent worktrees
-  and branches only; no `--force`, no `-D`; authorised 2026-11-01)
-- `git init`
-- `git add`
-- `git commit`
-
-Everything else from the global allowlist still applies (no `git push`, `git checkout`,
-`git reset`, `npx`, `node`, etc.). Ask before running anything not listed here or globally.
+`npm run screenshots` needs a one-time Chromium install: `npx playwright install chromium`.
 
 ## Language conventions
 
