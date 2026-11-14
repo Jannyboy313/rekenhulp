@@ -1,13 +1,14 @@
 <script lang="ts">
   import { untrack } from 'svelte';
   import ErrorScreen from './components/ErrorScreen.svelte';
-  import { watchViewport } from './components/layout.svelte';
+  import { viewport, watchViewport } from './components/layout.svelte';
   import LessonSetList from './components/LessonSetList.svelte';
   import LessonTopicList from './components/LessonTopicList.svelte';
   import LessonView from './components/LessonView.svelte';
   import PlayScreen from './components/PlayScreen.svelte';
   import PracticeSetList from './components/PracticeSetList.svelte';
   import ResultScreen from './components/ResultScreen.svelte';
+  import RotateNotice from './components/RotateNotice.svelte';
   import SetOverview, { type OverviewTab } from './components/SetOverview.svelte';
   import SetupScreen from './components/SetupScreen.svelte';
   import { createBackGuard } from './lib/backGuard';
@@ -72,6 +73,7 @@
 
   // The layout follows the viewport, also after a rotation (v4 spec §3.2).
   $effect(() => watchViewport(window, document.documentElement));
+  const tooLow = $derived(viewport.layout === 'too-low');
 
   // A system back never closes the app from another screen (spec §3).
   const backGuard = createBackGuard(history);
@@ -146,77 +148,90 @@
 
 <svelte:window onpopstate={handlePopState} />
 
-<!-- A screen that fails while rendering gives the error screen too (spec §3). -->
-<svelte:boundary onerror={(error) => console.error(error)}>
-  {#if screen.name === 'sets'}
-    <SetOverview {tab} ontab={(next) => (tab = next)}>
-      {#snippet practice()}
-        <PracticeSetList sets={[...sets, MIXED_SET]} onselect={showSetup} />
-      {/snippet}
-      {#snippet lessons()}
-        <LessonSetList
-          {sets}
-          lessons={allLessons}
-          onopen={(set, lesson) => openLesson(set, lesson, { name: 'sets' })}
-        />
-      {/snippet}
-    </SetOverview>
-  {:else if screen.name === 'lessonTopics'}
-    {@const current = screen}
-    <LessonTopicList
-      set={current.set}
-      lesson={current.lesson}
-      onselect={(topic) => (screen = { name: 'lesson', parent: current, topic })}
-      onback={lessonBack}
-    />
-  {:else if screen.name === 'lesson'}
-    <LessonView topic={screen.topic} onback={lessonBack} />
-  {:else if screen.name === 'setup'}
-    {@const set = screen.set}
-    <SetupScreen
-      {set}
-      bind:size
-      bind:level
-      bind:tables
-      pool={sets}
-      bind:chosenSets
-      onstart={() => startSession(set)}
-      onback={showSets}
-    />
-  {:else if screen.name === 'playing'}
-    {@const set = screen.set}
-    {@const questions = screen.questions}
-    {#key questions}
-      <PlayScreen
-        {set}
-        {questions}
-        lessons={allLessons}
-        onfinish={(records, totalMs) => finishSession(set, records, totalMs)}
+<!-- Under the "too low" notice the screen stays mounted, with its state, but out of reach
+     (v4 spec §3.3). -->
+<div class="screens" inert={tooLow}>
+  <!-- A screen that fails while rendering gives the error screen too (spec §3). -->
+  <svelte:boundary onerror={(error) => console.error(error)}>
+    {#if screen.name === 'sets'}
+      <SetOverview {tab} ontab={(next) => (tab = next)}>
+        {#snippet practice()}
+          <PracticeSetList sets={[...sets, MIXED_SET]} onselect={showSetup} />
+        {/snippet}
+        {#snippet lessons()}
+          <LessonSetList
+            {sets}
+            lessons={allLessons}
+            onopen={(set, lesson) => openLesson(set, lesson, { name: 'sets' })}
+          />
+        {/snippet}
+      </SetOverview>
+    {:else if screen.name === 'lessonTopics'}
+      {@const current = screen}
+      <LessonTopicList
+        set={current.set}
+        lesson={current.lesson}
+        onselect={(topic) => (screen = { name: 'lesson', parent: current, topic })}
+        onback={lessonBack}
       />
-    {/key}
-  {:else if screen.name === 'error'}
-    <ErrorScreen onhome={showSets} />
-  {:else}
-    {@const set = screen.set}
-    {@const summary = screen.summary}
-    <ResultScreen
-      {set}
-      {summary}
-      onrestart={() => startSession(set)}
-      onmenu={showSets}
-      onpractise={() => practiseMistakes(set, summary)}
-    />
-  {/if}
-  {#snippet failed(_error, reset)}
-    <ErrorScreen
-      onhome={() => {
-        showSets();
-        reset();
-      }}
-    />
-  {/snippet}
-</svelte:boundary>
+    {:else if screen.name === 'lesson'}
+      <LessonView topic={screen.topic} onback={lessonBack} />
+    {:else if screen.name === 'setup'}
+      {@const set = screen.set}
+      <SetupScreen
+        {set}
+        bind:size
+        bind:level
+        bind:tables
+        pool={sets}
+        bind:chosenSets
+        onstart={() => startSession(set)}
+        onback={showSets}
+      />
+    {:else if screen.name === 'playing'}
+      {@const set = screen.set}
+      {@const questions = screen.questions}
+      {#key questions}
+        <PlayScreen
+          {set}
+          {questions}
+          lessons={allLessons}
+          onfinish={(records, totalMs) => finishSession(set, records, totalMs)}
+        />
+      {/key}
+    {:else if screen.name === 'error'}
+      <ErrorScreen onhome={showSets} />
+    {:else}
+      {@const set = screen.set}
+      {@const summary = screen.summary}
+      <ResultScreen
+        {set}
+        {summary}
+        onrestart={() => startSession(set)}
+        onmenu={showSets}
+        onpractise={() => practiseMistakes(set, summary)}
+      />
+    {/if}
+    {#snippet failed(_error, reset)}
+      <ErrorScreen
+        onhome={() => {
+          showSets();
+          reset();
+        }}
+      />
+    {/snippet}
+  </svelte:boundary>
+</div>
 
-{#if updates && shouldPrompt(updateState, screen.name)}
+{#if tooLow}
+  <RotateNotice />
+{:else if updates && shouldPrompt(updateState, screen.name)}
   <UpdateDialog oninstall={updates.install} onlater={updates.dismiss} />
 {/if}
+
+<style>
+  /* Only carries `inert`: the screens stay the flex children of #app. */
+  .screens {
+    display: contents;
+  }
+</style>

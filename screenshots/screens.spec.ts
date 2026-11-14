@@ -95,6 +95,7 @@ const SHOTS: readonly Shot[] = [
   { id: 'lesson-topics', scene: 'lesson-topics' },
   { id: 'lesson', scene: 'lesson' },
   { id: 'error', scene: 'error' },
+  { id: 'too-low', scene: 'too-low' },
 ];
 
 /** One folder per project, so per layout (playwright.config.ts). */

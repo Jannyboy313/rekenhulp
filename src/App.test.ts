@@ -58,6 +58,50 @@ describe('App', () => {
     expect(document.documentElement.dataset.layout).toBe('tablet-landscape');
   });
 
+  describe('too low (v4 spec §3.3)', () => {
+    async function rotate(width: number, height: number) {
+      resize(width, height);
+      await fireEvent(window, new Event('resize'));
+    }
+    const screens = () => document.querySelector<HTMLElement>('.screens');
+
+    it('shows a notice over the screen, which becomes inert', async () => {
+      render(App);
+      expect(screens()?.inert).toBe(false);
+      await rotate(780, 360);
+      expect(screen.getByRole('heading', { name: 'Scherm te laag' })).toBeTruthy();
+      expect(screen.getByText('Draai je apparaat of maak het venster groter.')).toBeTruthy();
+      expect(screens()?.inert).toBe(true);
+
+      await rotate(360, 780);
+      expect(screen.queryByRole('heading', { name: 'Scherm te laag' })).toBeNull();
+      expect(screens()?.inert).toBe(false);
+    });
+
+    it('keeps a running session with its typed answer', async () => {
+      render(App);
+      await click(/Tafels/);
+      await click(/^Start/);
+      const prompt = document.querySelector('.prompt')?.textContent;
+      await click('1');
+      await rotate(780, 360);
+      await rotate(360, 780);
+      expect(document.querySelector('.prompt')?.textContent).toBe(prompt);
+      expect(screen.getByLabelText('Jouw antwoord').textContent?.trim()).toBe('1');
+    });
+
+    it('holds the update dialog back until the screen is high enough', async () => {
+      const updates = createUpdates(vi.fn());
+      render(App, { updates });
+      await rotate(780, 360);
+      updates.needRefresh();
+      await tick();
+      expect(screen.queryByText(/nieuwe versie beschikbaar/)).toBeNull();
+      await rotate(360, 780);
+      expect(screen.getByText(/nieuwe versie beschikbaar/)).toBeTruthy();
+    });
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
     vi.unstubAllGlobals();

@@ -208,7 +208,7 @@ body {
   max-width: none;
 }
 
-:root[data-layout^='tablet'] #app > main {
+:root[data-layout^='tablet'] #app main {
   width: 100%;
   max-width: var(--column, 30rem);
   margin-inline: auto;

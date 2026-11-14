@@ -7,6 +7,7 @@ import LessonTopicList from '../components/LessonTopicList.svelte';
 import LessonView from '../components/LessonView.svelte';
 import PlayScreen from '../components/PlayScreen.svelte';
 import ResultScreen from '../components/ResultScreen.svelte';
+import RotateNotice from '../components/RotateNotice.svelte';
 import SetupScreen from '../components/SetupScreen.svelte';
 import { LESSONS, lessonFor } from '../lib/lessons';
 import { createRng } from '../lib/random';
@@ -118,4 +119,5 @@ export const SCENES: Record<string, Scene> = {
     }),
   lesson: (target) => mount(LessonView, { target, props: { topic: firstTopic, onback: noop } }),
   error: (target) => mount(ErrorScreen, { target, props: { onhome: noop } }),
+  'too-low': (target) => mount(RotateNotice, { target }),
 };
