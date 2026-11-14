@@ -94,6 +94,7 @@ const SHOTS: readonly Shot[] = [
   { id: 'results-mistakes', scene: 'results-mistakes' },
   { id: 'lesson-topics', scene: 'lesson-topics' },
   { id: 'lesson', scene: 'lesson' },
+  { id: 'error', scene: 'error' },
 ];
 
 const dir = import.meta.dirname;

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import ErrorScreen from './components/ErrorScreen.svelte';
   import LessonSetList from './components/LessonSetList.svelte';
   import LessonTopicList from './components/LessonTopicList.svelte';
   import LessonView from './components/LessonView.svelte';
@@ -40,6 +41,7 @@
     | { name: 'setup'; set: PracticeSet }
     | { name: 'playing'; set: PracticeSet; questions: Question[] }
     | { name: 'results'; set: PracticeSet; summary: SessionSummary }
+    | { name: 'error' }
     | LessonTopicsScreen
     | { name: 'lesson'; parent: LessonTopicsScreen; topic: LessonTopic };
 
@@ -103,22 +105,34 @@
     else if (screen.name === 'lessonTopics') screen = screen.returnTo;
   }
 
+  /** A session that cannot be built shows the error screen instead of a dead button (spec §3). */
+  function play(set: PracticeSet, build: () => Question[]) {
+    try {
+      screen = { name: 'playing', set, questions: build() };
+    } catch (error) {
+      console.error(error);
+      screen = { name: 'error' };
+    }
+  }
+
   function startSession(set: PracticeSet) {
     const rng = createRng(randomSeed());
-    const questions = isMixed(set)
-      ? buildMixedSession(countingSets(sets, chosenSets, level), level, size, rng)
-      : buildSession(forLevel(set, level), size, rng, generatorsFor(set, tables));
-    screen = { name: 'playing', set, questions };
+    play(set, () =>
+      isMixed(set)
+        ? buildMixedSession(countingSets(sets, chosenSets, level), level, size, rng)
+        : buildSession(forLevel(set, level), size, rng, generatorsFor(set, tables)),
+    );
   }
 
   /** Fouten oefenen (spec §3.5): new exercises of the topics of the first-attempt mistakes. */
   function practiseMistakes(set: PracticeSet, summary: SessionSummary) {
-    const questions = mistakeSession(
-      summary.mistakes.map(({ question }) => question),
-      createRng(randomSeed()),
-      generatorsFor(set, tables),
+    play(set, () =>
+      mistakeSession(
+        summary.mistakes.map(({ question }) => question),
+        createRng(randomSeed()),
+        generatorsFor(set, tables),
+      ),
     );
-    screen = { name: 'playing', set, questions };
   }
 
   function finishSession(set: PracticeSet, records: QuestionRecord[], totalMs: number) {
@@ -128,63 +142,76 @@
 
 <svelte:window onpopstate={handlePopState} />
 
-{#if screen.name === 'sets'}
-  <SetOverview {tab} ontab={(next) => (tab = next)}>
-    {#snippet practice()}
-      <PracticeSetList sets={[...sets, MIXED_SET]} onselect={showSetup} />
-    {/snippet}
-    {#snippet lessons()}
-      <LessonSetList
-        {sets}
-        lessons={allLessons}
-        onopen={(set, lesson) => openLesson(set, lesson, { name: 'sets' })}
-      />
-    {/snippet}
-  </SetOverview>
-{:else if screen.name === 'lessonTopics'}
-  {@const current = screen}
-  <LessonTopicList
-    set={current.set}
-    lesson={current.lesson}
-    onselect={(topic) => (screen = { name: 'lesson', parent: current, topic })}
-    onback={lessonBack}
-  />
-{:else if screen.name === 'lesson'}
-  <LessonView topic={screen.topic} onback={lessonBack} />
-{:else if screen.name === 'setup'}
-  {@const set = screen.set}
-  <SetupScreen
-    {set}
-    bind:size
-    bind:level
-    bind:tables
-    pool={sets}
-    bind:chosenSets
-    onstart={() => startSession(set)}
-    onback={showSets}
-  />
-{:else if screen.name === 'playing'}
-  {@const set = screen.set}
-  {@const questions = screen.questions}
-  {#key questions}
-    <PlayScreen
-      {set}
-      {questions}
-      lessons={allLessons}
-      onfinish={(records, totalMs) => finishSession(set, records, totalMs)}
+<!-- A screen that fails while rendering gives the error screen too (spec §3). -->
+<svelte:boundary onerror={(error) => console.error(error)}>
+  {#if screen.name === 'sets'}
+    <SetOverview {tab} ontab={(next) => (tab = next)}>
+      {#snippet practice()}
+        <PracticeSetList sets={[...sets, MIXED_SET]} onselect={showSetup} />
+      {/snippet}
+      {#snippet lessons()}
+        <LessonSetList
+          {sets}
+          lessons={allLessons}
+          onopen={(set, lesson) => openLesson(set, lesson, { name: 'sets' })}
+        />
+      {/snippet}
+    </SetOverview>
+  {:else if screen.name === 'lessonTopics'}
+    {@const current = screen}
+    <LessonTopicList
+      set={current.set}
+      lesson={current.lesson}
+      onselect={(topic) => (screen = { name: 'lesson', parent: current, topic })}
+      onback={lessonBack}
     />
-  {/key}
-{:else}
-  {@const set = screen.set}
-  {@const summary = screen.summary}
-  <ResultScreen
-    {set}
-    {summary}
-    onrestart={() => startSession(set)}
-    onmenu={showSets}
-    onpractise={() => practiseMistakes(set, summary)}
-  />
-{/if}
+  {:else if screen.name === 'lesson'}
+    <LessonView topic={screen.topic} onback={lessonBack} />
+  {:else if screen.name === 'setup'}
+    {@const set = screen.set}
+    <SetupScreen
+      {set}
+      bind:size
+      bind:level
+      bind:tables
+      pool={sets}
+      bind:chosenSets
+      onstart={() => startSession(set)}
+      onback={showSets}
+    />
+  {:else if screen.name === 'playing'}
+    {@const set = screen.set}
+    {@const questions = screen.questions}
+    {#key questions}
+      <PlayScreen
+        {set}
+        {questions}
+        lessons={allLessons}
+        onfinish={(records, totalMs) => finishSession(set, records, totalMs)}
+      />
+    {/key}
+  {:else if screen.name === 'error'}
+    <ErrorScreen onhome={showSets} />
+  {:else}
+    {@const set = screen.set}
+    {@const summary = screen.summary}
+    <ResultScreen
+      {set}
+      {summary}
+      onrestart={() => startSession(set)}
+      onmenu={showSets}
+      onpractise={() => practiseMistakes(set, summary)}
+    />
+  {/if}
+  {#snippet failed(_error, reset)}
+    <ErrorScreen
+      onhome={() => {
+        showSets();
+        reset();
+      }}
+    />
+  {/snippet}
+</svelte:boundary>
 
 {#if updates && shouldPrompt(updateState, screen.name)}
   <UpdateDialog oninstall={updates.install} onlater={updates.dismiss} />

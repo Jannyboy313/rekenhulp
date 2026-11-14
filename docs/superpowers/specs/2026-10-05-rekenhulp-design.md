@@ -104,7 +104,7 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 
 The app is a state machine in `App.svelte` with four states:
 `sets → setup → playing → results`, plus two for the lesstof: `lessonTopics` and `lesson`
-(lesstof spec §3).
+(lesstof spec §3), and `error` (below).
 
 - "Terug" moves from `setup` back to `sets`.
 - "Opnieuw" moves from `results` back to `playing`, with the same set, count, level and table
@@ -116,6 +116,13 @@ The app is a state machine in `App.svelte` with four states:
   `playing` it is ignored; only Stop ends a session. On `sets` it behaves as the system default.
   Implementation: one history entry is kept above the start screen while the app is not on
   `sets`; a `popstate` that consumes it is handled as back.
+- An unexpected error never leaves a dead screen. When a session cannot be built (a generator
+  throws) or a screen fails while rendering, the app shows the error screen (`error`): the heading
+  "Er ging iets mis", the text "Dit scherm kon niet worden getoond. Ga terug naar het begin en
+  probeer het opnieuw." and one button **Naar het begin**, which moves to `sets`. The system back
+  does the same. The error is logged to the console; nothing is sent anywhere. The update dialog
+  (§2) is not shown on it. Errors inside an event handler (such as an answer check) are not
+  caught this way.
 
 ### 3.1 Set overview (start screen)
 

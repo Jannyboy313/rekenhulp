@@ -2,6 +2,7 @@
 // Add a scene (and a shot in screenshots/screens.spec.ts) for every new screen or state.
 import { mount } from 'svelte';
 import App from '../App.svelte';
+import ErrorScreen from '../components/ErrorScreen.svelte';
 import LessonTopicList from '../components/LessonTopicList.svelte';
 import LessonView from '../components/LessonView.svelte';
 import PlayScreen from '../components/PlayScreen.svelte';
@@ -116,4 +117,5 @@ export const SCENES: Record<string, Scene> = {
       props: { set: proportions, lesson, onselect: noop, onback: noop },
     }),
   lesson: (target) => mount(LessonView, { target, props: { topic: firstTopic, onback: noop } }),
+  error: (target) => mount(ErrorScreen, { target, props: { onhome: noop } }),
 };

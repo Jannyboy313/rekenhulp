@@ -6,6 +6,7 @@ import App from './App.svelte';
 import { stubMatchMedia } from './components/testMatchMedia';
 import { FIXTURE_LESSON } from './lib/lessons/fixture';
 import { DEEP_FIXTURE_SET } from './lib/setFixture';
+import type { PracticeSet } from './lib/types';
 import { createUpdates } from './lib/update';
 import {
   choosesTables,
@@ -402,6 +403,50 @@ describe('App', () => {
       await click('Stoppen');
       await click('Opnieuw');
       expect(isDeep()).toBe(true);
+    });
+  });
+  describe('error screen', () => {
+    // No topics and no tables: building its session throws.
+    const BROKEN_SET: PracticeSet = {
+      id: 'broken',
+      name: 'Kapot',
+      description: 'Kan geen sessie maken',
+      topics: [],
+      tablesPercent: 0,
+    };
+
+    beforeEach(() => {
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    it('shows the error screen when a session cannot be built, and returns to the overview', async () => {
+      render(App, { props: { sets: [BROKEN_SET] } });
+      await click(/^Kapot/);
+      await click(/^Start/);
+      expect(screen.getByRole('heading', { name: 'Er ging iets mis' })).toBeTruthy();
+      expect(console.error).toHaveBeenCalled();
+      await click('Naar het begin');
+      expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
+    });
+
+    it('system back on the error screen returns to the overview', async () => {
+      render(App, { props: { sets: [BROKEN_SET] } });
+      await click(/^Kapot/);
+      await click(/^Start/);
+      await systemBack();
+      expect(screen.getByText('Wat wil je oefenen?')).toBeTruthy();
+    });
+
+    it('shows the error screen when a screen fails while rendering', async () => {
+      const failing: PracticeSet = {
+        ...BROKEN_SET,
+        get description(): string {
+          throw new Error('render failure');
+        },
+      };
+      render(App, { props: { sets: [failing] } });
+      await tick();
+      expect(screen.getByRole('heading', { name: 'Er ging iets mis' })).toBeTruthy();
     });
   });
 });

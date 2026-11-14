@@ -204,7 +204,8 @@ touches the PWA config, the service worker or `main.ts`.
 ```
 src/
   App.svelte            state machine: sets → setup → playing → results, plus lessonTopics and
-                        lesson (lesstof)
+                        lesson (lesstof) and error (a session that cannot be built, or a
+                        screen that fails while rendering: `svelte:boundary`)
   components/           SetOverview (shell: header + Oefenen/Lesstof tabs, a snippet per tab),
                         PracticeSetList, LessonSetList, SetRow (shared row), LessonTopicList,
                         LessonView, LessonBlocks (renders lesson blocks), LessonLinks +
@@ -213,7 +214,7 @@ src/
                         queue incl. repeats, auto-advance timer), QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
-                        panel), ResultScreen, MathText + Fraction (stacked fractions, the slot of
+                        panel), ResultScreen, ErrorScreen, MathText + Fraction (stacked fractions, the slot of
                         a prompt), Icon, Logo, SetGlyph, press.ts (act-on-press action)
   lib/
     types.ts            Question, Step, AnswerKind, CheckResult, Topic, PracticeSet
