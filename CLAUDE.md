@@ -90,7 +90,7 @@ the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are close
 | Step                                                                                    | New infrastructure |
 | --------------------------------------------------------------------------------------- | ------------------ |
 | v4: tablet support (§12.10); form in its own spec                                       | wide layout        |
-| v5: practice test (§12.6), reuses `buildMixedSession`; form in its own spec             | test session       |
+| v5: practice test (§12.6), reuses `buildMixedSession` and `lib/play.ts`; own spec       | test session       |
 | v6: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
 | v7: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)                   | open               |
 | v8: print button for the practice test (§12.12)                                         | print stylesheet   |
@@ -137,8 +137,6 @@ only the real choices, update and commit the spec, then implement directly with 
 
 - Focus falls back to `body` after a screen or question change, and when the kladblok's "Tik hier
   voor je antwoord" button is activated by keyboard (keyboard/screen-reader users only).
-- Move the `PlayScreen` session state (queue, repeats, records) into a pure reducer in
-  `lib/play.ts`; separate session with a light plan.
 
 ## Svelte pitfalls
 
@@ -215,8 +213,8 @@ src/
                         PracticeSetList, LessonSetList, SetRow (shared row), LessonTopicList,
                         LessonView, LessonBlocks (renders lesson blocks), LessonLinks +
                         LessonSheet (lesson link from a mistake), SetupScreen (topic list, table
-                        choice or Gemengd set choice), PlayScreen (question
-                        queue incl. repeats, auto-advance timer), QuestionView (also the correct state),
+                        choice or Gemengd set choice), PlayScreen (runs
+                        lib/play.ts, auto-advance timer), QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
                         panel), ResultScreen, ErrorScreen, MathText + Fraction (stacked fractions, the slot of
@@ -248,6 +246,9 @@ src/
                         (Verdieping); hasDeep, forLevel; Gemengd: MIXED_SET (pseudo set, not in
                         PRACTICE_SETS), isMixed, countingSets
     setFixture.ts       test-only set with a Verdieping
+    play.ts             pure reducer of a running session: queue incl. repeats, position,
+                        attempts, feedback, records (startPlay, answer, advance, stop);
+                        PlayScreen keeps only timers, kladblok notes and the lesson sheet
     session.ts          quotas, shuffle, de-duplication, table choice (generatorsFor),
                         repeats (insertRepeat), Gemengd (buildMixedSession)
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
