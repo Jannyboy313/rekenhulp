@@ -257,8 +257,11 @@ Rules:
   correct state (the 600 ms before auto-advance) and, except Escape, every key while a lesson is
   open. A held key repeats, except Enter.
 - When a button has keyboard focus, Enter and Space keep their native meaning (activate that
-  button) and are not also handled as OK or spatie. The exception is a keypad key: a tapped key
-  keeps the focus, and Enter after it is OK, not that key again.
+  button) and are not also handled as OK or spatie. The exceptions are the typing
+  surfaces, which keep the focus after a tap: on a keypad key Enter is OK (not that key again),
+  and on a kladblok cell Space is the spatie while a cell is active.
+- The Enter that submits a wrong answer does not also press **Verder**: one key press is one
+  action.
 - The key on screen shows its pressed state for 100 ms, so the input is visible.
 - Code: `lib/physicalKeys.ts`, a pure `keyFor(key, available)` that maps a `KeyboardEvent.key` to
   a `KeypadKey`, `'ok'` or nothing, given the keys of the keypad on screen. `KeypadAnswer` owns

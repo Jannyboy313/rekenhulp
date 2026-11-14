@@ -2,6 +2,7 @@
   import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
   import { displayAnswer, INPUT_MODELS } from '../lib/inputModels';
   import type { KeypadKey } from '../lib/keypadInput';
+  import { choiceFor } from '../lib/physicalKeys';
   import { promptSize } from '../lib/promptSize';
   import {
     applyNoteKey,
@@ -73,6 +74,18 @@
   let correctInput = $state<string | null>(null);
   const locked = $derived(correctInput !== null);
 
+  /** Physical keyboard on a step without a keypad: j/n and 1–4 (v4 spec §6). */
+  function handleKeydown(event: KeyboardEvent) {
+    if (step.kind !== 'boolean' && step.kind !== 'choice') return;
+    if (locked || event.repeat || event.ctrlKey || event.altKey || event.metaKey) return;
+    const choices = step.kind === 'boolean' ? [NO, YES] : (step.options ?? []);
+    const index = choiceFor(event.key, step.kind, choices.length);
+    const choice = index === null ? undefined : choices[index];
+    if (choice === undefined) return;
+    event.preventDefault();
+    answer(choice);
+  }
+
   function answer(input: string) {
     if (answered) return;
     answered = true;
@@ -81,6 +94,8 @@
     onanswer(input, result);
   }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <!-- The bar of the correct state runs as long as PlayScreen's timer (inherited by KeypadAnswer). -->
 <div class="question" style:--advance-ms="{CORRECT_FEEDBACK_MS}ms">

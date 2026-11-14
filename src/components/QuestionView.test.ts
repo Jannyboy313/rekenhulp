@@ -649,3 +649,106 @@ describe('QuestionView letter input', () => {
     expect(onanswer).toHaveBeenCalledOnce();
   });
 });
+
+describe('QuestionView physical keyboard (v4 spec §6)', () => {
+  beforeEach(() => {
+    stubMatchMedia();
+    vi.useFakeTimers();
+  });
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.unstubAllGlobals();
+  });
+
+  const type = async (...keys: string[]) => {
+    for (const key of keys) await fireEvent.keyDown(window, { key });
+  };
+
+  it('types digits and submits with Enter', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step, onanswer } });
+    await type('1', '2', 'Enter');
+    expect(onanswer).toHaveBeenCalledWith('12', expect.objectContaining({ correct: true }));
+  });
+
+  it('does nothing on Enter with empty input, on unknown keys and with a modifier', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step, onanswer } });
+    await type('Enter', 'c', '*');
+    const handled = await fireEvent.keyDown(window, { key: '5', ctrlKey: true });
+    expect(handled).toBe(true);
+    expect(answerText()).toBe('');
+    expect(onanswer).not.toHaveBeenCalled();
+  });
+
+  it('ignores keys in the correct state', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step, onanswer } });
+    await type('1', '2', 'Enter', '7', 'Enter');
+    expect(onanswer).toHaveBeenCalledOnce();
+  });
+
+  it('types into the active kladblok cell, where space is the spatie and Enter does nothing', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step, scratchpad: true, onanswer } });
+    const cell = screen.getByRole('button', { name: /^Kladblok vak 1:/ });
+    await press(/^Kladblok vak 1:/);
+    await type('8');
+    // The tapped cell keeps the focus: space is the spatie, not a second tap on the cell.
+    await fireEvent.keyDown(cell, { key: ' ' });
+    await type('4', 'Enter');
+    expect(cell.getAttribute('aria-label')).toBe('Kladblok vak 1: 8 4');
+    expect(onanswer).not.toHaveBeenCalled();
+  });
+
+  it('submits on Enter while a tapped keypad key has the focus, without typing it again', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step, onanswer } });
+    await press('1', '2');
+    const handled = await fireEvent.keyDown(screen.getByRole('button', { name: '2' }), {
+      key: 'Enter',
+    });
+    expect(handled).toBe(false);
+    expect(onanswer).toHaveBeenCalledWith('12', expect.anything());
+  });
+
+  it('leaves Enter to another focused button', async () => {
+    const onanswer = vi.fn();
+    render(QuestionView, { props: { step, scratchpad: true, onanswer } });
+    await press('1', '2');
+    const handled = await fireEvent.keyDown(
+      screen.getByRole('button', { name: /^Kladblok vak 1:/ }),
+      { key: 'Enter' },
+    );
+    expect(handled).toBe(true);
+    expect(onanswer).not.toHaveBeenCalled();
+  });
+
+  it('shows the typed key as pressed for 100 ms', async () => {
+    render(QuestionView, { props: { step, onanswer: vi.fn() } });
+    await type('5');
+    const five = screen.getByRole('button', { name: '5' });
+    expect(five.classList.contains('pressed')).toBe(true);
+    await vi.advanceTimersByTimeAsync(100);
+    expect(five.classList.contains('pressed')).toBe(false);
+  });
+
+  it('answers Ja/Nee with j and n, and multiple choice with 1–4', async () => {
+    const onanswer = vi.fn();
+    const prime = booleanStep({ prompt: 'Is 91 een priemgetal?', answer: false });
+    const { unmount } = render(QuestionView, { props: { step: prime, onanswer } });
+    await type('1', 'j');
+    expect(onanswer).toHaveBeenCalledWith('Ja', expect.objectContaining({ correct: false }));
+    unmount();
+
+    const choice = choiceStep({
+      prompt: 'Welke is het grootst?',
+      options: ['1', '2', '3', '4'],
+      answer: '4',
+    });
+    render(QuestionView, { props: { step: choice, onanswer } });
+    await type('j', '5', '3');
+    expect(onanswer).toHaveBeenLastCalledWith('3', expect.objectContaining({ correct: false }));
+    expect(onanswer).toHaveBeenCalledTimes(2);
+  });
+});

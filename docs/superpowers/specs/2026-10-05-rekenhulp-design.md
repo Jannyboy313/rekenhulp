@@ -95,7 +95,8 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
   correct shows a ✓, wrong a ✕ and the words "Niet goed". Supports `prefers-reduced-motion`.
 - Font: Inter, bundled with the app so it works offline, with `system-ui` as fallback. Numbers
   use tabular figures.
-- The system keyboard is never used for answers; the app has its own keypad (§6).
+- The system keyboard is never used for answers; the app has its own keypad (§6). A physical
+  keyboard (a tablet cover) types on that keypad: the mapping is in v4 spec §6.
 - The screen stays on during a session (Screen Wake Lock API). The lock is requested again when
   the app becomes visible after being hidden, and released when the session ends. Where the API
   is missing or the request is refused, nothing is shown and the session works as usual.

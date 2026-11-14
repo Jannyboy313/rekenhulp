@@ -1,6 +1,7 @@
 <script lang="ts" generics="S">
   import type { InputModel } from '../lib/inputModels';
   import type { FractionSlot, KeypadKey } from '../lib/keypadInput';
+  import { keyFor, type PhysicalAction } from '../lib/physicalKeys';
   import { NOTE_COLUMNS, NOTE_KEYS, type ScratchpadInput } from '../lib/scratchpad';
   import { withUnits } from '../lib/units';
   import Fraction from './Fraction.svelte';
@@ -34,6 +35,7 @@
 
   /** Keeps the height of an empty slot that is not the one the next digit goes into. */
   const BLANK_SLOT = '\u{a0}';
+  const PRESSED_MS = 100;
 
   // QuestionView is keyed per step, so the model never changes during this component's life.
   // svelte-ignore state_referenced_locally
@@ -56,6 +58,42 @@
     error = null;
   }
 
+  // The key on screen that a physical key stood for: shown as pressed for a moment (v4 spec §6).
+  let pressed = $state<PhysicalAction | null>(null);
+  let pressedTimer: ReturnType<typeof setTimeout> | undefined;
+  $effect(() => () => clearTimeout(pressedTimer));
+
+  /** Enter and Space on a focused button activate that button, unless it is a typing surface. */
+  function isNative(event: KeyboardEvent): boolean {
+    const { target, key } = event;
+    if (!(target instanceof HTMLButtonElement) || (key !== 'Enter' && key !== ' ')) return false;
+    // A tapped keypad key keeps the focus; so does the kladblok cell being typed into.
+    if (target.dataset.key !== undefined) return false;
+    return !(key === ' ' && inNote && target.dataset.cell !== undefined);
+  }
+
+  /** Physical keyboard: the keys of the keypad on screen, and Enter for OK (v4 spec §6). */
+  function handleKeydown(event: KeyboardEvent) {
+    if (locked || event.ctrlKey || event.altKey || event.metaKey || isNative(event)) return;
+    const keys = inNote ? NOTE_KEYS : model.keys;
+    const action = keyFor(
+      event.key,
+      keys.map((def) => def.key),
+      !inNote,
+    );
+    if (action === null) return;
+    event.preventDefault();
+    if (action === 'ok') {
+      if (event.repeat) return;
+      submit();
+    } else {
+      handleKey(action);
+    }
+    pressed = action;
+    clearTimeout(pressedTimer);
+    pressedTimer = setTimeout(() => (pressed = null), PRESSED_MS);
+  }
+
   function select(slot: FractionSlot) {
     if (model.select) value = model.select(value, slot);
     error = null;
@@ -72,6 +110,8 @@
     if (error === null) onsubmit(input);
   }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 {#snippet slotButton(name: FractionSlot, digits: string, active: FractionSlot)}<button
     type="button"
@@ -129,6 +169,7 @@
   {tall}
   tray={inNote}
   disabled={locked}
+  {pressed}
   onkey={handleKey}
   onsubmit={inNote ? undefined : submit}
 />

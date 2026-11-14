@@ -118,9 +118,28 @@
     apply(stop(play));
   }
 
+  /**
+   * Physical keyboard (v4 spec §6): Escape closes the lesson, Enter is Verder on the wrong panel.
+   * The Enter that submitted the wrong answer was handled by the keypad (default prevented), and
+   * Enter on a focused button stays that button's.
+   */
+  function handleKeydown(event: KeyboardEvent) {
+    if (openLesson) {
+      if (event.key === 'Escape') closeLesson();
+      return;
+    }
+    if (event.key !== 'Enter' || event.defaultPrevented || event.repeat) return;
+    if (event.ctrlKey || event.altKey || event.metaKey) return;
+    if (!feedback || feedback.result.correct || event.target instanceof HTMLButtonElement) return;
+    event.preventDefault();
+    handleNext();
+  }
+
   // A pending auto-advance must not outlive this screen.
   $effect(() => () => clearTimeout(advanceTimer));
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <main class="play">
   <header>

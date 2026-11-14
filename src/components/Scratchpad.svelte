@@ -71,6 +71,7 @@
         class:empty={note === '' && index !== active}
         aria-label={`Kladblok vak ${index + 1}: ${note === '' ? 'leeg' : formatNoteLabel(note)}`}
         aria-pressed={index === active}
+        data-cell={index}
         {disabled}
         use:press={() => onselect(index)}
         ><!-- One scrolling item for the text runs and fractions, so they are clipped as one. --><span

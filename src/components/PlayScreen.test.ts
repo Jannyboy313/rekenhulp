@@ -480,3 +480,27 @@ describe('PlayScreen reserved kladblok space (v4 spec §5.1)', () => {
     expect(keypad()?.classList.contains('tall')).toBe(true);
   });
 });
+
+describe('PlayScreen physical keyboard (v4 spec §6)', () => {
+  const questions = [question('2 × 3 = ?', 6), question('4 × 5 = ?', 20)];
+
+  it('moves on from the wrong panel with Enter, but not with the Enter that submitted', async () => {
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    await fireEvent.keyDown(window, { key: '7' });
+    await fireEvent.keyDown(window, { key: 'Enter' });
+    expect(screen.getByText('Niet goed')).toBeTruthy();
+    await fireEvent.keyDown(document.body, { key: 'Enter' });
+    expect(screen.queryByText('Niet goed')).toBeNull();
+    expect(screen.getByText('2 / 2')).toBeTruthy();
+  });
+
+  it('leaves Enter on a focused button of the wrong panel alone', async () => {
+    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    await press('7', 'OK');
+    const handled = await fireEvent.keyDown(screen.getByRole('button', { name: 'Stoppen' }), {
+      key: 'Enter',
+    });
+    expect(handled).toBe(true);
+    expect(screen.getByText('Niet goed')).toBeTruthy();
+  });
+});

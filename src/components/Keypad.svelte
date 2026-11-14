@@ -15,6 +15,8 @@
     disabled?: boolean;
     /** The extended keyboard of the kladblok: a grey tray with smaller keys (spec §3.6). */
     tray?: boolean;
+    /** The key a physical key stood for, drawn as pressed (v4 spec §6). */
+    pressed?: KeypadKey | 'ok' | null;
     onkey: (key: KeypadKey) => void;
     /** Without it there is no OK: the kladblok has no submit (spec §3.6). */
     onsubmit?: () => void;
@@ -27,6 +29,7 @@
     tall = false,
     disabled = false,
     tray = false,
+    pressed = null,
     onkey,
     onsubmit,
   }: Props = $props();
@@ -45,6 +48,8 @@
       type="button"
       class="key"
       class:digit={/^\d$/.test(key)}
+      class:pressed={pressed === key}
+      data-key={key}
       style:grid-column={span === undefined ? undefined : `span ${span}`}
       aria-label={ariaLabel ?? label}
       {disabled}
@@ -64,6 +69,8 @@
     <button
       type="button"
       class="key ok"
+      class:pressed={pressed === 'ok'}
+      data-key="ok"
       style:grid-column="span {okSpan(keys, columns)}"
       disabled={disabled || !canSubmit}
       onclick={onsubmit}>OK</button
@@ -103,7 +110,8 @@
     box-shadow: 0 1px 0 var(--border-key);
   }
 
-  .key:active:not(:disabled) {
+  .key:active:not(:disabled),
+  .key.pressed {
     filter: brightness(0.94);
   }
 
