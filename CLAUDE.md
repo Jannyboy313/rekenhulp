@@ -145,6 +145,9 @@ only the real choices, update and commit the spec, then implement directly with 
 
 ## PWA pitfalls
 
+`npm run build` ends with `scripts/check-dist.mjs`, which fails the build (and so the deploy) when
+`dist/` breaks one of the `dist/sw.js` rules below or ships `screens.html`.
+
 - Do not add `webmanifest` to `workbox.globPatterns`: vite-plugin-pwa already precaches the manifest,
   and a second entry with a different revision makes Workbox throw at SW startup (no offline mode).
   After `npm run build`, `dist/sw.js` must contain exactly one `manifest.webmanifest` entry.
@@ -176,7 +179,7 @@ only the real choices, update and commit the spec, then implement directly with 
 npm install     # install dependencies
 npm test        # run Vitest once
 npm run check   # svelte-check (type check)
-npm run build   # production build incl. service worker
+npm run build   # production build incl. service worker, then checks dist/sw.js
 npm run format  # Prettier, writes all files
 npm run screenshots # PNG per screen state at 360×780 into screenshots/ (starts its own Vite)
 npm run dev     # dev server
