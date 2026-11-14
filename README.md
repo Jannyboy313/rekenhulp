@@ -19,6 +19,7 @@ npm run check   # type check
 npm run dev     # local dev server
 npm run build   # static build in dist/
 npm run preview # serve dist/ locally
+npm run smoke   # build + offline smoke test (needs: npx playwright install chromium)
 ```
 
 ## Hosting

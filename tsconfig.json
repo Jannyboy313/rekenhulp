@@ -13,5 +13,5 @@
     "noEmit": true
   },
   "include": ["src/**/*.ts", "src/**/*.svelte", "vite.config.ts", "pwa-assets.config.ts",
-    "playwright.config.ts", "screenshots/**/*.ts"]
+    "playwright.config.ts", "playwright.smoke.config.ts", "screenshots/**/*.ts", "e2e/**/*.ts"]
 }

@@ -182,11 +182,15 @@ npm run check   # svelte-check (type check)
 npm run build   # production build incl. service worker, then checks dist/sw.js
 npm run format  # Prettier, writes all files
 npm run screenshots # PNG per screen state at 360×780 into screenshots/ (starts its own Vite)
+npm run smoke   # builds, then plays a session offline against vite preview (Playwright, e2e/)
 npm run dev     # dev server
 npm run preview # serve dist/
 ```
 
-`npm run screenshots` needs a one-time Chromium install: `npx playwright install chromium`.
+`npm run smoke` is not part of the Vercel build (it needs Chromium); run it before a push that
+touches the PWA config, the service worker or `main.ts`.
+
+`npm run screenshots` and `npm run smoke` need a one-time Chromium install: `npx playwright install chromium`.
 
 ## Language conventions
 
