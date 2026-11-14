@@ -22,7 +22,7 @@ Let the user print the practice test (spec §12.6) to PDF.
 
 Known constraints:
 
-- Depends on the practice test, a v4 step (after mixed categories).
+- Depends on the practice test, a v5 step.
 - Print via the browser (`window.print()` with a print stylesheet) needs no new infrastructure or
   network calls; the open question is what to print (questions only, answers, or both).
 

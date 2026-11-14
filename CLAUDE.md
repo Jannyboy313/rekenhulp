@@ -56,7 +56,7 @@ and Heuristieken (`systematicCounting`, `workingBackwards`, `guessAndCheck`, `si
   `numberOrder`, `arithmeticWords`, `estimateCalc`, `decimalNames`, `compareFractions`,
   `fractionConcepts` and `solidNames`), and the score per topic on the results screen (§3.5,
 §12.4: `topicScores` in `lib/results.ts`) and Fouten oefenen (§3.5, §12.4: `mistakeSession`
-in `lib/session.ts`, three new exercises per wrong question), and Gemengd (v4 mixed categories,
+in `lib/session.ts`, three new exercises per wrong question), and Gemengd (mixed categories,
 §12.5: the pseudo set `MIXED_SET` with a set choice on the setup screen; `countingSets` in
 `lib/sets.ts` and `buildMixedSession` in `lib/session.ts`, an equal share per set).
 
@@ -80,18 +80,20 @@ props or branches; shared are only `SetRow`, the `SetOverview` shell and the `.s
 The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScreen` only pass
 lesson data through to `LessonLinks` and `LessonSheet`.
 
-Next steps (spec §12.6), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
-the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). v4 practises across sets: mixed categories (§12.5) are done. v5 holds only persistent memory in IndexedDB.
+Next steps (spec §12), one at a time and only when the user says so. v3 is done (§12.2–§12.4);
+the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). Mixed categories (§12.5) are done. Order decided 2026-11-14.
 
-| Step                                                                                    | New infrastructure   |
-| --------------------------------------------------------------------------------------- | -------------------- |
-| v4: practice test (§12.6), reuses `buildMixedSession`; form in its own spec             | test session         |
-| v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB            |
+| Step                                                                                    | New infrastructure |
+| --------------------------------------------------------------------------------------- | ------------------ |
+| v4: tablet support (§12.10); form in its own spec                                       | wide layout        |
+| v5: practice test (§12.6), reuses `buildMixedSession`; form in its own spec             | test session       |
+| v5: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
+| v6: calculator problems (§12.11); form in its own spec                                  | open               |
 
 Between versions: check the sets against the toetsmatrijs (§12.7).
 
 Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
-§12.8).
+§12.8) until v6 (§12.11).
 
 To add a set: widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and labels in
 `lib/topics/index.ts`, append the set to `PRACTICE_SETS` in `lib/sets.ts` and give it a glyph in

@@ -29,12 +29,12 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
   the app.
-- No problems that need a calculator, at either level (§12.8). Verdieping is harder through
+- No problems that need a calculator, at either level, until v6 (§12.8, §12.11). Verdieping is harder through
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 is on the roadmap
-  (§12), and the architecture must make adding it cheap.
+- v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 to v6 are on the
+  roadmap (§12), and the architecture must make adding them cheap.
 
 ## 2. Platform & stack
 
@@ -4170,9 +4170,15 @@ The roadmap covers the practice sets only. The lesstof has its own order (lessto
 set needs no lesson.
 
 v3 deepens practice within a set: levels (§12.2) and multiple choice with the RWT gaps
-(§12.3), then three small features that make a session's result usable (§12.4). v4 practises
-across sets: mixed categories (§12.5) and a practice test (§12.6). The check against the
-toetsmatrijs (§12.7) is not tied to a version.
+(§12.3), then three small features that make a session's result usable (§12.4). Mixed
+categories (§12.5) are done. The order after that (decided 2026-11-14):
+
+- v4: tablet support (§12.10).
+- v5: the practice test (§12.6) and persistent memory in IndexedDB. Persistent memory has no
+  section yet; the non-goals of §1 change when that work starts.
+- v6: problems where a calculator is allowed (§12.11).
+
+The check against the toetsmatrijs (§12.7) is not tied to a version.
 
 ### 12.1 v2 — PABO mental arithmetic and basic knowledge (done)
 
@@ -4368,9 +4374,9 @@ the current session.
    lesstof spec §3.1–§3.2 (place, button, sheet, mapping) and §4 (exception to the code
    separation).
 
-### 12.5 v4 — mixed categories (done)
+### 12.5 Mixed categories (done)
 
-Comes after v3. A session that mixes exercises from more than one set. Decided 2026-11-08,
+Comes after v3. Built as the first v4 step, before the reorder of 2026-11-14. A session that mixes exercises from more than one set. Decided 2026-11-08,
 specified in §3.1 (the row **Gemengd**), §3.2 (set choice), §4.1 and §4.2 (distribution):
 
 - One row **Gemengd** on the overview; its setup has a pill per set (default all), plus the
@@ -4385,9 +4391,9 @@ specified in §3.1 (the row **Gemengd**), §3.2 (set choice), §4.1 and §4.2 (d
 
 LKT 3.3 (written algorithms) is out of scope (§12.8, decided 2026-11-08).
 
-### 12.6 v4 — practice test (oefentoets)
+### 12.6 v5 — practice test (oefentoets)
 
-Comes after mixed categories (§12.5), whose mixing it reuses. A session in the style of a PABO
+Comes after tablet support (v4, §12.10). It reuses the mixing of mixed categories (§12.5). A session in the style of a PABO
 test. Its form (composition, count, level, the pass mark) is decided in its own spec iteration.
 The non-goals of §1 hold: no stored results or history.
 
@@ -4446,8 +4452,8 @@ The distribution of table 1 needs no change to the sets; it matters for the prac
 ### 12.8 Out of scope until further notice
 
 - Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at
-  the Verdieping level. The app is for mental arithmetic and ways of thinking. This drops the
-  earlier plans for calculator problems and the set *Toepassingen*.
+  the Verdieping level, until v6 (§12.11). Until then the app is for mental arithmetic and ways
+  of thinking.
 - Anything that needs pictures:
   - reading graphs, tables and diagrams
   - spatial geometry: views, nets and cube buildings
@@ -4460,3 +4466,16 @@ The distribution of table 1 needs no change to the sets; it matters for the prac
 ### 12.9 Optional later
 
 Topic toggles on the setup screen.
+
+### 12.10 v4 — tablet support
+
+Decided 2026-11-14. The app is phone-first (§2: portrait, 360–430 px wide); v4 makes it usable
+on a tablet. Its form (landscape or portrait only, layout and keypad size on wide screens, the
+manifest `orientation`) is decided in its own spec iteration; §2 changes then.
+
+### 12.11 v6 — calculator problems
+
+Decided 2026-11-14; reverses the drop of calculator problems in §12.8. Problems where a
+calculator is allowed, such as the RWT calculator part and the LKT part 2. Its form (which
+problems, ranges, whether the app offers a calculator, how it relates to the sets and levels) is
+decided in its own spec iteration; §1 and §12.8 change when that work starts.
