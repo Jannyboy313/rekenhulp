@@ -1,6 +1,6 @@
 # Rekenhulp v8 — Fouten van eerder (yesterday's mistakes)
 
-Date: 2026-11-15. Status: approved, not built. Implements the v8 entry of main spec §12.16.
+Date: 2026-11-15. Status: built on 2026-11-15. Implements the v8 entry of main spec §12.16.
 
 "Main spec" is `2026-10-05-rekenhulp-design.md`, "memory spec" is
 `2026-11-15-geheugen-design.md`, "v4 spec" is `2026-11-14-tablet-design.md`.

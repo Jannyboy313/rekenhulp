@@ -26,12 +26,13 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 
 - No accounts, statistics, streaks or history
 - No persistence, with one exception since v7: a record per answered exercise in IndexedDB, on
-  the device only, which the user can delete (`2026-11-15-geheugen-design.md`). Nothing reads
-  the records yet. Settings are not stored, and localStorage is not used: every app start uses
+  the device only, which the user can delete (`2026-11-15-geheugen-design.md`). Their only reader
+  is Fouten van eerder (v8, `2026-11-15-fouten-van-eerder-design.md`). Settings are not stored, and localStorage is not used: every app start uses
   defaults.
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
-  the app.
+  the app. Fouten van eerder (v8) is not adaptive: topics that went wrong only come back in a
+  session the user starts for that purpose.
 - No problems that need a calculator, at either level, until v9 (§12.8, §12.11). Verdieping is harder through
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
@@ -119,7 +120,7 @@ The app is a state machine in `App.svelte` with four states:
 
 - "Terug" moves from `setup` and `testSetup` back to `sets`.
 - "Opnieuw" moves from `results` back to `playing`, with the same set, count, level and table
-  choice (Gemengd: set choice, §3.2); after a test, or Fouten oefenen after a test, it starts a
+  choice (Gemengd: set choice, §3.2; Fouten van eerder: the same topics); after a test, or Fouten oefenen after a test, it starts a
   new test with the same length and topics.
 - "Menu" moves from `results` to `sets`. After a session started from a lesson topic the button
   is "Naar de les" and returns to that `lesson` (lesstof spec §3.3).
@@ -148,6 +149,9 @@ The app is a state machine in `App.svelte` with four states:
   one-line description of its topics. The list scrolls when the screen is short.
 - Tapping a card opens the setup screen for that set.
 - Sets whose topics are not implemented yet (v2/v3) are not shown.
+- **Fouten van eerder** (v8): the first row, above Tafels, shown only when a topic that went
+  wrong on an earlier day is due. A tap starts a session of those topics at once, without a
+  setup screen; the rules are in `2026-11-15-fouten-van-eerder-design.md`.
 - **Oefentoets** (§12.6): the last row, after Gemengd; its row, glyph and setup are in the
   oefentoets spec §4. Like Gemengd it is not a set and has no row on the **Lesstof** tab.
 - **Gegevens wissen** (v7): a small text button under the last row of **Oefenen**, which deletes
@@ -1246,7 +1250,7 @@ categories (§12.5) are done. The order after that (decided 2026-11-14, v6 and v
 - v7: persistent memory in IndexedDB (done). It has its own spec,
   `2026-11-15-geheugen-design.md`: one record of plain data per answered exercise, and a button
   to delete them.
-- v8: yesterday's mistakes (§12.16), builds on v7.
+- v8: yesterday's mistakes (§12.16, done).
 - v9: problems where a calculator is allowed (§12.11).
 - v10: a print button for the practice test (§12.12).
 - v11: a streak of practice days (§12.13).
@@ -1596,12 +1600,12 @@ sommen** at the end of a lesson topic starts a session of its own with 5 exercis
 equally over the practice topics that link to the lesson topic (`LESSON_LINKS` inverted, every
 ref), both levels mixed; its results screen leads back to the lesson.
 
-### 12.16 v8 — yesterday's mistakes
+### 12.16 v8 — yesterday's mistakes (done)
 
 Decided 2026-11-15. Exercises that went wrong come back on a later day. Builds on the persistent
 memory of v7. A stored mistake is plain data (v7), so what comes back is a new exercise of the
 same topic, as in Fouten oefenen (§3.5), not the same `Question`.
 
-The open questions (when a mistake comes back, when it is cleared, where the user starts it, and
-how it relates to "no adaptive difficulty", §1) are worked out in its own spec,
-`2026-11-15-fouten-van-eerder-design.md`.
+It has its own spec, `2026-11-15-fouten-van-eerder-design.md`: a topic is due from the day after
+a session in which it went wrong, until a later session has it all right; the row **Fouten van
+eerder** on the Oefenen tab starts two new exercises per due topic, at most seven topics.

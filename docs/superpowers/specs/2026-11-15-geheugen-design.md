@@ -8,8 +8,8 @@ Date: 2026-11-15. Status: built on 2026-11-15. Implements the v7 entry of main s
 
 The app remembers, on the device, what was practised and how it went: one small record per
 answered exercise. v7 is the framework only. It stores the records and lets the user delete
-them; nothing reads them yet. Its first readers are v8 (yesterday's mistakes, main spec §12.16)
-and v11 (the streak, §12.13).
+them; v7 itself reads nothing. Its first reader is v8 (Fouten van eerder, built:
+`2026-11-15-fouten-van-eerder-design.md`), the next is v11 (the streak, main spec §12.13).
 
 ### Non-goals
 
@@ -61,7 +61,8 @@ interface PracticeRecord {
 ```
 
 - `source` is `set` for a set and for Gemengd, `test` for the Oefentoets, `lesson` for
-  **Oefen 5 sommen**; Fouten oefenen keeps the source of the session it follows.
+  **Oefen 5 sommen**; Fouten oefenen keeps the source of the session it follows. Fouten van eerder (v8) saves as
+  `set`.
 - A `Topic` id is from now on a storage format: renaming or removing a topic leaves old records
   with an unknown id. A reader skips those; nothing is migrated. `topic` is therefore a `string`
   in the record, not a `Topic`.

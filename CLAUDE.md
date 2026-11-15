@@ -89,8 +89,15 @@ Done besides the sets:
   interface, `openMemory`: IndexedDB with a volatile fallback); `App.svelte` saves the answered
   exercises when a session or test ends (`save`), `main.ts` opens the memory and asks for
   durable storage; **Gegevens wissen** (`ClearMemory`) is the last item of the Oefenen list.
-  Nothing reads the records yet (v8 and v11 will). A `Topic` id is now a storage format: a
+  v8 reads the records (below); v11 will. A `Topic` id is now a storage format: a
   renamed or removed topic leaves old records that readers must skip
+
+- v8, Fouten van eerder (`docs/superpowers/specs/2026-11-15-fouten-van-eerder-design.md`):
+  `lib/review.ts` (`dueTopics`: a topic whose last session had a mistake, on an earlier day;
+  `REVIEW_ROW`), `reviewSession` in `lib/session.ts` (two exercises per topic, at most seven
+  topics). `App.svelte` reads the memory each time the overview is shown (`refreshDue`) and
+  passes the row to `PracticeSetList` (`review`); a fourth `Origin`, `review`, saved with the
+  source `set`
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -114,12 +121,11 @@ The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScr
 lesson data through to `LessonLinks`, `LessonSheet` and `LessonPane` (the lesson next to the
 wrong-answer panel on a landscape tablet, v4 spec §7).
 
-Next steps (spec §12), one at a time and only when the user says so. v3, v4, v5, v6 and v7 are done (§12.2–§12.4, §12.10, §12.6, §12.15, geheugen spec);
+Next steps (spec §12), one at a time and only when the user says so. v3, v4, v5, v6, v7 and v8 are done (§12.2–§12.4, §12.10, §12.6, §12.15, geheugen spec, §12.16);
 the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). Mixed categories (§12.5) are done. Order decided 2026-11-14; v6 and v8 inserted 2026-11-15.
 
 | Step                                                                           | New infrastructure |
 | ------------------------------------------------------------------------------ | ------------------ |
-| v8: yesterday's mistakes come back on a later day (§12.16), builds on v7       | none (uses v7)     |
 | v9: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)          | open               |
 | v10: print button for the practice test (§12.12)                               | print stylesheet   |
 | v11: streak of practice days (§12.13), builds on v7                            | none (uses v7)     |
@@ -319,10 +325,13 @@ src/
                         PlayScreen keeps only timers, kladblok notes and the lesson sheet
     session.ts          quotas, shuffle, de-duplication, table choice (generatorsFor),
                         repeats (insertRepeat), Gemengd (buildMixedSession), Oefentoets
-                        (buildTestSession); both share planForSets
+                        (buildTestSession); both share planForSets; Fouten van eerder
+                        (reviewSession)
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
     wakeLock.ts         keeps the screen on while PlayScreen or TestScreen is mounted
     update.ts           update prompt state (waiting version, Later) and shouldPrompt (screens)
+    review.ts           Fouten van eerder: dueTopics (the topics of earlier mistakes that are
+                        due, from the practice records), REVIEW_ROW, reviewDescription
     memory.ts           practice records (plain data per answered exercise), the Memory
                         interface, a volatile memory and openMemory (IndexedDB, volatile when
                         it cannot open); toPracticeRecords
@@ -376,5 +385,5 @@ shot, not a missing scene.
 ## Out of scope
 
 Persistence other than the practice records of `lib/memory.ts` (so no localStorage, no stored
-settings), reading those records for a feature, statistics, streaks, accounts, analytics,
+settings), reading those records for a feature other than Fouten van eerder (`lib/review.ts`), statistics, streaks, accounts, analytics,
 adaptive difficulty (the user-chosen level of spec §12.2 is not adaptive), network requests. Do not add these without an explicit request.
