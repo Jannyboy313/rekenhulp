@@ -59,6 +59,11 @@ export function formatDuration(ms: number): string {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
+/** A countdown rounds up, so it starts at the full limit and ends as 0:00 appears. */
+export function formatCountdown(ms: number): string {
+  return formatDuration(Math.ceil(ms / 1000) * 1000);
+}
+
 export function formatSeconds(ms: number): string {
   return `${(ms / 1000).toFixed(1).replace('.', ',')} s`;
 }

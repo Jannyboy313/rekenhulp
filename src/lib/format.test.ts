@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   capitalize,
+  formatCountdown,
   formatDuration,
   formatEuro,
   formatExpressionInput,
@@ -107,6 +108,18 @@ describe('formatDuration', () => {
     [-5, '0:00'],
   ])('formats %d ms', (ms, expected) => {
     expect(formatDuration(ms)).toBe(expected);
+  });
+});
+
+describe('formatCountdown', () => {
+  it.each([
+    [17 * 60_000, '17:00'],
+    [59_001, '1:00'],
+    [59_000, '0:59'],
+    [1, '0:01'],
+    [0, '0:00'],
+  ])('rounds %d ms up to a whole second', (ms, expected) => {
+    expect(formatCountdown(ms)).toBe(expected);
   });
 });
 

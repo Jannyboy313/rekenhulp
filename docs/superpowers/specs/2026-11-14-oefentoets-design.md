@@ -64,7 +64,7 @@ as in Gemengd (main spec §4.2).
 
 Tafels is in no domain. Getallen & delers counts only with LKT (decision 7), so with **RWT** it
 and Talstelsels are not in the test, and A has two sets. The mapping is configuration
-(`lib/test.ts`), by set id; a test checks that every set of `PRACTICE_SETS` except Tafels is in
+(`lib/practiceTest.ts`), by set id; a test checks that every set of `PRACTICE_SETS` except Tafels is in
 exactly one domain, so a new set cannot be forgotten.
 
 ### 3.2 Blueprints
@@ -243,7 +243,7 @@ The results screen of a session (main spec §3.5), with these differences for a 
 
 All in `lib/`, pure and without Svelte.
 
-`lib/test.ts` (new):
+`lib/practiceTest.ts` (new):
 
 ```ts
 type TestLength = 'short' | 'long';
@@ -308,7 +308,7 @@ summarizeTest(records, blueprint, totalMs, timedOut): SessionSummary
 
 ## 9. Testing
 
-- `lib/test.ts`: every blueprint sums to its total; the pass mark at its boundaries (10 and 11
+- `lib/practiceTest.ts`: every blueprint sums to its total; the pass mark at its boundaries (10 and 11
   of 15, 34 and 35 of 50); `remainingMs` before, at and after the deadline; every set except
   Tafels in exactly one domain.
 - `buildTestSession`, 1000 seeds per blueprint: the total; the exact count per domain (via the
@@ -334,7 +334,7 @@ summarizeTest(records, blueprint, totalMs, timedOut): SessionSummary
 One plan, one commit per task, `main` deployable after each. The row on the overview comes last,
 so an unfinished test is never reachable.
 
-1. `lib/test.ts`: domains, blueprints, pass mark, remaining time.
+1. `lib/practiceTest.ts`: domains, blueprints, pass mark, remaining time.
 2. `buildTestSession`, with the shared planning helper.
 3. The play policy in `lib/play.ts`.
 4. `summarizeTest` and the test results on `ResultScreen`.
@@ -353,5 +353,5 @@ Made in the task that changes the behaviour, so spec and code never disagree on 
 
 - Main spec §3 (the states `testSetup` and `testing`, the system back), §3.1 (the row), §3.5
   (pointer to §6 here), §2 (the update dialog on `testSetup`), §10 (shots), §12.6 (done).
-- `CLAUDE.md`: Status, the roadmap row of v5, the architecture entries (`lib/test.ts`,
+- `CLAUDE.md`: Status, the roadmap row of v5, the architecture entries (`lib/practiceTest.ts`,
   `TestScreen`, `TestSetupScreen`, the shared shell, the play policy).
