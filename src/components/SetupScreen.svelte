@@ -11,8 +11,8 @@
   } from '../lib/sets';
   import { TABLE_FACTORS } from '../lib/topics/tables';
   import type { Level, PracticeSet } from '../lib/types';
-  import Icon from './Icon.svelte';
-  import SetGlyph from './SetGlyph.svelte';
+  import SegmentedControl from './SegmentedControl.svelte';
+  import SetupShell from './SetupShell.svelte';
 
   interface Props {
     set: PracticeSet;
@@ -40,6 +40,7 @@
     onback,
   }: Props = $props();
 
+  const SIZES = SESSION_SIZES.map((value) => ({ value, label: String(value) }));
   const LEVELS: readonly { value: Level; label: string }[] = [
     { value: 'quick', label: 'Opfrisser' },
     { value: 'deep', label: 'Verdieping' },
@@ -63,222 +64,87 @@
       .map((s) => s.id)
       .filter((s) => (s === id ? !chosenSets.includes(s) : chosenSets.includes(s)));
   }
-
-  /** Arrow keys step through the enabled options of a radio group (disabled ones are skipped). */
-  function onRadioKey<T>(
-    event: KeyboardEvent,
-    options: readonly T[],
-    current: T,
-    choose: (next: T) => void,
-  ) {
-    const step =
-      event.key === 'ArrowRight' || event.key === 'ArrowDown'
-        ? 1
-        : event.key === 'ArrowLeft' || event.key === 'ArrowUp'
-          ? -1
-          : 0;
-    if (step === 0) return;
-    event.preventDefault();
-    const next = options[options.indexOf(current) + step];
-    if (next === undefined) return;
-    choose(next);
-    const group = event.currentTarget as HTMLElement;
-    queueMicrotask(() => group.querySelector<HTMLElement>('[tabindex="0"]')?.focus());
-  }
 </script>
 
-<main class="setup">
-  <header>
-    <button type="button" class="back" aria-label="Terug" onclick={onback}>
-      <Icon name="chevron-left" size={24} stroke={2.2} />
-    </button>
-    <span class="tile"><SetGlyph id={set.id} name={set.name} size={24} /></span>
-    <h1>{set.name}</h1>
-  </header>
-
-  <div class="content">
-    {#if choosesTables(set)}
-      <section>
-        <div class="section-header">
-          <h2 id="tables-heading">Welke tafels?</h2>
-          <button type="button" class="link" onclick={() => (tables = [...TABLE_FACTORS])}>
-            Alle
-          </button>
-          <button type="button" class="link" onclick={() => (tables = [])}>Geen</button>
-        </div>
-        <div class="tables" role="group" aria-labelledby="tables-heading">
-          {#each TABLE_FACTORS as table (table)}
-            <button
-              type="button"
-              class="pill"
-              aria-pressed={tables.includes(table)}
-              onclick={() => toggleTable(table)}>{table}</button
-            >
-          {/each}
-        </div>
-      </section>
-    {:else if isMixed(set)}
-      <section>
-        <div class="section-header">
-          <h2 id="sets-heading">Welke sets?</h2>
-          <button type="button" class="link" onclick={() => (chosenSets = pool.map((s) => s.id))}>
-            Alle
-          </button>
-          <button type="button" class="link" onclick={() => (chosenSets = [])}>Geen</button>
-        </div>
-        <!-- A set without a Verdieping (Tafels) keeps its choice but does not count there. -->
-        <div class="sets" role="group" aria-labelledby="sets-heading">
-          {#each pool as option (option.id)}
-            <button
-              type="button"
-              class="pill set-pill"
-              aria-pressed={chosenSets.includes(option.id)}
-              disabled={level === 'deep' && !hasDeep(option)}
-              onclick={() => toggleSet(option.id)}>{option.name}</button
-            >
-          {/each}
-        </div>
-      </section>
-    {/if}
-
-    <section class="size">
-      <div class="section-header"><h2 id="size-heading">Aantal opgaven</h2></div>
-      <!-- svelte-ignore a11y_interactive_supports_focus -->
-      <div
-        class="segments sizes"
-        role="radiogroup"
-        aria-labelledby="size-heading"
-        onkeydown={(event) => onRadioKey(event, SESSION_SIZES, size, (next) => (size = next))}
-      >
-        {#each SESSION_SIZES as option (option)}
+<SetupShell id={set.id} name={set.name} count={size} {canStart} {onstart} {onback}>
+  {#if choosesTables(set)}
+    <section>
+      <div class="section-header">
+        <h2 id="tables-heading">Welke tafels?</h2>
+        <button type="button" class="link" onclick={() => (tables = [...TABLE_FACTORS])}>
+          Alle
+        </button>
+        <button type="button" class="link" onclick={() => (tables = [])}>Geen</button>
+      </div>
+      <div class="tables" role="group" aria-labelledby="tables-heading">
+        {#each TABLE_FACTORS as table (table)}
           <button
             type="button"
-            role="radio"
-            class="segment"
-            aria-checked={size === option}
-            tabindex={size === option ? 0 : -1}
-            onclick={() => (size = option)}>{option}</button
+            class="pill"
+            aria-pressed={tables.includes(table)}
+            onclick={() => toggleTable(table)}>{table}</button
           >
         {/each}
       </div>
     </section>
+  {:else if isMixed(set)}
+    <section>
+      <div class="section-header">
+        <h2 id="sets-heading">Welke sets?</h2>
+        <button type="button" class="link" onclick={() => (chosenSets = pool.map((s) => s.id))}>
+          Alle
+        </button>
+        <button type="button" class="link" onclick={() => (chosenSets = [])}>Geen</button>
+      </div>
+      <!-- A set without a Verdieping (Tafels) keeps its choice but does not count there. -->
+      <div class="sets" role="group" aria-labelledby="sets-heading">
+        {#each pool as option (option.id)}
+          <button
+            type="button"
+            class="pill set-pill"
+            aria-pressed={chosenSets.includes(option.id)}
+            disabled={level === 'deep' && !hasDeep(option)}
+            onclick={() => toggleSet(option.id)}>{option.name}</button
+          >
+        {/each}
+      </div>
+    </section>
+  {/if}
 
-    {#if !choosesTables(set)}
-      <section>
-        <div class="section-header"><h2 id="level-heading">Niveau</h2></div>
-        <!-- svelte-ignore a11y_interactive_supports_focus -->
-        <div
-          class="segments levels"
-          role="radiogroup"
-          aria-labelledby="level-heading"
-          onkeydown={(event) => onRadioKey(event, enabledLevels, level, (next) => (level = next))}
-        >
-          {#each LEVELS as option (option.value)}
-            <button
-              type="button"
-              role="radio"
-              class="segment"
-              aria-checked={level === option.value}
-              tabindex={level === option.value ? 0 : -1}
-              disabled={!enabledLevels.includes(option.value)}
-              onclick={() => (level = option.value)}>{option.label}</button
-            >
-          {/each}
-        </div>
-      </section>
-    {/if}
+  <section class="size">
+    <div class="section-header"><h2 id="size-heading">Aantal opgaven</h2></div>
+    <SegmentedControl options={SIZES} bind:value={size} labelledby="size-heading" />
+  </section>
 
-    <!-- Informational, so it comes after the settings (v4 spec §9). -->
-    {#if !choosesTables(set) && !isMixed(set)}
-      <section class="topics">
-        <div class="section-header"><h2>Wat zit erin</h2></div>
-        <ul class="info">
-          {#each describeSetTopicRows(forLevel(set, level), size) as row (row.name)}
-            <li>
-              <span class="row-name">{row.name}</span>
-              {#if row.detail}<span class="row-detail">{row.detail}</span>{/if}
-            </li>
-          {/each}
-        </ul>
-      </section>
-    {/if}
-  </div>
+  {#if !choosesTables(set)}
+    <section>
+      <div class="section-header"><h2 id="level-heading">Niveau</h2></div>
+      <SegmentedControl
+        options={LEVELS}
+        bind:value={level}
+        enabled={enabledLevels}
+        labelledby="level-heading"
+      />
+    </section>
+  {/if}
 
-  <footer>
-    <button type="button" class="primary start" disabled={!canStart} onclick={onstart}
-      >Start · <span class="start-number">{size}</span> opgaven</button
-    >
-  </footer>
-</main>
+  <!-- Informational, so it comes after the settings (v4 spec §9). -->
+  {#if !choosesTables(set) && !isMixed(set)}
+    <section class="topics">
+      <div class="section-header"><h2>Wat zit erin</h2></div>
+      <ul class="info">
+        {#each describeSetTopicRows(forLevel(set, level), size) as row (row.name)}
+          <li>
+            <span class="row-name">{row.name}</span>
+            {#if row.detail}<span class="row-detail">{row.detail}</span>{/if}
+          </li>
+        {/each}
+      </ul>
+    </section>
+  {/if}
+</SetupShell>
 
 <style>
-  .setup {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding-top: env(safe-area-inset-top);
-  }
-
-  header {
-    display: flex;
-    align-items: center;
-    padding: 8px 16px 8px 4px;
-  }
-
-  .back {
-    width: 44px;
-    height: 44px;
-    min-height: 0;
-    padding: 0;
-    background: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .tile {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    background: var(--primary-tint);
-    margin: 0 10px 0 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  h1 {
-    font-size: 22px;
-    line-height: 28px;
-    font-weight: 700;
-  }
-
-  .content {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    padding: 8px 16px 32px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  .section-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 36px;
-  }
-
-  h2 {
-    margin-right: auto;
-    font-size: 15px;
-    line-height: 20px;
-    font-weight: 600;
-  }
-
   .link {
     min-height: 44px;
     padding: 0 12px;
@@ -286,38 +152,6 @@
     color: var(--primary);
     font-size: 14px;
     font-weight: 600;
-  }
-
-  .info {
-    list-style: none;
-    margin: 0;
-    padding: 4px 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: var(--shadow-card);
-  }
-
-  .info li {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 11px 0;
-  }
-
-  .info li + li {
-    border-top: 1px solid var(--list-divider);
-  }
-
-  .row-name {
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  .row-detail {
-    font-size: 13px;
-    color: var(--muted);
-    text-align: right;
   }
 
   .tables {
@@ -355,187 +189,6 @@
     border-color: var(--primary);
     color: var(--primary-text);
     font-weight: 700;
-  }
-
-  .segments {
-    display: grid;
-    gap: 4px;
-    padding: 4px;
-    border-radius: 14px;
-    background: var(--sky-track);
-  }
-
-  .sizes {
-    grid-template-columns: repeat(5, 1fr);
-  }
-
-  .levels {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .segment {
-    height: 44px;
-    min-height: 0;
-    padding: 0;
-    border-radius: 10px;
-    background: transparent;
-    color: var(--text-2);
-    font-size: 16px;
-    font-weight: 600;
-  }
-
-  .segment[aria-checked='true'] {
-    background: var(--surface);
-    color: var(--primary);
-    font-weight: 700;
-    box-shadow: var(--shadow-segment);
-  }
-
-  footer {
-    position: relative;
-    padding: 8px 16px calc(24px + env(safe-area-inset-bottom));
-  }
-
-  /* Fades scrolled content into the background above the button (hints at more below). */
-  footer::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 100%;
-    height: 32px;
-    background: linear-gradient(transparent, var(--bg));
-    pointer-events: none;
-  }
-
-  .start {
-    width: 100%;
-    box-shadow: var(--shadow-glow);
-  }
-
-  .start-number {
-    color: var(--start-number);
-  }
-
-  /* Tablet (v4 spec §8): the header over the whole width, the options and Start in one centred
-     column. "Wat zit erin" comes first here (everything fits), by `order`: the DOM keeps the
-     phone's order, with the settings first. */
-  :global([data-layout^='tablet']) .setup {
-    --column: none;
-    padding-inline: 40px;
-  }
-
-  :global([data-layout^='tablet']) header {
-    padding: 20px 0 12px;
-    margin-left: -12px;
-  }
-
-  :global([data-layout^='tablet']) .tile {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    margin: 0 14px 0 4px;
-  }
-
-  :global([data-layout^='tablet']) h1 {
-    font-size: 34px;
-    line-height: 40px;
-    font-weight: 800;
-    letter-spacing: -0.02em;
-  }
-
-  :global([data-layout^='tablet']) :is(.content, footer) {
-    width: 100%;
-    max-width: 640px;
-    margin-inline: auto;
-    padding-inline: 0;
-  }
-
-  :global([data-layout^='tablet-landscape']) :is(.content, footer) {
-    max-width: 800px;
-  }
-
-  :global([data-layout^='tablet']) footer {
-    padding-bottom: calc(32px + env(safe-area-inset-bottom));
-  }
-
-  :global([data-layout^='tablet']) .start {
-    height: 60px;
-    font-size: 19px;
-  }
-
-  :global([data-layout^='tablet']) .topics {
-    order: -1;
-  }
-
-  /* Landscape: Aantal opgaven and Niveau side by side; a section on its own takes the row. */
-  :global([data-layout^='tablet-landscape']) .content {
-    display: grid;
-    grid-template-columns: 3fr 2fr;
-    align-content: start;
-    gap: 20px 24px;
-  }
-
-  :global([data-layout^='tablet-landscape']) section:not(.size, .size + section),
-  :global([data-layout^='tablet-landscape']) .size:last-child,
-  :global([data-layout^='tablet-landscape']) .size + .topics {
-    grid-column: 1 / -1;
-  }
-
-  :global([data-layout^='tablet']) h2 {
-    font-size: 18px;
-    line-height: 24px;
-    font-weight: 700;
-  }
-
-  :global([data-layout^='tablet']) .segment {
-    height: 52px;
-    font-size: 18px;
-  }
-
-  /* The topics in columns, the detail under the name; a line between the rows of the grid. */
-  :global([data-layout^='tablet']) .info {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 24px;
-    padding: 4px 20px;
-    border-radius: 20px;
-  }
-
-  :global([data-layout^='tablet-landscape']) .info {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  :global([data-layout^='tablet']) .info li {
-    position: relative;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 2px;
-    padding: 12px 0;
-    border-top: none;
-  }
-
-  /* The line spans the gap to the next column, so it reads as one line per row. */
-  :global([data-layout='tablet-portrait']) .info li:nth-child(n + 3)::before,
-  :global([data-layout^='tablet-landscape']) .info li:nth-child(n + 4)::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -12px;
-    right: -12px;
-    border-top: 1px solid var(--list-divider);
-  }
-
-  :global([data-layout^='tablet']) .row-name {
-    font-size: 16px;
-    line-height: 20px;
-    font-weight: 700;
-  }
-
-  :global([data-layout^='tablet']) .row-detail {
-    font-size: 14px;
-    line-height: 18px;
-    text-align: left;
   }
 
   /* Tafels: larger pills, 7 per row in landscape. */
