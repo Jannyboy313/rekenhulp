@@ -77,12 +77,16 @@ Done besides the sets:
   `lib/practiceTest.ts` (domains, blueprints, pass mark), `buildTestSession`, the play policy
   `TEST_POLICY` (no feedback, no repeats), `TestSetupScreen`, `TestScreen` (deadline, stop
   dialog) and the verdict on `ResultScreen` (`summary.test`). `App.svelte` keeps the `Origin`
-  (set or test) of a session for Opnieuw and Fouten oefenen
+  (set, test or lesson topic) of a session for Opnieuw and Fouten oefenen
+- v6, practice from a lesson topic (§12.15, lesstof spec §3.3): the button **Oefen 5 sommen**
+  at the end of `LessonView` starts `topicSession` (`lib/session.ts`) over
+  `practiceTopicsFor` (`LESSON_LINKS` inverted, `lib/lessons/links.ts`); the results screen
+  leads back to the lesson (`menuLabel` on `ResultScreen`, `leaveResults` in `App.svelte`)
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
 lesstof content is developed separately from the practice sets and is not part of the roadmap
-below (only the lesson features of v6 are): no fixed order, content only when the user asks for
+below (only the lesson features of v6 were): no fixed order, content only when the user asks for
 it (iterate its spec §7 first). Linking from
 other screens is supported (`openLesson(set, lesson, returnTo)` in `App.svelte`) but not used
 yet. The lesson link from a mistake is done (lesstof spec §3.1–§3.2): `Les:` buttons
@@ -101,12 +105,11 @@ The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScr
 lesson data through to `LessonLinks`, `LessonSheet` and `LessonPane` (the lesson next to the
 wrong-answer panel on a landscape tablet, v4 spec §7).
 
-Next steps (spec §12), one at a time and only when the user says so. v3, v4 and v5 are done (§12.2–§12.4, §12.10, §12.6);
+Next steps (spec §12), one at a time and only when the user says so. v3, v4, v5 and v6 are done (§12.2–§12.4, §12.10, §12.6, §12.15);
 the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). Mixed categories (§12.5) are done. Order decided 2026-11-14; v6 and v8 inserted 2026-11-15.
 
 | Step                                                                                    | New infrastructure |
 | --------------------------------------------------------------------------------------- | ------------------ |
-| v6: from a lesson to practice, and a mini check after a lesson (§12.15)                 | none               |
 | v7: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
 | v8: yesterday's mistakes come back on a later day (§12.16), builds on v7                | none (uses v7)     |
 | v9: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)                   | open               |
