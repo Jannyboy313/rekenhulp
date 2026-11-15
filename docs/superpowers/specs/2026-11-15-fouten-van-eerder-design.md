@@ -161,8 +161,8 @@ One plan, one commit per task, `main` deployable after each.
 
 1. `lib/review.ts`: `dueTopics`.
 2. `reviewSession` in `lib/session.ts`.
-3. The row: `REVIEW_ROW`, the glyph, `PracticeSetList`, the scene and the shot.
-4. `App.svelte`: reading, the `review` origin, `oncleared`.
+3. The row: `REVIEW_ROW`, the glyph, `PracticeSetList`.
+4. `App.svelte`: reading, the `review` origin, `oncleared`; the scene and the shot.
 5. The documents: main spec §1 (non-goals: the records have a reader; adaptive difficulty as
    decision 14), §3 (Opnieuw), §3.1 (the row), §3.5, §12 and §12.16 (done, pointer to this
    spec); memory spec §1 and §4 (the first reader, the source of a review session);
