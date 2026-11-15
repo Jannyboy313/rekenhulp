@@ -165,6 +165,10 @@ only the real choices, update and commit the spec, then implement directly with 
   a landscape tablet: a test that mounts `App` sets 360 × 780 first.
 - `npm run screenshots -- --project=<layout> -g <shot>` renders one shot, but first empties that
   layout's folder.
+- A block with its own `overflow` (a lesson table) inside a scrolling flex column needs
+  `flex: none`: as a scroll container its minimum height is 0, so it shrinks to nothing when
+  the column overflows. The phone shots grow the viewport and hide this; the screenshot run
+  checks `.table-box` before growing.
 
 ## Svelte pitfalls
 
