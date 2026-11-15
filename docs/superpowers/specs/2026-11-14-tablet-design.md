@@ -338,6 +338,9 @@ most n wide. Every screen keeps its header on top and its pinned buttons at the 
 - **A list longer than the screen** scrolls inside its column as on the phone (a "Wat zit erin"
   card on a compact tablet, a long lesson). A row of tiles is never lower than its content, with
   a minimum of 120; when the grid does not fit, it scrolls.
+- **Lesson blocks** on the lesson screen grow with the body: a worked line 22/34, the labels
+  ("Tip", a worked title) 14, a table head 15, table cells padded 12 16. The pane and the sheet
+  (§7) keep the phone's block sizes.
 - **A small tablet in portrait** (narrower than 720): the three tiles per row are too narrow for
   a name next to the glyph, so the name goes under the glyph (17/22) and the side padding of the
   overview is 20. Found on the 600 × 960 screenshots: names broke inside a word.

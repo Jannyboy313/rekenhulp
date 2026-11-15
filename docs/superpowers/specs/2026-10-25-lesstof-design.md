@@ -185,7 +185,10 @@ Refs are `set/topic` ids; a bare id is a topic of the set's own lesson. **—** 
   tile, set name), then one row per topic with its title and a one-line summary, in the row style
   of the overview. Scrolls when long.
 - **`lesson`:** header with the back button and the topic title, then the blocks (§5), scrolling
-  as one page, respecting the safe-area insets.
+  as one page, respecting the safe-area insets. A table is a card over the full width (surface,
+  border, radius 14, card shadow) with a tinted head row (`--primary-tint`, text
+  `--primary-dark`); a table wider than the card scrolls sideways inside it. The same in the
+  sheet and the pane (§3.1).
 
 ## 5. Data model
 
