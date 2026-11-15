@@ -208,6 +208,21 @@ function generatePlan(
   return shuffle(rng, questions);
 }
 
+export const REVIEW_PER_TOPIC = 2;
+export const REVIEW_MAX_TOPICS = 7;
+
+/** Fouten van eerder (review spec §5): two new exercises of each of the first seven topics. */
+export function reviewSession(
+  topics: readonly Topic[],
+  rng: Rng,
+  generators: Record<Topic, Generator> = GENERATORS,
+): Question[] {
+  const plan = topics
+    .slice(0, REVIEW_MAX_TOPICS)
+    .flatMap((topic) => repeat(topic, REVIEW_PER_TOPIC));
+  return generatePlan(plan, rng, generators);
+}
+
 export const EXERCISES_PER_MISTAKE = 3;
 
 /**

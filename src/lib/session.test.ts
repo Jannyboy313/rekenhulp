@@ -11,6 +11,9 @@ import {
   insertRepeat,
   MAX_UNIQUE_ATTEMPTS,
   mistakeSession,
+  REVIEW_MAX_TOPICS,
+  REVIEW_PER_TOPIC,
+  reviewSession,
   shareCount,
   topicSession,
 } from './session';
@@ -808,5 +811,58 @@ describe('buildTestSession (test spec §3.3)', () => {
     expect(() =>
       buildTestSession({ length: 'long', lkt: false }, pool, createRng(1), stubGenerators()),
     ).toThrow(RangeError);
+  });
+});
+
+describe('reviewSession (review spec §5)', () => {
+  const topicsOf = (topics: Topic[], seed = 1) =>
+    reviewSession(topics, createRng(seed)).map((q) => q.topic);
+  const count = (made: Topic[], topic: Topic) => made.filter((m) => m === topic).length;
+
+  it('is empty without topics', () => {
+    expect(reviewSession([], createRng(1))).toEqual([]);
+  });
+
+  it('gives two different exercises of one topic', () => {
+    const questions = reviewSession(['lcm'], createRng(1));
+    expect(questions.map((q) => q.topic)).toEqual(['lcm', 'lcm']);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(2);
+  });
+
+  it('gives two exercises per topic', () => {
+    const made = topicsOf(['lcm', 'gcd', 'prime']);
+    expect(made).toHaveLength(6);
+    for (const topic of ['lcm', 'gcd', 'prime'] as const) expect(count(made, topic)).toBe(2);
+  });
+
+  it('takes the first seven topics only', () => {
+    const topics: Topic[] = [
+      'lcm',
+      'gcd',
+      'prime',
+      'squares',
+      'divisors',
+      'factorization',
+      'percentages',
+      'scale',
+    ];
+    const made = topicsOf(topics);
+    expect(made).toHaveLength(REVIEW_MAX_TOPICS * REVIEW_PER_TOPIC);
+    for (const topic of topics.slice(0, 7)) expect(count(made, topic)).toBe(2);
+    expect(count(made, 'scale')).toBe(0);
+  });
+
+  it('never repeats a key or a first prompt within a session', () => {
+    for (let seed = 1; seed <= 1000; seed++) {
+      const questions = reviewSession(['lcm', 'percentages', 'scale'], createRng(seed));
+      expect(new Set(questions.map((q) => q.key)).size).toBe(6);
+      expect(new Set(questions.map((q) => q.steps[0]?.prompt)).size).toBe(6);
+    }
+  });
+
+  it('is the same for the same seed', () => {
+    const keys = (seed: number) =>
+      reviewSession(['lcm', 'scale'], createRng(seed)).map((q) => q.key);
+    expect(keys(7)).toEqual(keys(7));
   });
 });
