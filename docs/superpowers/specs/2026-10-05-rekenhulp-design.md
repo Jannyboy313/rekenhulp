@@ -1451,7 +1451,7 @@ LKT 3.3 (written algorithms) is out of scope (§12.8, decided 2026-11-08).
 
 Comes after tablet support (v4, §12.10). It reuses the mixing of mixed categories (§12.5). A session in the style of a PABO
 test. Its form (composition, count, level, the pass mark) is in its own spec,
-`2026-11-14-oefentoets-design.md` (draft, not built); where that spec and the notes below
+`2026-11-14-oefentoets-design.md` (decided, not built); where that spec and the notes below
 differ, that spec holds. The non-goals of §1 hold: no stored results or history.
 
 Input for its spec (architecture analysis of 2026-11-14, not decided): `lib/play.ts` always

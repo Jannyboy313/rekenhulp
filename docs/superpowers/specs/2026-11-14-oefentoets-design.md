@@ -1,6 +1,6 @@
 # Rekenhulp v5 — Oefentoets (practice test)
 
-Date: 2026-11-14. Status: draft, to be iterated by the user; not built. Implements main spec §12.6.
+Date: 2026-11-14. Status: iterated with the user on 2026-11-15, ready for a plan; not built. Implements main spec §12.6.
 
 "Main spec" is `2026-10-05-rekenhulp-design.md`, "v4 spec" is `2026-11-14-tablet-design.md`. The
 toetsmatrijs is table 1 of `docs/references/cito-rwt-handreiking.md` (§3.3).
@@ -28,16 +28,24 @@ stays as it is: generators, answer kinds, keypads, kladblok, layouts.
 
 ## 2. Decisions
 
-Decided with the user on 2026-11-14 (1–4); the rest follows from main spec §12.6.
+Decided with the user on 2026-11-14 (1–4) and 2026-11-15 (7–8, and the confirmed defaults of
+the draft: 6, 9–13); 5 follows from main spec §12.6.
 
-| #   | Question      | Decision                                                                                                                              |
-| --- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Composition   | Two lengths: **Kort**, 15 exercises as the hoofdrekenen part (8/5/2/0), and **Lang**, 50 as the whole test (15/14/12/9) (§3).        |
-| 2   | LKT-only sets | A choice on the setup, default off. On: Talstelsels joins domain A, Heuristieken is a fifth group (§3.3).                             |
-| 3   | Time          | A limit that counts down: 17 minutes for Kort, 57 for Lang (the same pace). At 0:00 the test ends; unanswered counts as wrong (§5.3). |
-| 4   | Pass mark     | 70% of all exercises of the test: 11 of 15, 35 of 50. Shown as an indication, not a Cito norm (§6).                                   |
-| 5   | Feedback      | Only after the test: no correct or wrong state, no tips, no lesson links, no repeats (§5.1).                                          |
-| 6   | Level         | Verdieping, with the 20% Opfrisser share, so Tafels is never in the test (§3.2). Not a setting.                                       |
+| #   | Question             | Decision                                                                                                                                                                                    |
+| --- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Composition          | Two lengths: **Kort**, 15 exercises as the hoofdrekenen part (8/5/2/0), and **Lang**, 50 as the whole test (15/14/12/9) (§3).                                                               |
+| 2   | LKT-only sets        | A choice on the setup, default off. On: Getallen & delers and Talstelsels join domain A, Heuristieken is a fifth group (§3.1).                                                              |
+| 3   | Time                 | A limit that counts down: 17 minutes for Kort, 57 for Lang (the same pace). At 0:00 the test ends; unanswered counts as wrong (§5.3).                                                       |
+| 4   | Pass mark            | 70% of all exercises of the test: 11 of 15, 35 of 50. Shown as an indication, not a Cito norm (§6).                                                                                         |
+| 5   | Feedback             | Only after the test: no correct or wrong state, no tips, no lesson links, no repeats (§5.1).                                                                                                |
+| 6   | Level                | Verdieping, with the 20% Opfrisser share, so Tafels is never in the test (§3.2). Not a setting.                                                                                             |
+| 7   | Getallen & delers    | Only with **RWT + LKT**: of its 10 topics only `squares` (A.4d) and `remainders` (delen met rest, A.4a) are RWT eindtermen; KGV, GGD, priemgetallen and deelbaarheid are LKT matter (§3.1). |
+| 8   | Heuristieken in Kort | 2 exercises, the weight of the smallest domain with exercises (C), as D has none in Kort (§3.2).                                                                                            |
+| 9   | Topics control       | A segmented control (RWT / RWT + LKT), not a switch: the app has no switch, and the segments name both states (§4.2).                                                                       |
+| 10  | Stopping             | A dialog before stopping, unlike a practice session: an accidental tap would end a test of up to 57 minutes as failed (§5.4).                                                               |
+| 11  | Skipping             | No skip button: OK stays disabled on an empty field, so a guess is the way on. The real RWT has no going back (handreiking §3.1) (§5.1).                                                    |
+| 12  | Unanswered           | Count for the verdict and the score, not in "Per onderwerp" or "Fouten" (§6).                                                                                                               |
+| 13  | Last minute          | Marked from 1:00 (colour, bold, one announcement); nothing else warns about the time (§5.2). Fouten oefenen is offered after a test (§6).                                                   |
 
 ## 3. Composition
 
@@ -46,17 +54,18 @@ Decided with the user on 2026-11-14 (1–4); the rest follows from main spec §1
 Each set belongs to one domain of the toetsmatrijs. Within a domain every set weighs the same,
 as in Gemengd (main spec §4.2).
 
-| Domain | Name on the setup       | Sets                                                              |
-| ------ | ----------------------- | ----------------------------------------------------------------- |
-| A      | Hele getallen           | Getallen & delers, Bewerkingen, Getalbegrip; with LKT: Talstelsels |
-| B      | Verhoudingen en breuken | Verhoudingen, Breuken & kommagetallen                             |
-| C      | Meten en meetkunde      | Meten, Meetkunde                                                  |
-| D      | Verbanden en statistiek | Verbanden & statistiek                                            |
-| H      | Heuristieken            | Heuristieken (with LKT only)                                      |
+| Domain | Name on the setup       | Sets                                                               |
+| ------ | ----------------------- | ------------------------------------------------------------------ |
+| A      | Hele getallen           | Bewerkingen, Getalbegrip; with LKT: Getallen & delers, Talstelsels |
+| B      | Verhoudingen en breuken | Verhoudingen, Breuken & kommagetallen                              |
+| C      | Meten en meetkunde      | Meten, Meetkunde                                                   |
+| D      | Verbanden en statistiek | Verbanden & statistiek                                             |
+| H      | Heuristieken            | Heuristieken (with LKT only)                                       |
 
-Tafels is in no domain. The mapping is configuration (`lib/test.ts`), by set id; a test checks
-that every set of `PRACTICE_SETS` except Tafels is in exactly one domain, so a new set cannot be
-forgotten.
+Tafels is in no domain. Getallen & delers counts only with LKT (decision 7), so with **RWT** it
+and Talstelsels are not in the test, and A has two sets. The mapping is configuration
+(`lib/test.ts`), by set id; a test checks that every set of `PRACTICE_SETS` except Tafels is in
+exactly one domain, so a new set cannot be forgotten.
 
 ### 3.2 Blueprints
 
@@ -98,10 +107,11 @@ random.
 Examples:
 
 - **Kort, RWT:** Opfrisser 3 over A, B and C: 1 each (three domains, so each gets at least one).
-  Verdieping 7 / 4 / 1. A: 7 over 3 sets, so 3 + 2 + 2; C: 1 for Meten or Meetkunde, and the
+  Verdieping 7 / 4 / 1. A: 7 over 2 sets, so 4 + 3; C: 1 for Meten or Meetkunde, and the
   Opfrisser exercise for either.
 - **Lang, RWT:** Opfrisser 10 over 15/14/12/9: shares 3 / 2,8 / 2,4 / 1,8, so 3 / 3 / 2 / 2.
-  Verdieping 12 / 11 / 10 / 7. A: 12 over 3 sets, so 4 each, 1 per Verdieping topic.
+  Verdieping 12 / 11 / 10 / 7. A: 12 over 2 sets, so 6 each over their 4 Verdieping
+  topics.
 - **Lang, RWT + LKT:** Opfrisser 10 over 13/12/10/8/7: shares 2,6 / 2,4 / 2 / 1,6 / 1,4, so
   3 / 2 / 2 / 2 / 1. Verdieping 10 / 10 / 8 / 6 / 6. A now has 4 sets.
 
@@ -126,7 +136,7 @@ A screen of its own (`testSetup`), with the header of the setup screen: the back
 1. **Lengte** — a segmented control of 2 (a radio group, as the count): **Kort** and **Lang**.
    Under it one line: "15 opgaven · 17 minuten" or "50 opgaven · 57 minuten".
 2. **Onderwerpen** — a segmented control of 2: **RWT** and **RWT + LKT**. Under it one line:
-   "De vier domeinen van de RWT" or "Ook Talstelsels en Heuristieken".
+   "De vier domeinen van de RWT" or "Ook Getallen & delers, Talstelsels en Heuristieken".
 3. **Zo werkt het** — a card with three lines:
    - "Je ziet pas na afloop wat goed en fout was."
    - "De tijd loopt door, ook als je de app verlaat. Bij 0:00 stopt de toets."
@@ -303,7 +313,7 @@ summarizeTest(records, blueprint, totalMs, timedOut): SessionSummary
   Tafels in exactly one domain.
 - `buildTestSession`, 1000 seeds per blueprint: the total; the exact count per domain (via the
   set of each question's topic); the Opfrisser and Verdieping counts; no `tables`; without LKT
-  no topic of Talstelsels or Heuristieken; no duplicate keys or first prompts.
+  no topic of Getallen & delers, Talstelsels or Heuristieken; no duplicate keys or first prompts.
 - `lib/play.ts`, table-driven: with the test policy a wrong answer adds no repeat and leaves no
   feedback, a two-step question goes to step 2 after a wrong step 1, the last answer finishes;
   the default policy is unchanged (the existing tests stay as they are).
@@ -335,25 +345,7 @@ so an unfinished test is never reachable.
 
 ## 11. Open assumptions
 
-Defaults chosen while writing; each is the decision unless the user changes it in review.
-
-1. **Level:** Verdieping with the 20% Opfrisser share, not a setting (§2, 6). The alternative is
-   a Niveau control as on the setup screen.
-2. **Getallen & delers in an RWT test:** it sits in domain A, although KGV, GGD, priemgetallen
-   and ontbinden are LKT matter rather than RWT eindtermen (only `squares` is, A.4d). The
-   alternative is to count it only with **RWT + LKT**, which leaves A with Bewerkingen and
-   Getalbegrip.
-3. **Heuristieken in Kort:** decision 2 gave it "the weight of domain D", which is 0 in Kort. The
-   blueprint gives it the weight of the smallest domain with exercises instead (§3.2).
-4. **The topics choice is a segmented control** (RWT / RWT + LKT), not a switch: the app has no
-   switch control, and the segments name both states.
-5. **A dialog before stopping** (§5.4), unlike a practice session: an accidental tap would end a
-   test of up to 57 minutes as failed.
-6. **No skip button** (§5.1): an answer is needed to go on. The real RWT has no going back
-   (handreiking §3.1); whether it allows an empty answer is not in the handreiking.
-7. **Unanswered exercises** count for the verdict and the score, but not in "Per onderwerp" (§6).
-8. **The last minute** is marked (§5.2); nothing else warns about the time.
-9. **Fouten oefenen** after a test is offered, as a practice session (§6).
+None. The assumptions of the draft were decided on 2026-11-15: decisions 6–13 of §2.
 
 ## 12. Changes to other documents
 
