@@ -839,6 +839,8 @@ several sets share follow the index.
 | §5.95 | Working backwards, deeper (`backwardsProblems`) | `topics/heuristieken.md` |
 | §5.96 | Two unknowns (`twoUnknowns`) | `topics/heuristieken.md` |
 | §5.97 | Simplify the problem, deeper (`simplifyDeep`) | `topics/heuristieken.md` |
+| §5.98 | Circle with the calculator (`calcCircle`, v9, not built yet) | `topics/meetkunde.md` |
+| §5.99 | Volume with the calculator (`calcVolume`, v9, not built yet) | `topics/meetkunde.md` |
 
 ### v3 rules for Verhoudingen, Getallen & delers and Bewerkingen (§5.53–§5.66)
 
@@ -1563,9 +1565,10 @@ The phone rules it changed are in §2, §3.2, §3.5, §3.6 and §6 of this spec.
 
 Decided 2026-11-14; reverses the drop of calculator problems in §12.8. The foundation: exercises
 marked as "rekenmachine toegestaan", as Cito marks them, such as the RWT calculator part and the
-LKT part 2. How and what (which problems, ranges, how the mark is shown, whether the app offers a
-calculator, how it relates to the sets and levels) is decided in its own spec iteration; §1 and
-§12.8 change when that work starts.
+LKT part 2. It has its own spec, `2026-11-15-rekenmachine-design.md` (a draft, not built yet): a
+calculator button on marked exercises that opens a calculator overlay, calculator topics as
+Verdieping topics of the existing sets, and Meetkunde as the first set (§5.98–§5.99). §1 and
+§12.8 change when it is built.
 
 ### 12.12 v10 — print the practice test
 

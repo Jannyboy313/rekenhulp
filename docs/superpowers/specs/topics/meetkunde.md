@@ -373,3 +373,57 @@ klok)`. Three forms, each equally likely; suffix `°`, except the number of angl
   `buitenhoek 180 − 140 = 40 → 360 : 40 = 9`; `2 + 3 + 4 = 9 delen → 1 deel = 180 : 9 = 20 →
   4 × 20 = 80`; `grote wijzer: 20 × 6 = 120°, kleine wijzer: 4 × 30 + 20 × 0,5 = 130° → 130 −
   120 = 10`.
+
+### Meetkunde v9 (§5.98–§5.99)
+
+The first calculator topics (`2026-11-15-rekenmachine-design.md`, v9): not built yet. Both are
+Verdieping topics in `CALCULATOR_TOPICS`, so their exercises show the calculator button. The v3
+rules of §5 apply (no topic tips, the de-duplication key is the form, the variant and the
+numbers, prompts without a slot of at most 170 characters), except the rule on decimals: the
+answer is rounded half up as the last sentence of the prompt says, and only the rounded value is
+correct (calculator spec §6). `π = 3,14`, said in the prompt; the calculator has no `π` key.
+
+### 5.98 Circle with the calculator (`calcCircle`)
+
+Verdieping, calculator (RWT C.10b, C.11b). Label: `Cirkel met de rekenmachine (omtrek,
+oppervlakte, terugrekenen)`. Three forms, each equally likely; always rounded to 1 decimal:
+
+| Form        | Example                                                                                                      | Answer | Suffix |
+|-------------|--------------------------------------------------------------------------------------------------------------|--------|--------|
+| Omtrek      | `Een cirkel heeft een diameter van 7,5 cm. Hoe groot is de omtrek? Neem π = 3,14. Rond af op 1 decimaal.`    | 23,6   | `cm`   |
+| Oppervlakte | `Een cirkel heeft een straal van 6,5 m. Hoe groot is de oppervlakte? Neem π = 3,14. Rond af op 1 decimaal.`  | 132,7  | `m²`   |
+| Terug       | `Een cirkel heeft een omtrek van 40 cm. Hoe groot is de diameter? Neem π = 3,14. Rond af op 1 decimaal.`     | 12,7   | `cm`   |
+
+- **Unit:** `cm` or `m`, 50/50, for every form; the area in `cm²` or `m²`.
+- **Omtrek and Oppervlakte:** the given length has one decimal and is not a whole number, in
+  `[1,5; 25]`; it is the radius or (50%) the diameter. Omtrek `3,14 × d`, oppervlakte
+  `3,14 × r × r`; a given diameter gives a radius with up to 2 decimals (`7,5 : 2 = 3,75`).
+- **Terug:** a whole circumference in `[10, 200]`; asked the diameter (`omtrek : 3,14`) or (50%)
+  the radius (`omtrek : 3,14 : 2`).
+- Explanations: `3,14 × 7,5 = 23,55 → 23,6`; `straal = 7,5 : 2 = 3,75 → 3,14 × 3,75² =
+  44,15625 → 44,2`; `40 : 3,14 = 12,738… → 12,7`; `diameter = 40 : 3,14 = 12,738… → straal =
+  6,369… → 6,4`.
+
+### 5.99 Volume with the calculator (`calcVolume`)
+
+Verdieping, calculator (RWT C.12, with C.2 for the litres). Label: `Inhoud met de rekenmachine
+(bol, cilinder, liters)`. Three forms, each equally likely; always rounded to a whole number:
+
+| Form     | Example                                                                                                                                              | Answer | Suffix  |
+|----------|------------------------------------------------------------------------------------------------------------------------------------------------------|--------|---------|
+| Bol      | `Een bol heeft een straal van 6 cm. De inhoud van een bol is 4/3 × π × straal³. Neem π = 3,14. Hoe groot is de inhoud? Rond af op een heel getal.`     | 904    | `cm³`   |
+| Cilinder | `Een cilinder heeft een straal van 3,5 cm en een hoogte van 12 cm. Hoe groot is de inhoud? Neem π = 3,14. Rond af op een heel getal.`                 | 462    | `cm³`   |
+| Bak      | `Een bak is 85 cm lang, 35 cm breed en 42 cm hoog. Hoeveel liter past erin? Rond af op een heel getal.`                                               | 125    | `L`     |
+
+- **Bol** (C.12b, the formula given, `4/3` as a stacked fraction): a whole radius `r ∈ [2, 12]`
+  cm, given as the radius or (50%) as the diameter `2r`. Volume `4 : 3 × 3,14 × r³`.
+- **Cilinder** (C.12c): a radius with one decimal that is not whole, in `[1,5; 9,5]`, or (50%)
+  an odd diameter in `[3, 19]`, so the radius ends on `,5`; a whole height `h ∈ [5, 30]` cm.
+  Volume `3,14 × r × r × h`.
+- **Bak** (C.12a): whole centimetres, length `[30, 120]`, width `[20, 60]`, height `[20, 60]`,
+  length ≥ width, and at most one of the three a multiple of 10 (three round lengths are the
+  mental exercise of §5.28). Volume in litres: `l × b × h : 1000`, with the suffix `L` as the
+  Litres form of §5.28.
+- No value within `0,001` of a rounding boundary, unless exactly on it (calculator spec §6).
+- Explanations: `4 : 3 × 3,14 × 6³ = 904,32 → 904`; `straal = 7 : 2 = 3,5 → 3,14 × 3,5² × 12 =
+  461,58 → 462`; `85 × 35 × 42 = 124 950 cm³ = 124,95 L → 125`.
