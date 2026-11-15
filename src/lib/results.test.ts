@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { fromInteger } from './rational';
-import { isCorrect, summarize, topicScores, wrongSteps, type QuestionRecord } from './results';
+import {
+  isCorrect,
+  summarize,
+  summarizeTest,
+  topicScores,
+  wrongSteps,
+  type QuestionRecord,
+} from './results';
 import type { Topic } from './types';
 import { numberStep } from './steps';
 
@@ -136,9 +143,9 @@ describe('topicScores', () => {
   });
 
   it('merges topics with the same short name', () => {
-    expect(topicScores([topicRecord('probability', true), topicRecord('twoDice', false)])).toEqual(
-      [{ name: 'Kans', correct: 1, answered: 2 }],
-    );
+    expect(topicScores([topicRecord('probability', true), topicRecord('twoDice', false)])).toEqual([
+      { name: 'Kans', correct: 1, answered: 2 },
+    ]);
   });
 
   it('counts a partly answered two-step question as wrong', () => {
@@ -156,5 +163,52 @@ describe('topicScores', () => {
       topicRecord('scale', true),
     ]);
     expect(scores.map(({ name }) => name)).toEqual(['Schaal', 'KGV', 'GGD']);
+  });
+});
+
+describe('summarizeTest (test spec §6)', () => {
+  const LIMIT = 17 * 60_000;
+  const records = (correct: number, wrong: number) => [
+    ...Array.from({ length: correct }, (_, i) => record([true], 1000 + i)),
+    ...Array.from({ length: wrong }, (_, i) => record([false], 2000 + i)),
+  ];
+
+  it('scores over every exercise of the test, unanswered ones included', () => {
+    const summary = summarizeTest(records(11, 1), 15, LIMIT, 600_000, false);
+    expect(summary).toMatchObject({ answered: 12, correct: 11, percentage: 73 });
+    expect(summary.test).toEqual({
+      total: 15,
+      unanswered: 3,
+      needed: 11,
+      passed: true,
+      limitMs: LIMIT,
+      timedOut: false,
+    });
+  });
+
+  it('fails below the pass mark', () => {
+    const summary = summarizeTest(records(10, 5), 15, LIMIT, 600_000, false);
+    expect(summary.percentage).toBe(67);
+    expect(summary.test).toMatchObject({ unanswered: 0, passed: false });
+  });
+
+  it('handles a test with no answers', () => {
+    const summary = summarizeTest([], 15, LIMIT, LIMIT, true);
+    expect(summary).toMatchObject({ answered: 0, percentage: 0, averageMs: 0, topics: [] });
+    expect(summary.test).toMatchObject({ unanswered: 15, passed: false, timedOut: true });
+  });
+
+  it('caps the time at the limit', () => {
+    expect(summarizeTest([], 15, LIMIT, LIMIT + 80_000, true).totalMs).toBe(LIMIT);
+  });
+
+  it('keeps the topics and mistakes to the answered exercises', () => {
+    const summary = summarizeTest(records(8, 2), 15, LIMIT, 600_000, false);
+    expect(summary.mistakes).toHaveLength(2);
+    expect(summary.topics).toEqual([{ name: 'Tafels van 2 t/m 15', correct: 8, answered: 10 }]);
+  });
+
+  it('leaves a practice summary without a test', () => {
+    expect(summarize([], 5000).test).toBeUndefined();
   });
 });

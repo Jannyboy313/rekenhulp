@@ -3,14 +3,15 @@
   import { formatDuration, formatSeconds } from '../lib/format';
   import { displayAnswer } from '../lib/inputModels';
   import { wrongSteps, type SessionSummary } from '../lib/results';
+  import { PASS_PERCENT } from '../lib/practiceTest';
   import { EXERCISES_PER_MISTAKE } from '../lib/session';
-  import type { PracticeSet } from '../lib/types';
   import Icon from './Icon.svelte';
   import { viewport } from './layout.svelte';
   import MathText from './MathText.svelte';
 
   interface Props {
-    set: PracticeSet;
+    /** The set name, or "Oefentoets". */
+    name: string;
     summary: SessionSummary;
     onrestart: () => void;
     onmenu: () => void;
@@ -18,9 +19,12 @@
     onpractise: () => void;
   }
 
-  let { set, summary, onrestart, onmenu, onpractise }: Props = $props();
+  let { name, summary, onrestart, onmenu, onpractise }: Props = $props();
 
   const failedSteps = $derived(wrongSteps(summary.mistakes));
+  // A test scores over all its exercises, unanswered ones included (test spec §6).
+  const test = $derived(summary.test);
+  const total = $derived(test?.total ?? summary.answered);
   // "Per onderwerp" starts open where it has its own column and the height for it (landscape,
   // not compact; v4 spec §8). Read once: after that the user's choice holds, also through a
   // rotation.
@@ -39,17 +43,31 @@
 <main class="results">
   <div class="scroll">
     <header>
-      <p class="set-name">{set.name}</p>
+      <p class="set-name">{name}</p>
       <h1>Resultaat</h1>
     </header>
 
-    {#if summary.answered === 0}
+    {#if total === 0}
       <p>Geen opgaven beantwoord.</p>
     {:else}
       <section class="card score-card">
+        {#if test}
+          <div class="verdict" class:passed={test.passed}>
+            <p class="verdict-title">
+              <span class="verdict-icon">
+                <Icon name={test.passed ? 'check' : 'cross'} size={16} stroke={2.6} />
+              </span>
+              {test.passed ? 'Geslaagd' : 'Niet geslaagd'}
+            </p>
+            <p class="verdict-note">
+              Je had {test.needed} van de {test.total} goed nodig ({PASS_PERCENT}%). Dit is een
+              indicatie, geen Cito-norm.
+            </p>
+          </div>
+        {/if}
         <div class="score-row">
           <p class="score">
-            {summary.correct}<span class="total">{' / '}{summary.answered}</span>
+            {summary.correct}<span class="total">{' / '}{total}</span>
           </p>
           <p class="pill">{summary.percentage}%</p>
         </div>
@@ -64,15 +82,31 @@
           <div class="fill" style:width="{summary.percentage}%"></div>
         </div>
         <dl class="stats">
-          <div>
-            <dt>Totale tijd</dt>
-            <dd>{formatDuration(summary.totalMs)}</dd>
-          </div>
+          {#if test}
+            <div>
+              <dt>Tijd</dt>
+              <dd>{formatDuration(summary.totalMs)} van {formatDuration(test.limitMs)}</dd>
+            </div>
+          {:else}
+            <div>
+              <dt>Totale tijd</dt>
+              <dd>{formatDuration(summary.totalMs)}</dd>
+            </div>
+          {/if}
           <div>
             <dt>Gemiddeld per som</dt>
             <dd>{formatSeconds(summary.averageMs)}</dd>
           </div>
+          {#if test && test.unanswered > 0}
+            <div>
+              <dt>Niet beantwoord</dt>
+              <dd>{test.unanswered}</dd>
+            </div>
+          {/if}
         </dl>
+        {#if test?.timedOut}
+          <p class="timed-out">De tijd was om.</p>
+        {/if}
       </section>
 
       <!-- With one topic the card would repeat the score; collapsed by default (spec §3.5). -->
@@ -129,7 +163,7 @@
             </li>
           {/each}
         </ul>
-      {:else}
+      {:else if summary.correct === total}
         <p class="all-good">Alles goed!</p>
       {/if}
     {/if}
@@ -197,6 +231,50 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+
+  /* The verdict of a test (test spec §6); the icon and the title carry it, the colour adds. */
+  .verdict {
+    --verdict: var(--bad);
+    --verdict-tint: var(--bad-tint);
+    --verdict-text: var(--bad-text);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .verdict.passed {
+    --verdict: var(--good);
+    --verdict-tint: var(--good-tint);
+    --verdict-text: var(--good-text);
+  }
+
+  .verdict-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--verdict-text);
+  }
+
+  .verdict-icon {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--verdict-tint);
+    color: var(--verdict);
+  }
+
+  .verdict-note,
+  .timed-out {
+    font-size: 13px;
+    line-height: 18px;
+    color: var(--muted);
   }
 
   .score-row {

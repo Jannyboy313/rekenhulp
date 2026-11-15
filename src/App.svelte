@@ -205,7 +205,7 @@
       {@const set = screen.set}
       {@const summary = screen.summary}
       <ResultScreen
-        {set}
+        name={set.name}
         {summary}
         onrestart={() => startSession(set)}
         onmenu={showSets}

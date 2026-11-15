@@ -79,7 +79,13 @@ function results(mistakes: number): Scene {
   return (target) =>
     mount(ResultScreen, {
       target,
-      props: { set: proportions, summary, onrestart: noop, onmenu: noop, onpractise: noop },
+      props: {
+        name: proportions.name,
+        summary,
+        onrestart: noop,
+        onmenu: noop,
+        onpractise: noop,
+      },
     });
 }
 

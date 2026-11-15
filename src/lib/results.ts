@@ -1,3 +1,4 @@
+import { hasPassed, neededToPass } from './practiceTest';
 import { TOPIC_LABELS } from './topics';
 import type { AnswerKind, CheckResult, Question } from './types';
 
@@ -22,6 +23,18 @@ export interface SessionSummary {
   averageMs: number;
   mistakes: QuestionRecord[];
   topics: TopicScore[];
+  /** Only for an Oefentoets (test spec §6). */
+  test?: TestOutcome;
+}
+
+export interface TestOutcome {
+  /** Every exercise of the test, unanswered ones included. */
+  total: number;
+  unanswered: number;
+  needed: number;
+  passed: boolean;
+  limitMs: number;
+  timedOut: boolean;
 }
 
 /** A step answered wrongly, as the result screen lists it. */
@@ -89,10 +102,40 @@ export function summarize(records: readonly QuestionRecord[], totalMs: number): 
   return {
     answered,
     correct,
-    percentage: answered === 0 ? 0 : Math.round((correct / answered) * 100),
+    percentage: percentage(correct, answered),
     totalMs,
     averageMs: answered === 0 ? 0 : durationSum / answered,
     mistakes: records.filter((record) => !isCorrect(record)),
     topics: topicScores(records),
   };
+}
+
+/**
+ * An Oefentoets: the score and the verdict over every exercise of the test; the topics and the
+ * mistakes over the answered ones only (test spec §6).
+ */
+export function summarizeTest(
+  records: readonly QuestionRecord[],
+  total: number,
+  limitMs: number,
+  totalMs: number,
+  timedOut: boolean,
+): SessionSummary {
+  const summary = summarize(records, Math.min(totalMs, limitMs));
+  return {
+    ...summary,
+    percentage: percentage(summary.correct, total),
+    test: {
+      total,
+      unanswered: total - summary.answered,
+      needed: neededToPass(total),
+      passed: hasPassed(summary.correct, total),
+      limitMs,
+      timedOut,
+    },
+  };
+}
+
+function percentage(correct: number, total: number): number {
+  return total === 0 ? 0 : Math.round((correct / total) * 100);
 }

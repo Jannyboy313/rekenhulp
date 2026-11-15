@@ -2,8 +2,7 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { summarize, type QuestionRecord } from '../lib/results';
-import { TABLES_SET } from '../lib/sets';
+import { summarize, summarizeTest, type QuestionRecord } from '../lib/results';
 import { fromInteger } from '../lib/rational';
 import { SLOT } from '../lib/slot';
 import { choiceStep, factorizationStep, numberStep } from '../lib/steps';
@@ -27,7 +26,7 @@ function renderResults(
 ) {
   return render(ResultScreen, {
     props: {
-      set: TABLES_SET,
+      name: 'Tafels',
       summary: summarize(records, totalMs),
       onrestart,
       onmenu,
@@ -35,6 +34,29 @@ function renderResults(
     },
   });
 }
+
+const LIMIT = 17 * 60_000;
+
+/** A test of 15 with `right` correct and `wrong` wrong answers; the rest unanswered. */
+function renderTest(right: number, wrong: number, { totalMs = 600_000, timedOut = false } = {}) {
+  const records = Array.from({ length: right + wrong }, (_, i) =>
+    recordOf(
+      numberStep({ prompt: `${i} + 1 = ?`, answer: fromInteger(i + 1) }),
+      i < right ? String(i + 1) : '99',
+    ),
+  );
+  return render(ResultScreen, {
+    props: {
+      name: 'Oefentoets',
+      summary: summarizeTest(records, 15, LIMIT, totalMs, timedOut),
+      onrestart: vi.fn(),
+      onmenu: vi.fn(),
+      onpractise: vi.fn(),
+    },
+  });
+}
+
+const stat = (label: string) => screen.getByText(label).nextElementSibling?.textContent;
 
 function tileValues(card: Element): string[] {
   return [...card.querySelectorAll('.tile-value')].map((el) => el.textContent?.trim() ?? '');
@@ -276,5 +298,54 @@ describe('ResultScreen "Per onderwerp" per layout (v4 spec §8)', () => {
     viewport.shown = 'phone';
     await tick();
     expect(details().open).toBe(false);
+  });
+});
+
+describe('ResultScreen after an Oefentoets (test spec §6)', () => {
+  it('shows a pass with the needed number and the score over the whole test', () => {
+    renderTest(11, 1);
+    expect(screen.getByText('Oefentoets')).toBeTruthy();
+    expect(screen.getByText('Geslaagd')).toBeTruthy();
+    expect(
+      screen.getByText(
+        'Je had 11 van de 15 goed nodig (70%). Dit is een indicatie, geen Cito-norm.',
+      ),
+    ).toBeTruthy();
+    expect(document.querySelector('.score')?.textContent?.trim()).toBe('11 / 15');
+    expect(screen.getByText('73%')).toBeTruthy();
+    expect(stat('Tijd')).toBe('10:00 van 17:00');
+    expect(stat('Niet beantwoord')).toBe('3');
+  });
+
+  it('shows a fail', () => {
+    renderTest(10, 5);
+    expect(screen.getByText('Niet geslaagd')).toBeTruthy();
+    expect(screen.queryByText('Geslaagd')).toBeNull();
+    expect(screen.queryByText('Niet beantwoord')).toBeNull();
+  });
+
+  it('says when the time ran out', () => {
+    renderTest(3, 0, { totalMs: LIMIT + 400, timedOut: true });
+    expect(screen.getByText('De tijd was om.')).toBeTruthy();
+    expect(stat('Tijd')).toBe('17:00 van 17:00');
+  });
+
+  it('shows the verdict and the score also without answers', () => {
+    renderTest(0, 0, { timedOut: true });
+    expect(screen.getByText('Niet geslaagd')).toBeTruthy();
+    expect(document.querySelector('.score')?.textContent?.trim()).toBe('0 / 15');
+    expect(screen.queryByText('Geen opgaven beantwoord.')).toBeNull();
+    expect(screen.queryByText('Alles goed!')).toBeNull();
+  });
+
+  it('says Alles goed! only when every exercise of the test was right', () => {
+    renderTest(12, 0);
+    expect(screen.queryByText('Alles goed!')).toBeNull();
+    expect(screen.queryByRole('heading', { name: /Fouten/ })).toBeNull();
+  });
+
+  it('says Alles goed! after a test without mistakes or gaps', () => {
+    renderTest(15, 0);
+    expect(screen.getByText('Alles goed!')).toBeTruthy();
   });
 });
