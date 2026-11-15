@@ -1,6 +1,8 @@
-import { describe, expect, it } from 'vitest';
+import { IDBFactory as FakeFactory } from 'fake-indexeddb';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   createVolatileMemory,
+  openMemory,
   toPracticeRecords,
   type Memory,
   type PracticeRecord,
@@ -63,6 +65,7 @@ describe('toPracticeRecords', () => {
 
 const VARIANTS: readonly { name: string; create: () => Memory }[] = [
   { name: 'volatile', create: createVolatileMemory },
+  { name: 'IndexedDB', create: () => openMemory(new FakeFactory()) },
 ];
 
 describe.each(VARIANTS)('$name memory', ({ create }) => {
@@ -107,5 +110,101 @@ describe.each(VARIANTS)('$name memory', ({ create }) => {
   it('does not share records with another memory', async () => {
     await create().add([a]);
     expect(await create().all()).toEqual([]);
+  });
+});
+
+describe('openMemory', () => {
+  const [a, b] = [practiceRecord('area'), practiceRecord('tables', false)];
+
+  /** An `open` whose request fails, as a blocked or corrupt database does. */
+  function failingFactory(): IDBFactory {
+    return {
+      open() {
+        const request = { error: new Error('open failed') } as unknown as IDBOpenDBRequest;
+        queueMicrotask(() => request.onerror?.(new Event('error')));
+        return request;
+      },
+    } as unknown as IDBFactory;
+  }
+
+  function throwingFactory(): IDBFactory {
+    return {
+      open() {
+        throw new Error('no storage');
+      },
+    } as unknown as IDBFactory;
+  }
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it('keeps the records for a later memory on the same database', async () => {
+    const factory = new FakeFactory();
+    await openMemory(factory).add([a, b]);
+    expect(await openMemory(factory).all()).toEqual([a, b]);
+  });
+
+  it('clears the records for a later memory too', async () => {
+    const factory = new FakeFactory();
+    const memory = openMemory(factory);
+    await memory.add([a]);
+    await memory.clear();
+    expect(await openMemory(factory).all()).toEqual([]);
+  });
+
+  it('is volatile without IndexedDB', async () => {
+    const memory = openMemory(undefined);
+    await memory.add([a]);
+    expect(await memory.all()).toEqual([a]);
+  });
+
+  it.each([
+    { name: 'throws', factory: throwingFactory },
+    { name: 'fails', factory: failingFactory },
+  ])('is volatile when opening $name, and logs it once', async ({ factory }) => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const memory = openMemory(factory());
+    await memory.add([a]);
+    await memory.add([b]);
+    expect(await memory.all()).toEqual([a, b]);
+    expect(log).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports the first add that reached IndexedDB, once', async () => {
+    const onFirstAdd = vi.fn();
+    const memory = openMemory(new FakeFactory(), onFirstAdd);
+    await memory.add([]);
+    expect(onFirstAdd).not.toHaveBeenCalled();
+    await memory.add([a]);
+    expect(onFirstAdd).toHaveBeenCalledTimes(1);
+    await memory.add([b]);
+    expect(onFirstAdd).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    { name: 'without IndexedDB', factory: () => undefined },
+    { name: 'when opening fails', factory: failingFactory },
+  ])('does not report an add $name', async ({ factory }) => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const onFirstAdd = vi.fn();
+    await openMemory(factory(), onFirstAdd).add([a]);
+    expect(onFirstAdd).not.toHaveBeenCalled();
+  });
+
+  it('lets go of the database when a newer version needs it', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const factory = new FakeFactory();
+    const memory = openMemory(factory);
+    await memory.add([a]);
+    await new Promise<void>((resolve, reject) => {
+      const request = factory.open('rekenhulp', 2);
+      request.onsuccess = () => {
+        request.result.close();
+        resolve();
+      };
+      request.onerror = request.onblocked = () => reject(new Error('the upgrade was blocked'));
+    });
+    // Version 1 can no longer open the database: the memory goes on, volatile.
+    await memory.add([b]);
+    expect(await memory.all()).toEqual([b]);
   });
 });
