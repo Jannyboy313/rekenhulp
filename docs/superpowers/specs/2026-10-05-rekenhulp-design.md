@@ -1221,7 +1221,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-No open assumptions.
+v7 (persistent memory): the defaults of its draft spec, `2026-11-15-geheugen-design.md` §10.
 
 ## 12. Roadmap (not in v1)
 
@@ -1236,11 +1236,9 @@ categories (§12.5) are done. The order after that (decided 2026-11-14, v6 and v
 - v4: tablet support (§12.10).
 - v5: the practice test (§12.6, done).
 - v6: from a lesson to practice, and a mini check after a lesson (§12.15, done).
-- v7: persistent memory in IndexedDB. No section yet; the non-goals of §1 change when that work
-  starts. Input for its spec (architecture analysis of 2026-11-14, not decided): a `Question`
-  cannot be stored (`Step.check` is a closure), so storage gets its own record of plain data
-  (such as topic, key, correct, duration, time) behind an interface in `lib/` with an in-memory
-  variant; the `Topic` id is then a storage format, and the app keeps working without IndexedDB.
+- v7: persistent memory in IndexedDB. It has its own spec, `2026-11-15-geheugen-design.md`
+  (draft): one record of plain data per answered exercise, and a button to delete them. The
+  non-goals of §1 change when it is built (its §9).
 - v8: yesterday's mistakes (§12.16), builds on v7.
 - v9: problems where a calculator is allowed (§12.11).
 - v10: a print button for the practice test (§12.12).
