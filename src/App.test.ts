@@ -464,7 +464,8 @@ describe('App', () => {
 
     it('is the row after the sets on Oefenen, and not on Lesstof', async () => {
       render(App);
-      const rows = screen.getAllByRole('button');
+      // The rows only: the list ends with Gegevens wissen (memory spec §5).
+      const rows = [...document.querySelectorAll('.set-list > li:not(.list-footer) button')];
       expect(rows).toHaveLength(PRACTICE_SETS.length + 2);
       expect(rows.at(-2)!.textContent).toContain('Gemengd');
       expect(rows.at(-2)!.textContent).toContain('Opgaven uit meerdere sets door elkaar');
@@ -581,8 +582,9 @@ describe('App', () => {
 
     it('is the last row on Oefenen, and not on Lesstof', async () => {
       render(App);
+      // The last button is Gegevens wissen (memory spec §5).
       const rows = screen.getAllByRole('button');
-      expect(rows.at(-1)!.textContent).toContain('Oefentoets');
+      expect(rows.at(-2)!.textContent).toContain('Oefentoets');
       await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
       expect(screen.queryByRole('button', { name: /Oefentoets/ })).toBeNull();
     });
@@ -753,5 +755,57 @@ describe('App memory (memory spec §4)', () => {
     expect(screen.getByRole('button', { name: 'Opnieuw' })).toBeTruthy();
     await tick();
     expect(log).toHaveBeenCalledWith(failure);
+  });
+});
+
+describe('App: Gegevens wissen (memory spec §5)', () => {
+  const asked = 'Er is een nieuwe versie beschikbaar. Nu installeren?';
+
+  beforeEach(() => {
+    vi.spyOn(history, 'back').mockImplementation(() => {});
+    resize(360, 780);
+  });
+
+  it('is the last item on Oefenen, after the Oefentoets, and not on Lesstof', async () => {
+    render(App);
+    const items = [...document.querySelectorAll('.set-list > li')];
+    expect(items.at(-2)!.textContent).toContain('Oefentoets');
+    expect(items.at(-1)!.textContent).toContain('Gegevens wissen');
+    await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+    expect(screen.queryByRole('button', { name: 'Gegevens wissen' })).toBeNull();
+  });
+
+  it('holds the update dialog back while its dialog is open', async () => {
+    const updates = createUpdates(vi.fn());
+    render(App, { updates });
+    await click('Gegevens wissen');
+    updates.needRefresh();
+    await tick();
+    expect(screen.queryByText(asked)).toBeNull();
+    await click('Annuleren');
+    expect(screen.getByText(asked)).toBeTruthy();
+  });
+
+  it('clears the saved records, and offers the button again after leaving the overview', async () => {
+    const memory = createVolatileMemory();
+    render(App, { memory });
+    await click(/Tafels/);
+    await click(/^Start/);
+    await click('1');
+    await click('OK');
+    await click('Verder');
+    await click('Stoppen');
+    await click('Menu');
+    expect(await memory.all()).toHaveLength(1);
+
+    await click('Gegevens wissen');
+    await click('Wissen');
+    await vi.waitFor(() => expect(screen.getByRole('status').textContent).toBe('Gegevens gewist.'));
+    expect(await memory.all()).toEqual([]);
+
+    await click(/Tafels/);
+    await click('Terug');
+    expect(screen.getByRole('button', { name: 'Gegevens wissen' })).toBeTruthy();
+    expect(screen.getByRole('status').textContent).toBe('');
   });
 });

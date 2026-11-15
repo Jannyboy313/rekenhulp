@@ -59,6 +59,11 @@ const SHOTS: readonly Shot[] = [
     steps: (page) => page.getByRole('tab', { name: 'Lesstof' }).click(),
   },
   { id: 'update-dialog', scene: 'app-update' },
+  {
+    id: 'clear-dialog',
+    scene: 'app',
+    steps: (page) => page.getByRole('button', { name: 'Gegevens wissen' }).click(),
+  },
   { id: 'setup-quick', scene: 'setup-quick' },
   { id: 'setup-deep', scene: 'setup-deep' },
   { id: 'setup-tables', scene: 'setup-tables' },

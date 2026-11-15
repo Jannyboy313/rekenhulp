@@ -1,5 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte';
+  import ClearMemory from './components/ClearMemory.svelte';
   import ErrorScreen from './components/ErrorScreen.svelte';
   import { viewport, watchViewport } from './components/layout.svelte';
   import LessonSetList from './components/LessonSetList.svelte';
@@ -108,6 +109,8 @@
   // The Oefentoets choices, kept in memory as the count (test spec §4.2).
   let testLength = $state<TestLength>('short');
   let testLkt = $state(false);
+  // The update dialog waits for the Gegevens wissen dialog (memory spec §5).
+  let clearOpen = $state(false);
 
   // The layout follows the viewport, also after a rotation (v4 spec §3.2).
   $effect(() => watchViewport(window, document.documentElement));
@@ -256,7 +259,11 @@
             sets={[...sets, MIXED_SET]}
             onselect={showSetup}
             ontest={() => (screen = { name: 'testSetup' })}
-          />
+          >
+            {#snippet footer()}
+              <ClearMemory {memory} bind:open={clearOpen} />
+            {/snippet}
+          </PracticeSetList>
         {/snippet}
         {#snippet lessons()}
           <LessonSetList
@@ -349,7 +356,7 @@
 
 {#if tooLow}
   <RotateNotice />
-{:else if updates && shouldPrompt(updateState, screen.name)}
+{:else if updates && !clearOpen && shouldPrompt(updateState, screen.name)}
   <UpdateDialog oninstall={updates.install} onlater={updates.dismiss} />
 {/if}
 

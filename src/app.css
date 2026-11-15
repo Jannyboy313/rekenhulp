@@ -297,6 +297,20 @@ button:focus-visible {
   display: flex;
 }
 
+/* The item under the last row. On a tablet it is not a tile: it takes the last free cell of the
+   grid, at its bottom right. */
+.set-list > li.list-footer {
+  display: flex;
+  justify-content: center;
+}
+
+:root[data-layout^='tablet'] .set-list > li.list-footer {
+  grid-column-end: -1;
+  min-height: 0;
+  align-self: end;
+  justify-self: end;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
