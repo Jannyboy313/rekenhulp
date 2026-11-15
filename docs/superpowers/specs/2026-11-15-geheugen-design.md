@@ -80,10 +80,8 @@ interface Memory {
 
 /** Lasts until the app closes; also the fallback and the test double. */
 function createVolatileMemory(): Memory;
-/** IndexedDB behind the same interface. */
-function createIndexedDbMemory(factory: IDBFactory): Memory;
-/** IndexedDB when there is one, else volatile. */
-function openMemory(factory: IDBFactory | undefined): Memory;
+/** IndexedDB when there is one that opens, else volatile (§3.3). */
+function openMemory(factory: IDBFactory | undefined, onFirstAdd?: () => void): Memory;
 /** The records of a finished session (§4). */
 function toPracticeRecords(
   records: readonly QuestionRecord[],
@@ -103,16 +101,17 @@ function toPracticeRecords(
 - The database is opened on the first call, not at app start, and the connection is reused.
 - When `indexedDB` is missing, or opening fails (private mode, a blocked or corrupt database),
   the memory falls back to the volatile variant for the rest of the app run (decision 8). The
-  failure is logged once.
+  failure is logged once. An operation that fails on an open database is not a fallback: its
+  promise rejects (decision 9, §5).
 - A newer app version in another tab can need the database (`versionchange`): the connection is
   closed then, and reopened on the next call.
 
 ### 3.4 Durable storage
 
 Without it the browser may evict the origin's storage under pressure, the records included.
-`navigator.storage.persist()` is asked after the first successful `add` of an app run; a missing
-API or a refusal changes nothing (decision 10). It lives in `main.ts`, passed into the memory as
-a callback, so `lib/memory.ts` does not touch `navigator`.
+`navigator.storage.persist()` is asked after the first successful `add` to IndexedDB of an app
+run; a missing API or a refusal changes nothing (decision 10). It lives in `main.ts`, passed
+into the memory as `onFirstAdd`, so `lib/memory.ts` does not touch `navigator`.
 
 ## 4. Saving a session
 
@@ -128,15 +127,16 @@ a callback, so `lib/memory.ts` does not touch `navigator`.
 ## 5. Gegevens wissen
 
 - On the **Oefenen** tab of the set overview, under the last row (Oefentoets): a small text
-  button **Gegevens wissen**, centred, in the muted text colour, 44 px high. On the phone it
-  scrolls with the list; on a tablet it is a line under the tiles. It is always shown, also when
-  nothing is stored. The **Lesstof** tab does not have it.
+  button **Gegevens wissen**, in the muted text colour, 44 px high. It is the last item of the
+  list and scrolls with it: centred on the phone; on a tablet it takes the free cells after the
+  last tile, at their bottom right (13 tiles leave free cells in both tablet grids). It is
+  always shown, also when nothing is stored. The **Lesstof** tab does not have it.
 - A tap opens a modal dialog (`ModalDialog`): title "Gegevens wissen?", text "Je resultaten op
   dit apparaat worden verwijderd. Dit kan niet ongedaan worden gemaakt.", buttons **Annuleren**
   (secondary, has the focus) and **Wissen** (primary). Escape closes it like Annuleren.
 - **Wissen** calls `memory.clear()`, closes the dialog and replaces the button by the text
-  "Gegevens gewist." (`role="status"`) until the overview is left. A failed clear is logged; the
-  text is then "Wissen is niet gelukt." and the button stays.
+  "Gegevens gewist." (`role="status"`) until the tab or the overview is left. A failed clear is
+  logged; the text is then "Wissen is niet gelukt." and the button stays.
 - The update dialog (main spec §2) waits while this dialog is open. A system back is not handled
   by the dialog: on `sets` it behaves as the system default (main spec §3).
 - Under the "too low" notice (v4 spec §3.3) the dialog is out of reach like the screen; it is
@@ -145,9 +145,9 @@ a callback, so `lib/memory.ts` does not touch `navigator`.
 ## 6. Code structure
 
 - `lib/memory.ts`: the types and functions of §3.2.
-- `components/ClearMemory.svelte`: the button, its status text and `ClearDialog` (a
-  `ModalDialog`, like `StopDialog`). Rendered by `App.svelte` in the `practice` snippet, after
-  `PracticeSetList`; the list and the shell get no memory props.
+- `components/ClearMemory.svelte`: the button, its status text and its dialog (a
+  `ModalDialog`). `App.svelte` passes it to `PracticeSetList` as a `footer` snippet, the last
+  item of the list; the list and the shell get no memory props.
 - `App.svelte`: the `memory` prop, saving in `finishSession` and `finishTest`, and
   `shouldPrompt` not shown while the clear dialog is open.
 - `main.ts`: `openMemory`, the `persist()` callback.
@@ -157,7 +157,7 @@ a callback, so `lib/memory.ts` does not touch `navigator`.
 
 - `lib/memory.test.ts`: one table of behaviours run against both variants (volatile, and
   IndexedDB on `fake-indexeddb`): add then all, order kept, `add([])`, clear, records surviving
-  a second `createIndexedDbMemory` on the same factory (the volatile one does not). The
+  a second `openMemory` on the same factory. The
   fallback: `openMemory(undefined)`, and a factory whose `open` fails. `toPracticeRecords`:
   first-attempt correct and wrong, a multi-step question, the source and the time passed
   through.
