@@ -1,3 +1,4 @@
+import { blueprintFor, DOMAINS, domainSets, type TestConfig } from './practiceTest';
 import { randomInt, shuffle, type Rng } from './random';
 import { choosesTables, MIN_SIZE_FOR_MIXED_TABLES, QUICK_SHARE_PERCENT } from './sets';
 import { GENERATORS } from './topics';
@@ -108,21 +109,67 @@ export function buildMixedSession(
   generators: Record<Topic, Generator> = GENERATORS,
 ): Question[] {
   const quick = level === 'deep' ? shareCount(QUICK_SHARE_PERCENT, size) : 0;
+  return generatePlan(planForSets(sets, level, size - quick, quick, rng), rng, generators);
+}
+
+/**
+ * Oefentoets (test spec §3.3): the Opfrisser share is spread over the domains by their counts,
+ * then each domain is planned as Gemengd at Verdieping; one generation over the whole plan.
+ */
+export function buildTestSession(
+  config: TestConfig,
+  pool: readonly PracticeSet[],
+  rng: Rng,
+  generators: Record<Topic, Generator> = GENERATORS,
+): Question[] {
+  const { total, counts } = blueprintFor(config);
+  const domains = DOMAINS.filter((domain) => counts[domain.id] > 0);
+  // Not shareCount: its minimum size is for sessions; the test always has its 20%.
+  const quickTotal = Math.round((QUICK_SHARE_PERCENT * total) / 100);
+  const quickPerDomain = allocateQuotas(
+    domains.map((domain) => ({ key: domain.id, weight: counts[domain.id] })),
+    quickTotal,
+    rng,
+  );
+  const plan = domains.flatMap((domain) => {
+    const sets = domainSets(domain, pool, config.lkt);
+    if (sets.length === 0) throw new RangeError(`No sets for domain ${domain.id}`);
+    const quick = quickPerDomain.get(domain.id) ?? 0;
+    return planForSets(sets, 'deep', counts[domain.id] - quick, quick, rng);
+  });
+  return generatePlan(plan, rng, generators);
+}
+
+/**
+ * Gemengd steps 1–3 (spec §4.2): every set an equal part of the main count, spread over its
+ * topics of the level; the Opfrisser count spread the same way, independently.
+ */
+function planForSets(
+  sets: readonly PracticeSet[],
+  level: Level,
+  mainCount: number,
+  quickCount: number,
+  rng: Rng,
+): Topic[] {
   const plan: Topic[] = [];
-  for (const [set, count] of perSet(sets, size - quick, rng)) {
+  for (const [set, count] of perSet(sets, mainCount, rng)) {
     if (level === 'deep') plan.push(...planTopics(set.deep ?? [], count, rng));
     else if (choosesTables(set)) plan.push(...repeat('tables', count));
     else plan.push(...planTopics(set.topics, count, rng));
   }
-  for (const [set, count] of perSet(sets, quick, rng)) {
+  for (const [set, count] of perSet(sets, quickCount, rng)) {
     plan.push(...planTopics(set.topics, count, rng));
   }
-  return generatePlan(plan, rng, generators);
+  return plan;
 }
 
 /** Equal counts per set: step 2 with weight 1 for every set (spec §4.2, Gemengd). */
 function perSet(sets: readonly PracticeSet[], total: number, rng: Rng) {
-  return allocateQuotas(sets.map((set) => ({ key: set, weight: 1 })), total, rng);
+  return allocateQuotas(
+    sets.map((set) => ({ key: set, weight: 1 })),
+    total,
+    rng,
+  );
 }
 
 function repeat(topic: Topic, count: number): Topic[] {

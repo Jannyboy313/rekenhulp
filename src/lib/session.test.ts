@@ -1,10 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
+import { blueprintFor, DOMAINS, type TestConfig } from './practiceTest';
 import { createRng } from './random';
 import { fromInteger } from './rational';
 import {
   allocateQuotas,
   buildMixedSession,
   buildSession,
+  buildTestSession,
   generatorsFor,
   insertRepeat,
   MAX_UNIQUE_ATTEMPTS,
@@ -540,13 +542,11 @@ describe('mistakeSession', () => {
 
   it('never repeats a wrong question as is', () => {
     // A pool of four: after one mistake exactly the other three remain.
-    const pool = [1, 2, 3, 4].map(
-      (n): Question => ({
-        key: `q${n}`,
-        topic: 'lcm',
-        steps: [numberStep({ prompt: `p${n}`, answer: fromInteger(n) })],
-      }),
-    );
+    const pool = [1, 2, 3, 4].map((n): Question => ({
+      key: `q${n}`,
+      topic: 'lcm',
+      steps: [numberStep({ prompt: `p${n}`, answer: fromInteger(n) })],
+    }));
     // Cycles through the pool, so the redraws are deterministic (de-duplication is best effort).
     let next = 0;
     const generators = { ...GENERATORS, lcm: () => pool[next++ % pool.length]! };
@@ -565,32 +565,34 @@ describe('mistakeSession', () => {
   });
 });
 
-describe('buildMixedSession (spec §4.2, Gemengd)', () => {
-  type Kind = 'quick' | 'deep';
-  const entry = (topic: Topic, set: PracticeSet, kind: Kind) => ({ topic, set: set.id, kind });
-  const entries = PRACTICE_SETS.flatMap((set) => [
-    ...(choosesTables(set) ? [entry('tables', set, 'quick')] : []),
-    ...set.topics.map(({ topic }) => entry(topic, set, 'quick')),
-    ...(set.deep ?? []).map(({ topic }) => entry(topic, set, 'deep')),
-  ]);
-  const owner = new Map(entries.map((entry) => [entry.topic, entry]));
-  const ownersOf = (questions: readonly Question[]) => questions.map((q) => owner.get(q.topic)!);
-  /** Exercises per set, in the order of `sets` (zeros included). */
-  const perSet = (questions: readonly Question[], sets: readonly PracticeSet[], kind?: Kind) => {
-    const owners = ownersOf(questions).filter((o) => kind === undefined || o.kind === kind);
-    return sets.map((set) => owners.filter((o) => o.set === set.id).length);
-  };
-  const sorted = (counts: number[]) => [...counts].sort((x, y) => y - x);
+// Shared by the Gemengd and the Oefentoets tests: the set and level each topic belongs to.
+type Kind = 'quick' | 'deep';
+const entry = (topic: Topic, set: PracticeSet, kind: Kind) => ({ topic, set: set.id, kind });
+const entries = PRACTICE_SETS.flatMap((set) => [
+  ...(choosesTables(set) ? [entry('tables', set, 'quick')] : []),
+  ...set.topics.map(({ topic }) => entry(topic, set, 'quick')),
+  ...(set.deep ?? []).map(({ topic }) => entry(topic, set, 'deep')),
+]);
+const owner = new Map(entries.map((entry) => [entry.topic, entry]));
+const ownersOf = (questions: readonly Question[]) => questions.map((q) => owner.get(q.topic)!);
+/** Exercises per set, in the order of `sets` (zeros included). */
+const perSet = (questions: readonly Question[], sets: readonly PracticeSet[], kind?: Kind) => {
+  const owners = ownersOf(questions).filter((o) => kind === undefined || o.kind === kind);
+  return sets.map((set) => owners.filter((o) => o.set === set.id).length);
+};
+const sorted = (counts: number[]) => [...counts].sort((x, y) => y - x);
 
-  /** Fast generators with a unique key per call, for the distribution tests over many seeds. */
-  function stubGenerators(): Record<Topic, Generator> {
-    let n = 0;
-    const entries = Object.keys(GENERATORS).map((topic) => [
-      topic,
-      (): Question => ({ key: `${topic}-${n++}`, topic: topic as Topic, steps: [] }),
-    ]);
-    return Object.fromEntries(entries) as Record<Topic, Generator>;
-  }
+/** Fast generators with a unique key per call, for the distribution tests over many seeds. */
+function stubGenerators(): Record<Topic, Generator> {
+  let n = 0;
+  const entries = Object.keys(GENERATORS).map((topic) => [
+    topic,
+    (): Question => ({ key: `${topic}-${n++}`, topic: topic as Topic, steps: [] }),
+  ]);
+  return Object.fromEntries(entries) as Record<Topic, Generator>;
+}
+
+describe('buildMixedSession (spec §4.2, Gemengd)', () => {
   const SEEDS = Array.from({ length: 200 }, (_, i) => i + 1);
   const build = (sets: readonly PracticeSet[], level: Level, size: number, seed: number) =>
     buildMixedSession(sets, level, size, createRng(seed), stubGenerators());
@@ -709,5 +711,74 @@ describe('buildMixedSession (spec §4.2, Gemengd)', () => {
   it('is deterministic for a seed', () => {
     const keys = () => buildMixedSession(all, 'quick', 15, createRng(9)).map((q) => q.key);
     expect(keys()).toEqual(keys());
+  });
+});
+
+describe('buildTestSession (test spec §3.3)', () => {
+  const SEEDS = Array.from({ length: 1000 }, (_, i) => i + 1);
+  const CONFIGS: TestConfig[] = [
+    { length: 'short', lkt: false },
+    { length: 'short', lkt: true },
+    { length: 'long', lkt: false },
+    { length: 'long', lkt: true },
+  ];
+  const domainOf = new Map(
+    DOMAINS.flatMap((d) => [...d.sets, ...(d.lktSets ?? [])].map((id) => [id, d.id])),
+  );
+  const LKT_ONLY = new Set(['getallen', 'talstelsels', 'heuristieken']);
+  const build = (config: TestConfig, seed: number) =>
+    buildTestSession(config, PRACTICE_SETS, createRng(seed), stubGenerators());
+
+  describe.each(CONFIGS)('%o', (config) => {
+    const blueprint = blueprintFor(config);
+    const quick = config.length === 'short' ? 3 : 10;
+
+    it('has the exact count per domain and level for every seed', () => {
+      for (const seed of SEEDS) {
+        const questions = build(config, seed);
+        expect(questions).toHaveLength(blueprint.total);
+        const owners = ownersOf(questions);
+        for (const domain of DOMAINS) {
+          const count = owners.filter((o) => domainOf.get(o.set) === domain.id).length;
+          expect(count).toBe(blueprint.counts[domain.id]);
+        }
+        expect(owners.filter((o) => o.kind === 'quick')).toHaveLength(quick);
+        expect(questions.some((q) => q.topic === 'tables')).toBe(false);
+        if (!config.lkt) expect(owners.some((o) => LKT_ONLY.has(o.set))).toBe(false);
+      }
+    });
+
+    it('builds unique exercises with the default generators', () => {
+      for (const seed of SEEDS.slice(0, 20)) {
+        const questions = buildTestSession(config, PRACTICE_SETS, createRng(seed));
+        expect(questions).toHaveLength(blueprint.total);
+        expect(new Set(questions.map((q) => q.key)).size).toBe(questions.length);
+        const prompts = questions.map((q) => q.steps[0]!.prompt);
+        expect(new Set(prompts).size).toBe(prompts.length);
+      }
+    });
+  });
+
+  it('gives Kort RWT one Opfrisser exercise in each of A, B and C', () => {
+    for (const seed of SEEDS.slice(0, 200)) {
+      const owners = ownersOf(build({ length: 'short', lkt: false }, seed));
+      const quickDomains = owners.filter((o) => o.kind === 'quick').map((o) => domainOf.get(o.set));
+      expect(quickDomains.sort()).toEqual(['A', 'B', 'C']);
+    }
+  });
+
+  it('uses all 10 sets in Lang RWT + LKT', () => {
+    const seen = new Set<string>();
+    for (const seed of SEEDS.slice(0, 50)) {
+      for (const o of ownersOf(build({ length: 'long', lkt: true }, seed))) seen.add(o.set);
+    }
+    expect(seen.size).toBe(10);
+  });
+
+  it('throws when a domain has no sets in the pool', () => {
+    const pool = PRACTICE_SETS.filter((set) => set.id !== 'verbanden');
+    expect(() =>
+      buildTestSession({ length: 'long', lkt: false }, pool, createRng(1), stubGenerators()),
+    ).toThrow(RangeError);
   });
 });

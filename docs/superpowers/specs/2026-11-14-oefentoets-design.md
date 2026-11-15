@@ -260,7 +260,7 @@ hasPassed(correct, total): boolean
 remainingMs(deadline, now): number                    // never below 0
 ```
 
-`lib/session.ts`: `buildTestSession(blueprint, pool, lkt, rng, generators?)`. It shares the
+`lib/session.ts`: `buildTestSession(config, pool, rng, generators?)`; it derives the blueprint from the config. It shares the
 per-set planning with `buildMixedSession` (one helper that returns the planned topics for a list
 of sets, a Verdieping count and an Opfrisser count), and generates the whole plan in one go.
 
