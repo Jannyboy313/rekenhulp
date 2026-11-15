@@ -11,12 +11,26 @@
   import RotateNotice from './components/RotateNotice.svelte';
   import SetOverview, { type OverviewTab } from './components/SetOverview.svelte';
   import SetupScreen from './components/SetupScreen.svelte';
+  import TestScreen from './components/TestScreen.svelte';
+  import TestSetupScreen from './components/TestSetupScreen.svelte';
   import { createBackGuard } from './lib/backGuard';
   import { LESSONS } from './lib/lessons';
   import type { Lesson, LessonTopic } from './lib/lessons/types';
   import { createRng, randomSeed } from './lib/random';
-  import { summarize, type QuestionRecord, type SessionSummary } from './lib/results';
-  import { buildMixedSession, buildSession, generatorsFor, mistakeSession } from './lib/session';
+  import { blueprintFor, TEST_ROW, type TestConfig, type TestLength } from './lib/practiceTest';
+  import {
+    summarize,
+    summarizeTest,
+    type QuestionRecord,
+    type SessionSummary,
+  } from './lib/results';
+  import {
+    buildMixedSession,
+    buildSession,
+    buildTestSession,
+    generatorsFor,
+    mistakeSession,
+  } from './lib/session';
   import {
     countingSets,
     DEFAULT_SESSION_SIZE,
@@ -38,11 +52,16 @@
     returnTo: Screen;
   };
 
+  // What started a session: decides its name, Opnieuw and Fouten oefenen (test spec §8).
+  type Origin = { kind: 'set'; set: PracticeSet } | { kind: 'test'; config: TestConfig };
+
   type Screen =
     | { name: 'sets' }
     | { name: 'setup'; set: PracticeSet }
-    | { name: 'playing'; set: PracticeSet; questions: Question[] }
-    | { name: 'results'; set: PracticeSet; summary: SessionSummary }
+    | { name: 'testSetup' }
+    | { name: 'playing'; origin: Origin; questions: Question[] }
+    | { name: 'testing'; config: TestConfig; questions: Question[] }
+    | { name: 'results'; origin: Origin; summary: SessionSummary }
     | { name: 'error' }
     | LessonTopicsScreen
     | { name: 'lesson'; parent: LessonTopicsScreen; topic: LessonTopic };
@@ -70,6 +89,9 @@
   let level = $state<Level>('quick');
   // Gemengd starts with every set chosen (spec §3.2); the initial value is meant, `sets` is fixed.
   let chosenSets = $state(untrack(() => sets.map((set) => set.id)));
+  // The Oefentoets choices, kept in memory as the count (test spec §4.2).
+  let testLength = $state<TestLength>('short');
+  let testLkt = $state(false);
 
   // The layout follows the viewport, also after a rotation (v4 spec §3.2).
   $effect(() => watchViewport(window, document.documentElement));
@@ -86,8 +108,8 @@
   // The effect re-runs on every new screen, so a back between two lesson screens re-arms too.
   function handlePopState() {
     if (!backGuard.popped()) return;
-    // Ignored during a session: only Stop ends it.
-    if (screen.name === 'playing') backGuard.arm();
+    // Ignored during a session or a test: only Stop ends it.
+    if (screen.name === 'playing' || screen.name === 'testing') backGuard.arm();
     else if (screen.name === 'lesson' || screen.name === 'lessonTopics') lessonBack();
     else showSets();
   }
@@ -111,10 +133,14 @@
     else if (screen.name === 'lessonTopics') screen = screen.returnTo;
   }
 
+  function originName(origin: Origin): string {
+    return origin.kind === 'set' ? origin.set.name : TEST_ROW.name;
+  }
+
   /** A session that cannot be built shows the error screen instead of a dead button (spec §3). */
-  function play(set: PracticeSet, build: () => Question[]) {
+  function show(build: () => Screen) {
     try {
-      screen = { name: 'playing', set, questions: build() };
+      screen = build();
     } catch (error) {
       console.error(error);
       screen = { name: 'error' };
@@ -123,26 +149,54 @@
 
   function startSession(set: PracticeSet) {
     const rng = createRng(randomSeed());
-    play(set, () =>
-      isMixed(set)
+    show(() => ({
+      name: 'playing',
+      origin: { kind: 'set', set },
+      questions: isMixed(set)
         ? buildMixedSession(countingSets(sets, chosenSets, level), level, size, rng)
         : buildSession(forLevel(set, level), size, rng, generatorsFor(set, tables)),
-    );
+    }));
+  }
+
+  function startTest(config: TestConfig) {
+    show(() => ({
+      name: 'testing',
+      config,
+      questions: buildTestSession(config, sets, createRng(randomSeed())),
+    }));
+  }
+
+  function restart(origin: Origin) {
+    if (origin.kind === 'set') startSession(origin.set);
+    else startTest(origin.config);
   }
 
   /** Fouten oefenen (spec §3.5): new exercises of the topics of the first-attempt mistakes. */
-  function practiseMistakes(set: PracticeSet, summary: SessionSummary) {
-    play(set, () =>
-      mistakeSession(
+  function practiseMistakes(origin: Origin, summary: SessionSummary) {
+    show(() => ({
+      name: 'playing',
+      origin,
+      questions: mistakeSession(
         summary.mistakes.map(({ question }) => question),
         createRng(randomSeed()),
-        generatorsFor(set, tables),
+        origin.kind === 'set' ? generatorsFor(origin.set, tables) : undefined,
       ),
-    );
+    }));
   }
 
-  function finishSession(set: PracticeSet, records: QuestionRecord[], totalMs: number) {
-    screen = { name: 'results', set, summary: summarize(records, totalMs) };
+  function finishSession(origin: Origin, records: QuestionRecord[], totalMs: number) {
+    screen = { name: 'results', origin, summary: summarize(records, totalMs) };
+  }
+
+  function finishTest(
+    config: TestConfig,
+    records: QuestionRecord[],
+    totalMs: number,
+    timedOut: boolean,
+  ) {
+    const { total, limitMs } = blueprintFor(config);
+    const summary = summarizeTest(records, total, limitMs, totalMs, timedOut);
+    screen = { name: 'results', origin: { kind: 'test', config }, summary };
   }
 </script>
 
@@ -156,7 +210,11 @@
     {#if screen.name === 'sets'}
       <SetOverview {tab} ontab={(next) => (tab = next)}>
         {#snippet practice()}
-          <PracticeSetList sets={[...sets, MIXED_SET]} onselect={showSetup} />
+          <PracticeSetList
+            sets={[...sets, MIXED_SET]}
+            onselect={showSetup}
+            ontest={() => (screen = { name: 'testSetup' })}
+          />
         {/snippet}
         {#snippet lessons()}
           <LessonSetList
@@ -188,28 +246,45 @@
         onstart={() => startSession(set)}
         onback={showSets}
       />
+    {:else if screen.name === 'testSetup'}
+      <TestSetupScreen
+        bind:length={testLength}
+        bind:lkt={testLkt}
+        onstart={() => startTest({ length: testLength, lkt: testLkt })}
+        onback={showSets}
+      />
     {:else if screen.name === 'playing'}
-      {@const set = screen.set}
+      {@const origin = screen.origin}
       {@const questions = screen.questions}
       {#key questions}
         <PlayScreen
-          name={set.name}
+          name={originName(origin)}
           {questions}
           lessons={allLessons}
-          onfinish={(records, totalMs) => finishSession(set, records, totalMs)}
+          onfinish={(records, totalMs) => finishSession(origin, records, totalMs)}
+        />
+      {/key}
+    {:else if screen.name === 'testing'}
+      {@const config = screen.config}
+      {@const questions = screen.questions}
+      {#key questions}
+        <TestScreen
+          {questions}
+          limitMs={blueprintFor(config).limitMs}
+          onfinish={(records, totalMs, timedOut) => finishTest(config, records, totalMs, timedOut)}
         />
       {/key}
     {:else if screen.name === 'error'}
       <ErrorScreen onhome={showSets} />
     {:else}
-      {@const set = screen.set}
+      {@const origin = screen.origin}
       {@const summary = screen.summary}
       <ResultScreen
-        name={set.name}
+        name={originName(origin)}
         {summary}
-        onrestart={() => startSession(set)}
+        onrestart={() => restart(origin)}
         onmenu={showSets}
-        onpractise={() => practiseMistakes(set, summary)}
+        onpractise={() => practiseMistakes(origin, summary)}
       />
     {/if}
     {#snippet failed(_error, reset)}

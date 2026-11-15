@@ -4,7 +4,8 @@
   import SetGlyph from './SetGlyph.svelte';
 
   interface Props {
-    set: PracticeSet;
+    /** A set, or the Oefentoets row: only what the row shows. */
+    set: Pick<PracticeSet, 'id' | 'name' | 'description'>;
     disabled?: boolean;
     onclick: () => void;
   }

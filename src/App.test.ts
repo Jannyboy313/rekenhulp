@@ -415,12 +415,12 @@ describe('App', () => {
     const checked = (name: string) =>
       screen.getByRole('radio', { name }).getAttribute('aria-checked') === 'true';
 
-    it('is the last row on Oefenen, and not on Lesstof', async () => {
+    it('is the row after the sets on Oefenen, and not on Lesstof', async () => {
       render(App);
       const rows = screen.getAllByRole('button');
-      expect(rows).toHaveLength(PRACTICE_SETS.length + 1);
-      expect(rows.at(-1)!.textContent).toContain('Gemengd');
-      expect(rows.at(-1)!.textContent).toContain('Opgaven uit meerdere sets door elkaar');
+      expect(rows).toHaveLength(PRACTICE_SETS.length + 2);
+      expect(rows.at(-2)!.textContent).toContain('Gemengd');
+      expect(rows.at(-2)!.textContent).toContain('Opgaven uit meerdere sets door elkaar');
 
       await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
       expect(screen.queryByRole('button', { name: /Gemengd/ })).toBeNull();
@@ -512,6 +512,100 @@ describe('App', () => {
       render(App, { props: { sets: [failing] } });
       await tick();
       expect(screen.getByRole('heading', { name: 'Er ging iets mis' })).toBeTruthy();
+    });
+  });
+
+  describe('Oefentoets (test spec §4–§6)', () => {
+    const asked = 'Er is een nieuwe versie beschikbaar. Nu installeren?';
+    const checked = (name: string) =>
+      screen.getByRole('radio', { name }).getAttribute('aria-checked') === 'true';
+
+    async function stopTest() {
+      await click('Stoppen');
+      await fireEvent.click(screen.getByRole('dialog').querySelector('.primary')!);
+    }
+
+    /** Gives some answer to the current question, whatever its kind. */
+    async function answerSomething() {
+      if (screen.queryByRole('button', { name: 'OK' })) await click('OK');
+      else if (screen.queryByRole('button', { name: 'Nee' })) await click('Nee');
+      else await fireEvent.keyDown(window, { key: '1' });
+    }
+
+    it('is the last row on Oefenen, and not on Lesstof', async () => {
+      render(App);
+      const rows = screen.getAllByRole('button');
+      expect(rows.at(-1)!.textContent).toContain('Oefentoets');
+      await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+      expect(screen.queryByRole('button', { name: /Oefentoets/ })).toBeNull();
+    });
+
+    it('keeps the setup choices in memory', async () => {
+      render(App);
+      await click(/^Oefentoets/);
+      expect(checked('Kort')).toBe(true);
+      await fireEvent.click(screen.getByRole('radio', { name: 'Lang' }));
+      await click('Terug');
+      await click(/^Oefentoets/);
+      expect(checked('Lang')).toBe(true);
+    });
+
+    it('runs a test, ignores the system back, and starts again with Opnieuw', async () => {
+      render(App);
+      await click(/^Oefentoets/);
+      await click(/^Start/);
+      expect(screen.getByText('1 / 15')).toBeTruthy();
+      expect(document.querySelector('.countdown')?.textContent).toBe('17:00');
+
+      await systemBack();
+      expect(screen.getByText('1 / 15')).toBeTruthy();
+
+      await stopTest();
+      expect(screen.getByText('Niet geslaagd')).toBeTruthy();
+      expect(document.querySelector('.score')?.textContent?.trim()).toBe('0 / 15');
+
+      await click('Opnieuw');
+      expect(screen.getByText('1 / 15')).toBeTruthy();
+      expect(document.querySelector('.countdown')).not.toBeNull();
+    });
+
+    it('practises the mistakes of a test without a verdict, and Opnieuw starts a test', async () => {
+      // A fixed seed, so the answers below give the same mistakes every run.
+      vi.spyOn(crypto, 'getRandomValues').mockImplementation((array) => {
+        (array as Uint32Array).fill(42);
+        return array;
+      });
+      render(App);
+      await click(/^Oefentoets/);
+      await click(/^Start/);
+      // Empty input keeps OK disabled, so type a digit first where there is a keypad.
+      for (let i = 0; i < 3; i++) {
+        if (screen.queryByRole('button', { name: '7' })) await click('7');
+        await answerSomething();
+      }
+      await stopTest();
+      await click(/^Fouten oefenen/);
+      expect(screen.getByText('Oefentoets')).toBeTruthy();
+      expect(document.querySelector('.countdown')).toBeNull();
+
+      await click('Stoppen');
+      expect(screen.queryByText(/geslaagd/i)).toBeNull();
+      await click('Opnieuw');
+      expect(document.querySelector('.countdown')).not.toBeNull();
+    });
+
+    it('offers an update on the test setup, never during the test', async () => {
+      const updates = createUpdates(vi.fn());
+      render(App, { updates });
+      await click(/^Oefentoets/);
+      updates.needRefresh();
+      await tick();
+      expect(screen.getByText(asked)).toBeTruthy();
+      await click('Later');
+      await click(/^Start/);
+      updates.resume();
+      await tick();
+      expect(screen.queryByText(asked)).toBeNull();
     });
   });
 });

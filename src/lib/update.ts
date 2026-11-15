@@ -6,7 +6,7 @@ export interface UpdateState {
 }
 
 /** Screens where the update dialog may show; never during a session or a lesson (spec §2). */
-const PROMPT_SCREENS: readonly string[] = ['sets', 'setup'];
+const PROMPT_SCREENS: readonly string[] = ['sets', 'setup', 'testSetup'];
 
 export function shouldPrompt(state: UpdateState, screen: string): boolean {
   return state.available && !state.dismissed && PROMPT_SCREENS.includes(screen);

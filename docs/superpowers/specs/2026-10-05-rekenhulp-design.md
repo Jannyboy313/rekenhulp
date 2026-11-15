@@ -69,8 +69,9 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 - Service worker registration uses `registerType: 'prompt'`: a new version waits until the user
   confirms. The app checks for one on start and on every resume (`visibilitychange` to visible).
 - A modal dialog (Dutch: "Er is een nieuwe versie beschikbaar. Nu installeren?", buttons
-  Installeren and Later) is shown only on the set overview (`sets`) and the set setup (`setup`).
-  Never on `lessonTopics`, `lesson`, `playing` or `results`.
+  Installeren and Later) is shown only on the set overview (`sets`), the set setup (`setup`) and
+  the test setup (`testSetup`, oefentoets spec §4.2). Never on `lessonTopics`, `lesson`,
+  `playing`, `testing` or `results`.
 - An update that arrives on another screen is not lost: the dialog appears as soon as the user is
   back on an allowed screen.
 - Later closes the dialog until the next resume or start; if the update is still waiting it is
@@ -109,16 +110,18 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 
 The app is a state machine in `App.svelte` with four states:
 `sets → setup → playing → results`, plus two for the lesstof: `lessonTopics` and `lesson`
-(lesstof spec §3), and `error` (below).
+(lesstof spec §3), two for the practice test: `testSetup → testing → results`
+(`2026-11-14-oefentoets-design.md` §4–§6), and `error` (below).
 
-- "Terug" moves from `setup` back to `sets`.
+- "Terug" moves from `setup` and `testSetup` back to `sets`.
 - "Opnieuw" moves from `results` back to `playing`, with the same set, count, level and table
-  choice (Gemengd: set choice, §3.2).
+  choice (Gemengd: set choice, §3.2); after a test, or Fouten oefenen after a test, it starts a
+  new test with the same length and topics.
 - "Menu" moves from `results` to `sets`.
 - The system back action (Android back button or gesture, iOS swipe back) never closes the app
-  from another screen. On `setup` and `results` it moves to `sets`, like Terug and Menu. On
-  `lessonTopics` and `lesson` it does what Terug does (lesstof spec §3). During
-  `playing` it is ignored; only Stop ends a session. On `sets` it behaves as the system default.
+  from another screen. On `setup`, `testSetup` and `results` it moves to `sets`, like Terug and
+  Menu. On `lessonTopics` and `lesson` it does what Terug does (lesstof spec §3). During
+  `playing` and `testing` it is ignored; only Stop ends a session or a test. On `sets` it behaves as the system default.
   Implementation: one history entry is kept above the start screen while the app is not on
   `sets`; a `popstate` that consumes it is handled as back.
 - An unexpected error never leaves a dead screen. When a session cannot be built (a generator
@@ -140,7 +143,9 @@ The app is a state machine in `App.svelte` with four states:
   one-line description of its topics. The list scrolls when the screen is short.
 - Tapping a card opens the setup screen for that set.
 - Sets whose topics are not implemented yet (v2/v3) are not shown.
-- **Gemengd** (§12.5): the last row, after the sets, mixes exercises from several sets in one
+- **Oefentoets** (§12.6): the last row, after Gemengd; its row, glyph and setup are in the
+  oefentoets spec §4. Like Gemengd it is not a set and has no row on the **Lesstof** tab.
+- **Gemengd** (§12.5): the row after the sets, mixes exercises from several sets in one
   session. Its description is "Opgaven uit meerdere sets door elkaar", and its glyph is a 2 × 2
   grid of small rounded tiles in violet, amber, blue and violet. Tapping it opens its setup
   (§3.2). It is not a set of its own: it has no topics, and the **Lesstof** tab has no row for
@@ -407,6 +412,9 @@ property rewrites get no tips: their explanation (§5.4, §5.6) or rewrite messa
 already names the mistake.
 
 ### 3.5 Results
+
+After a practice test the screen adds a verdict and scores over every exercise of the test; the
+differences are in the oefentoets spec §6. The rules below are those of a session.
 
 - The screen is one screen high: the content scrolls and the buttons are pinned below it.
 - Each error card shows the prompt (a slot as a plain `?`, not coloured) and two tiles: "Jouw

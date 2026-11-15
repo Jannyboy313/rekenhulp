@@ -11,6 +11,8 @@ describe('shouldPrompt', () => {
     ['lesson', false],
     ['playing', false],
     ['results', false],
+    ['testSetup', true],
+    ['testing', false],
   ])('shows on %s only when allowed: %s', (screen, expected) => {
     expect(shouldPrompt({ available: true, dismissed: false }, screen)).toBe(expected);
   });

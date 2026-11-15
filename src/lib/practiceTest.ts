@@ -56,6 +56,13 @@ const BLUEPRINTS: Record<TestLength, Record<'rwt' | 'lkt', Blueprint>> = {
   },
 };
 
+/** The row on the Oefenen tab (test spec §4.1): display data only, the test is not a set. */
+export const TEST_ROW = {
+  id: 'oefentoets',
+  name: 'Oefentoets',
+  description: 'Toets met tijdslimiet, uitslag na afloop',
+} as const;
+
 export const PASS_PERCENT = 70;
 
 export function blueprintFor(config: TestConfig): Blueprint {

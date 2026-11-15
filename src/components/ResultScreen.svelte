@@ -85,7 +85,11 @@
           {#if test}
             <div>
               <dt>Tijd</dt>
-              <dd>{formatDuration(summary.totalMs)} van {formatDuration(test.limitMs)}</dd>
+              <dd>
+                {formatDuration(summary.totalMs)}<span class="limit"
+                  >{' van '}{formatDuration(test.limitMs)}</span
+                >
+              </dd>
             </div>
           {:else}
             <div>
@@ -268,6 +272,13 @@
     border-radius: 50%;
     background: var(--verdict-tint);
     color: var(--verdict);
+  }
+
+  /* "van 17:00" stays smaller, so the time used fits on one line in its column. */
+  .limit {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
   }
 
   .verdict-note,

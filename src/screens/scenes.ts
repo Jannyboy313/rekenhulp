@@ -9,11 +9,14 @@ import PlayScreen from '../components/PlayScreen.svelte';
 import ResultScreen from '../components/ResultScreen.svelte';
 import RotateNotice from '../components/RotateNotice.svelte';
 import SetupScreen from '../components/SetupScreen.svelte';
+import TestScreen from '../components/TestScreen.svelte';
+import TestSetupScreen from '../components/TestSetupScreen.svelte';
 import { LESSONS, lessonFor } from '../lib/lessons';
+import { blueprintFor, TEST_ROW } from '../lib/practiceTest';
 import { createRng } from '../lib/random';
 import { rational } from '../lib/rational';
-import { summarize, type QuestionRecord } from '../lib/results';
-import { buildSession } from '../lib/session';
+import { summarize, summarizeTest, type QuestionRecord } from '../lib/results';
+import { buildSession, buildTestSession } from '../lib/session';
 import { DEFAULT_SESSION_SIZE, MIXED_SET, PRACTICE_SETS } from '../lib/sets';
 import { SLOT } from '../lib/slot';
 import { numberStep } from '../lib/steps';
@@ -89,6 +92,20 @@ function results(mistakes: number): Scene {
     });
 }
 
+/** A Kort RWT test: `answered` of 15 answered, the first `mistakes` of them wrong. */
+function testResults(answered: number, mistakes: number, timedOut: boolean): Scene {
+  const config = { length: 'short', lkt: false } as const;
+  const { total, limitMs } = blueprintFor(config);
+  const questions = buildTestSession(config, PRACTICE_SETS, createRng(7)).slice(0, answered);
+  const records = questions.map((question, index) => record(question, index < mistakes));
+  const summary = summarizeTest(records, total, limitMs, timedOut ? limitMs : 754_000, timedOut);
+  return (target) =>
+    mount(ResultScreen, {
+      target,
+      props: { name: TEST_ROW.name, summary, onrestart: noop, onmenu: noop, onpractise: noop },
+    });
+}
+
 function play(set: PracticeSet, question: Question): Scene {
   return (target) =>
     mount(PlayScreen, { target, props: { name: set.name, questions: [question], onfinish: noop } });
@@ -118,6 +135,22 @@ export const SCENES: Record<string, Scene> = {
   'setup-mixed': setup(MIXED_SET, 'quick'),
   'results-perfect': results(0),
   'results-mistakes': results(3),
+  'test-setup': (target) =>
+    mount(TestSetupScreen, {
+      target,
+      props: { length: 'short', lkt: false, onstart: noop, onback: noop },
+    }),
+  test: (target) =>
+    mount(TestScreen, {
+      target,
+      props: {
+        questions: [PERCENT_QUESTION, questionOfKind('number'), questionOfKind('choice')],
+        limitMs: blueprintFor({ length: 'short', lkt: false }).limitMs,
+        onfinish: noop,
+      },
+    }),
+  'results-test-passed': testResults(15, 2, false),
+  'results-test-failed': testResults(12, 3, true),
   'lesson-topics': (target) =>
     mount(LessonTopicList, {
       target,

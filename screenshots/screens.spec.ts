@@ -92,6 +92,21 @@ const SHOTS: readonly Shot[] = [
   },
   { id: 'results-perfect', scene: 'results-perfect' },
   { id: 'results-mistakes', scene: 'results-mistakes' },
+  { id: 'test-setup', scene: 'test-setup' },
+  // "question-" in the ids: the compact project takes these play screen shots too.
+  { id: 'question-test', scene: 'test' },
+  {
+    id: 'question-test-last-minute',
+    scene: 'test',
+    steps: (page) => page.clock.runFor('16:05'),
+  },
+  {
+    id: 'question-test-stop',
+    scene: 'test',
+    steps: (page) => page.getByRole('button', { name: 'Stoppen' }).click(),
+  },
+  { id: 'results-test-passed', scene: 'results-test-passed' },
+  { id: 'results-test-failed', scene: 'results-test-failed' },
   { id: 'lesson-topics', scene: 'lesson-topics' },
   { id: 'lesson', scene: 'lesson' },
   { id: 'error', scene: 'error' },

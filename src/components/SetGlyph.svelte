@@ -22,6 +22,7 @@
     'talstelsels',
     'heuristieken',
     'gemengd',
+    'oefentoets',
   ];
 </script>
 
@@ -104,6 +105,12 @@
       <rect x="15" y="3" width="10" height="10" rx="2.5" class="fa" />
       <rect x="3" y="15" width="10" height="10" rx="2.5" class="fb" />
       <rect x="15" y="15" width="10" height="10" rx="2.5" class="fv" />
+    {:else if id === 'oefentoets'}
+      <!-- A sheet with a check mark and a small clock (test spec §4.1). -->
+      <rect x="4" y="3" width="15" height="20" rx="2.5" class="sv fill" stroke-width="2" />
+      <path d="M7.5 12.5l2.5 2.5 5-5" class="sa nf" stroke-width="2.4" />
+      <circle cx="20" cy="20" r="6" class="fb" />
+      <path d="M20 17v3h2.4" class="ss nf" stroke-width="1.8" />
     {/if}
   </svg>
 {:else}
@@ -140,6 +147,11 @@
 
   .sd {
     stroke: var(--primary-dark);
+  }
+
+  /* A line on a filled shape, such as the clock hands. */
+  .ss {
+    stroke: var(--surface);
   }
 
   .nf {
