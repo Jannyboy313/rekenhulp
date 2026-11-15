@@ -5,8 +5,10 @@ import {
   currentEntry,
   currentStep,
   originalNumber,
+  PRACTICE_POLICY,
   startPlay,
   stop,
+  TEST_POLICY,
   type PlayState,
 } from './play';
 import { createRng } from './random';
@@ -205,3 +207,49 @@ function structuredCloneShape(state: PlayState) {
     finished: state.finished,
   };
 }
+
+describe('the test policy (test spec §5.1)', () => {
+  const start = (...questions: Question[]) => startPlay(questions, 0, TEST_POLICY);
+
+  it.each([
+    ['wrong', '9', false],
+    ['right', '1', true],
+  ])('moves on at once after a %s answer, without feedback or a repeat', (_, input, correct) => {
+    const state = give(start(A, B), input, 500);
+    expect(state).toMatchObject({ questionIndex: 1, stepIndex: 0, feedback: null });
+    expect(state.queue).toHaveLength(2);
+    expect(state.records).toHaveLength(1);
+    expect(state.records[0]!.attempts[0]!.result.correct).toBe(correct);
+    expect(state.questionStart).toBe(500);
+  });
+
+  it('shows step 2 after a wrong step 1, and records the question after step 2', () => {
+    const afterFirst = give(start(TWO_STEPS, A), '9');
+    expect(afterFirst).toMatchObject({ questionIndex: 0, stepIndex: 1, records: [] });
+    const afterSecond = give(afterFirst, '5', 5000);
+    expect(afterSecond.questionIndex).toBe(1);
+    expect(afterSecond.records).toHaveLength(1);
+    expect(afterSecond.records[0]!.durationMs).toBe(5000);
+  });
+
+  it('finishes after the last answer, also when it is wrong', () => {
+    const state = give(give(start(A, B), '1'), '9');
+    expect(state.finished).toBe(true);
+    expect(state.records).toHaveLength(2);
+  });
+
+  it('keeps the answered questions on stop', () => {
+    const state = stop(give(start(A, B, C), '1'));
+    expect(state.finished).toBe(true);
+    expect(state.records).toHaveLength(1);
+  });
+
+  it('leaves nothing for advance to do', () => {
+    const state = give(start(A, B), '9');
+    expect(advance(state, 1000)).toBe(state);
+  });
+
+  it('is not the default', () => {
+    expect(startPlay([A], 0).policy).toEqual(PRACTICE_POLICY);
+  });
+});

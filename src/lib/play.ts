@@ -9,8 +9,19 @@ export interface QueueEntry {
   repeat: boolean;
 }
 
+/** A practice session repeats wrong answers and shows feedback; a test does neither. */
+export interface PlayPolicy {
+  repeatWrong: boolean;
+  feedback: boolean;
+}
+
+export const PRACTICE_POLICY: PlayPolicy = { repeatWrong: true, feedback: true };
+/** Oefentoets (test spec §5.1): the next step or question at once, nothing repeated. */
+export const TEST_POLICY: PlayPolicy = { repeatWrong: false, feedback: false };
+
 /** The state of a running session. Every transition returns a new state; none mutates. */
 export interface PlayState {
+  readonly policy: PlayPolicy;
   readonly queue: readonly QueueEntry[];
   readonly questionIndex: number;
   readonly stepIndex: number;
@@ -25,8 +36,13 @@ export interface PlayState {
   readonly finished: boolean;
 }
 
-export function startPlay(questions: readonly Question[], now: number): PlayState {
+export function startPlay(
+  questions: readonly Question[],
+  now: number,
+  policy: PlayPolicy = PRACTICE_POLICY,
+): PlayState {
   return {
+    policy,
     queue: questions.map((question) => ({ question, repeat: false })),
     questionIndex: 0,
     stepIndex: 0,
@@ -64,11 +80,12 @@ export function answer(state: PlayState, attempt: StepAttempt, now: number, rng:
   if (attempts.length === question.steps.length) {
     const record = { question, attempts, durationMs: now - state.questionStart };
     if (!entry.repeat) records = [...records, record];
-    if (!isCorrect(record)) {
+    if (state.policy.repeatWrong && !isCorrect(record)) {
       queue = insertRepeat(queue, state.questionIndex, { question, repeat: true }, rng);
     }
   }
-  return { ...state, queue, records, attempts, feedback: attempt };
+  const next = { ...state, queue, records, attempts, feedback: attempt };
+  return state.policy.feedback ? next : advance(next, now);
 }
 
 /** After the feedback: the next step, the next question, or finished. */
