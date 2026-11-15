@@ -7,9 +7,11 @@
     memory: Memory;
     /** The dialog is open; `App` holds the update dialog back meanwhile. */
     open?: boolean;
+    /** After a successful clear: `App` reads the memory again (review spec §4). */
+    oncleared?: () => void;
   }
 
-  let { memory, open = $bindable(false) }: Props = $props();
+  let { memory, open = $bindable(false), oncleared }: Props = $props();
 
   let outcome = $state<'none' | 'cleared' | 'failed'>('none');
   let cancel: HTMLButtonElement | undefined = $state();
@@ -22,6 +24,7 @@
     try {
       await memory.clear();
       outcome = 'cleared';
+      oncleared?.();
     } catch (error) {
       console.error(error);
       outcome = 'failed';

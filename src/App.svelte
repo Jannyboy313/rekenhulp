@@ -20,6 +20,7 @@
   import type { Lesson, LessonTopic } from './lib/lessons/types';
   import { createVolatileMemory, toPracticeRecords, type Memory } from './lib/memory';
   import { createRng, randomSeed } from './lib/random';
+  import { dueTopics, REVIEW_ROW } from './lib/review';
   import { blueprintFor, TEST_ROW, type TestConfig, type TestLength } from './lib/practiceTest';
   import {
     summarize,
@@ -33,6 +34,7 @@
     buildTestSession,
     generatorsFor,
     mistakeSession,
+    reviewSession,
     topicSession,
   } from './lib/session';
   import {
@@ -59,11 +61,13 @@
   type LessonScreen = { name: 'lesson'; parent: LessonTopicsScreen; topic: LessonTopic };
 
   // What started a session: decides its name, Opnieuw and Fouten oefenen (test spec §8), and
-  // for a lesson topic where its results lead back to (lesstof spec §3.3).
+  // for a lesson topic where its results lead back to (lesstof spec §3.3). A review is Fouten
+  // van eerder, with the topics of its session (review spec §5).
   type Origin =
     | { kind: 'set'; set: PracticeSet }
     | { kind: 'test'; config: TestConfig }
-    | { kind: 'lesson'; from: LessonScreen; topics: Topic[] };
+    | { kind: 'lesson'; from: LessonScreen; topics: Topic[] }
+    | { kind: 'review'; topics: Topic[] };
 
   type Screen =
     | { name: 'sets' }
@@ -111,6 +115,25 @@
   let testLkt = $state(false);
   // The update dialog waits for the Gegevens wissen dialog (memory spec §5).
   let clearOpen = $state(false);
+
+  // The topics of earlier mistakes that are due (review spec §3); empty until the memory is read.
+  let due = $state.raw<Topic[]>([]);
+
+  /** A read that fails gives no row (review spec §4). */
+  function refreshDue() {
+    memory.all().then(
+      (records) => (due = dueTopics(records, Date.now())),
+      (error: unknown) => {
+        console.error(error);
+        due = [];
+      },
+    );
+  }
+
+  // Each time the overview is shown: a session that just ended is saved before this read.
+  $effect(() => {
+    if (screen.name === 'sets') refreshDue();
+  });
 
   // The layout follows the viewport, also after a rotation (v4 spec §3.2).
   $effect(() => watchViewport(window, document.documentElement));
@@ -161,6 +184,7 @@
 
   function originName(origin: Origin): string {
     if (origin.kind === 'lesson') return origin.from.topic.title;
+    if (origin.kind === 'review') return REVIEW_ROW.name;
     return origin.kind === 'set' ? origin.set.name : TEST_ROW.name;
   }
 
@@ -202,9 +226,19 @@
     }));
   }
 
+  /** Fouten van eerder (review spec §5): the origin keeps the topics that are in the session. */
+  function startReview(topics: readonly Topic[]) {
+    show(() => {
+      const questions = reviewSession(topics, createRng(randomSeed()));
+      const played = [...new Set(questions.map(({ topic }) => topic))];
+      return { name: 'playing', origin: { kind: 'review', topics: played }, questions };
+    });
+  }
+
   function restart(origin: Origin) {
     if (origin.kind === 'set') startSession(origin.set);
     else if (origin.kind === 'test') startTest(origin.config);
+    else if (origin.kind === 'review') startReview(origin.topics);
     else practiseLesson(origin.from, origin.topics);
   }
 
@@ -223,7 +257,9 @@
 
   /** Never awaited: saving must not delay or block the results (memory spec §4). */
   function save(origin: Origin, records: QuestionRecord[]) {
-    memory.add(toPracticeRecords(records, origin.kind, Date.now())).catch(console.error);
+    // A review has no source of its own (review spec decision 11).
+    const source = origin.kind === 'review' ? 'set' : origin.kind;
+    memory.add(toPracticeRecords(records, source, Date.now())).catch(console.error);
   }
 
   function finishSession(origin: Origin, records: QuestionRecord[], totalMs: number) {
@@ -259,9 +295,12 @@
             sets={[...sets, MIXED_SET]}
             onselect={showSetup}
             ontest={() => (screen = { name: 'testSetup' })}
+            review={due.length > 0
+              ? { count: due.length, onstart: () => startReview(due) }
+              : undefined}
           >
             {#snippet footer()}
-              <ClearMemory {memory} bind:open={clearOpen} />
+              <ClearMemory {memory} bind:open={clearOpen} oncleared={refreshDue} />
             {/snippet}
           </PracticeSetList>
         {/snippet}

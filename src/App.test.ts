@@ -809,3 +809,131 @@ describe('App: Gegevens wissen (memory spec §5)', () => {
     expect(screen.getByRole('status').textContent).toBe('');
   });
 });
+
+describe('App: Fouten van eerder (review spec)', () => {
+  const NOON = new Date(2026, 10, 15, 12).getTime();
+  const YESTERDAY = new Date(2026, 10, 14, 12).getTime();
+  const ROW = /Fouten van eerder/;
+
+  beforeEach(() => {
+    vi.spyOn(history, 'back').mockImplementation(() => {});
+    resize(360, 780);
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOON);
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  /** A memory with one wrong record per topic, all at `at`. */
+  async function memoryWith(topics: string[], at = YESTERDAY) {
+    const memory = createVolatileMemory();
+    await memory.add(
+      topics.map((topic) => ({ topic, correct: false, at, source: 'set' as const })),
+    );
+    return memory;
+  }
+
+  async function row() {
+    return vi.waitFor(() => screen.getByRole('button', { name: ROW }));
+  }
+
+  /** The reads of the memory have settled, so a missing row is not a pending one. */
+  async function settled() {
+    await new Promise((resolve) => setTimeout(resolve));
+    await tick();
+  }
+
+  async function answerWrong() {
+    await click('1');
+    await click('OK');
+    await click('Verder');
+  }
+
+  it('shows no row with an empty memory', async () => {
+    render(App, { memory: createVolatileMemory() });
+    await settled();
+    expect(screen.queryByRole('button', { name: ROW })).toBeNull();
+  });
+
+  it('shows no row for a mistake of today', async () => {
+    render(App, { memory: await memoryWith(['tables'], NOON - 1000) });
+    await settled();
+    expect(screen.queryByRole('button', { name: ROW })).toBeNull();
+  });
+
+  it('shows the row first, with the number of due topics, and not on Lesstof', async () => {
+    render(App, { memory: await memoryWith(['tables']) });
+    expect((await row()).textContent).toContain('1 onderwerp om te herhalen');
+    expect(screen.getAllByRole('button')[0]).toBe(await row());
+    await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+    expect(screen.queryByRole('button', { name: ROW })).toBeNull();
+  });
+
+  it('counts every due topic', async () => {
+    render(App, { memory: await memoryWith(['tables', 'lcm']) });
+    expect((await row()).textContent).toContain('2 onderwerpen om te herhalen');
+  });
+
+  it('starts the session at once, and clears the row once it is played', async () => {
+    const memory = await memoryWith(['tables']);
+    render(App, { memory });
+    await fireEvent.click(await row());
+    expect(screen.getByText('Fouten van eerder')).toBeTruthy();
+    expect(screen.getByText('1 / 2')).toBeTruthy();
+
+    await answerWrong();
+    await answerWrong();
+    await click('Stoppen');
+    await click('Menu');
+    await settled();
+    expect(screen.queryByRole('button', { name: ROW })).toBeNull();
+    // The faked clock moves on a little while the test waits.
+    const saved = (await memory.all()).slice(1);
+    expect(saved.map(({ at, ...rest }) => rest)).toEqual([
+      { topic: 'tables', correct: false, source: 'set' },
+      { topic: 'tables', correct: false, source: 'set' },
+    ]);
+    for (const { at } of saved) expect(at).toBeGreaterThanOrEqual(NOON);
+  });
+
+  it('keeps the row after a session that was stopped at once', async () => {
+    render(App, { memory: await memoryWith(['tables']) });
+    await fireEvent.click(await row());
+    await click('Stoppen');
+    await click('Menu');
+    expect(await row()).toBeTruthy();
+  });
+
+  it('starts the same topics again with Opnieuw, and practises its mistakes', async () => {
+    render(App, { memory: await memoryWith(['tables']) });
+    await fireEvent.click(await row());
+    await answerWrong();
+    await click('Stoppen');
+    await click('Fouten oefenen · 3');
+    expect(screen.getByText('Fouten van eerder')).toBeTruthy();
+    expect(screen.getByText('1 / 3')).toBeTruthy();
+
+    await click('Stoppen');
+    await click('Opnieuw');
+    expect(screen.getByText('Fouten van eerder')).toBeTruthy();
+    expect(screen.getByText('1 / 2')).toBeTruthy();
+  });
+
+  it('removes the row after Gegevens wissen', async () => {
+    render(App, { memory: await memoryWith(['tables']) });
+    await row();
+    await click('Gegevens wissen');
+    await click('Wissen');
+    await vi.waitFor(() => expect(screen.queryByRole('button', { name: ROW })).toBeNull());
+  });
+
+  it('shows the list without the row when the memory cannot be read', async () => {
+    const failure = new Error('read failed');
+    const logged = vi.spyOn(console, 'error').mockImplementation(() => {});
+    render(App, { memory: { ...createVolatileMemory(), all: () => Promise.reject(failure) } });
+    await settled();
+    expect(logged).toHaveBeenCalledWith(failure);
+    expect(screen.queryByRole('button', { name: ROW })).toBeNull();
+    expect(screen.getByRole('button', { name: /^Tafels/ })).toBeTruthy();
+  });
+});

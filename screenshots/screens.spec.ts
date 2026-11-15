@@ -58,6 +58,11 @@ const SHOTS: readonly Shot[] = [
     scene: 'app',
     steps: (page) => page.getByRole('tab', { name: 'Lesstof' }).click(),
   },
+  {
+    id: 'overview-review',
+    scene: 'app-review',
+    steps: (page) => page.getByRole('button', { name: /Fouten van eerder/ }).waitFor(),
+  },
   { id: 'update-dialog', scene: 'app-update' },
   {
     id: 'clear-dialog',

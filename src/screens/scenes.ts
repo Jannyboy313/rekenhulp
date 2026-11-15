@@ -12,6 +12,7 @@ import SetupScreen from '../components/SetupScreen.svelte';
 import TestScreen from '../components/TestScreen.svelte';
 import TestSetupScreen from '../components/TestSetupScreen.svelte';
 import { LESSONS, lessonFor } from '../lib/lessons';
+import { createVolatileMemory } from '../lib/memory';
 import { blueprintFor, TEST_ROW } from '../lib/practiceTest';
 import { createRng } from '../lib/random';
 import { rational } from '../lib/rational';
@@ -124,6 +125,19 @@ export const SCENES: Record<string, Scene> = {
   ),
   'question-percent': play(proportions, PERCENT_QUESTION),
   app: (target) => mount(App, { target }),
+  // Mistakes of an earlier day in three topics: the row Fouten van eerder (review spec §4).
+  'app-review': (target) => {
+    const memory = createVolatileMemory();
+    void memory.add(
+      ['tables', 'percentages', 'lcm'].map((topic) => ({
+        topic,
+        correct: false,
+        at: 0,
+        source: 'set' as const,
+      })),
+    );
+    mount(App, { target, props: { memory } });
+  },
   'app-update': (target) => {
     const updates = createUpdates(noop);
     updates.needRefresh();
