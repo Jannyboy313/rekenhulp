@@ -10,7 +10,8 @@
 
 Study material per practice set, to understand and refresh the methods before practising, aimed
 at the LKT and the RWT. It is read on demand, never part of a session; a mistake in a session can
-open the lesson topics of its exercise in a sheet (§3.1).
+open the lesson topics of its exercise in a sheet (§3.1), and a lesson topic can start a short
+session about itself (§3.3).
 
 **Several methods.** The reader is a PABO student who will teach children that calculate in
 different ways, so a topic shows **more than one method** wherever a common second method exists
@@ -23,11 +24,12 @@ different ways, so a topic shows **more than one method** wherever a common seco
 ### Non-goals
 
 - No persistence of any kind: no "read" marks, no last-opened topic (main spec §1).
-- No exercises, interaction, images or network inside a lesson.
+- No exercises, interaction, images or network inside a lesson. Practising a lesson topic
+  (§3.3) is a session of its own, outside the lesson.
 - No didactics (main spec §12.8): the lesstof shows calculation methods, not how to teach them:
   no teaching models or terms, no typical pupils' errors.
-- No link from the setup or results screen to a lesson; the only practice entry point is the
-  wrong-answer panel (§3.1).
+- No link from the setup or results screen to a lesson; the only way from practice into a
+  lesson is the wrong-answer panel (§3.1).
 
 ## 2. Build order
 
@@ -162,6 +164,34 @@ Refs are `set/topic` ids; a bare id is a topic of the set's own lesson. **—** 
 |               | `backwardsProblems` → `workingBackwards`; `guessAndCheck`, `twoUnknowns` → `guessAndCheck`;     |
 |               | `simplifyProblem` → `simplifySums`, `figurePatterns`; `simplifyDeep` → `simplifySums`          |
 
+### 3.3 From a lesson topic to practice (v6)
+
+One entry point for both v6 features (main spec §12.15): practising a lesson topic and the mini
+check after it are the same short session.
+
+- **Button:** on the `lesson` screen, after the last block, at the end of the scrolling content
+  (so it is reached after reading): one full-width primary button **Oefen 5 sommen**. Not in
+  the sheet or the pane of §3.1: there a session is already running. Not on the topic list.
+- **Mapping:** the practice topics of a lesson topic are derived from `LESSON_LINKS` (§3.2),
+  read the other way: every practice topic that lists the lesson topic among its refs, at any
+  position, in the order of `LESSON_LINKS`. No second table. A lesson topic that no practice
+  topic refers to gets no button.
+- **Session:** 5 exercises (`LESSON_PRACTICE_SIZE`), spread equally over the mapped practice
+  topics (quota algorithm of main spec §4.2 with weight 1 each), de-duplicated and shuffled as
+  any session. No level choice: Opfrisser and Verdieping topics are mixed, each practice topic
+  at its own level. It runs on the normal playing screen with the practice policy (repeats,
+  tips, kladblok, lesson links from a mistake); the header shows the title of the lesson topic.
+- **Results:** the normal results screen, named after the lesson topic. **Opnieuw** starts 5
+  new exercises of the same lesson topic; **Fouten oefenen** works as always and keeps this
+  origin. In the place of **Menu** the button is **Naar de les**: it returns to the `lesson`
+  screen of the topic (its Terug still leads to the topic list). The system back on these
+  results does the same.
+- **Code separation (§4):** `lib/session.ts` builds a session from a plain list of practice
+  topics (`topicSession`) and knows no lessons; `practiceTopicsFor` lives in
+  `lib/lessons/links.ts`. `LessonView` only gets an optional `onpractise` callback and
+  `ResultScreen` a generic label for its Menu button; `App.svelte` connects them with a third
+  session origin (`lesson`).
+
 ## 4. Screens
 
 - **Overview tabs:** a segmented control **Oefenen | Lesstof** under the title, `role="tablist"`,
@@ -212,6 +242,8 @@ function lessonFor(set: PracticeSet): Lesson | undefined;
 interface LessonRef { setId: string; topicId: string }
 const LESSON_LINKS: Partial<Record<Topic, readonly LessonRef[]>>;   // missing = no link
 function lessonLinksFor(topic: Topic, lessons: readonly Lesson[]): LessonTopic[];
+const LESSON_PRACTICE_SIZE = 5;                                      // §3.3
+function practiceTopicsFor(setId: string, topicId: string): Topic[]; // §3.3, LESSON_LINKS inverted
 ```
 
 - `LESSON_LINKS` is `Partial`, so a new practice topic needs no entry (§6: adding a set never
@@ -240,6 +272,10 @@ function lessonLinksFor(topic: Topic, lessons: readonly Lesson[]): LessonTopic[]
 - **Links:** every ref in `LESSON_LINKS` resolves against the real `LESSONS` and no topic lists
   the same ref twice; `lessonLinksFor` is tested with the fixture (order kept, unresolved refs
   dropped, unknown topic gives none).
+- **Practice (§3.3):** `practiceTopicsFor` is tested with fixture links (every position of a
+  ref counts, order of the links kept, another set's topic with the same id excluded, no ref
+  gives none); `topicSession` in `lib/session.ts` with seeded generators (size, equal spread,
+  only the given topics, no topics throws).
 
 ## 7. Content per set
 

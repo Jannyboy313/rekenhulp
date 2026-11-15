@@ -117,10 +117,11 @@ The app is a state machine in `App.svelte` with four states:
 - "Opnieuw" moves from `results` back to `playing`, with the same set, count, level and table
   choice (Gemengd: set choice, §3.2); after a test, or Fouten oefenen after a test, it starts a
   new test with the same length and topics.
-- "Menu" moves from `results` to `sets`.
+- "Menu" moves from `results` to `sets`. After a session started from a lesson topic the button
+  is "Naar de les" and returns to that `lesson` (lesstof spec §3.3).
 - The system back action (Android back button or gesture, iOS swipe back) never closes the app
   from another screen. On `setup`, `testSetup` and `results` it moves to `sets`, like Terug and
-  Menu. On `lessonTopics` and `lesson` it does what Terug does (lesstof spec §3). During
+  Menu (from the results of a lesson session to the lesson, like Naar de les). On `lessonTopics` and `lesson` it does what Terug does (lesstof spec §3). During
   `playing` and `testing` it is ignored; only Stop ends a session or a test. On `sets` it behaves as the system default.
   Implementation: one history entry is kept above the start screen while the app is not on
   `sets`; a `popstate` that consumes it is handled as back.
@@ -441,7 +442,8 @@ differences are in the oefentoets spec §6. The rules below are those of a sessi
   "Alles goed!"
 - Buttons **Menu** (neutral grey) and **Opnieuw** (primary, right; new session with the same
   set, count, level and table choice, or for Gemengd the same set choice). Opnieuw is always the
-  primary button.
+  primary button. After a session started from a lesson topic, Menu is **Naar de les** and
+  Opnieuw starts 5 new exercises of that lesson topic (lesstof spec §3.3).
 - With at least one first-attempt mistake, a full-width button **Fouten oefenen · n** above
   them (§12.4), tonal (violet tint, violet text): between Opnieuw and Menu in weight. It starts a session with three new exercises
   per wrong question, of that question's topic, so `n` is three times the number of wrong
@@ -1233,7 +1235,7 @@ categories (§12.5) are done. The order after that (decided 2026-11-14, v6 and v
 
 - v4: tablet support (§12.10).
 - v5: the practice test (§12.6, done).
-- v6: from a lesson to practice, and a mini check after a lesson (§12.15).
+- v6: from a lesson to practice, and a mini check after a lesson (§12.15, done).
 - v7: persistent memory in IndexedDB. No section yet; the non-goals of §1 change when that work
   starts. Input for its spec (architecture analysis of 2026-11-14, not decided): a `Question`
   cannot be stored (`Step.check` is a closure), so storage gets its own record of plain data
@@ -1580,19 +1582,14 @@ in one cell, a table component, and a branch in `QuestionView`. The table costs 
 kladblok hides rows below 816 px viewport height (§3.6). Open: only 2×2, or also 3 columns with
 an intermediate step.
 
-### 12.15 v6 — from a lesson to practice, and a mini check
+### 12.15 v6 — from a lesson to practice, and a mini check (done)
 
 Decided 2026-11-15. Two features that connect the lesstof to practice; the opposite direction
-(from a mistake to a lesson, lesstof spec §3.1–§3.2) exists. Both need no new infrastructure and
-no persistence. Their form is decided in the lesstof spec when the work starts.
-
-- From a lesson to practice: a lesson topic offers a way to practise that topic.
-- Mini check: a few exercises about the lesson topic, after the lesson.
-
-Open: where the button sits (per lesson topic or per lesson), which practice topics a lesson
-topic maps to (`LESSON_LINKS` maps the other way, practice topic → lesson topics), the level
-and the number of exercises, whether the mini check is a session of its own or part of the
-lesson view, and whether the two features are one entry point or two.
+(from a mistake to a lesson, lesstof spec §3.1–§3.2) existed. No new infrastructure and no
+persistence. They became one entry point, decided in the lesstof spec §3.3: a button **Oefen 5
+sommen** at the end of a lesson topic starts a session of its own with 5 exercises, spread
+equally over the practice topics that link to the lesson topic (`LESSON_LINKS` inverted, every
+ref), both levels mixed; its results screen leads back to the lesson.
 
 ### 12.16 v8 — yesterday's mistakes
 
