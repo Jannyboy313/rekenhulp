@@ -60,8 +60,8 @@
   }
 
   .worked-line {
-    font-size: 18px;
-    line-height: 30px;
+    font-size: var(--lesson-worked-size, 18px);
+    line-height: var(--lesson-worked-line, 30px);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
@@ -73,32 +73,39 @@
 
   .label {
     margin-bottom: 4px;
-    font-size: 13px;
+    font-size: var(--lesson-label-size, 13px);
     font-weight: 700;
     color: var(--sky-text);
   }
 
-  /* A scroll container may shrink to nothing as a flex item of the lesson's scrolling column. */
+  /* A card that scrolls sideways when the table is wider (lesstof spec §4). A scroll container
+     may shrink to nothing as a flex item of the lesson's scrolling column, hence flex: none. */
   .table-box {
     flex: none;
     overflow-x: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
   }
 
   table {
+    width: 100%;
     border-collapse: collapse;
     font-variant-numeric: tabular-nums;
   }
 
   th,
   td {
-    padding: 6px 16px 6px 0;
+    padding: var(--lesson-cell-padding, 8px 12px);
     text-align: left;
     white-space: nowrap;
   }
 
   th {
-    font-size: 13px;
-    color: var(--muted);
+    font-size: var(--lesson-head-size, 13px);
+    color: var(--primary-dark);
+    background: var(--primary-tint);
   }
 
   td {

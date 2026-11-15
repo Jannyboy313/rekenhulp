@@ -114,5 +114,11 @@
     gap: 20px;
     font-size: 19px;
     line-height: 29px;
+    /* The blocks grow with the body (v4 spec §8); LessonBlocks reads these. */
+    --lesson-worked-size: 22px;
+    --lesson-worked-line: 34px;
+    --lesson-label-size: 14px;
+    --lesson-head-size: 15px;
+    --lesson-cell-padding: 12px 16px;
   }
 </style>
