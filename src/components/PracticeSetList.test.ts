@@ -33,6 +33,30 @@ describe('PracticeSetList', () => {
   });
 });
 
+describe('PracticeSetList review row (review spec §4)', () => {
+  it('has no such row without the prop', () => {
+    render(PracticeSetList, { sets: PRACTICE_SETS, onselect: () => {}, ontest: () => {} });
+    expect(screen.queryByRole('button', { name: /Fouten van eerder/ })).toBeNull();
+  });
+
+  it('renders it as the first row, with the count and a glyph', async () => {
+    const onstart = vi.fn();
+    render(PracticeSetList, {
+      sets: PRACTICE_SETS,
+      onselect: () => {},
+      ontest: () => {},
+      review: { count: 3, onstart },
+    });
+    const rows = screen.getAllByRole('button');
+    expect(rows).toHaveLength(PRACTICE_SETS.length + 2);
+    expect(rows[0]!.textContent).toContain('Fouten van eerder');
+    expect(rows[0]!.textContent).toContain('3 onderwerpen om te herhalen');
+    expect(rows[0]!.querySelector('svg')).not.toBeNull();
+    await fireEvent.click(rows[0]!);
+    expect(onstart).toHaveBeenCalledOnce();
+  });
+});
+
 describe('PracticeSetList footer', () => {
   it('has no footer item without a footer', () => {
     render(PracticeSetList, { sets: PRACTICE_SETS, onselect: () => {}, ontest: () => {} });

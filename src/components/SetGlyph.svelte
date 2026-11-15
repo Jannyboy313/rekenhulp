@@ -23,6 +23,7 @@
     'heuristieken',
     'gemengd',
     'oefentoets',
+    'fouten',
   ];
 </script>
 
@@ -111,6 +112,11 @@
       <path d="M7.5 12.5l2.5 2.5 5-5" class="sa nf" stroke-width="2.4" />
       <circle cx="20" cy="20" r="6" class="fb" />
       <path d="M20 17v3h2.4" class="ss nf" stroke-width="1.8" />
+    {:else if id === 'fouten'}
+      <!-- A circular arrow around a dot: what went wrong comes back (review spec §4). -->
+      <path d="M23 14a9 9 0 1 1-2.6-6.4" class="sv nf" stroke-width="2.6" />
+      <path d="M21 2.8v5.2h-5.2" class="sv nf" stroke-width="2.6" />
+      <circle cx="14" cy="14" r="3.2" class="fa" />
     {/if}
   </svg>
 {:else}

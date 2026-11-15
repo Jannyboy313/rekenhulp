@@ -2,6 +2,13 @@ import type { PracticeRecord } from './memory';
 import { GENERATORS } from './topics';
 import type { Topic } from './types';
 
+/** The row on the Oefenen tab (review spec §4): display data only, not a set. */
+export const REVIEW_ROW = { id: 'fouten', name: 'Fouten van eerder' } as const;
+
+export function reviewDescription(count: number): string {
+  return `${count} ${count === 1 ? 'onderwerp' : 'onderwerpen'} om te herhalen`;
+}
+
 const TOPIC_IDS: ReadonlySet<string> = new Set(Object.keys(GENERATORS));
 
 /** The local calendar day of a moment, comparable as a number. */

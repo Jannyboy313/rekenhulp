@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import type { PracticeRecord } from './memory';
-import { dueTopics } from './review';
+import { dueTopics, reviewDescription } from './review';
+
+describe('reviewDescription (review spec §4)', () => {
+  it.each([
+    [1, '1 onderwerp om te herhalen'],
+    [2, '2 onderwerpen om te herhalen'],
+    [12, '12 onderwerpen om te herhalen'],
+  ])('%i', (count, expected) => {
+    expect(reviewDescription(count)).toBe(expected);
+  });
+});
 
 /** A moment in November 2026, local time: the tests hold in any time zone. */
 function moment(day: number, hour = 12, minute = 0): number {
