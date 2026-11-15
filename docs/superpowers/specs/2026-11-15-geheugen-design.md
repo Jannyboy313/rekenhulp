@@ -165,8 +165,8 @@ into the memory as `onFirstAdd`, so `lib/memory.ts` does not touch `navigator`.
   test each add their records with the right source; a memory whose `add` rejects still shows
   the results. Gegevens wissen: Annuleren, Escape and Wissen; the status text; the update dialog
   waiting.
-- Scenes and shots (main spec §10, CLAUDE.md): `overview-clear` (the end of the list with the
-  button) and `clear-dialog`, on every layout the overview shots have.
+- Shots (main spec §10, CLAUDE.md): `clear-dialog` (the scene `app` with a tap on the button), on
+  every layout the overview shots have. The button itself is in the shot `overview-practice`.
 - `npm run smoke`: needed, `main.ts` changes. The smoke test also checks that a played session
   left records in IndexedDB.
 
