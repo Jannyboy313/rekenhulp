@@ -1228,7 +1228,8 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-No open assumptions.
+- v8, Fouten van eerder: decisions 5–14 of `2026-11-15-fouten-van-eerder-design.md` §2 are
+  defaults of the draft, listed in its §9.
 
 ## 12. Roadmap (not in v1)
 
@@ -1602,6 +1603,6 @@ Decided 2026-11-15. Exercises that went wrong come back on a later day. Builds o
 memory of v7. A stored mistake is plain data (v7), so what comes back is a new exercise of the
 same topic, as in Fouten oefenen (§3.5), not the same `Question`.
 
-Open: when a mistake comes back (the next day, or spaced over more days), when it is cleared,
-where the user starts it, and how it relates to "no adaptive difficulty" (§1): it picks
-exercises from earlier results, which the user-chosen level does not.
+The open questions (when a mistake comes back, when it is cleared, where the user starts it, and
+how it relates to "no adaptive difficulty", §1) are worked out in its own spec,
+`2026-11-15-fouten-van-eerder-design.md`; its remaining assumptions are listed in §11.
