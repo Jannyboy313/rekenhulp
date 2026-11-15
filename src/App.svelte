@@ -193,7 +193,7 @@
       {@const questions = screen.questions}
       {#key questions}
         <PlayScreen
-          {set}
+          name={set.name}
           {questions}
           lessons={allLessons}
           onfinish={(records, totalMs) => finishSession(set, records, totalMs)}

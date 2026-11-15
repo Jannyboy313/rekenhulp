@@ -91,7 +91,7 @@ function results(mistakes: number): Scene {
 
 function play(set: PracticeSet, question: Question): Scene {
   return (target) =>
-    mount(PlayScreen, { target, props: { set, questions: [question], onfinish: noop } });
+    mount(PlayScreen, { target, props: { name: set.name, questions: [question], onfinish: noop } });
 }
 
 /** Fixed, so the runner knows the keys: 20 is right; the topic has lesson links. */

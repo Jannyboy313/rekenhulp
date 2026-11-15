@@ -20,23 +20,25 @@
   import type { QuestionRecord } from '../lib/results';
   import { EMPTY_NOTES, sessionUsesScratchpad, showsScratchpad } from '../lib/scratchpad';
   import { keepScreenAwake } from '../lib/wakeLock';
-  import type { CheckResult, PracticeSet, Question } from '../lib/types';
+  import type { CheckResult, Question } from '../lib/types';
   import Feedback from './Feedback.svelte';
   import Icon from './Icon.svelte';
   import { viewport } from './layout.svelte';
   import LessonPane from './LessonPane.svelte';
   import LessonSheet from './LessonSheet.svelte';
+  import PlayShell from './PlayShell.svelte';
   import QuestionView from './QuestionView.svelte';
 
   interface Props {
-    set: PracticeSet;
+    /** The set name, or "Oefentoets" for Fouten oefenen after a test. */
+    name: string;
     questions: readonly Question[];
     onfinish: (records: QuestionRecord[], totalMs: number) => void;
     /** Tests pass a fixture; the app uses the registry. */
     lessons?: readonly Lesson[];
   }
 
-  let { set, questions, onfinish, lessons = LESSONS }: Props = $props();
+  let { name, questions, onfinish, lessons = LESSONS }: Props = $props();
 
   const rng = createRng(randomSeed());
   const sessionStart = Date.now();
@@ -165,36 +167,16 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<main class="play">
-  <header>
-    <button type="button" class="close" aria-label="Stoppen" onclick={finish}>
-      <Icon name="close" size={24} stroke={2.2} />
-    </button>
-    <div class="info">
-      <div class="line">
-        <span class="set-name">{set.name}</span>
-        <span class="counter">
-          {#if entry.repeat}
-            <span class="repeat-label"><Icon name="repeat" size={12} stroke={2.4} />Herhaling</span>
-          {:else}
-            <span>{originalNumber(play)} / {questions.length}</span>
-          {/if}
-          <span aria-hidden="true">·</span>
-          <span class="timer">{formatDuration(now - sessionStart)}</span>
-        </span>
-      </div>
-      <div
-        class="track"
-        role="progressbar"
-        aria-label="Voortgang"
-        aria-valuemin={0}
-        aria-valuemax={questions.length}
-        aria-valuenow={firstAttempts}
-      >
-        <div class="fill" style:width="{(firstAttempts / questions.length) * 100}%"></div>
-      </div>
-    </div>
-  </header>
+<PlayShell {name} onstop={finish} progress={firstAttempts} max={questions.length}>
+  {#snippet meta()}
+    {#if entry.repeat}
+      <span class="repeat-label"><Icon name="repeat" size={12} stroke={2.4} />Herhaling</span>
+    {:else}
+      <span>{originalNumber(play)} / {questions.length}</span>
+    {/if}
+    <span aria-hidden="true">·</span>
+    <span class="timer">{formatDuration(now - sessionStart)}</span>
+  {/snippet}
 
   <!-- No role: the correct field and the wrong panel are the status regions (silent), this one
        is the single announcement. -->
@@ -228,7 +210,7 @@
       setName={tablet ? lessonSet : undefined}
     />
   {/if}
-</main>
+</PlayShell>
 
 {#snippet lessonPane()}
   {#if openLesson}
@@ -244,98 +226,6 @@
 {/snippet}
 
 <style>
-  /* The page never scrolls while playing (spec §2): #app is exactly one screen high, and the
-     question or the feedback shrinks its own content instead. */
-  .play {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-
-  header {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    padding: calc(12px + env(safe-area-inset-top)) 16px 8px 8px;
-  }
-
-  /* Tablet portrait: one column, the header aligned to it (v4 spec §4.4). The ✕ glyph, not its
-     tap target, lines up with the column edge. */
-  :global([data-layout='tablet-portrait']) .play {
-    --column: 600px;
-    padding-inline: 20px;
-  }
-
-  :global([data-layout='tablet-portrait']) header {
-    padding: calc(16px + env(safe-area-inset-top)) 0 12px;
-    margin-left: -12px;
-  }
-
-  /* Landscape: the whole width; the question and the feedback lay out the two panes (§4.2). */
-  :global([data-layout^='tablet-landscape']) .play {
-    --column: none;
-    padding-inline: var(--play-body-side);
-  }
-
-  :global([data-layout^='tablet-landscape']) header {
-    padding: calc(16px + env(safe-area-inset-top)) 0 12px;
-    margin-left: -12px;
-  }
-
-  :global([data-layout='tablet-landscape-compact']) header {
-    padding: calc(10px + env(safe-area-inset-top)) 0 8px;
-  }
-
-  .close {
-    flex: none;
-    width: var(--play-stop);
-    height: var(--play-stop);
-    min-height: 0;
-    padding: 0;
-    background: none;
-    color: var(--text-2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .info {
-    flex: 1;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .line {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    font-size: var(--play-meta);
-    line-height: 20px;
-  }
-
-  /* A long set name is cut, so the counter keeps its place and the header its height. */
-  .set-name {
-    min-width: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .counter {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--muted);
-  }
-
   .repeat-label {
     display: inline-flex;
     align-items: center;
@@ -347,19 +237,5 @@
     color: var(--yellow-text);
     font-size: 12px;
     font-weight: 700;
-  }
-
-  .track {
-    height: var(--play-track);
-    border-radius: 4px;
-    background: var(--border);
-    overflow: hidden;
-  }
-
-  .fill {
-    height: 100%;
-    border-radius: 4px;
-    background: var(--primary);
-    transition: width 200ms ease-out;
   }
 </style>

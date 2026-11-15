@@ -294,8 +294,9 @@ summarizeTest(records, blueprint, totalMs, timedOut): SessionSummary
   one-screen-high frame and the header with ✕, name, counter, time and progress bar, with their
   per-layout rules) is extracted into one component used by both; the layout rules must not
   exist twice (CLAUDE.md, layout pitfalls).
-- `QuestionView` gets one prop that turns off its correct state; `TestScreen` sets it. It is
-  the only test-related change to a practice component besides the shell.
+- `QuestionView` is unchanged: with the test policy the answer moves on in the same transition,
+  and `QuestionView` is keyed on the step, so its correct state never renders (a component test
+  guards this). The stop dialog and the update dialog share one modal dialog component.
 - **`TestSetupScreen`** (new). The segmented control and the pinned Start of `SetupScreen` are
   shared by extraction, not copied.
 - `ResultScreen` renders the verdict, the score over `total` and the extra stats from
@@ -338,7 +339,7 @@ so an unfinished test is never reachable.
 2. `buildTestSession`, with the shared planning helper.
 3. The play policy in `lib/play.ts`.
 4. `summarizeTest` and the test results on `ResultScreen`.
-5. The shared shell, `TestScreen`, the `QuestionView` prop, the stop dialog.
+5. The shared shell, `TestScreen`, the stop dialog.
 6. `TestSetupScreen`, with the shared setup controls.
 7. `App.svelte`: the states, the row and its glyph, the update rule; scenes and shots.
 8. The documents of §12.

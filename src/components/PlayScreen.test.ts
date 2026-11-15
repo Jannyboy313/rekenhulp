@@ -38,7 +38,7 @@ describe('PlayScreen', () => {
 
   it('records answers and finishes after the last question', async () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish } });
 
     expect(screen.getByText('Tafels')).toBeTruthy();
     expect(screen.getByText('1 / 2')).toBeTruthy();
@@ -63,7 +63,7 @@ describe('PlayScreen', () => {
     Object.defineProperty(navigator, 'wakeLock', { configurable: true, value: { request } });
     try {
       const { unmount } = render(PlayScreen, {
-        props: { set: TABLES_SET, questions, onfinish: vi.fn() },
+        props: { name: TABLES_SET.name, questions, onfinish: vi.fn() },
       });
       await vi.advanceTimersByTimeAsync(0);
       expect(request).toHaveBeenCalledWith('screen');
@@ -75,14 +75,14 @@ describe('PlayScreen', () => {
   });
 
   it('shows the elapsed time', async () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     expect(screen.getByText('0:00')).toBeTruthy();
     await vi.advanceTimersByTimeAsync(65_000);
     expect(screen.getByText('1:05')).toBeTruthy();
   });
 
   it('announces the result in a live region', async () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     const announcement = () => document.querySelector('.sr-only[aria-live="polite"]')?.textContent;
     await press('6', 'OK');
     expect(announcement()?.trim()).toBe('Goed!');
@@ -93,7 +93,7 @@ describe('PlayScreen', () => {
 
   describe('correct state', () => {
     it('turns the field green with a check, dims the keypad and offers no Verder', async () => {
-      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+      render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
       await press('6', 'OK');
       const field = screen.getByRole('status');
       expect(field.getAttribute('aria-label')).toBe('Goed: jouw antwoord is 6');
@@ -108,7 +108,7 @@ describe('PlayScreen', () => {
 
     it('fills the unknown of the sum with the typed input', async () => {
       const sum = question(`7 × ${SLOT} = 56`, 8);
-      render(PlayScreen, { props: { set: TABLES_SET, questions: [sum], onfinish: vi.fn() } });
+      render(PlayScreen, { props: { name: TABLES_SET.name, questions: [sum], onfinish: vi.fn() } });
       await press('8', 'OK');
       const prompt = document.querySelector('.prompt')!;
       expect(prompt.textContent).toBe('7 × 8 = 56');
@@ -118,7 +118,9 @@ describe('PlayScreen', () => {
     it('shows the typed input, not the normalised one, in the field and the sum', async () => {
       const decimal = question(`0,2 + 0,3 = ${SLOT}`, 0);
       decimal.steps = [numberStep({ prompt: `0,2 + 0,3 = ${SLOT}`, answer: rational(1n, 2n) })];
-      render(PlayScreen, { props: { set: TABLES_SET, questions: [decimal], onfinish: vi.fn() } });
+      render(PlayScreen, {
+        props: { name: TABLES_SET.name, questions: [decimal], onfinish: vi.fn() },
+      });
       await press('0', 'komma', '5', '0', 'OK');
       expect(screen.getByRole('status').textContent).toBe('0,50');
       expect(document.querySelector('.prompt')?.textContent).toBe('0,2 + 0,3 = 0,50');
@@ -136,7 +138,9 @@ describe('PlayScreen', () => {
           }),
         ],
       };
-      render(PlayScreen, { props: { set: TABLES_SET, questions: [area], onfinish: vi.fn() } });
+      render(PlayScreen, {
+        props: { name: TABLES_SET.name, questions: [area], onfinish: vi.fn() },
+      });
       await press('1', '2', '6', 'OK');
       expect(document.querySelector('.prompt')?.textContent).toBe(
         'Hoe groot is de oppervlakte van een rechthoek van 18 bij 7 cm?',
@@ -149,7 +153,7 @@ describe('PlayScreen', () => {
 
     it('does not advance after Stoppen', async () => {
       const onfinish = vi.fn();
-      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+      render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish } });
       await press('6', 'OK', 'Stoppen');
       await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
       expect(onfinish).toHaveBeenCalledOnce();
@@ -162,7 +166,9 @@ describe('PlayScreen', () => {
         topic: 'percentages',
         steps: [numberStep({ prompt: `10% van 90 = ${SLOT}`, answer: fromInteger(9) })],
       };
-      render(PlayScreen, { props: { set: TABLES_SET, questions: [percent], onfinish: vi.fn() } });
+      render(PlayScreen, {
+        props: { name: TABLES_SET.name, questions: [percent], onfinish: vi.fn() },
+      });
       await press('9', 'OK');
       const cells = screen.getAllByRole<HTMLButtonElement>('button', { name: /^Kladblok vak/ });
       expect(cells.length).toBeGreaterThan(0);
@@ -173,7 +179,7 @@ describe('PlayScreen', () => {
   it('calls onfinish at most once when Stop is pressed during the final auto-advance', async () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
     render(PlayScreen, {
-      props: { set: TABLES_SET, questions: [questions[0]!], onfinish },
+      props: { name: TABLES_SET.name, questions: [questions[0]!], onfinish },
     });
     await press('6', 'OK', 'Stoppen');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
@@ -182,7 +188,7 @@ describe('PlayScreen', () => {
 
   it('Stop finishes with only the answered questions', async () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish } });
     await press('6', 'OK');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
     await press('2', 'Stoppen');
@@ -199,7 +205,7 @@ describe('PlayScreen', () => {
         booleanStep({ prompt: 'Is 91 een priemgetal?', answer: false, explanation: '91 = 7 × 13' }),
       ],
     };
-    render(PlayScreen, { props: { set: TABLES_SET, questions: [prime], onfinish } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions: [prime], onfinish } });
     await press('Ja');
     expect(screen.getByText('Niet goed')).toBeTruthy();
     expect(screen.getByText('Ja')).toBeTruthy();
@@ -228,7 +234,9 @@ describe('PlayScreen', () => {
     };
     const shown = () =>
       [...document.querySelectorAll('.option')].map((button) => button.textContent?.trim());
-    render(PlayScreen, { props: { set: TABLES_SET, questions: [estimate], onfinish: vi.fn() } });
+    render(PlayScreen, {
+      props: { name: TABLES_SET.name, questions: [estimate], onfinish: vi.fn() },
+    });
     expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
     await press('400');
     expect(screen.getByText('Niet goed')).toBeTruthy();
@@ -253,7 +261,7 @@ describe('PlayScreen', () => {
     };
     // Visibility depends on the question's topic, not on the set, so TABLES_SET is fine here.
     render(PlayScreen, {
-      props: { set: TABLES_SET, questions: [twoSteps, next], onfinish: vi.fn() },
+      props: { name: TABLES_SET.name, questions: [twoSteps, next], onfinish: vi.fn() },
     });
 
     await fireEvent.click(screen.getByRole('button', { name: 'Kladblok vak 1: leeg' }));
@@ -270,7 +278,7 @@ describe('PlayScreen', () => {
   });
 
   it('shows no kladblok for table questions', () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     expect(screen.queryByRole('group', { name: 'Kladblok' })).toBeNull();
   });
 
@@ -286,7 +294,7 @@ describe('PlayScreen', () => {
       'distributive',
     );
     // The steps come from the question, not from the set: TABLES_SET only provides the header name.
-    render(PlayScreen, { props: { set: TABLES_SET, questions: [property], onfinish } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions: [property], onfinish } });
 
     await press('9', '8', 'keer', '7', 'OK');
     expect(screen.getByText('Niet goed')).toBeTruthy();
@@ -313,7 +321,7 @@ describe('PlayScreen', () => {
 
   it('repeats a wrong question until it is correct and records only first attempts', async () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish } });
 
     await press('5', 'OK', 'Verder');
     // With one question left, the repeat comes after it, not directly next.
@@ -346,7 +354,9 @@ describe('PlayScreen', () => {
     }
 
     it('shows the counter and an empty progress bar on the first question', () => {
-      render(PlayScreen, { props: { set: TABLES_SET, questions: fifteen, onfinish: vi.fn() } });
+      render(PlayScreen, {
+        props: { name: TABLES_SET.name, questions: fifteen, onfinish: vi.fn() },
+      });
       expect(screen.getByText('1 / 15')).toBeTruthy();
       expect(progress().getAttribute('aria-valuenow')).toBe('0');
       expect(progress().getAttribute('aria-valuemin')).toBe('0');
@@ -354,7 +364,9 @@ describe('PlayScreen', () => {
     });
 
     it('advances the counter and the bar after a correct answer', async () => {
-      render(PlayScreen, { props: { set: TABLES_SET, questions: fifteen, onfinish: vi.fn() } });
+      render(PlayScreen, {
+        props: { name: TABLES_SET.name, questions: fifteen, onfinish: vi.fn() },
+      });
       await press('1', 'OK');
       await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
       expect(screen.getByText('2 / 15')).toBeTruthy();
@@ -363,7 +375,7 @@ describe('PlayScreen', () => {
 
     it('replaces the number with the Herhaling label and keeps the bar on a repeat', async () => {
       render(PlayScreen, {
-        props: { set: TABLES_SET, questions: [fifteen[0]!, fifteen[1]!], onfinish: vi.fn() },
+        props: { name: TABLES_SET.name, questions: [fifteen[0]!, fifteen[1]!], onfinish: vi.fn() },
       });
       await press('9', 'OK', 'Verder');
       await press('2', 'OK');
@@ -376,7 +388,7 @@ describe('PlayScreen', () => {
     it('stops with one click on Stoppen, without a dialog', async () => {
       const onfinish = vi.fn();
       const confirm = vi.spyOn(window, 'confirm');
-      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+      render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish } });
       await press('Stoppen');
       expect(onfinish).toHaveBeenCalledOnce();
       expect(confirm).not.toHaveBeenCalled();
@@ -386,7 +398,7 @@ describe('PlayScreen', () => {
 
   it('Stop drops repeats that are still waiting', async () => {
     const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish } });
     await press('5', 'OK', 'Verder', 'Stoppen');
     expect(onfinish).toHaveBeenCalledOnce();
     expect(onfinish.mock.calls[0]![0].map(isCorrect)).toEqual([false]);
@@ -408,7 +420,7 @@ describe('PlayScreen', () => {
 
     it('reads the lesson in a sheet and comes back to the same panel and session', async () => {
       const onfinish = vi.fn<(records: QuestionRecord[], totalMs: number) => void>();
-      render(PlayScreen, { props: { set: NUMBERS_SET, questions: [lcm], onfinish } });
+      render(PlayScreen, { props: { name: NUMBERS_SET.name, questions: [lcm], onfinish } });
       await press('2', '4', 'OK');
 
       await press('Les: KGV');
@@ -431,7 +443,7 @@ describe('PlayScreen', () => {
     });
 
     it('shows no link for a topic without lesson topics', async () => {
-      render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+      render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
       await press('5', 'OK');
       expect(screen.getByText('Niet goed')).toBeTruthy();
       expect(screen.queryByRole('button', { name: /^Les: / })).toBeNull();
@@ -456,7 +468,7 @@ describe('PlayScreen reserved kladblok space (v4 spec §5.1)', () => {
 
   it('keeps a hidden, inert kladblok and the lower keypad on a table step', () => {
     render(PlayScreen, {
-      props: { set: TABLES_SET, questions: [table, percent], onfinish: vi.fn() },
+      props: { name: TABLES_SET.name, questions: [table, percent], onfinish: vi.fn() },
     });
     expect(pad()?.inert).toBe(true);
     expect(pad()?.getAttribute('aria-hidden')).toBe('true');
@@ -466,7 +478,7 @@ describe('PlayScreen reserved kladblok space (v4 spec §5.1)', () => {
 
   it('keeps it on a Ja/Nee step, whose buttons still answer', async () => {
     const onfinish = vi.fn();
-    render(PlayScreen, { props: { set: TABLES_SET, questions: [yesNo, percent], onfinish } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions: [yesNo, percent], onfinish } });
     expect(pad()?.inert).toBe(true);
     await press('Nee');
     await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
@@ -475,7 +487,7 @@ describe('PlayScreen reserved kladblok space (v4 spec §5.1)', () => {
   });
 
   it('reserves nothing in a session without a kladblok step', () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions: [table], onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions: [table], onfinish: vi.fn() } });
     expect(pad()).toBeNull();
     expect(keypad()?.classList.contains('tall')).toBe(true);
   });
@@ -485,7 +497,7 @@ describe('PlayScreen physical keyboard (v4 spec §6)', () => {
   const questions = [question('2 × 3 = ?', 6), question('4 × 5 = ?', 20)];
 
   it('moves on from the wrong panel with Enter, but not with the Enter that submitted', async () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     await fireEvent.keyDown(window, { key: '7' });
     await fireEvent.keyDown(window, { key: 'Enter' });
     expect(screen.getByText('Niet goed')).toBeTruthy();
@@ -495,7 +507,7 @@ describe('PlayScreen physical keyboard (v4 spec §6)', () => {
   });
 
   it('leaves Enter on a focused button of the wrong panel alone', async () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     await press('7', 'OK');
     const handled = await fireEvent.keyDown(screen.getByRole('button', { name: 'Stoppen' }), {
       key: 'Enter',
@@ -512,7 +524,7 @@ describe('PlayScreen rotation (v4 spec §3.1)', () => {
 
   it('keeps the wrong panel through a layout change, and Verder still works', async () => {
     const questions = [question('2 × 3 = ?', 6), question('4 × 5 = ?', 20)];
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     await press('7', 'OK');
     const panel = screen.getByText('Niet goed');
     viewport.shown = 'tablet-landscape';
@@ -551,7 +563,7 @@ describe('PlayScreen lesson on a tablet (v4 spec §7)', () => {
     viewport.shown = layout;
     const onfinish = vi.fn();
     render(PlayScreen, {
-      props: { set: NUMBERS_SET, questions: [divisible, divisible], onfinish },
+      props: { name: NUMBERS_SET.name, questions: [divisible, divisible], onfinish },
     });
     await press('2', '4', 'OK');
     return onfinish;
@@ -656,7 +668,7 @@ describe('PlayScreen physical keyboard, review fixes (v4 spec §3.3, §6)', () =
   });
 
   it('does not let a held Enter press Verder', async () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     await press('7', 'OK');
     // Verder has the focus: without this, every auto-repeat would click it natively.
     const handled = await fireEvent.keyDown(screen.getByRole('button', { name: 'Verder' }), {
@@ -668,7 +680,7 @@ describe('PlayScreen physical keyboard, review fixes (v4 spec §3.3, §6)', () =
   });
 
   it('ignores Enter on the wrong panel under the "too low" notice', async () => {
-    render(PlayScreen, { props: { set: TABLES_SET, questions, onfinish: vi.fn() } });
+    render(PlayScreen, { props: { name: TABLES_SET.name, questions, onfinish: vi.fn() } });
     await press('7', 'OK');
     viewport.layout = 'too-low';
     await tick();
