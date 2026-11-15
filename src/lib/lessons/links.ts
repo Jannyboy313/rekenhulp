@@ -136,6 +136,17 @@ export function lessonLinksFor(
   });
 }
 
+/** The number of exercises of a session started from a lesson topic (lesstof spec §3.3). */
+export const LESSON_PRACTICE_SIZE = 5;
+
+/** `LESSON_LINKS` read the other way: the practice topics that refer to a lesson topic. */
+export function practiceTopicsFor(setId: string, topicId: string, links = LESSON_LINKS): Topic[] {
+  const entries = Object.entries(links) as [Topic, readonly LessonRef[]][];
+  return entries
+    .filter(([, refs]) => refs.some((ref) => ref.setId === setId && ref.topicId === topicId))
+    .map(([topic]) => topic);
+}
+
 /** The name of the practice set whose lesson holds `topic`, for "Les · <set>" (v4 spec §7). */
 export function lessonSetName(
   topic: LessonTopic,

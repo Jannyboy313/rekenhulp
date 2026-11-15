@@ -12,6 +12,7 @@ import {
   MAX_UNIQUE_ATTEMPTS,
   mistakeSession,
   shareCount,
+  topicSession,
 } from './session';
 import { DEEP_FIXTURE_SET } from './setFixture';
 import {
@@ -519,6 +520,33 @@ describe('buildSession for Verdieping', () => {
 
   it('has no Opfrisser share below 10 and splits 5 by largest remainder', () => {
     expect(counts(5)).toEqual({ lcm: 3, gcd: 2, prime: 0, tables: 0, total: 5 });
+  });
+});
+
+describe('topicSession (lesstof spec §3.3)', () => {
+  const counts = (topics: Topic[], size: number) => {
+    const made = topicSession(topics, size, createRng(1)).map((q) => q.topic);
+    return topics.map((topic) => made.filter((m) => m === topic).length).sort();
+  };
+
+  it('builds only exercises of the one topic', () => {
+    const questions = topicSession(['lcm'], 5, createRng(1));
+    expect(questions.map((q) => q.topic)).toEqual(Array.from({ length: 5 }, () => 'lcm'));
+    expect(new Set(questions.map((q) => q.key)).size).toBe(5);
+  });
+
+  it('spreads the exercises equally over the topics', () => {
+    expect(counts(['lcm', 'gcd'], 5)).toEqual([2, 3]);
+    expect(counts(['lcm', 'gcd', 'prime'], 5)).toEqual([1, 2, 2]);
+  });
+
+  it('gives at most one exercise per topic with more topics than exercises', () => {
+    const topics: Topic[] = ['lcm', 'gcd', 'prime', 'squares', 'divisors', 'factorization'];
+    expect(counts(topics, 5)).toEqual([0, 1, 1, 1, 1, 1]);
+  });
+
+  it('throws without topics', () => {
+    expect(() => topicSession([], 5, createRng(1))).toThrow(RangeError);
   });
 });
 

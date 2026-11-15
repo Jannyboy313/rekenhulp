@@ -112,6 +112,17 @@ export function buildMixedSession(
   return generatePlan(planForSets(sets, level, size - quick, quick, rng), rng, generators);
 }
 
+/** A session of the given topics alone, an equal share each (lesstof spec §3.3). */
+export function topicSession(
+  topics: readonly Topic[],
+  size: number,
+  rng: Rng,
+  generators: Record<Topic, Generator> = GENERATORS,
+): Question[] {
+  const weights = topics.map((topic) => ({ topic, weight: 1 }));
+  return generatePlan(planTopics(weights, size, rng), rng, generators);
+}
+
 /**
  * Oefentoets (test spec §3.3): the Opfrisser share is spread over the domains by their counts,
  * then each domain is planned as Gemengd at Verdieping; one generation over the whole plan.
