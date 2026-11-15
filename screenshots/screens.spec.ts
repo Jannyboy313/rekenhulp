@@ -139,6 +139,15 @@ SHOTS.forEach((shot, index) => {
     await page.goto(`/screens.html#${shot.scene}`);
     await page.evaluate(() => document.fonts.ready);
     await shot.steps?.(page);
+    // Before the phone grows: a block that scrolls sideways must keep its height in the first
+    // viewport (as a flex item of a scrolling column it may shrink to nothing).
+    const clipped = await page.evaluate(
+      () =>
+        [...document.querySelectorAll('.table-box')].filter(
+          (box) => box.scrollHeight - box.clientHeight > 1,
+        ).length,
+    );
+    expect(clipped, 'lesson tables cut off vertically').toBe(0);
     // A tablet keeps its viewport: a taller one would be another layout (v4 spec §3.1).
     if (project === 'phone') await growToContent(page);
     const name = `${String(index + 1).padStart(2, '0')}-${shot.id}.png`;

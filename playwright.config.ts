@@ -24,7 +24,7 @@ export default defineConfig({
     {
       name: 'compact',
       use: { viewport: { width: 900, height: 520 } },
-      grep: /question-|results-|lesson-sheet/,
+      grep: /question-|results-|lesson-|lesson$/,
     },
   ],
   webServer: {
