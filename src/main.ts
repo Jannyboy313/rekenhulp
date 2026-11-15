@@ -2,6 +2,7 @@ import { mount } from 'svelte';
 import { registerSW } from 'virtual:pwa-register';
 import './app.css';
 import App from './App.svelte';
+import { openMemory } from './lib/memory';
 import { createUpdates } from './lib/update';
 
 const target = document.getElementById('app');
@@ -25,4 +26,10 @@ const updateSW = registerSW({
   },
 });
 
-mount(App, { target, props: { updates } });
+// Without durable storage the browser may evict the records under pressure; a missing API or a
+// refusal changes nothing (memory spec §3.4).
+const memory = openMemory(globalThis.indexedDB, () => {
+  void navigator.storage?.persist?.().catch(() => {});
+});
+
+mount(App, { target, props: { updates, memory } });

@@ -22,3 +22,37 @@ test('a session can be played offline after the first visit', async ({ page, con
   await page.getByRole('button', { name: '7', exact: true }).click();
   await expect(page.getByLabel('Jouw antwoord')).toHaveText('7');
 });
+
+test('a played session leaves its records in IndexedDB (memory spec §4)', async ({ page }) => {
+  const stored = () =>
+    page.evaluate(
+      () =>
+        new Promise<number>((resolve, reject) => {
+          const open = indexedDB.open('rekenhulp');
+          open.onerror = () => reject(open.error);
+          open.onsuccess = () => {
+            const count = open.result.transaction('records').objectStore('records').count();
+            count.onsuccess = () => {
+              open.result.close();
+              resolve(count.result);
+            };
+            count.onerror = () => reject(count.error);
+          };
+        }),
+    );
+
+  await page.goto('/');
+  await page.getByRole('button', { name: /Tafels/ }).click();
+  await page.getByRole('button', { name: /^Start/ }).click();
+  // 1 is never a table answer.
+  await page.getByRole('button', { name: '1', exact: true }).click();
+  await page.getByRole('button', { name: 'OK', exact: true }).click();
+  await page.getByRole('button', { name: 'Verder' }).click();
+  await page.getByRole('button', { name: 'Stoppen' }).click();
+  await expect(page.getByRole('button', { name: 'Opnieuw' })).toBeVisible();
+  await expect.poll(stored).toBe(1);
+
+  await page.reload();
+  await expect(page.getByText('Wat wil je oefenen?')).toBeVisible();
+  expect(await stored()).toBe(1);
+});

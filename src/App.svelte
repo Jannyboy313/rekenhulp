@@ -17,6 +17,7 @@
   import { LESSONS } from './lib/lessons';
   import { LESSON_PRACTICE_SIZE, practiceTopicsFor } from './lib/lessons/links';
   import type { Lesson, LessonTopic } from './lib/lessons/types';
+  import { createVolatileMemory, toPracticeRecords, type Memory } from './lib/memory';
   import { createRng, randomSeed } from './lib/random';
   import { blueprintFor, TEST_ROW, type TestConfig, type TestLength } from './lib/practiceTest';
   import {
@@ -81,9 +82,16 @@
     sets?: readonly PracticeSet[];
     /** Fed by the service worker in `main.ts`; without it the app never asks to update. */
     updates?: Updates;
+    /** Where the answered exercises are kept (memory spec §4); without it, until the app closes. */
+    memory?: Memory;
   }
 
-  let { lessons: allLessons = LESSONS, sets = PRACTICE_SETS, updates }: Props = $props();
+  let {
+    lessons: allLessons = LESSONS,
+    sets = PRACTICE_SETS,
+    updates,
+    memory = createVolatileMemory(),
+  }: Props = $props();
 
   let updateState = $state<UpdateState>({ available: false, dismissed: false });
   $effect(() => updates?.subscribe((state) => (updateState = state)));
@@ -210,7 +218,13 @@
     }));
   }
 
+  /** Never awaited: saving must not delay or block the results (memory spec §4). */
+  function save(origin: Origin, records: QuestionRecord[]) {
+    memory.add(toPracticeRecords(records, origin.kind, Date.now())).catch(console.error);
+  }
+
   function finishSession(origin: Origin, records: QuestionRecord[], totalMs: number) {
+    save(origin, records);
     screen = { name: 'results', origin, summary: summarize(records, totalMs) };
   }
 
@@ -222,7 +236,9 @@
   ) {
     const { total, limitMs } = blueprintFor(config);
     const summary = summarizeTest(records, total, limitMs, totalMs, timedOut);
-    screen = { name: 'results', origin: { kind: 'test', config }, summary };
+    const origin: Origin = { kind: 'test', config };
+    save(origin, records);
+    screen = { name: 'results', origin, summary };
   }
 </script>
 

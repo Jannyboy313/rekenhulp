@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import App from './App.svelte';
 import { viewport } from './components/layout.svelte';
 import { FIXTURE_LESSON } from './lib/lessons/fixture';
+import { createVolatileMemory } from './lib/memory';
 import { DEEP_FIXTURE_SET } from './lib/setFixture';
 import type { PracticeSet } from './lib/types';
 import { createUpdates } from './lib/update';
@@ -653,5 +654,104 @@ describe('App', () => {
       await tick();
       expect(screen.queryByText(asked)).toBeNull();
     });
+  });
+});
+
+describe('App memory (memory spec §4)', () => {
+  beforeEach(() => {
+    vi.spyOn(history, 'back').mockImplementation(() => {});
+    resize(360, 780);
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  /** A wrong first attempt: 1 is never a table answer, nor a KGV. */
+  async function answerWrong() {
+    await click('1');
+    await click('OK');
+    await click('Verder');
+  }
+
+  async function startTables() {
+    await click(/Tafels/);
+    await click(/^Start/);
+  }
+
+  it('saves the answered exercises of a stopped session', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(5000);
+    const memory = createVolatileMemory();
+    render(App, { memory });
+    await startTables();
+    await answerWrong();
+    await answerWrong();
+    await click('Stoppen');
+    expect(await memory.all()).toEqual([
+      { topic: 'tables', correct: false, at: 5000, source: 'set' },
+      { topic: 'tables', correct: false, at: 5000, source: 'set' },
+    ]);
+  });
+
+  it('saves nothing for a session stopped at once', async () => {
+    const memory = createVolatileMemory();
+    render(App, { memory });
+    await startTables();
+    await click('Stoppen');
+    expect(await memory.all()).toEqual([]);
+  });
+
+  it('saves Fouten oefenen with the source of its session', async () => {
+    const memory = createVolatileMemory();
+    render(App, { memory });
+    await startTables();
+    await answerWrong();
+    await click('Stoppen');
+    await click('Fouten oefenen · 3');
+    await answerWrong();
+    await click('Stoppen');
+    expect((await memory.all()).map(({ source }) => source)).toEqual(['set', 'set']);
+  });
+
+  it('saves a lesson session as lesson', async () => {
+    const memory = createVolatileMemory();
+    render(App, { memory });
+    await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+    await click(/^Getallen/);
+    await click(/^KGV/);
+    await click('Oefen 5 sommen');
+    await answerWrong();
+    await click('Stoppen');
+    const records = await memory.all();
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({ correct: false, source: 'lesson' });
+  });
+
+  it('saves the answered exercises of a test as test', async () => {
+    const memory = createVolatileMemory();
+    render(App, { memory });
+    await click(/^Oefentoets/);
+    await click(/^Start/);
+    if (screen.queryByRole('button', { name: '7' })) await click('7');
+    if (screen.queryByRole('button', { name: 'OK' })) await click('OK');
+    else if (screen.queryByRole('button', { name: 'Nee' })) await click('Nee');
+    else await fireEvent.keyDown(window, { key: '1' });
+    await click('Stoppen');
+    await fireEvent.click(screen.getByRole('dialog').querySelector('.primary')!);
+    const records = await memory.all();
+    expect(records).toHaveLength(1);
+    expect(records[0]?.source).toBe('test');
+  });
+
+  it('shows the results when saving fails, and logs the failure', async () => {
+    const log = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const failure = new Error('disk full');
+    const memory = { ...createVolatileMemory(), add: () => Promise.reject(failure) };
+    render(App, { memory });
+    await startTables();
+    await answerWrong();
+    await click('Stoppen');
+    expect(screen.getByRole('button', { name: 'Opnieuw' })).toBeTruthy();
+    await tick();
+    expect(log).toHaveBeenCalledWith(failure);
   });
 });
