@@ -1228,8 +1228,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-- v8, Fouten van eerder: decisions 5–14 of `2026-11-15-fouten-van-eerder-design.md` §2 are
-  defaults of the draft, listed in its §9.
+No open assumptions.
 
 ## 12. Roadmap (not in v1)
 
@@ -1605,4 +1604,4 @@ same topic, as in Fouten oefenen (§3.5), not the same `Question`.
 
 The open questions (when a mistake comes back, when it is cleared, where the user starts it, and
 how it relates to "no adaptive difficulty", §1) are worked out in its own spec,
-`2026-11-15-fouten-van-eerder-design.md`; its remaining assumptions are listed in §11.
+`2026-11-15-fouten-van-eerder-design.md`.

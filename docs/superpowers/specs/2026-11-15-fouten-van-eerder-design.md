@@ -1,6 +1,6 @@
 # Rekenhulp v8 — Fouten van eerder (yesterday's mistakes)
 
-Date: 2026-11-15. Status: draft, not built. Implements the v8 entry of main spec §12.16.
+Date: 2026-11-15. Status: approved, not built. Implements the v8 entry of main spec §12.16.
 
 "Main spec" is `2026-10-05-rekenhulp-design.md`, "memory spec" is
 `2026-11-15-geheugen-design.md`, "v4 spec" is `2026-11-14-tablet-design.md`.
@@ -26,8 +26,7 @@ What comes back is a topic, not an exercise: a record holds no prompt or answer 
 
 ## 2. Decisions
 
-Decided with the user on 2026-11-15: 1–4 as choices. 5–14 are the defaults of this draft and
-still open (§9).
+Decided with the user on 2026-11-15: 1–4 as choices, 5–14 as the confirmed defaults of the draft.
 
 | #   | Question                | Decision                                                                                                                                                              |
 | --- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -171,11 +170,5 @@ One plan, one commit per task, `main` deployable after each.
 
 ## 9. Open assumptions
 
-Decisions 5–14 of §2, the texts and the glyph of §4. The ones most worth a second look:
-
-- **5**: a topic is judged per session, so one right answer does not clear a topic when the
-  same session also had it wrong.
-- **7**: 14 exercises at most, not 15.
-- **9**: the row on top moves the list down when it appears.
-- **10**: Tafels comes back with all tables.
-- **12**: Opnieuw repeats the same topics instead of the topics that are still due.
+None. The defaults of the draft (decisions 5–14 of §2, the texts and the glyph of §4) were
+confirmed on 2026-11-15.
