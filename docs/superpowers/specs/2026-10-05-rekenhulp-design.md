@@ -1231,7 +1231,7 @@ v3 deepens practice within a set: levels (§12.2) and multiple choice with the R
 categories (§12.5) are done. The order after that (decided 2026-11-14):
 
 - v4: tablet support (§12.10).
-- v5: the practice test (§12.6).
+- v5: the practice test (§12.6, done).
 - v6: persistent memory in IndexedDB. No section yet; the non-goals of §1 change when that work
   starts. Input for its spec (architecture analysis of 2026-11-14, not decided): a `Question`
   cannot be stored (`Step.check` is a closure), so storage gets its own record of plain data
@@ -1455,11 +1455,11 @@ specified in §3.1 (the row **Gemengd**), §3.2 (set choice), §4.1 and §4.2 (d
 
 LKT 3.3 (written algorithms) is out of scope (§12.8, decided 2026-11-08).
 
-### 12.6 v5 — practice test (oefentoets)
+### 12.6 v5 — practice test (oefentoets) (done)
 
 Comes after tablet support (v4, §12.10). It reuses the mixing of mixed categories (§12.5). A session in the style of a PABO
 test. Its form (composition, count, level, the pass mark) is in its own spec,
-`2026-11-14-oefentoets-design.md` (decided, not built); where that spec and the notes below
+`2026-11-14-oefentoets-design.md` (built 2026-11-15); where that spec and the notes below
 differ, that spec holds. The non-goals of §1 hold: no stored results or history.
 
 Input for its spec (architecture analysis of 2026-11-14, not decided): `lib/play.ts` always

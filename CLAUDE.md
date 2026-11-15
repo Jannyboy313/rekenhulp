@@ -22,7 +22,7 @@ not all of it:
   `docs/superpowers/specs/2026-11-14-tablet-design.md`; read it for any change to a screen's
   layout. The main spec describes the phone. The designer's handoff (`design-handoff/`) is
   local only and gitignored
-- practice test (v5, draft, not built): its own spec,
+- practice test (v5, Oefentoets): its own spec,
   `docs/superpowers/specs/2026-11-14-oefentoets-design.md`
 - RWT scope (gaps in §12.3, check in §12.7): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
@@ -73,6 +73,11 @@ Done besides the sets:
   (`resolveLayout` in `lib/layout.ts`, `data-layout` on the root element), a notice for a
   landscape viewport that is too low (`RotateNotice`), reserved kladblok space, physical keyboard
   input (`lib/physicalKeys.ts`) and the Design V3 phone changes
+- v5, the Oefentoets (§12.6, oefentoets spec): not a set but a last row on Oefenen;
+  `lib/practiceTest.ts` (domains, blueprints, pass mark), `buildTestSession`, the play policy
+  `TEST_POLICY` (no feedback, no repeats), `TestSetupScreen`, `TestScreen` (deadline, stop
+  dialog) and the verdict on `ResultScreen` (`summary.test`). `App.svelte` keeps the `Origin`
+  (set or test) of a session for Opnieuw and Fouten oefenen
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -95,12 +100,11 @@ The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScr
 lesson data through to `LessonLinks`, `LessonSheet` and `LessonPane` (the lesson next to the
 wrong-answer panel on a landscape tablet, v4 spec §7).
 
-Next steps (spec §12), one at a time and only when the user says so. v3 and v4 are done (§12.2–§12.4, §12.10);
+Next steps (spec §12), one at a time and only when the user says so. v3, v4 and v5 are done (§12.2–§12.4, §12.10, §12.6);
 the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). Mixed categories (§12.5) are done. Order decided 2026-11-14.
 
 | Step                                                                                    | New infrastructure |
 | --------------------------------------------------------------------------------------- | ------------------ |
-| v5: practice test (§12.6), reuses `buildMixedSession` and `lib/play.ts`; own spec       | test session       |
 | v6: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
 | v7: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)                   | open               |
 | v8: print button for the practice test (§12.12)                                         | print stylesheet   |
@@ -230,8 +234,8 @@ touches the PWA config, the service worker or `main.ts`.
 
 ```
 src/
-  App.svelte            state machine: sets → setup → playing → results, plus lessonTopics and
-                        lesson (lesstof) and error (a session that cannot be built, or a
+  App.svelte            state machine: sets → setup → playing → results, plus testSetup and
+                        testing (Oefentoets), lessonTopics and lesson (lesstof) and error (a session that cannot be built, or a
                         screen that fails while rendering: `svelte:boundary`); keeps the
                         layout up to date and shows RotateNotice over an inert screen
   app.css               tokens: colours, shadows, and the play screen sizes per layout
@@ -244,9 +248,13 @@ src/
                         mistake: sheet, or pane in landscape), layout.svelte.ts (`viewport`
                         state and watchViewport; components style on `[data-layout]` and read
                         `viewport` where the presentation differs), RotateNotice,
-                        SetupScreen (topic list, table
-                        choice or Gemengd set choice), PlayScreen (runs
-                        lib/play.ts, auto-advance timer), QuestionView (also the correct state),
+                        SetupShell (header, sections, pinned Start; shared by SetupScreen and
+                        TestSetupScreen), SegmentedControl, SetupScreen (topic list, table
+                        choice or Gemengd set choice), TestSetupScreen, PlayShell (one-screen
+                        frame + header; shared by PlayScreen and TestScreen), PlayScreen (runs
+                        lib/play.ts, auto-advance timer), TestScreen (test policy, deadline,
+                        StopDialog), ModalDialog (shared by UpdateDialog and StopDialog),
+                        QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
                         panel), ResultScreen, ErrorScreen, MathText + Fraction (stacked fractions, the slot of
@@ -278,18 +286,23 @@ src/
     units.ts            withUnits: an answer with its prefix and suffix
     promptSize.ts       prompt font size step from the displayed length
     primes.ts           gcd, lcm, isPrime, prime factorization
-    results.ts          question records + session summary
+    results.ts          question records + session summary; summarizeTest (verdict, score over
+                        the whole test)
+    practiceTest.ts     Oefentoets: TestConfig, DOMAINS (set ids per domain), blueprintFor,
+                        pass mark, remainingMs, TEST_ROW (overview row)
     sets.ts             practice sets (config): topics + weights + tables share, optional `deep`
                         (Verdieping); hasDeep, forLevel; Gemengd: MIXED_SET (pseudo set, not in
                         PRACTICE_SETS), isMixed, countingSets
     setFixture.ts       test-only set with a Verdieping
     play.ts             pure reducer of a running session: queue incl. repeats, position,
-                        attempts, feedback, records (startPlay, answer, advance, stop);
+                        attempts, feedback, records (startPlay, answer, advance, stop); a
+                        PlayPolicy (PRACTICE_POLICY, TEST_POLICY: no feedback, no repeats);
                         PlayScreen keeps only timers, kladblok notes and the lesson sheet
     session.ts          quotas, shuffle, de-duplication, table choice (generatorsFor),
-                        repeats (insertRepeat), Gemengd (buildMixedSession)
+                        repeats (insertRepeat), Gemengd (buildMixedSession), Oefentoets
+                        (buildTestSession); both share planForSets
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
-    wakeLock.ts         keeps the screen on while PlayScreen is mounted
+    wakeLock.ts         keeps the screen on while PlayScreen or TestScreen is mounted
     update.ts           update prompt state (waiting version, Later) and shouldPrompt (screens)
     tips.ts             Diagnose type, firstTip, moneyTip (cents-rounding exception),
                         powerOfTenShift, factor-of-ten tip (fallback of number, fraction and

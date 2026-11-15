@@ -1,6 +1,6 @@
 # Rekenhulp v5 — Oefentoets (practice test)
 
-Date: 2026-11-14. Status: iterated with the user on 2026-11-15, ready for a plan; not built. Implements main spec §12.6.
+Date: 2026-11-14. Status: built on 2026-11-15. Implements main spec §12.6.
 
 "Main spec" is `2026-10-05-rekenhulp-design.md`, "v4 spec" is `2026-11-14-tablet-design.md`. The
 toetsmatrijs is table 1 of `docs/references/cito-rwt-handreiking.md` (§3.3).
