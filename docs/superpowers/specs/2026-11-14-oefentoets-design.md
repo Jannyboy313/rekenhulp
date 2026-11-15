@@ -16,7 +16,8 @@ stays as it is: generators, answer kinds, keypads, kladblok, layouts.
 
 ### Non-goals
 
-- Stored results or history (main spec §1; v7).
+- A history of results. Since v7 the answered exercises of a test are stored as practice records
+  (`2026-11-15-geheugen-design.md` §4), but nothing shows them.
 - Adaptive selection and a scale score, as the real RWT has (handreiking §3.1): the test is the
   same kind of fixed test as the Cito practice tests (§3.2), scored as the number correct.
 - Calculator exercises (v9), so the test covers the mental-arithmetic scope of the app only, also

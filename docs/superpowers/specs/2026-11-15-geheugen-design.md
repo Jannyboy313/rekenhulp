@@ -1,6 +1,6 @@
 # Rekenhulp v7 — Geheugen (persistent memory)
 
-Date: 2026-11-15. Status: draft, not built. Implements the v7 entry of main spec §12.
+Date: 2026-11-15. Status: built on 2026-11-15. Implements the v7 entry of main spec §12.
 
 "Main spec" is `2026-10-05-rekenhulp-design.md`, "v4 spec" is `2026-11-14-tablet-design.md`.
 
@@ -25,7 +25,7 @@ and v11 (the streak, §12.13).
 
 ## 2. Decisions
 
-Decided with the user on 2026-11-15 (1–4). 5–11 are defaults of this draft, to confirm (§10).
+Decided with the user on 2026-11-15: 1–4 as choices, 5–11 as the confirmed defaults of the draft.
 
 | #   | Question          | Decision                                                                                                                                                                  |
 | --- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -186,13 +186,14 @@ Made in the task that changes the behaviour, so spec and code never disagree on 
 
 - Main spec §1 (non-goals: persistence of results is allowed, in IndexedDB only; statistics,
   streaks and history stay out until their versions), §2 (the update dialog waits for the clear
-  dialog), §3.1 (the button), §10 (shots), §12 (v7 done, pointer to this spec).
+  dialog), §3.1 (the button), §3.2 (wording), §12 (v7 done, pointer to this spec).
 - `CLAUDE.md`: the project description ("no persistence"), Status, the roadmap row of v7, the
   architecture entries (`lib/memory.ts`, `ClearMemory`), "Out of scope" (persistence only
   through `lib/memory.ts`; localStorage, statistics and streaks stay out).
 - `docs/ideas.md`: the note that storing a reminder time waits for v7.
+- Oefentoets spec §1: its non-goal is a shown history, the records of a test are stored.
 
 ## 10. Open assumptions
 
-Decisions 5–11 of §2 and the place and texts of §5 are defaults of this draft. They are
-confirmed, or changed, at the review of the plan.
+None. The defaults of the draft (decisions 5–11 of §2, the place and texts of §5) were confirmed
+on 2026-11-15.

@@ -4,7 +4,8 @@ Offline-first PWA for practising mental arithmetic on a phone (no calculator), g
 practice platform for the arithmetic of PABO students (RWT and LKT). A session is a generated set
 of exercises (default 15). The current level, Opfrisser, is short practice on the go (target ~3
 minutes); v3 adds Verdieping, at PABO-test level with more time per exercise (spec §12.2). No
-accounts, no database, no persistence, no network calls.
+accounts, no server, no network calls; the only persistence is a record per answered exercise in
+IndexedDB on the device (v7).
 
 The design spec is the source of truth: `docs/superpowers/specs/2026-10-05-rekenhulp-design.md`.
 If code and spec disagree, ask which one is wrong. The spec is long; read what the change needs,
@@ -24,6 +25,8 @@ not all of it:
   local only and gitignored
 - practice test (v5, Oefentoets): its own spec,
   `docs/superpowers/specs/2026-11-14-oefentoets-design.md`
+- persistent memory (v7, practice records in IndexedDB and Gegevens wissen): its own spec,
+  `docs/superpowers/specs/2026-11-15-geheugen-design.md`
 - RWT scope (gaps in §12.3, check in §12.7): `docs/references/cito-rwt-handreiking.md`, an
   excerpt of the official Cito handreiking (toetsmatrijs in §3.3, eindtermen in ch. 6); the PDF
   next to it is leading
@@ -82,6 +85,12 @@ Done besides the sets:
   at the end of `LessonView` starts `topicSession` (`lib/session.ts`) over
   `practiceTopicsFor` (`LESSON_LINKS` inverted, `lib/lessons/links.ts`); the results screen
   leads back to the lesson (`menuLabel` on `ResultScreen`, `leaveResults` in `App.svelte`)
+- v7, persistent memory (geheugen spec): `lib/memory.ts` (`PracticeRecord`, the `Memory`
+  interface, `openMemory`: IndexedDB with a volatile fallback); `App.svelte` saves the answered
+  exercises when a session or test ends (`save`), `main.ts` opens the memory and asks for
+  durable storage; **Gegevens wissen** (`ClearMemory`) is the last item of the Oefenen list.
+  Nothing reads the records yet (v8 and v11 will). A `Topic` id is now a storage format: a
+  renamed or removed topic leaves old records that readers must skip
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -105,17 +114,16 @@ The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScr
 lesson data through to `LessonLinks`, `LessonSheet` and `LessonPane` (the lesson next to the
 wrong-answer panel on a landscape tablet, v4 spec §7).
 
-Next steps (spec §12), one at a time and only when the user says so. v3, v4, v5 and v6 are done (§12.2–§12.4, §12.10, §12.6, §12.15);
+Next steps (spec §12), one at a time and only when the user says so. v3, v4, v5, v6 and v7 are done (§12.2–§12.4, §12.10, §12.6, §12.15, geheugen spec);
 the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). Mixed categories (§12.5) are done. Order decided 2026-11-14; v6 and v8 inserted 2026-11-15.
 
-| Step                                                                                    | New infrastructure |
-| --------------------------------------------------------------------------------------- | ------------------ |
-| v7: persistent memory in IndexedDB; spec and "Out of scope" change when the work starts | IndexedDB          |
-| v8: yesterday's mistakes come back on a later day (§12.16), builds on v7                | none (uses v7)     |
-| v9: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)                   | open               |
-| v10: print button for the practice test (§12.12)                                        | print stylesheet   |
-| v11: streak of practice days (§12.13), builds on v7                                     | none (uses v7)     |
-| v12: visual improvements to the exercises (§12.14); decide the principle first          | open               |
+| Step                                                                           | New infrastructure |
+| ------------------------------------------------------------------------------ | ------------------ |
+| v8: yesterday's mistakes come back on a later day (§12.16), builds on v7       | none (uses v7)     |
+| v9: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)          | open               |
+| v10: print button for the practice test (§12.12)                               | print stylesheet   |
+| v11: streak of practice days (§12.13), builds on v7                            | none (uses v7)     |
+| v12: visual improvements to the exercises (§12.14); decide the principle first | open               |
 
 Between versions: check the sets against the toetsmatrijs (§12.7).
 
@@ -263,7 +271,8 @@ src/
                         choice or Gemengd set choice), TestSetupScreen, PlayShell (one-screen
                         frame + header; shared by PlayScreen and TestScreen), PlayScreen (runs
                         lib/play.ts, auto-advance timer), TestScreen (test policy, deadline,
-                        StopDialog), ModalDialog (shared by UpdateDialog and StopDialog),
+                        StopDialog), ModalDialog (shared by UpdateDialog, StopDialog and
+                        ClearMemory), ClearMemory (Gegevens wissen: button, dialog, outcome),
                         QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
@@ -314,6 +323,9 @@ src/
     backGuard.ts        keeps the system back inside the app (wired in App.svelte)
     wakeLock.ts         keeps the screen on while PlayScreen or TestScreen is mounted
     update.ts           update prompt state (waiting version, Later) and shouldPrompt (screens)
+    memory.ts           practice records (plain data per answered exercise), the Memory
+                        interface, a volatile memory and openMemory (IndexedDB, volatile when
+                        it cannot open); toPracticeRecords
     tips.ts             Diagnose type, firstTip, moneyTip (cents-rounding exception),
                         powerOfTenShift, factor-of-ten tip (fallback of number, fraction and
                         scientific steps)
@@ -363,5 +375,6 @@ shot, not a missing scene.
 
 ## Out of scope
 
-Persistence of any kind (incl. localStorage), statistics, streaks, accounts, analytics,
+Persistence other than the practice records of `lib/memory.ts` (so no localStorage, no stored
+settings), reading those records for a feature, statistics, streaks, accounts, analytics,
 adaptive difficulty (the user-chosen level of spec §12.2 is not adaptive), network requests. Do not add these without an explicit request.

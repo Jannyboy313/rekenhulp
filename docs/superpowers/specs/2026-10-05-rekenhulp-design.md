@@ -24,8 +24,11 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 
 ### Non-goals
 
-- No accounts, database, statistics, streaks or history
-- No persistence at all, including localStorage. Every app start uses defaults.
+- No accounts, statistics, streaks or history
+- No persistence, with one exception since v7: a record per answered exercise in IndexedDB, on
+  the device only, which the user can delete (`2026-11-15-geheugen-design.md`). Nothing reads
+  the records yet. Settings are not stored, and localStorage is not used: every app start uses
+  defaults.
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
   the app.
@@ -71,7 +74,8 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
 - A modal dialog (Dutch: "Er is een nieuwe versie beschikbaar. Nu installeren?", buttons
   Installeren and Later) is shown only on the set overview (`sets`), the set setup (`setup`) and
   the test setup (`testSetup`, oefentoets spec §4.2). Never on `lessonTopics`, `lesson`,
-  `playing`, `testing` or `results`.
+  `playing`, `testing` or `results`, and not while the dialog of Gegevens wissen is open
+  (§3.1).
 - An update that arrives on another screen is not lost: the dialog appears as soon as the user is
   back on an allowed screen.
 - Later closes the dialog until the next resume or start; if the update is still waiting it is
@@ -146,6 +150,9 @@ The app is a state machine in `App.svelte` with four states:
 - Sets whose topics are not implemented yet (v2/v3) are not shown.
 - **Oefentoets** (§12.6): the last row, after Gemengd; its row, glyph and setup are in the
   oefentoets spec §4. Like Gemengd it is not a set and has no row on the **Lesstof** tab.
+- **Gegevens wissen** (v7): a small text button under the last row of **Oefenen**, which deletes
+  the stored practice records after a confirmation; its place, dialog and texts are in
+  `2026-11-15-geheugen-design.md` §5.
 - **Gemengd** (§12.5): the row after the sets, mixes exercises from several sets in one
   session. Its description is "Opgaven uit meerdere sets door elkaar", and its glyph is a 2 × 2
   grid of small rounded tiles in violet, amber, blue and violet. Tapping it opens its setup
@@ -195,7 +202,7 @@ The app is a state machine in `App.svelte` with four states:
   the screen they scroll above the button; a fade from transparent to the background colour above
   the button hints that more content (e.g. the topic list) is hidden below.
 - The chosen count, table choice and set choice are kept in memory only while the app stays
-  open; nothing is persisted. **Opnieuw** reuses them and the level.
+  open; they are not persisted. **Opnieuw** reuses them and the level.
 
 Note: the 3-minute target of Opfrisser corresponds to roughly 15 exercises (~12 s each).
 Larger counts are deliberate longer sessions.
@@ -1221,7 +1228,7 @@ While a set's spec is iterated, assumptions that still need the user's confirmat
 here. Once confirmed, the decision lives in its own section and the item is removed; the history
 is in git.
 
-v7 (persistent memory): the defaults of its draft spec, `2026-11-15-geheugen-design.md` §10.
+No open assumptions.
 
 ## 12. Roadmap (not in v1)
 
@@ -1236,9 +1243,9 @@ categories (§12.5) are done. The order after that (decided 2026-11-14, v6 and v
 - v4: tablet support (§12.10).
 - v5: the practice test (§12.6, done).
 - v6: from a lesson to practice, and a mini check after a lesson (§12.15, done).
-- v7: persistent memory in IndexedDB. It has its own spec, `2026-11-15-geheugen-design.md`
-  (draft): one record of plain data per answered exercise, and a button to delete them. The
-  non-goals of §1 change when it is built (its §9).
+- v7: persistent memory in IndexedDB (done). It has its own spec,
+  `2026-11-15-geheugen-design.md`: one record of plain data per answered exercise, and a button
+  to delete them.
 - v8: yesterday's mistakes (§12.16), builds on v7.
 - v9: problems where a calculator is allowed (§12.11).
 - v10: a print button for the practice test (§12.12).
