@@ -147,6 +147,19 @@ describe('TestScreen stop dialog (test spec §5.4)', () => {
     expect(onfinish).not.toHaveBeenCalled();
   });
 
+  it('keeps the physical keyboard away from the answer while the dialog is open', async () => {
+    const onfinish = renderTest();
+    await press('Stoppen');
+    await fireEvent.keyDown(document.body, { key: '6' });
+    await fireEvent.keyDown(document.body, { key: 'Enter' });
+    expect(dialog()).toBeTruthy();
+    await fireEvent.keyDown(window, { key: 'Escape' });
+    expect(dialog()).toBeNull();
+    expect(screen.getByText('1 / 2')).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'OK' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(onfinish).not.toHaveBeenCalled();
+  });
+
   it('ends the test on Stoppen', async () => {
     const onfinish = renderTest();
     await press('Stoppen');

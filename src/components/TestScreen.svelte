@@ -81,7 +81,18 @@
   function handleAnswer(input: string, result: CheckResult) {
     apply(answer(play, { input, result }, Date.now(), rng));
   }
+
+  /**
+   * The keypad and the choices take physical keys on window (v4 spec §6): behind the open dialog
+   * they must not type or answer. Escape stays for the dialog; a focused button keeps its own
+   * Enter (a default action, not a listener).
+   */
+  function holdKeys(event: KeyboardEvent) {
+    if (stopping && event.key !== 'Escape') event.stopImmediatePropagation();
+  }
 </script>
+
+<svelte:window onkeydowncapture={holdKeys} />
 
 <svelte:document onvisibilitychange={() => document.visibilityState === 'visible' && tickClock()} />
 
