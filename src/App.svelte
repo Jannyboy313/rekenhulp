@@ -15,6 +15,7 @@
   import TestSetupScreen from './components/TestSetupScreen.svelte';
   import { createBackGuard } from './lib/backGuard';
   import { LESSONS } from './lib/lessons';
+  import { LESSON_PRACTICE_SIZE, practiceTopicsFor } from './lib/lessons/links';
   import type { Lesson, LessonTopic } from './lib/lessons/types';
   import { createRng, randomSeed } from './lib/random';
   import { blueprintFor, TEST_ROW, type TestConfig, type TestLength } from './lib/practiceTest';
@@ -30,6 +31,7 @@
     buildTestSession,
     generatorsFor,
     mistakeSession,
+    topicSession,
   } from './lib/session';
   import {
     countingSets,
@@ -40,7 +42,7 @@
     PRACTICE_SETS,
   } from './lib/sets';
   import { TABLE_FACTORS } from './lib/topics/tables';
-  import type { Level, PracticeSet, Question } from './lib/types';
+  import type { Level, PracticeSet, Question, Topic } from './lib/types';
   import { shouldPrompt, type UpdateState, type Updates } from './lib/update';
   import UpdateDialog from './components/UpdateDialog.svelte';
 
@@ -52,8 +54,14 @@
     returnTo: Screen;
   };
 
-  // What started a session: decides its name, Opnieuw and Fouten oefenen (test spec §8).
-  type Origin = { kind: 'set'; set: PracticeSet } | { kind: 'test'; config: TestConfig };
+  type LessonScreen = { name: 'lesson'; parent: LessonTopicsScreen; topic: LessonTopic };
+
+  // What started a session: decides its name, Opnieuw and Fouten oefenen (test spec §8), and
+  // for a lesson topic where its results lead back to (lesstof spec §3.3).
+  type Origin =
+    | { kind: 'set'; set: PracticeSet }
+    | { kind: 'test'; config: TestConfig }
+    | { kind: 'lesson'; from: LessonScreen; topics: Topic[] };
 
   type Screen =
     | { name: 'sets' }
@@ -64,7 +72,7 @@
     | { name: 'results'; origin: Origin; summary: SessionSummary }
     | { name: 'error' }
     | LessonTopicsScreen
-    | { name: 'lesson'; parent: LessonTopicsScreen; topic: LessonTopic };
+    | LessonScreen;
 
   interface Props {
     /** Tests pass a fixture; the app uses the registry. */
@@ -111,6 +119,13 @@
     // Ignored during a session or a test: only Stop ends it.
     if (screen.name === 'playing' || screen.name === 'testing') backGuard.arm();
     else if (screen.name === 'lesson' || screen.name === 'lessonTopics') lessonBack();
+    else if (screen.name === 'results') leaveResults(screen.origin);
+    else showSets();
+  }
+
+  /** Menu, or Naar de les after a session from a lesson topic (lesstof spec §3.3). */
+  function leaveResults(origin: Origin) {
+    if (origin.kind === 'lesson') screen = origin.from;
     else showSets();
   }
 
@@ -134,6 +149,7 @@
   }
 
   function originName(origin: Origin): string {
+    if (origin.kind === 'lesson') return origin.from.topic.title;
     return origin.kind === 'set' ? origin.set.name : TEST_ROW.name;
   }
 
@@ -166,9 +182,19 @@
     }));
   }
 
+  /** A short session about a lesson topic (lesstof spec §3.3). */
+  function practiseLesson(from: LessonScreen, topics: Topic[]) {
+    show(() => ({
+      name: 'playing',
+      origin: { kind: 'lesson', from, topics },
+      questions: topicSession(topics, LESSON_PRACTICE_SIZE, createRng(randomSeed())),
+    }));
+  }
+
   function restart(origin: Origin) {
     if (origin.kind === 'set') startSession(origin.set);
-    else startTest(origin.config);
+    else if (origin.kind === 'test') startTest(origin.config);
+    else practiseLesson(origin.from, origin.topics);
   }
 
   /** Fouten oefenen (spec §3.5): new exercises of the topics of the first-attempt mistakes. */
@@ -233,7 +259,13 @@
         onback={lessonBack}
       />
     {:else if screen.name === 'lesson'}
-      <LessonView topic={screen.topic} onback={lessonBack} />
+      {@const current = screen}
+      {@const topics = practiceTopicsFor(current.parent.lesson.setId, current.topic.id)}
+      <LessonView
+        topic={current.topic}
+        onback={lessonBack}
+        onpractise={topics.length > 0 ? () => practiseLesson(current, topics) : undefined}
+      />
     {:else if screen.name === 'setup'}
       {@const set = screen.set}
       <SetupScreen
@@ -283,7 +315,8 @@
         name={originName(origin)}
         {summary}
         onrestart={() => restart(origin)}
-        onmenu={showSets}
+        onmenu={() => leaveResults(origin)}
+        menuLabel={origin.kind === 'lesson' ? 'Naar de les' : undefined}
         onpractise={() => practiseMistakes(origin, summary)}
       />
     {/if}

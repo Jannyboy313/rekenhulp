@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { LESSON_PRACTICE_SIZE } from '../lib/lessons/links';
   import type { LessonTopic } from '../lib/lessons/types';
   import Icon from './Icon.svelte';
   import LessonBlocks from './LessonBlocks.svelte';
@@ -7,9 +8,11 @@
   interface Props {
     topic: LessonTopic;
     onback: () => void;
+    /** Starts a short session about this topic (lesstof spec §3.3); without it, no button. */
+    onpractise?: () => void;
   }
 
-  let { topic, onback }: Props = $props();
+  let { topic, onback, onpractise }: Props = $props();
 </script>
 
 <main class="lesson">
@@ -22,6 +25,11 @@
 
   <div class="content">
     <LessonBlocks blocks={topic.blocks} />
+    {#if onpractise}
+      <button type="button" class="primary practise" onclick={onpractise}>
+        Oefen {LESSON_PRACTICE_SIZE} sommen
+      </button>
+    {/if}
   </div>
 </main>
 
@@ -70,6 +78,12 @@
     gap: 16px;
     font-size: 16px;
     line-height: 24px;
+  }
+
+  /* `flex: none`: the content scrolls, so the button must not shrink with it. */
+  .practise {
+    flex: none;
+    margin-top: 8px;
   }
 
   /* Tablet (v4 spec §8): a reading column of 680 with a larger text; the title is aligned to

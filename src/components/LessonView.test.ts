@@ -47,4 +47,21 @@ describe('LessonView', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Terug' }));
     expect(onback).toHaveBeenCalledOnce();
   });
+
+  it('offers practice after the blocks, only with a handler (lesstof spec §3.3)', async () => {
+    const onpractise = vi.fn();
+    const { container, unmount } = render(LessonView, {
+      topic: splitting!,
+      onback: () => {},
+      onpractise,
+    });
+    const button = screen.getByRole('button', { name: 'Oefen 5 sommen' });
+    expect(container.querySelector('.content')?.lastElementChild).toBe(button);
+    await fireEvent.click(button);
+    expect(onpractise).toHaveBeenCalledOnce();
+    unmount();
+
+    render(LessonView, { topic: splitting!, onback: () => {} });
+    expect(screen.queryByRole('button', { name: /^Oefen/ })).toBeNull();
+  });
 });

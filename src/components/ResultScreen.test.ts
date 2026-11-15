@@ -228,6 +228,21 @@ describe('ResultScreen', () => {
     expect(screen.queryByRole('progressbar')).toBeNull();
   });
 
+  it('names the Menu button after where it leads', () => {
+    render(ResultScreen, {
+      props: {
+        name: 'KGV',
+        summary: summarize([], 0),
+        onrestart: vi.fn(),
+        onmenu: vi.fn(),
+        menuLabel: 'Naar de les',
+        onpractise: vi.fn(),
+      },
+    });
+    expect(screen.getByRole('button', { name: 'Naar de les' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Menu' })).toBeNull();
+  });
+
   it('calls Menu and Opnieuw once each', async () => {
     const onmenu = vi.fn();
     const onrestart = vi.fn();

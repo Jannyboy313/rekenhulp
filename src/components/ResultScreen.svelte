@@ -15,11 +15,13 @@
     summary: SessionSummary;
     onrestart: () => void;
     onmenu: () => void;
+    /** Where `onmenu` leads, when that is not the overview. */
+    menuLabel?: string;
     /** Fouten oefenen (spec §3.5); shown only with mistakes. */
     onpractise: () => void;
   }
 
-  let { name, summary, onrestart, onmenu, onpractise }: Props = $props();
+  let { name, summary, onrestart, onmenu, menuLabel = 'Menu', onpractise }: Props = $props();
 
   const failedSteps = $derived(wrongSteps(summary.mistakes));
   // A test scores over all its exercises, unanswered ones included (test spec §6).
@@ -179,7 +181,7 @@
         Fouten oefenen · {summary.mistakes.length * EXERCISES_PER_MISTAKE}
       </button>
     {/if}
-    <button type="button" class="secondary" onclick={onmenu}>Menu</button>
+    <button type="button" class="secondary" onclick={onmenu}>{menuLabel}</button>
     <button type="button" class="primary again" onclick={onrestart}>Opnieuw</button>
   </footer>
 </main>

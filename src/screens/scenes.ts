@@ -156,7 +156,8 @@ export const SCENES: Record<string, Scene> = {
       target,
       props: { set: proportions, lesson, onselect: noop, onback: noop },
     }),
-  lesson: (target) => mount(LessonView, { target, props: { topic: firstTopic, onback: noop } }),
+  lesson: (target) =>
+    mount(LessonView, { target, props: { topic: firstTopic, onback: noop, onpractise: noop } }),
   error: (target) => mount(ErrorScreen, { target, props: { onhome: noop } }),
   'too-low': (target) => mount(RotateNotice, { target }),
 };

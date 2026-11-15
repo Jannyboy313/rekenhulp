@@ -332,6 +332,52 @@ describe('App', () => {
       expect(history.back).toHaveBeenCalledTimes(1);
     });
 
+    describe('practice from a lesson topic (lesstof spec §3.3)', () => {
+      async function practiseLcm() {
+        await fireEvent.click(screen.getByRole('tab', { name: 'Lesstof' }));
+        await click(/^Getallen/);
+        await click(/^KGV/);
+        await click('Oefen 5 sommen');
+      }
+
+      it('plays 5 exercises under the topic title and returns to the lesson', async () => {
+        render(App);
+        await practiseLcm();
+        expect(screen.getByText('KGV')).toBeTruthy();
+        expect(screen.getByText('1 / 5')).toBeTruthy();
+
+        await click('Stoppen');
+        expect(screen.queryByRole('button', { name: 'Menu' })).toBeNull();
+        await click('Naar de les');
+        expect(screen.getByRole('heading', { name: 'KGV' })).toBeTruthy();
+        expect(screen.getByRole('button', { name: 'Oefen 5 sommen' })).toBeTruthy();
+
+        await click('Terug');
+        expect(screen.getByRole('heading', { name: 'Getallen & delers' })).toBeTruthy();
+      });
+
+      it('starts 5 new exercises with Opnieuw, and the system back leads to the lesson', async () => {
+        render(App);
+        await practiseLcm();
+        await systemBack();
+        expect(screen.getByText('1 / 5')).toBeTruthy();
+
+        await click('Stoppen');
+        await click('Opnieuw');
+        expect(screen.getByText('1 / 5')).toBeTruthy();
+
+        await click('Stoppen');
+        await systemBack();
+        expect(screen.getByRole('heading', { name: 'KGV' })).toBeTruthy();
+      });
+
+      it('has no button on a topic that no practice topic refers to', async () => {
+        render(App, { lessons: [FIXTURE_LESSON] });
+        await openFixtureTopic();
+        expect(screen.queryByRole('button', { name: /^Oefen/ })).toBeNull();
+      });
+    });
+
     it('moves one level up on a system back and re-arms the guard', async () => {
       const pushState = vi.spyOn(history, 'pushState');
       render(App, { lessons: [FIXTURE_LESSON] });
