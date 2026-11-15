@@ -78,7 +78,9 @@
     color: var(--sky-text);
   }
 
+  /* A scroll container may shrink to nothing as a flex item of the lesson's scrolling column. */
   .table-box {
+    flex: none;
     overflow-x: auto;
   }
 
