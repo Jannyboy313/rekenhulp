@@ -29,11 +29,11 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 - No network traffic after the initial load. The app works fully offline.
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
   the app.
-- No problems that need a calculator, at either level, until v7 (§12.8, §12.11). Verdieping is harder through
+- No problems that need a calculator, at either level, until v9 (§12.8, §12.11). Verdieping is harder through
   more steps and combined skills, not through numbers that need a calculator; the kladblok
   (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
-- v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 to v10 are on the
+- v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 to v12 are on the
   roadmap (§12), and the architecture must make adding them cheap.
 
 ## 2. Platform & stack
@@ -1223,24 +1223,27 @@ No open assumptions.
 
 ## 12. Roadmap (not in v1)
 
-The roadmap covers the practice sets only. The lesstof has its own order (lesstof spec §2); a new
-set needs no lesson.
+The roadmap covers the practice sets, plus the two lesson features of v6. The lesstof content has
+its own order (lesstof spec §2); a new set needs no lesson.
 
 v3 deepens practice within a set: levels (§12.2) and multiple choice with the RWT gaps
 (§12.3), then three small features that make a session's result usable (§12.4). Mixed
-categories (§12.5) are done. The order after that (decided 2026-11-14):
+categories (§12.5) are done. The order after that (decided 2026-11-14, v6 and v8 inserted
+2026-11-15):
 
 - v4: tablet support (§12.10).
 - v5: the practice test (§12.6, done).
-- v6: persistent memory in IndexedDB. No section yet; the non-goals of §1 change when that work
+- v6: from a lesson to practice, and a mini check after a lesson (§12.15).
+- v7: persistent memory in IndexedDB. No section yet; the non-goals of §1 change when that work
   starts. Input for its spec (architecture analysis of 2026-11-14, not decided): a `Question`
   cannot be stored (`Step.check` is a closure), so storage gets its own record of plain data
   (such as topic, key, correct, duration, time) behind an interface in `lib/` with an in-memory
   variant; the `Topic` id is then a storage format, and the app keeps working without IndexedDB.
-- v7: problems where a calculator is allowed (§12.11).
-- v8: a print button for the practice test (§12.12).
-- v9: a streak of practice days (§12.13).
-- v10: visual improvements to the exercises (§12.14).
+- v8: yesterday's mistakes (§12.16), builds on v7.
+- v9: problems where a calculator is allowed (§12.11).
+- v10: a print button for the practice test (§12.12).
+- v11: a streak of practice days (§12.13).
+- v12: visual improvements to the exercises (§12.14).
 
 The check against the toetsmatrijs (§12.7) is not tied to a version.
 
@@ -1523,9 +1526,9 @@ The distribution of table 1 needs no change to the sets; it matters for the prac
 ### 12.8 Out of scope until further notice
 
 - Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at
-  the Verdieping level, until v7 (§12.11). Until then the app is for mental arithmetic and ways
+  the Verdieping level, until v9 (§12.11). Until then the app is for mental arithmetic and ways
   of thinking.
-- Anything that needs pictures, until v10 decides what is allowed (§12.14):
+- Anything that needs pictures, until v12 decides what is allowed (§12.14):
   - reading graphs, tables and diagrams
   - spatial geometry: views, nets and cube buildings
   - symmetry of pictured figures (letters, patterns) and coordinates
@@ -1545,7 +1548,7 @@ Its form is in its own spec, `2026-11-14-tablet-design.md`: layouts for portrait
 landscape, the Design V3 phone changes, reserved kladblok space and physical keyboard input.
 The phone rules it changed are in §2, §3.2, §3.5, §3.6 and §6 of this spec.
 
-### 12.11 v7 — calculator problems
+### 12.11 v9 — calculator problems
 
 Decided 2026-11-14; reverses the drop of calculator problems in §12.8. The foundation: exercises
 marked as "rekenmachine toegestaan", as Cito marks them, such as the RWT calculator part and the
@@ -1553,18 +1556,18 @@ LKT part 2. How and what (which problems, ranges, how the mark is shown, whether
 calculator, how it relates to the sets and levels) is decided in its own spec iteration; §1 and
 §12.8 change when that work starts.
 
-### 12.12 v8 — print the practice test
+### 12.12 v10 — print the practice test
 
 Decided 2026-11-14. Print the practice test (§12.6) to paper or PDF. Printing through the browser
 (`window.print()` with a print stylesheet) needs no new infrastructure or network calls. Open:
 what to print (questions only, answers, or both).
 
-### 12.13 v9 — streak
+### 12.13 v11 — streak
 
 Decided 2026-11-14. Track a streak of consecutive practice days. Builds on the persistent memory
-of v6; streaks are a non-goal in §1 and "Out of scope" in `CLAUDE.md` until that work starts.
+of v7; streaks are a non-goal in §1 and "Out of scope" in `CLAUDE.md` until that work starts.
 
-### 12.14 v10 — visual improvements to the exercises
+### 12.14 v12 — visual improvements to the exercises
 
 Decided 2026-11-14. Exercises that show more than text. First decide the principle, not one-off
 exceptions to "no pictures" (§12.8): for example text-like visuals (tables) allowed, while
@@ -1576,3 +1579,27 @@ keypad stay the same (one number step); new are an optional `table` field on `St
 in one cell, a table component, and a branch in `QuestionView`. The table costs height, and the
 kladblok hides rows below 816 px viewport height (§3.6). Open: only 2×2, or also 3 columns with
 an intermediate step.
+
+### 12.15 v6 — from a lesson to practice, and a mini check
+
+Decided 2026-11-15. Two features that connect the lesstof to practice; the opposite direction
+(from a mistake to a lesson, lesstof spec §3.1–§3.2) exists. Both need no new infrastructure and
+no persistence. Their form is decided in the lesstof spec when the work starts.
+
+- From a lesson to practice: a lesson topic offers a way to practise that topic.
+- Mini check: a few exercises about the lesson topic, after the lesson.
+
+Open: where the button sits (per lesson topic or per lesson), which practice topics a lesson
+topic maps to (`LESSON_LINKS` maps the other way, practice topic → lesson topics), the level
+and the number of exercises, whether the mini check is a session of its own or part of the
+lesson view, and whether the two features are one entry point or two.
+
+### 12.16 v8 — yesterday's mistakes
+
+Decided 2026-11-15. Exercises that went wrong come back on a later day. Builds on the persistent
+memory of v7. A stored mistake is plain data (v7), so what comes back is a new exercise of the
+same topic, as in Fouten oefenen (§3.5), not the same `Question`.
+
+Open: when a mistake comes back (the next day, or spaced over more days), when it is cleared,
+where the user starts it, and how it relates to "no adaptive difficulty" (§1): it picks
+exercises from earlier results, which the user-chosen level does not.

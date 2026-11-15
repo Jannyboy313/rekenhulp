@@ -14,5 +14,5 @@ Known constraints (from the discussion of 2026-10-27):
   conflicts with "no accounts, no database, no network calls" and the static `dist/`.
 - Serverless alternatives (Periodic Background Sync, Notification Triggers) are Chromium-only or
   removed, and give no guaranteed daily time.
-- Storing a reminder time is persistence, which is out of scope until v6 (spec §12).
+- Storing a reminder time is persistence, which is out of scope until v7 (spec §12).
 - Cheap alternative: a calendar reminder (`.ics` download).

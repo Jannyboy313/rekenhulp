@@ -16,12 +16,12 @@ stays as it is: generators, answer kinds, keypads, kladblok, layouts.
 
 ### Non-goals
 
-- Stored results or history (main spec §1; v6).
+- Stored results or history (main spec §1; v7).
 - Adaptive selection and a scale score, as the real RWT has (handreiking §3.1): the test is the
   same kind of fixed test as the Cito practice tests (§3.2), scored as the number correct.
-- Calculator exercises (v7), so the test covers the mental-arithmetic scope of the app only, also
+- Calculator exercises (v9), so the test covers the mental-arithmetic scope of the app only, also
   in the long variant.
-- Printing (v8), a pause button, going back to an earlier exercise, skipping an exercise.
+- Printing (v10), a pause button, going back to an earlier exercise, skipping an exercise.
 - An LKT test form: the LKT distribution is unconfirmed (main spec §12.7). The LKT-only sets can
   be added to the RWT form (§3.3), nothing more.
 - Moving Gemengd and Tafels onto a shared session configuration (§8).
@@ -247,7 +247,7 @@ All in `lib/`, pure and without Svelte.
 
 ```ts
 type TestLength = 'short' | 'long';
-interface TestConfig { length: TestLength; lkt: boolean }      // plain data (v6, v8)
+interface TestConfig { length: TestLength; lkt: boolean }      // plain data (v7, v10)
 type DomainId = 'A' | 'B' | 'C' | 'D' | 'H';
 interface Domain { id: DomainId; name: string; sets: readonly string[]; lktSets?: readonly string[] }
 interface Blueprint { total: number; limitMs: number; counts: Readonly<Record<DomainId, number>> }
