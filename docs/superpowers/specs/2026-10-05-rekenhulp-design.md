@@ -98,6 +98,11 @@ needs no routing, SSR or server endpoints. Plain Vite + Svelte keeps the surface
   content does not fit, the question view lets only the prompt shrink and scroll (the kladblok
   and the keypad keep their size), and the feedback scrolls its prompt, answers, tip and
   explanation while **Verder** stays fixed below them. The other screens scroll as usual.
+- The document itself never scrolls, on any screen: the app is exactly as high as the window and
+  a screen scrolls its own list. The height is a percentage of the window (the initial
+  containing block), not `dvh`: after the reload of an update on Android `100dvh` was higher
+  than the visible window. A swipe stays with the list it starts on, so a document that scrolls
+  too makes that list stop short of its end until the next swipe.
 - Tap targets are ≥ 44 px, except the small **Alle**/**Geen** buttons (36 px, §3.2) and the
   fraction slots in the answer field (compact, so the keypad fits; the breuk key selects slots
   too). Feedback is announced via `aria-live`.
