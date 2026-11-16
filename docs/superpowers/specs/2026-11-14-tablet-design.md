@@ -325,7 +325,7 @@ column scrolls too.
 
 | Screen                      | Landscape                                                                                                                                                                                                 | Portrait                                              |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| Overview (Oefenen, Lesstof) | Header: logo 56, title 34. Tabs 420 wide, left-aligned. Tiles 4 × 3 from the top, rows 160 high (they do not fill the height: a stretched tile is mostly empty): glyph tile 52 and the name (18/23) on one line, the description (14/20) under it; padding 16 18, radius 20 | Tiles 3 × 4                                           |
+| Overview (Oefenen, Lesstof) | Header: logo 56, title 34. Tabs 420 wide, left-aligned. Tiles 4 × 3 that fill the height (rows `1fr`): glyph tile 52 and the name (18/23) on one line, the description (14/20) under it; padding 16 18, radius 20 | Tiles 3 × 4                                           |
 | Update dialog               | Unchanged: centred, max 384, scrim                                                                                                                                                                        | Same                                                  |
 | Setup, "Wat zit erin"       | Column 800: the "Wat zit erin" card with the topics in 3 columns (name 16/20 bold, detail 14/18 under it), then Aantal opgaven (3fr) and Niveau (2fr) side by side; Start pinned at the bottom of the column | Column 640: topics in 2 columns, Aantal and Niveau stacked |
 | Setup, Tafels               | Column 800: pills 7 per row (60 high, label 24), Aantal opgaven, Start                                                                                                                                    | Column 640: 5 per row                                 |
@@ -344,8 +344,7 @@ column scrolls too.
   3 × 4) cells and the last cell stays empty. A greyed-out set is a greyed-out tile.
 - **A list longer than the screen** scrolls inside its column as on the phone (a "Wat zit erin"
   card on a compact tablet, a long lesson). A row of tiles is never lower than its content, with
-  a minimum of 120 (so a row is lower than 160 only on a low screen); when the grid does not
-  fit, it scrolls.
+  a minimum of 120; when the grid does not fit, it scrolls.
 - **Lesson blocks** on the lesson screen grow with the body: a worked line 22/34, the labels
   ("Tip", a worked title) 14, a table head 15, table cells padded 12 16. The pane and the sheet
   (§7) keep the phone's block sizes.
