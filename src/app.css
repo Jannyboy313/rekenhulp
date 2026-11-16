@@ -186,7 +186,7 @@
 html,
 body {
   margin: 0;
-  min-height: 100%;
+  height: 100%;
   overscroll-behavior: none;
   background: var(--bg);
 }
@@ -199,8 +199,10 @@ body {
 
 /* Every screen sets its own side padding and its top and bottom safe-area insets. The side
    insets are here: they are only non-zero in landscape (a camera cut-out, v4 spec §3.4). */
+/* The height is a percentage of the window, not `100dvh`: after the reload of an update an
+   installed app on Android reported a `dvh` higher than the window, until its next start. */
 #app {
-  height: 100dvh;
+  height: 100%;
   max-width: 30rem;
   margin: 0 auto;
   padding-inline: env(safe-area-inset-left) env(safe-area-inset-right);
