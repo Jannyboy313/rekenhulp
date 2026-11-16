@@ -911,3 +911,45 @@ describe('buildTestSession and the calculator (calculator spec §8)', () => {
     expect(questions).toHaveLength(blueprintFor(config).total);
   });
 });
+
+describe('buildSession for Meetkunde Verdieping (calculator spec §7.3)', () => {
+  const deep = forLevel(GEOMETRY_SET, 'deep');
+  const CALCULATOR = ['calcCircle', 'calcVolume'];
+
+  it('has 3 Opfrisser exercises, one of each calculator topic and 2 or 3 of the four others', () => {
+    for (let seed = 1; seed <= 200; seed++) {
+      const questions = buildSession(deep, 15, createRng(seed));
+      const counts = new Map<string, number>();
+      for (const { topic } of questions) counts.set(topic, (counts.get(topic) ?? 0) + 1);
+      expect(counts.has('tables')).toBe(false);
+      const perTopic = deep.topics.map(({ topic }) => counts.get(topic) ?? 0);
+      expect(perTopic.slice(4)).toEqual([1, 1]);
+      expect(perTopic.slice(0, 4).sort()).toEqual([2, 2, 3, 3]);
+      const quick = GEOMETRY_SET.topics.map(({ topic }) => counts.get(topic) ?? 0);
+      expect(quick.reduce((sum, count) => sum + count, 0)).toBe(3);
+    }
+  });
+
+  it.each([...SESSION_SIZES])('builds %i unique questions', (size) => {
+    const questions = buildSession(deep, size, createRng(size));
+    expect(questions).toHaveLength(size);
+    expect(new Set(questions.map((q) => q.key)).size).toBe(size);
+  });
+
+  it('can leave a calculator topic out of 5 exercises, and has them in Gemengd', () => {
+    const seeds = Array.from({ length: 100 }, (_, i) => i + 1);
+    const topicsOf = (questions: readonly Question[]) => new Set(questions.map((q) => q.topic));
+    const small = seeds.map((seed) => topicsOf(buildSession(deep, 5, createRng(seed))));
+    expect(small.some((topics) => CALCULATOR.some((topic) => !topics.has(topic as Topic)))).toBe(
+      true,
+    );
+    const mixed = seeds.map((seed) =>
+      buildMixedSession([GEOMETRY_SET, MEASUREMENT_SET], 'deep', 15, createRng(seed)),
+    );
+    expect(mixed.some(sessionUsesCalculator)).toBe(true);
+    // Opfrisser never has them.
+    expect(
+      seeds.some((seed) => sessionUsesCalculator(buildSession(GEOMETRY_SET, 25, createRng(seed)))),
+    ).toBe(false);
+  });
+});

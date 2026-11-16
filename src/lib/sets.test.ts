@@ -609,7 +609,7 @@ describe('levels', () => {
     );
   });
 
-  it('lists the four Meetkunde Verdieping topics and the Opfrisser share, without a tables row', () => {
+  it('lists the six Meetkunde Verdieping topics and the Opfrisser share, without a tables row', () => {
     const names = (size: number) =>
       describeSetTopicRows(forLevel(GEOMETRY_SET, 'deep'), size).map((row) => row.name);
     const topics = [
@@ -617,14 +617,25 @@ describe('levels', () => {
       'Oppervlakte van ruimtefiguren',
       'Samengestelde figuren',
       'Redeneren met hoeken',
+      'Cirkel met de rekenmachine',
+      'Inhoud met de rekenmachine',
     ];
     expect(names(15)).toEqual([...topics, '20% opfrisser']);
     expect(names(5)).toEqual(topics);
+    // The calculator topics have half the weight of the others (calculator spec §7.3).
     expect(GEOMETRY_SET.deep).toEqual([
-      { topic: 'scalingSolids', weight: 1 },
-      { topic: 'surfaceArea', weight: 1 },
-      { topic: 'compositeShapes', weight: 1 },
-      { topic: 'angleReasoning', weight: 1 },
+      { topic: 'scalingSolids', weight: 2 },
+      { topic: 'surfaceArea', weight: 2 },
+      { topic: 'compositeShapes', weight: 2 },
+      { topic: 'angleReasoning', weight: 2 },
+      { topic: 'calcCircle', weight: 1 },
+      { topic: 'calcVolume', weight: 1 },
+    ]);
+    expect(withoutCalculator(GEOMETRY_SET).deep?.map(({ topic }) => topic)).toEqual([
+      'scalingSolids',
+      'surfaceArea',
+      'compositeShapes',
+      'angleReasoning',
     ]);
     expect(hasDeep(GEOMETRY_SET)).toBe(true);
     expect(forLevel(GEOMETRY_SET, 'quick')).toBe(GEOMETRY_SET);

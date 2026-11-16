@@ -158,11 +158,14 @@ export const GEOMETRY_SET: PracticeSet = {
     { topic: 'solidNames', weight: 1 },
   ],
   tablesPercent: 15,
+  // A calculator topic has half the weight of the others (calculator spec §7.3).
   deep: [
-    { topic: 'scalingSolids', weight: 1 },
-    { topic: 'surfaceArea', weight: 1 },
-    { topic: 'compositeShapes', weight: 1 },
-    { topic: 'angleReasoning', weight: 1 },
+    { topic: 'scalingSolids', weight: 2 },
+    { topic: 'surfaceArea', weight: 2 },
+    { topic: 'compositeShapes', weight: 2 },
+    { topic: 'angleReasoning', weight: 2 },
+    { topic: 'calcCircle', weight: 1 },
+    { topic: 'calcVolume', weight: 1 },
   ],
 };
 
