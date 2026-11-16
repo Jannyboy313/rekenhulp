@@ -290,14 +290,16 @@ deep: [
   `lib/topics/calcCircle.ts` and `lib/topics/calcVolume.ts`.
 - `lib/sets.ts`: the Meetkunde `deep`, `withoutCalculator`. `lib/session.ts`: the Kort filter in
   `buildTestSession`, `sessionUsesCalculator`.
-- `lib/keys.ts`: the key `clear`. `lib/physicalKeys.ts`: Delete, and Enter as `=` for the
-  calculator keypad.
+- `lib/physicalKeys.ts`: `calculatorKeyFor`, with Delete as `C` and Enter as `=`. `C` is not a
+  keypad key (it sits in the display row), so `lib/keys.ts` does not change.
 - `components/Calculator.svelte` (the overlay: dialog, display, `Keypad`, Neem over) and
-  `components/CalculatorButton.svelte`; `Icon` gets `calculator`.
+  `components/CalculatorButton.svelte`; `Icon` gets `calculator`. The overlay takes the physical
+  keys in the capture phase and stops them, so the listeners behind it need no change. `Keypad`
+  gets a label for its OK key (`=`) and a set of disabled keys.
 - `PlayShell.svelte`: the header snippet. `PlayScreen.svelte` and `TestScreen.svelte`: the
-  calculator state per question, open or closed, and passing a taken-over result to the answer
-  field. `KeypadAnswer.svelte`: its key listener is off while the overlay is open, and it
-  accepts a value set from outside.
+  calculator state per question, open or closed, and passing a taken-over result through
+  `QuestionView` to `KeypadAnswer`, which sets its value with the `fromText` of the input model
+  (only `number` has one).
 - `app.css`: the overlay sizes per layout as `--play-*` tokens.
 
 ## 10. Testing
