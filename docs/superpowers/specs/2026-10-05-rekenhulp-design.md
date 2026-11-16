@@ -33,9 +33,10 @@ has its own spec, `2026-10-25-lesstof-design.md`; this spec only covers its entr
 - No adaptive difficulty: the level is the user's choice per session (§12.2), never adjusted by
   the app. Fouten van eerder (v8) is not adaptive: topics that went wrong only come back in a
   session the user starts for that purpose.
-- No problems that need a calculator, at either level, until v9 (§12.8, §12.11). Verdieping is harder through
-  more steps and combined skills, not through numbers that need a calculator; the kladblok
-  (§3.6) is the tool for the longer exercises.
+- No problems that need a calculator, at either level, except the exercises of a calculator
+  topic (v9, §12.11): those show a calculator button and are Verdieping only. Everywhere else
+  Verdieping is harder through more steps and combined skills, not through numbers that need a
+  calculator; the kladblok (§3.6) is the tool for the longer exercises.
 - "Platform" means a wider scope of content, not infrastructure: the non-goals above still hold.
 - v1 to v3 are done: all sets in §4 are implemented, with their Verdieping. v4 to v12 are on the
   roadmap (§12), and the architecture must make adding them cheap.
@@ -218,6 +219,10 @@ Larger counts are deliberate longer sessions.
   button, a ✕ at the top left (aria-label "Stoppen"). Under the set name and the counter sits a
   progress bar over the first attempts. A repeat shows a yellow "Herhaling" label instead of
   the number; the counter text keeps the original total.
+- On an exercise of a calculator topic the header has a calculator button at its right end
+  (aria-label "Rekenmachine"); it opens the calculator over the answer field and the keypad. A
+  session with such exercises keeps the button's space on the others (v9,
+  `2026-11-15-rekenmachine-design.md` §4–§5).
 - Stop ends the session immediately and goes to results. Results then cover only the answered
   exercises; the current, unanswered exercise is not counted. A two-step exercise counts as
   answered only after its last step, so Stop after step 1 drops it. Repeats still waiting in the
@@ -609,7 +614,9 @@ With v2, the description of Verhoudingen on its card (§3.1) becomes "Procenten,
 schaal".
 
 The table lists the Opfrisser topics. A set's Verdieping (§12.2) has its own topics, all weight
-1 and without tables, plus a 20% share of the set's Opfrisser topics (§4.2):
+1 and without tables, plus a 20% share of the set's Opfrisser topics (§4.2). A calculator topic
+(v9, §12.11) has half the weight of the others: in Meetkunde the four topics have weight 2 and
+the two calculator topics weight 1.
 
 | Set       | Verdieping topics                                                  |
 |-----------|--------------------------------------------------------------------|
@@ -619,7 +626,7 @@ The table lists the Opfrisser topics. A set's Verdieping (§12.2) has its own to
 | **Bewerkingen** | `bracketPlacement`, `derivedFacts`, `multiStepProblems`, `smartCalculationDeep` |
 | **Getalbegrip** | `negativeContexts`, `roundingReasoning`, `estimateCalc`, `powerCalc` |
 | **Breuken & kommagetallen** | `mixedNotation`, `fractionProblems`, `decimalProblems`, `betweenNumbers` |
-| **Meetkunde** | `scalingSolids`, `surfaceArea`, `compositeShapes`, `angleReasoning` |
+| **Meetkunde** | `scalingSolids`, `surfaceArea`, `compositeShapes`, `angleReasoning` (2 each); `calcCircle`, `calcVolume` (1 each, calculator) |
 | **Verbanden & statistiek** | `twoDice`, `statisticsReasoning`, `statisticsProblems`, `formulaProblems` |
 | **Talstelsels** | `baseArithmetic`, `baseReasoning`, `hexBinary`, `romanCalc` |
 | **Heuristieken** | `countingCases`, `backwardsProblems`, `twoUnknowns`, `simplifyDeep` |
@@ -690,8 +697,11 @@ Examples with `n = 15`:
   is chosen at random.
 - **Meetkunde:** `r = 13` over 7 topics, so 2 + 2 + 2 + 2 + 2 + 2 + 1. The topic with 1 is chosen
   at random.
-- Verdieping of these three: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics) and
-  `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
+- Verdieping of Getalbegrip and Breuken & kommagetallen: 3 Opfrisser exercises (1 each for 3
+  random Opfrisser topics) and `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
+- Verdieping of Meetkunde: 3 Opfrisser exercises and `r = 12` over the weights 2/2/2/2/1/1, so
+  1 for each calculator topic and 3 + 3 + 2 + 2 for the four others (the two with 3 chosen at
+  random).
 - **Verbanden & statistiek:** `r = 13` over 6 topics, so 3 + 2 + 2 + 2 + 2 + 2. The topic with 3
   is chosen at random. Verdieping: 3 Opfrisser exercises (1 each for 3 random Opfrisser topics)
   and `r = 12` over 4 topics, so 3 + 3 + 3 + 3.
@@ -839,8 +849,8 @@ several sets share follow the index.
 | §5.95 | Working backwards, deeper (`backwardsProblems`) | `topics/heuristieken.md` |
 | §5.96 | Two unknowns (`twoUnknowns`) | `topics/heuristieken.md` |
 | §5.97 | Simplify the problem, deeper (`simplifyDeep`) | `topics/heuristieken.md` |
-| §5.98 | Circle with the calculator (`calcCircle`, v9, not built yet) | `topics/meetkunde.md` |
-| §5.99 | Volume with the calculator (`calcVolume`, v9, not built yet) | `topics/meetkunde.md` |
+| §5.98 | Circle with the calculator (`calcCircle`, v9) | `topics/meetkunde.md` |
+| §5.99 | Volume with the calculator (`calcVolume`, v9) | `topics/meetkunde.md` |
 
 ### v3 rules for Verhoudingen, Getallen & delers and Bewerkingen (§5.53–§5.66)
 
@@ -1253,7 +1263,7 @@ categories (§12.5) are done. The order after that (decided 2026-11-14, v6 and v
   `2026-11-15-geheugen-design.md`: one record of plain data per answered exercise, and a button
   to delete them.
 - v8: yesterday's mistakes (§12.16, done).
-- v9: problems where a calculator is allowed (§12.11).
+- v9: problems where a calculator is allowed (§12.11, done).
 - v10: a print button for the practice test (§12.12).
 - v11: a streak of practice days (§12.13).
 - v12: visual improvements to the exercises (§12.14).
@@ -1433,8 +1443,9 @@ follow separately (lesstof spec §2).
   - Mean versus median and other concepts. MC.
 
 Getallen & delers, Bewerkingen, Talstelsels and Heuristieken have no RWT gaps. Out of scope
-(§12.8): C.5 to C.8 and C.14 (pictures), C.12 the volume of a sphere (calculator), D.1 to D.3
-(graphs, tables, spreadsheets). The hoofdrekenen part of the RWT has no questions from domain
+(§12.8): C.5 to C.8 and C.14 (pictures), D.1 to D.3 (graphs, tables, spreadsheets). C.12, the
+volume of a sphere, was out of scope as a calculator problem; v9 closed it with `calcVolume`
+(§5.99). The hoofdrekenen part of the RWT has no questions from domain
 D.
 
 ### 12.4 v3 — results and lesson link
@@ -1507,8 +1518,8 @@ wait until the version of the kennisbasis is confirmed; 3.3 is out of scope (§1
 
 - RWT
   - C.10b: the surface area of a sphere with the formula given (`4 × π × r²`). Meetkunde,
-    Verdieping. §12.8 drops only the volume of a sphere (C.12b). Closed by the Sphere form of
-    §5.82 (`π = 3,14`).
+    Verdieping. §12.8 dropped only the volume of a sphere (C.12b), until v9 (§5.99). Closed by
+    the Sphere form of §5.82 (`π = 3,14`).
   - A.4a: division with a remainder (`23 : 7 = 3 rest 2`) is Verdieping only (`remainders`,
     `multiStepProblems`), while A.4 is also hoofdrekenen. Opfrisser. Closed by the Remainder
     form of §5.15 (`mentalOperations`, Opfrisser), missed in this check; the bare form without
@@ -1538,9 +1549,9 @@ The distribution of table 1 needs no change to the sets; it matters for the prac
 
 ### 12.8 Out of scope until further notice
 
-- Problems that need a calculator, such as the RWT calculator part and the LKT part 2, also at
-  the Verdieping level, until v9 (§12.11). Until then the app is for mental arithmetic and ways
-  of thinking.
+- Problems that need a calculator, such as the RWT calculator part and the LKT part 2, outside
+  the calculator topics of v9 (§12.11): so far those are two Meetkunde topics. Every other
+  exercise is mental arithmetic, also at the Verdieping level.
 - Anything that needs pictures, until v12 decides what is allowed (§12.14):
   - reading graphs, tables and diagrams
   - spatial geometry: views, nets and cube buildings
@@ -1561,14 +1572,14 @@ Its form is in its own spec, `2026-11-14-tablet-design.md`: layouts for portrait
 landscape, the Design V3 phone changes, reserved kladblok space and physical keyboard input.
 The phone rules it changed are in §2, §3.2, §3.5, §3.6 and §6 of this spec.
 
-### 12.11 v9 — calculator problems
+### 12.11 v9 — calculator problems (done)
 
 Decided 2026-11-14; reverses the drop of calculator problems in §12.8. The foundation: exercises
 marked as "rekenmachine toegestaan", as Cito marks them, such as the RWT calculator part and the
-LKT part 2. It has its own spec, `2026-11-15-rekenmachine-design.md` (approved, not built yet): a
-calculator button on marked exercises that opens a calculator overlay, calculator topics as
-Verdieping topics of the existing sets, and Meetkunde as the first set (§5.98–§5.99). §1 and
-§12.8 change when it is built.
+LKT part 2. It has its own spec, `2026-11-15-rekenmachine-design.md`: a calculator button on
+marked exercises that opens a calculator overlay, calculator topics as Verdieping topics of the
+existing sets, and Meetkunde as the first set (§5.98–§5.99). Other sets get calculator topics
+later, one spec iteration each.
 
 ### 12.12 v10 — print the practice test
 

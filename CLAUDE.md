@@ -98,6 +98,16 @@ Done besides the sets:
   topics). `App.svelte` reads the memory each time the overview is shown (`refreshDue`) and
   passes the row to `PracticeSetList` (`review`); a fourth `Origin`, `review`, saved with the
   source `set`
+- v9, calculator exercises (`docs/superpowers/specs/2026-11-15-rekenmachine-design.md`): a
+  calculator topic is a Verdieping topic in `CALCULATOR_TOPICS` (`lib/topics/index.ts`), with
+  half the weight of the others; so far `calcCircle` and `calcVolume` of Meetkunde. Its
+  exercises show `CalculatorButton` in the play header (`action` snippet of `PlayShell`), which
+  opens `Calculator` (a modal overlay; `lib/calculator.ts` is its reducer, evaluating through
+  `lib/expr`). `PlayScreen` and `TestScreen` hold the calculation per question and pass **Neem
+  over** to the answer field (`taken`, `fromText` of the `number` input model). Kort never has
+  calculator topics (`withoutCalculator`). A rounded answer goes through
+  `lib/topics/roundedAnswer.ts` (rounding sentence, boundary rule); `lib/topics/rounding.ts` is
+  the Getalbegrip topic, not a helper
 
 Lesstof (lesstof spec): the framework is done (Oefenen/Lesstof tabs, topic list, lesson view,
 content checks, back guard). Lessons done: every set except Tafels (`lib/lessons/<set>.ts`); its row is disabled. The
@@ -121,20 +131,20 @@ The one exception is the lesson link (lesstof spec §4): `Feedback` and `PlayScr
 lesson data through to `LessonLinks`, `LessonSheet` and `LessonPane` (the lesson next to the
 wrong-answer panel on a landscape tablet, v4 spec §7).
 
-Next steps (spec §12), one at a time and only when the user says so. v3, v4, v5, v6, v7 and v8 are done (§12.2–§12.4, §12.10, §12.6, §12.15, geheugen spec, §12.16);
+Next steps (spec §12), one at a time and only when the user says so. v3, v4, v5, v6, v7, v8 and v9 are done (§12.2–§12.4, §12.10, §12.6, §12.15, geheugen spec, §12.16, §12.11);
 the toetsmatrijs check of 2026-11-02 (§12.7) is done and its RWT gaps are closed; its LKT gaps wait for a confirmed kennisbasis; LKT 3.3 is out of scope (spec §12.8). Mixed categories (§12.5) are done. Order decided 2026-11-14; v6 and v8 inserted 2026-11-15.
 
 | Step                                                                           | New infrastructure |
 | ------------------------------------------------------------------------------ | ------------------ |
-| v9: exercises marked "rekenmachine toegestaan", as Cito does (§12.11)          | open               |
 | v10: print button for the practice test (§12.12)                               | print stylesheet   |
 | v11: streak of practice days (§12.13), builds on v7                            | none (uses v7)     |
 | v12: visual improvements to the exercises (§12.14); decide the principle first | open               |
 
 Between versions: check the sets against the toetsmatrijs (§12.7).
 
-Mental arithmetic only, at both levels: problems that need a calculator are out of scope (spec
-§12.8) until v9 (§12.11).
+Mental arithmetic at both levels, except the calculator topics (v9): a problem that needs a
+calculator belongs in a topic of `CALCULATOR_TOPICS`, never in another topic (spec §12.8). More
+calculator topics for other sets: one spec iteration each, only when the user asks.
 
 To add a set: write its topics in a new `docs/superpowers/specs/topics/<set id>.md` and add them
 to the index in spec §5, widen `Topic`/`AnswerKind` in `lib/types.ts`, register generators and
@@ -279,6 +289,7 @@ src/
                         lib/play.ts, auto-advance timer), TestScreen (test policy, deadline,
                         StopDialog), ModalDialog (shared by UpdateDialog, StopDialog and
                         ClearMemory), ClearMemory (Gegevens wissen: button, dialog, outcome),
+                        Calculator + CalculatorButton (v9: the overlay and its header button),
                         QuestionView (also the correct state),
                         KeypadAnswer (answer field + error + keypad, routes keys to the
                         kladblok), Keypad, Scratchpad (kladblok cells), Feedback (wrong-answer
@@ -310,6 +321,8 @@ src/
     feedback.ts         CORRECT_FEEDBACK_MS (auto-advance after a correct answer)
     units.ts            withUnits: an answer with its prefix and suffix
     promptSize.ts       prompt font size step from the displayed length
+    calculator.ts       the calculator (v9): key → state reducer, canPress, the result in at
+                        most 10 significant digits and 12 characters, display and Neem over text
     primes.ts           gcd, lcm, isPrime, prime factorization
     results.ts          question records + session summary; summarizeTest (verdict, score over
                         the whole test)
@@ -373,7 +386,7 @@ shot, not a missing scene.
 - Never use `eval`/`Function` for expressions; always go through `lib/expr`.
 - Commutative and associative properties apply to `+` and `×` only, never to `−` or `:`.
 - All arithmetic is exact; never compare floats. Use `lib/rational.ts`.
-- Generated exercises must be solvable without a calculator: divisions are exact, numbers stay
+- Outside the calculator topics, generated exercises must be solvable without a calculator: divisions are exact, numbers stay
   within the ranges in the spec.
 
 ## Testing

@@ -1,6 +1,6 @@
 # Rekenhulp v9 — Rekenmachine (calculator exercises)
 
-Date: 2026-11-15. Status: approved 2026-11-16, not built. Implements the v9 entry of main spec §12.11.
+Date: 2026-11-15. Status: built 2026-11-16. Implements the v9 entry of main spec §12.11.
 
 "Main spec" is `2026-10-05-rekenhulp-design.md`, "v4 spec" is `2026-11-14-tablet-design.md`,
 "test spec" is `2026-11-14-oefentoets-design.md`.
@@ -91,12 +91,15 @@ function sessionUsesCalculator(questions: readonly Question[]): boolean;
 ### 5.1 Place and behaviour
 
 - A modal `<dialog>` without a dark backdrop, at the bottom of the screen. It covers the answer
-  field and the keypad, never the prompt or the kladblok: its height is at most the answer field
-  plus the keypad of the layout (the plan checks this against the `--play-*` tokens of every
-  layout).
-  - Phone and `tablet-portrait`: full width of the play column, bottom-aligned.
-  - `tablet-landscape` and compact: over the right pane (the keypad), at the pane's width,
-    bottom-aligned. The prompt and the kladblok in the left pane stay free.
+  field and the keypad, never the prompt or the kladblok. Its height follows from the four key
+  rows (`--play-calc-height`: 232 on the phone and compact, 316 on a tablet) plus the header, the
+  display and **Neem over**.
+  - Phone and `tablet-portrait`: full width of the play column (600 on a tablet),
+    bottom-aligned, at most as high as the answer field plus the keypad.
+  - `tablet-landscape` and compact: over the right pane, 8 px wider than the pane on every side
+    so no key shows past its round corners. That pane holds only the keypad and is empty above
+    it, so the overlay may be higher than the keypad. The prompt, the kladblok and the answer
+    field in the left pane stay free.
 - On a Ja/Nee or multiple-choice step it covers the buttons in the same place.
 - The session behind it is inert while it is open. It closes with its ✕ (aria-label "Sluiten"),
   Escape, the system back (as `LessonSheet`), a tap outside it, and **Neem over**.
@@ -287,7 +290,9 @@ deep: [
   the text for **Neem over**.
 - `lib/rational.ts`: `roundHalfUp`.
 - `lib/topics/index.ts`: `CALCULATOR_TOPICS`, `allowsCalculator`; the two generators in
-  `lib/topics/calcCircle.ts` and `lib/topics/calcVolume.ts`.
+  `lib/topics/calcCircle.ts` and `lib/topics/calcVolume.ts`; what they share for a rounded
+  answer (the rounding sentence, the boundary rule, the explanation) in
+  `lib/topics/roundedAnswer.ts`.
 - `lib/sets.ts`: the Meetkunde `deep`, `withoutCalculator`. `lib/session.ts`: the Kort filter in
   `buildTestSession`, `sessionUsesCalculator`.
 - `lib/physicalKeys.ts`: `calculatorKeyFor`, with Delete as `C` and Enter as `=`. `C` is not a
@@ -300,7 +305,8 @@ deep: [
   calculator state per question, open or closed, and passing a taken-over result through
   `QuestionView` to `KeypadAnswer`, which sets its value with the `fromText` of the input model
   (only `number` has one).
-- `app.css`: the overlay sizes per layout as `--play-*` tokens.
+- `app.css`: `--play-calc-height` per layout; the place of the overlay follows from the existing
+  `--play-*` tokens of the panes.
 
 ## 10. Testing
 

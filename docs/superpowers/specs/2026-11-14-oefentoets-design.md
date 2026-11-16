@@ -20,8 +20,8 @@ stays as it is: generators, answer kinds, keypads, kladblok, layouts.
   (`2026-11-15-geheugen-design.md` §4), but nothing shows them.
 - Adaptive selection and a scale score, as the real RWT has (handreiking §3.1): the test is the
   same kind of fixed test as the Cito practice tests (§3.2), scored as the number correct.
-- Calculator exercises (v9), so the test covers the mental-arithmetic scope of the app only, also
-  in the long variant.
+- Calculator exercises in Kort: it is the hoofdrekenen part. Lang has the calculator topics of
+  its sets since v9 (§3.3, `2026-11-15-rekenmachine-design.md` §8).
 - Printing (v10), a pause button, going back to an earlier exercise, skipping an exercise.
 - An LKT test form: the LKT distribution is unconfirmed (main spec §12.7). The LKT-only sets can
   be added to the RWT form (§3.3), nothing more.
@@ -104,6 +104,11 @@ Given a blueprint with total `n`:
 
 The counts per domain are exact for every seed; which sets and topics get the leftovers is
 random.
+
+Calculator topics (v9, decided 2026-11-15): Kort is built from the sets without the calculator
+topics of their `deep` (`withoutCalculator`), so it never has one; Lang has them as any other
+Verdieping topic, by their weights. The time limit and the pass mark do not change, and the test
+screen shows the calculator button as the play screen does.
 
 Examples:
 

@@ -143,6 +143,8 @@ of main spec §3.3 do not change).
 | Multiple choice                       | 4 rows, one column (§5.1 for heights) | 2 × 2, 104 high, gap 16         | 2 × 2, 80 high        |
 | Primary button                        | 56, text 17                           | 60, text 19                     | 56, text 17           |
 | Landscape right pane                  | —                                     | 440                             | 400                   |
+| Calculator key rows (4 rows, v9)      | 232                                   | 316                             | 232                   |
+| Calculator overlay (v9)               | full width, at the bottom             | portrait 600 wide; landscape the right pane plus 8 on every side | as landscape |
 | Landscape body padding, pane gap      | —                                     | 8 40 32, gap 48                 | 4 32 20, gap 32       |
 
 - The phone answer text stays 30 (the code wins over the handoff's 26, handoff §8).
@@ -246,6 +248,9 @@ system keyboard is never opened.
 
 Rules:
 
+- While the calculator overlay is open (v9), every key goes to the calculator and none to the
+  screen behind it: the keys of its keypad as above, Enter and `=` for `=`, Delete for `C`, and
+  Escape closes it (`2026-11-15-rekenmachine-design.md` §5.5).
 - A key acts only when the keypad on screen has the matching key and that key is enabled;
   anything else is ignored. So `x` is `×` on the expression keypad and X on the Roman keypad (no
   keypad has both), and `c` does nothing on the number keypad.

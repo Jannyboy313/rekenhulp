@@ -376,7 +376,7 @@ klok)`. Three forms, each equally likely; suffix `°`, except the number of angl
 
 ### Meetkunde v9 (§5.98–§5.99)
 
-The first calculator topics (`2026-11-15-rekenmachine-design.md`, v9): not built yet. Both are
+The first calculator topics (`2026-11-15-rekenmachine-design.md`, v9). Both are
 Verdieping topics in `CALCULATOR_TOPICS`, so their exercises show the calculator button. The v3
 rules of §5 apply (no topic tips, the de-duplication key is the form, the variant and the
 numbers, prompts without a slot of at most 170 characters), except the rule on decimals: the
