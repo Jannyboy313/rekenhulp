@@ -1,4 +1,4 @@
-import { TOPIC_LABELS, type TopicLabel } from './topics';
+import { allowsCalculator, TOPIC_LABELS, type TopicLabel } from './topics';
 import type { Level, PracticeSet } from './types';
 
 export const SESSION_SIZES: readonly number[] = [5, 10, 15, 25, 50];
@@ -306,4 +306,13 @@ export function describeSetTopicRows(
   if (set.tablesPercent > 0) rows.push({ name: `${set.tablesPercent}% tafels` });
   if (set.quickShare) rows.push({ name: `${set.quickShare.percent}% opfrisser` });
   return rows;
+}
+
+/**
+ * The set without the calculator topics of its Verdieping (calculator spec §8): the short
+ * practice test is the hoofdrekenen part. The same object when there is nothing to drop.
+ */
+export function withoutCalculator(set: PracticeSet): PracticeSet {
+  const deep = set.deep?.filter(({ topic }) => !allowsCalculator(topic));
+  return deep === undefined || deep.length === set.deep?.length ? set : { ...set, deep };
 }

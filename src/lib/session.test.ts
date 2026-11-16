@@ -878,3 +878,36 @@ describe('sessionUsesCalculator (calculator spec §4)', () => {
     expect(sessionUsesCalculator([])).toBe(false);
   });
 });
+
+describe('buildTestSession and the calculator (calculator spec §8)', () => {
+  // Meetkunde with calculator topics, whatever the set itself holds.
+  const pool = PRACTICE_SETS.map((set) =>
+    set.id === 'meetkunde'
+      ? {
+          ...set,
+          deep: [
+            { topic: 'surfaceArea' as const, weight: 1 },
+            { topic: 'calcCircle' as const, weight: 1 },
+            { topic: 'calcVolume' as const, weight: 1 },
+          ],
+        }
+      : set,
+  );
+  const SEEDS = Array.from({ length: 200 }, (_, i) => i + 1);
+  const usesCalculator = (config: TestConfig, seed: number) =>
+    sessionUsesCalculator(buildTestSession(config, pool, createRng(seed), stubGenerators()));
+
+  it.each([false, true])('never puts a calculator topic in Kort (lkt: %s)', (lkt) => {
+    for (const seed of SEEDS) expect(usesCalculator({ length: 'short', lkt }, seed)).toBe(false);
+  });
+
+  it.each([false, true])('has them in Lang (lkt: %s)', (lkt) => {
+    expect(SEEDS.some((seed) => usesCalculator({ length: 'long', lkt }, seed))).toBe(true);
+  });
+
+  it('keeps the size and the count of Kort', () => {
+    const config: TestConfig = { length: 'short', lkt: false };
+    const questions = buildTestSession(config, pool, createRng(1), stubGenerators());
+    expect(questions).toHaveLength(blueprintFor(config).total);
+  });
+});

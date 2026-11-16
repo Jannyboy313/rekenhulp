@@ -21,6 +21,7 @@ import {
   RELATIONS_SET,
   SESSION_SIZES,
   TABLES_SET,
+  withoutCalculator,
 } from './sets';
 import { DEEP_FIXTURE_SET } from './setFixture';
 import { TOPIC_LABELS } from './topics';
@@ -686,5 +687,28 @@ describe('Gemengd (spec §3.2, §4.2)', () => {
     ['nothing chosen', [], 'quick', []],
   ])('counts %s', (_, chosen, level, expected) => {
     expect(countingSets(PRACTICE_SETS, chosen, level)).toEqual(expected);
+  });
+});
+
+describe('withoutCalculator (calculator spec §8)', () => {
+  const withCalculator: PracticeSet = {
+    ...GEOMETRY_SET,
+    deep: [
+      { topic: 'surfaceArea', weight: 2 },
+      { topic: 'calcCircle', weight: 1 },
+      { topic: 'calcVolume', weight: 1 },
+    ],
+  };
+
+  it('drops the calculator topics from the Verdieping and keeps the rest', () => {
+    const set = withoutCalculator(withCalculator);
+    expect(set.deep).toEqual([{ topic: 'surfaceArea', weight: 2 }]);
+    expect(set.topics).toBe(withCalculator.topics);
+    expect(set.id).toBe(withCalculator.id);
+  });
+
+  it('returns a set without calculator topics, or without a Verdieping, as it is', () => {
+    expect(withoutCalculator(MEASUREMENT_SET)).toBe(MEASUREMENT_SET);
+    expect(withoutCalculator(TABLES_SET)).toBe(TABLES_SET);
   });
 });

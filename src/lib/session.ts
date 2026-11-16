@@ -1,6 +1,11 @@
 import { blueprintFor, DOMAINS, domainSets, type TestConfig } from './practiceTest';
 import { randomInt, shuffle, type Rng } from './random';
-import { choosesTables, MIN_SIZE_FOR_MIXED_TABLES, QUICK_SHARE_PERCENT } from './sets';
+import {
+  choosesTables,
+  MIN_SIZE_FOR_MIXED_TABLES,
+  QUICK_SHARE_PERCENT,
+  withoutCalculator,
+} from './sets';
 import { allowsCalculator, GENERATORS } from './topics';
 import { generateTables } from './topics/tables';
 import type { Generator, Level, PracticeSet, Question, Topic, TopicWeight } from './types';
@@ -134,6 +139,8 @@ export function buildTestSession(
   generators: Record<Topic, Generator> = GENERATORS,
 ): Question[] {
   const { total, counts } = blueprintFor(config);
+  // Kort is the hoofdrekenen part: no calculator topics (calculator spec §8).
+  const sets = config.length === 'short' ? pool.map(withoutCalculator) : pool;
   const domains = DOMAINS.filter((domain) => counts[domain.id] > 0);
   // Not shareCount: its minimum size is for sessions; the test always has its 20%.
   const quickTotal = Math.round((QUICK_SHARE_PERCENT * total) / 100);
@@ -143,10 +150,10 @@ export function buildTestSession(
     rng,
   );
   const plan = domains.flatMap((domain) => {
-    const sets = domainSets(domain, pool, config.lkt);
-    if (sets.length === 0) throw new RangeError(`No sets for domain ${domain.id}`);
+    const ofDomain = domainSets(domain, sets, config.lkt);
+    if (ofDomain.length === 0) throw new RangeError(`No sets for domain ${domain.id}`);
     const quick = quickPerDomain.get(domain.id) ?? 0;
-    return planForSets(sets, 'deep', counts[domain.id] - quick, quick, rng);
+    return planForSets(ofDomain, 'deep', counts[domain.id] - quick, quick, rng);
   });
   return generatePlan(plan, rng, generators);
 }
