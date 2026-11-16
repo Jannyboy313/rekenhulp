@@ -8,7 +8,8 @@ export const GROUP_SEPARATOR = '\u{202f}';
 
 const MAX_DECIMALS = 20;
 
-function groupDigits(digits: string): string {
+/** Thin spaces between groups of three, from five digits on (spec §8). */
+export function groupDigits(digits: string): string {
   if (digits.length < 5) return digits;
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, GROUP_SEPARATOR);
 }
@@ -176,7 +177,7 @@ export function formatScientificInput(raw: string): string {
 }
 
 /** Typed powers '^3' and '^-3' as '³' and '⁻³'; a '^' or '^-' without digits stays visible. */
-function caretPowers(raw: string): string {
+export function caretPowers(raw: string): string {
   return raw.replace(
     /\^(-?)(\d+)/g,
     (_match, sign: string, digits: string) =>

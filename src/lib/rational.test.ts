@@ -19,6 +19,7 @@ import {
   power,
   powerOfTen,
   rational,
+  roundHalfUp,
   roundHalfUpToCents,
   subtract,
 } from './rational';
@@ -279,5 +280,27 @@ describe('power', () => {
   it('rejects negative and fractional exponents', () => {
     expect(() => power(rational(2n), -1)).toThrow(RangeError);
     expect(() => power(rational(2n), 1.5)).toThrow(RangeError);
+  });
+});
+
+describe('roundHalfUp', () => {
+  it.each([
+    ['23,55', 1, '23,6'],
+    ['23,54', 1, '23,5'],
+    ['124,95', 0, '125'],
+    ['904,32', 0, '904'],
+    ['2,675', 2, '2,68'],
+    ['-2,5', 0, '-3'],
+    ['-2,4', 0, '-2'],
+    ['12,7', 1, '12,7'],
+    ['1250', -2, '1300'],
+    ['0', 1, '0'],
+  ])('rounds %s to %i decimals: %s', (input, decimals, expected) => {
+    expect(roundHalfUp(parseDutchNumber(input)!, decimals)).toEqual(parseDutchNumber(expected));
+  });
+
+  it('rounds values that do not terminate', () => {
+    expect(roundHalfUp(rational(2n, 3n), 3)).toEqual(rational(667n, 1000n));
+    expect(roundHalfUp(rational(-2n, 3n), 3)).toEqual(rational(-667n, 1000n));
   });
 });

@@ -148,13 +148,24 @@ export function negate(value: Rational): Rational {
   return rational(-value.num, value.den);
 }
 
+/**
+ * Rounded half up to `decimals` decimals, a half away from zero for a negative value. A negative
+ * `decimals` rounds to tens, hundreds and so on.
+ */
+export function roundHalfUp(value: Rational, decimals: number): Rational {
+  const scale = powerOfTen(decimals);
+  const { num, den } = multiply(value, scale);
+  const absolute = num < 0n ? -num : num;
+  // floor(|scaled| + 1/2) = floor((2 × num + den) / (2 × den)); bigint division truncates, which
+  // is the floor for a non-negative value.
+  const steps = (2n * absolute + den) / (2n * den);
+  return divide(rational(num < 0n ? -steps : steps), scale);
+}
+
 /** A non-negative value rounded half up to 2 decimals (whole cents). */
 export function roundHalfUpToCents(value: Rational): Rational {
   if (value.num < 0n) throw new RangeError('Only non-negative amounts are rounded to cents');
-  // floor(value × 100 + 1/2) = floor((200 × num + den) / (2 × den)); bigint division truncates
-  // toward zero, which equals the floor for the non-negative values allowed here.
-  const cents = (200n * value.num + value.den) / (2n * value.den);
-  return rational(cents, 100n);
+  return roundHalfUp(value, 2);
 }
 
 /** value^exponent for an integer exponent ≥ 0. */

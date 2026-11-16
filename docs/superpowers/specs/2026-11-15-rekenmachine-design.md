@@ -157,7 +157,7 @@ While typing (no result):
 | `+` `×` `:`    | after a digit or `)`                                                                                       |
 | `−`            | after a digit or `)` it is the operator; at the start and directly after `(` it is the sign                |
 | `^`            | after a digit or `)`; the exponent is a whole number, and never a second `^` after it                      |
-| `(`            | at the start, after an operator, after a sign or after `(`                                                 |
+| `(`            | at the start, after `+ − × :` as an operator or after `(`; not after a sign (`lib/expr` has no `−(…)`)     |
 | `)`            | after a digit or `)`, while a parenthesis is open                                                          |
 | `=`            | when the input is a complete expression: it parses and every parenthesis is closed                         |
 | `⌫`            | removes the last character                                                                                 |

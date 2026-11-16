@@ -1,4 +1,4 @@
-type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+export type DigitKey = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 /** The letters of the Talstelsels keypads; C and D are shared by both (spec §6). */
 export type LetterKey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'I' | 'V' | 'X' | 'L' | 'M';
 /** '=' and ' ' (the spatie) are kladblok keys only; the answer reducers ignore them. */
