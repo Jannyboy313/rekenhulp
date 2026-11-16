@@ -1565,7 +1565,7 @@ The phone rules it changed are in §2, §3.2, §3.5, §3.6 and §6 of this spec.
 
 Decided 2026-11-14; reverses the drop of calculator problems in §12.8. The foundation: exercises
 marked as "rekenmachine toegestaan", as Cito marks them, such as the RWT calculator part and the
-LKT part 2. It has its own spec, `2026-11-15-rekenmachine-design.md` (a draft, not built yet): a
+LKT part 2. It has its own spec, `2026-11-15-rekenmachine-design.md` (approved, not built yet): a
 calculator button on marked exercises that opens a calculator overlay, calculator topics as
 Verdieping topics of the existing sets, and Meetkunde as the first set (§5.98–§5.99). §1 and
 §12.8 change when it is built.

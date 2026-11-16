@@ -1,6 +1,6 @@
 # Rekenhulp v9 — Rekenmachine (calculator exercises)
 
-Date: 2026-11-15. Status: draft, not built. Implements the v9 entry of main spec §12.11.
+Date: 2026-11-15. Status: approved 2026-11-16, not built. Implements the v9 entry of main spec §12.11.
 
 "Main spec" is `2026-10-05-rekenhulp-design.md`, "v4 spec" is `2026-11-14-tablet-design.md`,
 "test spec" is `2026-11-14-oefentoets-design.md`.
@@ -30,7 +30,7 @@ Other sets get calculator topics later, one spec iteration each.
 
 ## 2. Decisions
 
-Decided with the user on 2026-11-15 (1–8); 9–16 are the defaults of this draft (§11).
+Decided with the user on 2026-11-15 (1–8) and 2026-11-16 (9–16, §11).
 
 | #   | Question              | Decision                                                                                                                                                              |
 | --- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -45,7 +45,7 @@ Decided with the user on 2026-11-15 (1–8); 9–16 are the defaults of this dra
 | 9   | The mark              | The calculator button is the mark "rekenmachine toegestaan": an icon button in the header, only on a calculator exercise (§4). No text in the prompt.                 |
 | 10  | A `^` key             | Added to the keys of decision 7: `r²` and `r³` are in every exercise of §7, and `lib/expr` and the kladblok already have it. `C` moves to the display row (§5.2).     |
 | 11  | How it calculates     | A whole expression, evaluated on `=` by `lib/expr`: exact, with the order of operations of the app (main spec §7). Not key by key as a pocket calculator.             |
-| 12  | The result            | A decimal number of at most 10 significant digits; `≈` instead of `=` when it was rounded (§5.3).                                                                     |
+| 12  | The result            | A decimal number of at most 10 significant digits and 12 characters; `≈` instead of `=` when it was rounded (§5.3).                                                   |
 | 13  | Lifetime              | The calculation stays while its question is shown (closing and reopening keeps it) and is empty at the next question, as the kladblok notes.                          |
 | 14  | Which topic is marked | A registry by topic (`CALCULATOR_TOPICS`), not a field on a question: every exercise of a calculator topic is marked, and nothing else is (§3).                       |
 | 15  | Share in a session    | A calculator topic has half the weight of the other Verdieping topics of its set (§7.3), so roughly a fifth of a Meetkunde Verdieping session.                        |
@@ -168,11 +168,15 @@ While typing (no result):
   `3 × −2` is typed as `3 × (−2)`.
 - `=` evaluates with `parse` and `evaluate` of `lib/expr`: exact, powers before `×` and `:`,
   those two with equal priority from left to right, then `+` and `−`. Never `eval`.
-- **The result** is rounded half up to 10 significant digits. `exact` is true when that changed
-  nothing: the display then reads `3,14 × 6,5² = 132,665`, otherwise `4 : 3 ≈ 1,333333333`.
-  Trailing zeros are not shown.
-- **Error:** a division by zero, an exponent `lib/expr` refuses, or a result of `10¹²` or more
-  (or below `−10¹²`) gives `Fout` in the place of the result.
+- **The result** is rounded half up to 10 significant digits, and to fewer decimals when its
+  text (minus sign, digits and comma, no thousands separators) would be longer than 12
+  characters, the limit of a number field: `(−2) : 3 ≈ −0,666666667` and `1 : 3000 ≈
+  0,0003333333`. A value too small for 12 characters shows `≈ 0`. `exact` is true when the
+  rounding changed nothing: the display then reads `3,14 × 6,5² = 132,665`, otherwise `4 : 3 ≈
+  1,333333333`. Trailing zeros are not shown.
+- **Error:** a division by zero, an exponent `lib/expr` refuses, or a result whose whole part
+  does not fit the 12 characters (`10¹²` or more, `−10¹¹` or less) gives `Fout` in the place of
+  the result.
 
 With a result shown:
 
@@ -186,8 +190,8 @@ With a result shown:
 
 After `Fout`, an operator does nothing; a digit, `,`, `(`, `⌫` and `C` work as above.
 
-Continuing uses the result as shown, so a rounded result continues with its 10 digits. That
-is accurate enough for every rounding the exercises ask (§6).
+Continuing uses the result as shown, so a rounded result continues with the digits on the
+display. That is accurate enough for every rounding the exercises ask (§6).
 
 ### 5.4 Neem over
 
@@ -195,7 +199,7 @@ is accurate enough for every rounding the exercises ask (§6).
   closes the overlay. The text is the result as the number keypad would type it: digits, a
   comma, a leading minus sign; no thousands separators.
 - Nothing is rounded: `132,665` goes into the field as it is, and the user removes or changes
-  digits to round. A result has at most 12 characters, the limit of a number field.
+  digits to round. The text is the number on the display, at most 12 characters (§5.3).
 - Only for a step of the answer kind `number`. Other kinds have no button: the user types the
   answer.
 - Not available after `Fout`.
@@ -300,8 +304,9 @@ deep: [
 
 - `lib/calculator.test.ts`, table-driven: every row of the two key tables of §5.3; the order of
   operations (`2 + 3 × 4 = 14`, `12 : 4 × 3 = 9`, `2 × 3² = 18`); exact against rounded
-  (`1 : 8 = 0,125`, `4 : 3 ≈ 1,333333333`, `2 : 3 ≈ 0,6666666667`); `Fout` (`5 : 0`, a result of
-  `10¹²`); continuing after a result, after a rounded result and after a negative result; the
+  (`1 : 8 = 0,125`, `4 : 3 ≈ 1,333333333`, `2 : 3 ≈ 0,6666666667`); the 12 characters
+  (`(−2) : 3 ≈ −0,666666667`, `1 : 3000 ≈ 0,0003333333`, a tiny value `≈ 0`); `Fout` (`5 : 0`,
+  a result of `10¹²`, a result of `−10¹¹`); continuing after a result, after a rounded result and after a negative result; the
   40 characters; `canPress` agrees with `applyCalculatorKey` for every key in every state of the
   tables.
 - `lib/rational.test.ts`: `roundHalfUp` for 0, 1 and 2 decimals, a half, a negative value, a
@@ -323,21 +328,10 @@ deep: [
 
 ## 11. Open assumptions
 
-Defaults of this draft, to confirm or change:
-
-1. **The mark is the button only** (decision 9): no text "rekenmachine toegestaan" in or near the
-   prompt.
-2. **A `^` key**, with `C` in the display row instead of among the keys (decision 10). Without
-   `^` the keys fit 4 columns with `C`, and `r³` is typed as `6 × 6 × 6`.
-3. **An expression calculator** (decision 11): `2 + 3 × 4 =` gives 14, as the app teaches, not
-   20 as a simple pocket calculator gives. How the Cito calculator behaves is not in the
-   handreiking.
-4. **Half weight** for a calculator topic (decision 15). Equal weight would make a third of a
-   Meetkunde Verdieping session calculator work.
-5. **The topics of §7**: their forms, ranges and prompts in `topics/meetkunde.md` §5.98–§5.99,
-   in particular the given `π = 3,14` (no `π` key) and whole-number rounding for volumes.
-6. **Continuing with the rounded result** (§5.3) instead of keeping the exact value out of
-   sight.
+None. The six defaults of the draft were confirmed on 2026-11-16: decisions 9, 10, 11 and 15,
+the topics of §7 and continuing with the shown result (§5.3). The same day the result got its
+limit of 12 characters (§5.3): the draft's 10 significant digits did not always fit a number
+field.
 
 ## 12. Build order
 
