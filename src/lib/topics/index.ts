@@ -4,6 +4,8 @@ import { generateAngles } from './angles';
 import { generateArithmeticWords } from './arithmeticWords';
 import { generateBetweenNumbers } from './betweenNumbers';
 import { generateBracketPlacement } from './bracketPlacement';
+import { generateCalcCircle } from './calcCircle';
+import { generateCalcVolume } from './calcVolume';
 import { generateCalendar } from './calendar';
 import { generateClock } from './clock';
 import { generateCompareFractions } from './compareFractions';
@@ -177,6 +179,8 @@ export const GENERATORS: Record<Topic, Generator> = {
   surfaceArea: generateSurfaceArea,
   compositeShapes: generateCompositeShapes,
   angleReasoning: generateAngleReasoning,
+  calcCircle: generateCalcCircle,
+  calcVolume: generateCalcVolume,
   shapeProperties: generateShapeProperties,
   statistics: generateStatistics,
   percentagePoints: generatePercentagePoints,
@@ -313,6 +317,11 @@ export const TOPIC_LABELS: Record<Topic, TopicLabel> = {
   surfaceArea: { name: 'Oppervlakte van ruimtefiguren', detail: 'piramide, prisma, cilinder, bol' },
   compositeShapes: { name: 'Samengestelde figuren', detail: 'hoek eruit, pad, hectare' },
   angleReasoning: { name: 'Redeneren met hoeken', detail: 'buitenhoek, verhouding, klok' },
+  calcCircle: {
+    name: 'Cirkel met de rekenmachine',
+    detail: 'omtrek, oppervlakte, terugrekenen',
+  },
+  calcVolume: { name: 'Inhoud met de rekenmachine', detail: 'bol, cilinder, liters' },
   shapeProperties: { name: 'Eigenschappen van vierhoeken en driehoeken', detail: 'ja/nee' },
   statistics: { name: 'Statistiek', detail: 'gemiddelde, mediaan, modus, spreidingsbreedte' },
   percentagePoints: { name: 'Procentpunten', detail: 'procentpunt of procent' },
@@ -343,3 +352,13 @@ export const TOPIC_LABELS: Record<Topic, TopicLabel> = {
   twoUnknowns: { name: 'Twee onbekenden', detail: 'leeftijden, munten, rechthoek' },
   simplifyDeep: { name: 'Vereenvoudigen', detail: 'reeks optellen, bladzijden nummeren' },
 };
+
+/**
+ * Topics whose exercises allow the calculator (calculator spec §3): the play screen shows the
+ * calculator button on them, and the short practice test leaves them out.
+ */
+export const CALCULATOR_TOPICS: ReadonlySet<Topic> = new Set<Topic>(['calcCircle', 'calcVolume']);
+
+export function allowsCalculator(topic: Topic): boolean {
+  return CALCULATOR_TOPICS.has(topic);
+}

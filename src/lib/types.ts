@@ -89,6 +89,8 @@ export type Topic =
   | 'surfaceArea'
   | 'compositeShapes'
   | 'angleReasoning'
+  | 'calcCircle'
+  | 'calcVolume'
   | 'shapeProperties'
   | 'statistics'
   | 'percentagePoints'
