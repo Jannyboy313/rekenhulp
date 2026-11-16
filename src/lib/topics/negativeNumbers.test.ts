@@ -222,6 +222,9 @@ describe('temperature', () => {
     );
     expect(step.check('11')).toMatchObject({ correct: true, explanation: '4 − (−7) = 4 + 7 = 11' });
     expect(step.check('3').tip).toBe('Van −7 naar 0 is 7 graden, van 0 naar 4 nog 4: samen 11.');
+    expect(stepOf(differenceQuestion(-1, 11)).check('10').tip).toBe(
+      'Van −1 naar 0 is 1 graad, van 0 naar 11 nog 11: samen 12.',
+    );
     expect(step.check('5').tip).toBeUndefined();
   });
 

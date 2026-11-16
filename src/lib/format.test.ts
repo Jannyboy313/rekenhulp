@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   capitalize,
+  counted,
   formatCountdown,
   formatDuration,
   formatEuro,
@@ -32,6 +33,14 @@ describe('capitalize', () => {
   it('writes the first letter in upper case', () => {
     expect(capitalize('witte verf')).toBe('Witte verf');
     expect(capitalize('')).toBe('');
+  });
+});
+
+describe('counted', () => {
+  it('uses the singular for exactly one', () => {
+    expect(counted(1, 'stuk', 'stukken')).toBe('1 stuk');
+    expect(counted(0, 'stuk', 'stukken')).toBe('0 stukken');
+    expect(counted(3, 'stuk', 'stukken')).toBe('3 stukken');
   });
 });
 

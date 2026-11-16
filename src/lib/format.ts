@@ -185,6 +185,11 @@ export function caretPowers(raw: string): string {
   );
 }
 
+/** A count with its noun: `1 stuk`, `3 stukken`. */
+export function counted(count: number, singular: string, plural: string): string {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
 /** The text with its first letter in upper case: 'siroop' → 'Siroop'. */
 export function capitalize(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1);

@@ -92,9 +92,9 @@ function describeChange(context: ChangeContext, oldValue: number, newValue: numb
     case 'price':
       return `Een prijs gaat van ${euro(oldValue)} naar ${euro(newValue)}`;
     case 'inhabitants':
-      return `Een dorp gaat van ${from} naar ${to} inwoners`;
+      return `Een dorp gaat van ${from} naar ${to} ${newValue === 1 ? 'inwoner' : 'inwoners'}`;
     case 'visitors':
-      return `Een museum gaat van ${from} naar ${to} bezoekers per dag`;
+      return `Een museum gaat van ${from} naar ${to} ${newValue === 1 ? 'bezoeker' : 'bezoekers'} per dag`;
   }
 }
 

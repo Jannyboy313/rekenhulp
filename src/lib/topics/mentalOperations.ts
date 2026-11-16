@@ -1,4 +1,4 @@
-import { formatEuro, formatInteger as f, formatRational } from '../format';
+import { counted, formatEuro, formatInteger as f, formatRational } from '../format';
 import { drawUntil, notRound, pick, randomInt, randomIntWhere, type Rng } from '../random';
 import { SLOT } from '../slot';
 import { decimalPlaces, divide, equals, fromInteger } from '../rational';
@@ -179,7 +179,8 @@ export const REMAINDER_CONTEXTS: readonly RemainderContext[] = [
       `${f(n)} leerlingen gaan met busjes van ${d} plaatsen. Hoeveel busjes zijn er nodig?`,
     suffix: 'busjes',
     conclusion: (answer) => `${answer} busjes`,
-    tip: (rest) => `Er blijven ${rest} leerlingen over; daarvoor is nog een busje nodig.`,
+    tip: (rest) =>
+      `Er ${rest === 1 ? 'blijft 1 leerling' : `blijven ${rest} leerlingen`} over; daarvoor is nog een busje nodig.`,
     decimalTip: (quotient) => `Je kunt geen ${quotient} busjes nemen: ${WHOLE}`,
   },
   {
@@ -191,7 +192,8 @@ export const REMAINDER_CONTEXTS: readonly RemainderContext[] = [
       `Aan een tafel passen ${d} gasten. Hoeveel tafels zijn er nodig voor ${f(n)} gasten?`,
     suffix: 'tafels',
     conclusion: (answer) => `${answer} tafels`,
-    tip: (rest) => `Er blijven ${rest} gasten over; daarvoor is nog een tafel nodig.`,
+    tip: (rest) =>
+      `Er ${rest === 1 ? 'blijft 1 gast' : `blijven ${rest} gasten`} over; daarvoor is nog een tafel nodig.`,
     decimalTip: (quotient) => `Je kunt geen ${quotient} tafels nemen: ${WHOLE}`,
   },
   {
@@ -215,7 +217,7 @@ export const REMAINDER_CONTEXTS: readonly RemainderContext[] = [
       `In een doos passen ${d} eieren. Je vult zoveel mogelijk dozen met ${f(n)} eieren. ` +
       'Hoeveel eieren houd je over?',
     suffix: 'eieren',
-    conclusion: (answer) => `${answer} eieren over`,
+    conclusion: (answer) => `${counted(answer, 'ei', 'eieren')} over`,
     tip: () => 'Dat is het aantal dozen; gevraagd is wat je overhoudt.',
   },
   {

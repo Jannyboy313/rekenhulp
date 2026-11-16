@@ -138,7 +138,7 @@ function differenceTip(night: number, day: number): Diagnose {
   return (given) => {
     if (day > 0 && equals(given, fromInteger(Math.abs(day + night)))) {
       return (
-        `Van ${f(night)} naar 0 is ${f(-night)} graden, van 0 naar ${f(day)} nog ${f(day)}: ` +
+        `Van ${f(night)} naar 0 is ${f(-night)} ${night === -1 ? 'graad' : 'graden'}, van 0 naar ${f(day)} nog ${f(day)}: ` +
         `samen ${f(day - night)}.`
       );
     }

@@ -99,7 +99,11 @@ export function digitQuestion(place: Place, number: number, others: readonly num
   const digits = [...String(number)].reverse().map(Number);
   const index = PLACES.indexOf(place);
   const answer = digits[index]!;
-  const steps = PLACES.slice(0, index + 1).map((name, i) => `${digits[i]} ${name}`);
+  // One of a place is written in the singular: `1 tiental`, `1 eenheid`.
+  const singular = (name: Place) => (name === 'eenheden' ? 'eenheid' : name.slice(0, -2));
+  const steps = PLACES.slice(0, index + 1).map(
+    (name, i) => `${digits[i]} ${digits[i] === 1 ? singular(name) : name}`,
+  );
   return {
     key: `arithmeticWords:digit:${place}:${number}`,
     topic: 'arithmeticWords',

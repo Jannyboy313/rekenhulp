@@ -1,4 +1,4 @@
-import { formatEuro, formatInteger as f, formatMoney } from '../format';
+import { counted, formatEuro, formatInteger as f, formatMoney } from '../format';
 import { drawUntil, pick, randomInt, type Rng } from '../random';
 import { fromInteger, rational, type Rational } from '../rational';
 import { numberStep } from '../steps';
@@ -150,6 +150,12 @@ const ROUND_DOWN_PROMPTS: Record<
     `Van een plank van ${n} cm zaag je stukken van ${m} cm. Hoeveel stukken kun je zagen?`,
 };
 
+const ROUND_DOWN_SINGULAR: Record<(typeof ROUND_DOWN_CONTEXTS)[number], string> = {
+  kaartjes: 'kaartje',
+  zakjes: 'zakje',
+  stukken: 'stuk',
+};
+
 function roundDown(rng: Rng, context: (typeof ROUND_DOWN_CONTEXTS)[number]): Built {
   const [n, m] = division(rng);
   const quotient = Math.floor(n / m);
@@ -159,7 +165,7 @@ function roundDown(rng: Rng, context: (typeof ROUND_DOWN_CONTEXTS)[number]): Bui
     answer: fromInteger(quotient),
     money: false,
     suffix: context,
-    explanation: `${n} : ${m} = ${quotient} rest ${n % m} → ${quotient} ${context}`,
+    explanation: `${n} : ${m} = ${quotient} rest ${n % m} → ${counted(quotient, ROUND_DOWN_SINGULAR[context], context)}`,
   };
 }
 

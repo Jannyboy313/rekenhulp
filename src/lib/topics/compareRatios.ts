@@ -1,4 +1,4 @@
-import { capitalize, formatEuro, formatRational } from '../format';
+import { capitalize, counted, formatEuro, formatRational } from '../format';
 import { gcd, lcm } from '../primes';
 import { drawUntil, pick, randomInt, range, shuffle, type Rng } from '../random';
 import { rational } from '../rational';
@@ -27,7 +27,8 @@ export function recipeQuestion(
   const pears = (ratio: Ratio) => (apples / ratio[0]) * ratio[1];
   const [firstPears, secondPears] = [pears(first), pears(second)];
   const answer = firstPears > secondPears ? names[0] : firstPears < secondPears ? names[1] : EVEN;
-  const shown = (name: string, count: number) => `${name}: ${apples} appels → ${count} peren`;
+  const shown = (name: string, count: number) =>
+    `${name}: ${apples} appels → ${counted(count, 'peer', 'peren')}`;
   return {
     key: `compareRatios:recipe:${names[0]}:${first.join(':')}:${second.join(':')}:${apples}`,
     topic: 'compareRatios',

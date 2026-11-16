@@ -203,26 +203,26 @@ interface WhichPartContext {
   /** `In een klas van 30 kinderen zitten 12 jongens. Welk deel van de klas is meisje?` */
   prompt(total: number, given: number): string;
   /** The unit of the other part, for the explanation. */
-  other: string;
+  other(count: number): string;
   maxTotal: number;
 }
 
 export const WHICH_PART_CONTEXTS: Readonly<Record<string, WhichPartContext>> = {
   klas: {
     prompt: (n, a) =>
-      `In een klas van ${n} kinderen zitten ${a} jongens. Welk deel van de klas is meisje?`,
-    other: 'meisjes',
+      `In een klas van ${n} kinderen ${a === 1 ? 'zit 1 jongen' : `zitten ${a} jongens`}. Welk deel van de klas is meisje?`,
+    other: (count) => (count === 1 ? 'meisje' : 'meisjes'),
     maxTotal: 36,
   },
   boek: {
     prompt: (n, a) =>
       `Een boek heeft ${n} bladzijden. Je hebt er ${a} gelezen. Welk deel van het boek moet je nog lezen?`,
-    other: 'bladzijden',
+    other: (count) => (count === 1 ? 'bladzijde' : 'bladzijden'),
     maxTotal: 60,
   },
   tank: {
     prompt: (n, a) => `In een tank van ${n} liter zit ${a} liter. Welk deel van de tank is leeg?`,
-    other: 'liter',
+    other: () => 'liter',
     maxTotal: 60,
   },
 };
@@ -242,7 +242,7 @@ export function whichPartQuestion(context: string, total: number, given: number)
         prompt: prompt(total, given),
         answer,
         decimalAllowed: false,
-        explanation: `${total} − ${given} = ${rest} ${other} → ${unsimplified}${unsimplified === lowest ? '' : ` = ${lowest}`}`,
+        explanation: `${total} − ${given} = ${rest} ${other(rest)} → ${unsimplified}${unsimplified === lowest ? '' : ` = ${lowest}`}`,
       }),
     ],
   };

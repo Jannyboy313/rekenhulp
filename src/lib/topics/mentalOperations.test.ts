@@ -278,6 +278,17 @@ describe('remainder in a context', () => {
     expect(step.check('3').tip).toBeUndefined();
   });
 
+  it('names a rest of one in the singular', () => {
+    const busjes = stepOf(remainderQuestion(contextOf('busjes', 'up'), 225, 8));
+    expect(busjes.check('28').tip).toBe(
+      'Er blijft 1 leerling over; daarvoor is nog een busje nodig.',
+    );
+    const tafels = stepOf(remainderQuestion(contextOf('tafels', 'up'), 73, 6));
+    expect(tafels.check('12').tip).toBe('Er blijft 1 gast over; daarvoor is nog een tafel nodig.');
+    const eieren = stepOf(remainderQuestion(contextOf('dozen', 'rest'), 229, 6));
+    expect(eieren.check('1').explanation).toBe('229 = 38 × 6 + 1 → 1 ei over');
+  });
+
   it('rounds up for tafels', () => {
     const step = stepOf(remainderQuestion(contextOf('tafels', 'up'), 75, 6));
     expect(step.prompt).toBe(
