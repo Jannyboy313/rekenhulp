@@ -5,6 +5,7 @@
   import { hasSlot } from '../lib/slot';
   import type { LessonTopic } from '../lib/lessons/types';
   import type { AnswerKind, CheckResult } from '../lib/types';
+  import { sticks } from '../lib/units';
   import Icon from './Icon.svelte';
   import LessonLinks from './LessonLinks.svelte';
   import MathText from './MathText.svelte';
@@ -48,10 +49,10 @@
   });
 </script>
 
-<!-- A value with its unit; the percent sign sticks to the number (lib/units.ts). -->
+<!-- A value with its unit; a sign such as % sticks to the number (lib/units.ts). -->
 {#snippet value(text: string)}{#if prefix}{prefix}{' '}{/if}<MathText
     {text}
-  />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
+  />{#if suffix}{#if !sticks(suffix)}{' '}{/if}{suffix}{/if}{/snippet}
 
 {#snippet links()}
   <div class="lesson-links"><LessonLinks topics={lessons} onopen={onlesson} {opened} /></div>

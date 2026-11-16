@@ -120,8 +120,15 @@ describe('Feedback', () => {
     });
     expect(tileValues()).toEqual(['€ 15', '€ 45']);
     unmount();
-    renderFeedback({ input: '15', result: { correct: false, expected: '25' }, suffix: '%' });
+    const percent = renderFeedback({
+      input: '15',
+      result: { correct: false, expected: '25' },
+      suffix: '%',
+    });
     expect(tileValues()).toEqual(['15%', '25%']);
+    percent.unmount();
+    renderFeedback({ input: '50', result: { correct: false, expected: '60' }, suffix: '°' });
+    expect(tileValues()).toEqual(['50°', '60°']);
   });
 
   it('shows a factorization answer pretty-printed', () => {

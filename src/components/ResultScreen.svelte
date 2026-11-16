@@ -5,6 +5,7 @@
   import { wrongSteps, type SessionSummary } from '../lib/results';
   import { PASS_PERCENT } from '../lib/practiceTest';
   import { EXERCISES_PER_MISTAKE } from '../lib/session';
+  import { sticks } from '../lib/units';
   import Icon from './Icon.svelte';
   import { viewport } from './layout.svelte';
   import MathText from './MathText.svelte';
@@ -33,14 +34,14 @@
   const topicsOpen = untrack(() => viewport.shown === 'tablet-landscape');
 </script>
 
-<!-- A value with its unit; the percent sign sticks to the number (lib/units.ts). -->
+<!-- A value with its unit; a sign such as % sticks to the number (lib/units.ts). -->
 {#snippet value(
   text: string,
   prefix?: string,
   suffix?: string,
 )}{#if prefix}{prefix}{' '}{/if}<MathText
     {text}
-  />{#if suffix}{#if suffix !== '%'}{' '}{/if}{suffix}{/if}{/snippet}
+  />{#if suffix}{#if !sticks(suffix)}{' '}{/if}{suffix}{/if}{/snippet}
 
 <main class="results">
   <div class="scroll">
