@@ -158,6 +158,13 @@ SHOTS.forEach((shot, index) => {
         ).length,
     );
     expect(clipped, 'lesson tables cut off vertically').toBe(0);
+    // Only the lists inside a screen scroll, never the document: an absolutely positioned
+    // element (the hidden text of a fraction) outside a positioned scroll container would
+    // make the page scroll, header included.
+    const pageOverflow = await page.evaluate(
+      () => document.documentElement.scrollHeight - document.documentElement.clientHeight,
+    );
+    expect(pageOverflow, 'the document itself scrolls').toBeLessThanOrEqual(0);
     // A tablet keeps its viewport: a taller one would be another layout (v4 spec §3.1).
     if (project === 'phone') await growToContent(page);
     const name = `${String(index + 1).padStart(2, '0')}-${shot.id}.png`;

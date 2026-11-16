@@ -314,7 +314,9 @@ gets the "geopend" mark. `PlayScreen` and `Feedback` still only pass lesson data
 ## 8. List screens
 
 Lists keep the phone's type sizes unless a size is given. "Column n" is a centred column of at
-most n wide. Every screen keeps its header on top and its pinned buttons at the bottom.
+most n wide. Every screen keeps its header on top and its pinned buttons at the bottom. The
+lesson scrolls over the whole width of the window, so a swipe in the margin next to its reading
+column scrolls too.
 
 | Screen                      | Landscape                                                                                                                                                                                                 | Portrait                                              |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------- |

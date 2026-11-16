@@ -68,7 +68,10 @@
     font-weight: 700;
   }
 
+  /* `position: relative`: the visually hidden text of a fraction is absolutely positioned and
+     must scroll with the content, or it makes the document itself scroll. */
   .content {
+    position: relative;
     flex: 1;
     min-height: 0;
     overflow-y: auto;
@@ -93,12 +96,20 @@
     padding-inline: 40px;
   }
 
-  :global([data-layout^='tablet']) :is(header, .content) {
+  :global([data-layout^='tablet']) header {
     position: relative;
     width: 100%;
     max-width: 680px;
     margin-inline: auto;
     padding-inline: 0;
+  }
+
+  /* The content scrolls over the whole width of the window, so a swipe next to the column
+     scrolls too: it covers the side padding of the screen and pads itself down to the column. */
+  :global([data-layout^='tablet']) .content {
+    --side: 40px;
+    margin-inline: calc(-1 * var(--side));
+    padding-inline: max(var(--side), calc((100% - 680px) / 2 + var(--side)));
   }
 
   :global([data-layout^='tablet']) header {
