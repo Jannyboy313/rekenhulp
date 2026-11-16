@@ -792,3 +792,40 @@ describe('QuestionView physical keyboard, review fixes (v4 spec §3.3, §6)', ()
     ).toBe('Kladblok vak 1: 7');
   });
 });
+
+describe('QuestionView with a calculator result (calculator spec §5.4)', () => {
+  it('puts a taken-over result in the number field, replacing what was typed', async () => {
+    const { rerender } = render(QuestionView, { props: { step, onanswer: vi.fn() } });
+    await press('1', '2');
+    expect(answerText()).toBe('12');
+    await rerender({ taken: { text: '132,665' } });
+    expect(answerText()).toBe('132,665');
+    expect(okButton().disabled).toBe(false);
+  });
+
+  it('takes the same result again after the field was edited', async () => {
+    const { rerender } = render(QuestionView, {
+      props: { step, taken: { text: '23,55' }, onanswer: vi.fn() },
+    });
+    expect(answerText()).toBe('23,55');
+    await press('wissen');
+    expect(answerText()).toBe('23,5');
+    await rerender({ taken: { text: '23,55' } });
+    expect(answerText()).toBe('23,55');
+  });
+
+  it('gives the keypad back to the answer field when a kladblok cell was active', async () => {
+    const { rerender } = render(QuestionView, {
+      props: { step, scratchpad: true, onanswer: vi.fn() },
+    });
+    await press(/^Kladblok vak 1/);
+    expect(screen.queryByLabelText('Jouw antwoord')).toBeNull();
+    await rerender({ taken: { text: '12' } });
+    expect(answerText()).toBe('12');
+  });
+
+  it('leaves a field of another kind alone', async () => {
+    render(QuestionView, { props: { step: rewrite, taken: { text: '12' }, onanswer: vi.fn() } });
+    expect(answerText()).toBe('');
+  });
+});

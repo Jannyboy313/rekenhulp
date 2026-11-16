@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { untrack } from 'svelte';
+  import { tick, untrack } from 'svelte';
+  import { applyCalculatorKey, EMPTY_CALCULATOR } from '../lib/calculator';
   import { formatCountdown } from '../lib/format';
   import { remainingMs } from '../lib/practiceTest';
   import {
@@ -14,8 +15,12 @@
   import { createRng, randomSeed } from '../lib/random';
   import type { QuestionRecord } from '../lib/results';
   import { EMPTY_NOTES, sessionUsesScratchpad, showsScratchpad } from '../lib/scratchpad';
+  import { sessionUsesCalculator } from '../lib/session';
+  import { allowsCalculator } from '../lib/topics';
   import type { CheckResult, Question } from '../lib/types';
   import { keepScreenAwake } from '../lib/wakeLock';
+  import Calculator from './Calculator.svelte';
+  import CalculatorButton from './CalculatorButton.svelte';
   import { viewport } from './layout.svelte';
   import PlayShell from './PlayShell.svelte';
   import QuestionView from './QuestionView.svelte';
@@ -53,6 +58,24 @@
   // Like the lesson sheet, the dialog would lie over the "too low" notice (v4 spec §3.3).
   const tooLow = $derived(viewport.layout === 'too-low');
 
+  // The calculator, as on PlayScreen (calculator spec §4–§5, §8): the calculation belongs to
+  // the question; a test without calculator exercises (Kort) has no button.
+  const usesCalculator = untrack(() => sessionUsesCalculator(questions));
+  let calculation = $state.raw(EMPTY_CALCULATOR);
+  let calculatorOpen = $state(false);
+  let calculatorButton: HTMLButtonElement | undefined = $state();
+  let taken = $state.raw<{ text: string } | null>(null);
+
+  function closeCalculator() {
+    calculatorOpen = false;
+    void tick().then(() => calculatorButton?.focus());
+  }
+
+  function takeOver(text: string) {
+    taken = { text };
+    closeCalculator();
+  }
+
   function tickClock() {
     now = Date.now();
     if (remainingMs(deadline, now) === 0) apply(stop(play), true);
@@ -72,7 +95,14 @@
   function apply(next: PlayState, timedOut = false) {
     const previous = play;
     play = next;
-    if (next.questionIndex !== previous.questionIndex) notes = EMPTY_NOTES;
+    if (next.questionIndex !== previous.questionIndex) {
+      notes = EMPTY_NOTES;
+      calculation = EMPTY_CALCULATOR;
+      calculatorOpen = false;
+    }
+    if (next.questionIndex !== previous.questionIndex || next.stepIndex !== previous.stepIndex) {
+      taken = null;
+    }
     if (next.finished && !previous.finished) {
       onfinish([...next.records], Date.now() - start, timedOut);
     }
@@ -96,11 +126,20 @@
 
 <svelte:document onvisibilitychange={() => document.visibilityState === 'visible' && tickClock()} />
 
+{#snippet calculatorAction()}
+  <CalculatorButton
+    mode={allowsCalculator(question.topic) ? 'active' : 'reserved'}
+    onopen={() => (calculatorOpen = true)}
+    bind:ref={calculatorButton}
+  />
+{/snippet}
+
 <PlayShell
   name="Oefentoets"
   onstop={() => (stopping = true)}
   progress={play.records.length}
   max={questions.length}
+  action={usesCalculator ? calculatorAction : undefined}
 >
   {#snippet meta()}
     <span>{play.questionIndex + 1} / {questions.length}</span>
@@ -112,8 +151,17 @@
   <p class="sr-only" aria-live="polite">{lastMinute ? 'Nog één minuut' : ''}</p>
 
   {#key `${play.questionIndex}-${play.stepIndex}`}
-    <QuestionView {step} {scratchpad} {reserved} bind:notes onanswer={handleAnswer} />
+    <QuestionView {step} {scratchpad} {reserved} {taken} bind:notes onanswer={handleAnswer} />
   {/key}
+
+  {#if calculatorOpen && !tooLow}
+    <Calculator
+      {calculation}
+      onkey={(key) => (calculation = applyCalculatorKey(calculation, key))}
+      onclose={closeCalculator}
+      ontake={step.kind === 'number' ? takeOver : undefined}
+    />
+  {/if}
 </PlayShell>
 
 {#if stopping && !tooLow}

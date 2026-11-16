@@ -8,7 +8,8 @@
     | 'pen'
     | 'repeat'
     | 'bulb'
-    | 'book';
+    | 'book'
+    | 'calculator';
 
   const PATHS: Record<IconName, string> = {
     'chevron-left': 'M15 5l-7 7 7 7',
@@ -20,6 +21,9 @@
     repeat: 'M17 2l3 3-3 3M4 11V9a4 4 0 014-4h12M7 22l-3-3 3-3M20 13v2a4 4 0 01-4 4H4',
     bulb: 'M9 18h6M10 21h4M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z',
     book: 'M4 19.5A2.5 2.5 0 016.5 17H20V3H6.5A2.5 2.5 0 004 5.5v14zM4 19.5A2.5 2.5 0 006.5 22H20v-5',
+    // A frame, the display line and two rows of keys (dots).
+    calculator:
+      'M7 3h10a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2zM8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16.5h.01M12 16.5h.01M15.5 16.5h.01',
   };
 </script>
 

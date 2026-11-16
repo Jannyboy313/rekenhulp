@@ -14,10 +14,12 @@
     max: number;
     /** The right side of the header line: counter and time. */
     meta: Snippet;
+    /** The right end of the header: the calculator button or its space (calculator spec §4). */
+    action?: Snippet;
     children: Snippet;
   }
 
-  let { name, onstop, progress, max, meta, children }: Props = $props();
+  let { name, onstop, progress, max, meta, action, children }: Props = $props();
 </script>
 
 <main class="play">
@@ -41,6 +43,7 @@
         <div class="fill" style:width="{(progress / max) * 100}%"></div>
       </div>
     </div>
+    {@render action?.()}
   </header>
 
   {@render children()}

@@ -1,7 +1,7 @@
 import { blueprintFor, DOMAINS, domainSets, type TestConfig } from './practiceTest';
 import { randomInt, shuffle, type Rng } from './random';
 import { choosesTables, MIN_SIZE_FOR_MIXED_TABLES, QUICK_SHARE_PERCENT } from './sets';
-import { GENERATORS } from './topics';
+import { allowsCalculator, GENERATORS } from './topics';
 import { generateTables } from './topics/tables';
 import type { Generator, Level, PracticeSet, Question, Topic, TopicWeight } from './types';
 
@@ -270,4 +270,9 @@ export function insertRepeat<T>(queue: readonly T[], currentIndex: number, item:
   const earliest = Math.min(currentIndex + 2, queue.length);
   const index = randomInt(rng, earliest, queue.length);
   return [...queue.slice(0, index), item, ...queue.slice(index)];
+}
+
+/** At least one question allows the calculator: the header then keeps the button's space (calculator spec §4). */
+export function sessionUsesCalculator(questions: readonly Question[]): boolean {
+  return questions.some(({ topic }) => allowsCalculator(topic));
 }

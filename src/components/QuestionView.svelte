@@ -21,6 +21,8 @@
     reserved?: boolean;
     /** The kladblok notes. PlayScreen binds them, so they outlive this step. */
     notes?: readonly string[];
+    /** A calculator result for the answer field; passed on to KeypadAnswer (calculator spec §5.4). */
+    taken?: { text: string } | null;
     onanswer: (input: string, result: CheckResult) => void;
   }
 
@@ -29,6 +31,7 @@
     scratchpad = false,
     reserved = false,
     notes = $bindable(EMPTY_NOTES),
+    taken = null,
     onanswer,
   }: Props = $props();
 
@@ -181,6 +184,7 @@
       {scratch}
       tall={!scratchpad && !reserved}
       {locked}
+      {taken}
       onsubmit={answer}
     />
   {/if}

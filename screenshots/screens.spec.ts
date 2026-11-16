@@ -100,7 +100,19 @@ const SHOTS: readonly Shot[] = [
       await page.getByRole('button', { name: /^Les/ }).first().click();
     },
   },
-  { id: 'question-calculator-open', scene: 'calculator' },
+  { id: 'question-calculator', scene: 'question-calculator' },
+  {
+    id: 'question-calculator-open',
+    scene: 'question-calculator',
+    steps: async (page) => {
+      await page.getByRole('button', { name: 'Rekenmachine' }).click();
+      const keys = ['3', 'komma', '1', '4', 'keer', '6', 'komma', '5', 'tot de macht', '2', 'is'];
+      // Inside the dialog: the answer keypad behind it has keys of the same name.
+      for (const name of keys) {
+        await page.getByRole('dialog').getByRole('button', { name, exact: true }).click();
+      }
+    },
+  },
   { id: 'results-perfect', scene: 'results-perfect' },
   { id: 'results-mistakes', scene: 'results-mistakes' },
   { id: 'test-setup', scene: 'test-setup' },

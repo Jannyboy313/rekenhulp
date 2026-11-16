@@ -1,4 +1,5 @@
 <script lang="ts" generics="S">
+  import { untrack } from 'svelte';
   import type { InputModel } from '../lib/inputModels';
   import type { FractionSlot, KeypadKey } from '../lib/keypadInput';
   import { keyFor, type PhysicalAction } from '../lib/physicalKeys';
@@ -20,6 +21,11 @@
     tall?: boolean;
     /** The answer was correct: the field turns green, the keypad is dimmed and the bar runs. */
     locked?: boolean;
+    /**
+     * A result taken over from the calculator (calculator spec §5.4): it replaces what was typed.
+     * A new object per take, so the same text can be taken twice.
+     */
+    taken?: { text: string } | null;
     /** Called with valid input only; invalid input shows an inline error instead (spec §6). */
     onsubmit: (input: string) => void;
   }
@@ -31,6 +37,7 @@
     scratch,
     tall = scratch === undefined,
     locked = false,
+    taken = null,
     onsubmit,
   }: Props = $props();
 
@@ -42,6 +49,14 @@
   // svelte-ignore state_referenced_locally
   let value = $state.raw(model.empty);
   let error = $state<string | null>(null);
+
+  // Neem over: the result goes into the answer field, also when a kladblok cell was active.
+  $effect(() => {
+    if (taken === null || model.fromText === undefined) return;
+    value = model.fromText(taken.text);
+    error = null;
+    untrack(() => scratch?.onfocusanswer());
+  });
 
   const segments = $derived(model.view(value));
   const inNote = $derived(scratch?.active === true);

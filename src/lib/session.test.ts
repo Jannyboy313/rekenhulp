@@ -14,6 +14,7 @@ import {
   REVIEW_MAX_TOPICS,
   REVIEW_PER_TOPIC,
   reviewSession,
+  sessionUsesCalculator,
   shareCount,
   topicSession,
 } from './session';
@@ -864,5 +865,16 @@ describe('reviewSession (review spec §5)', () => {
     const keys = (seed: number) =>
       reviewSession(['lcm', 'scale'], createRng(seed)).map((q) => q.key);
     expect(keys(7)).toEqual(keys(7));
+  });
+});
+
+describe('sessionUsesCalculator (calculator spec §4)', () => {
+  const plain = { key: 'a', topic: 'tables', steps: [] } as const;
+  const calculator = { key: 'b', topic: 'calcVolume', steps: [] } as const;
+
+  it('is true when at least one question is of a calculator topic', () => {
+    expect(sessionUsesCalculator([plain, calculator])).toBe(true);
+    expect(sessionUsesCalculator([plain])).toBe(false);
+    expect(sessionUsesCalculator([])).toBe(false);
   });
 });

@@ -53,6 +53,11 @@ export interface InputModel<S> {
   view(state: S): FieldSegment[];
   /** Moves the cursor to a tapped slot; only kinds with a fraction template have it. */
   select?(state: S, slot: FractionSlot): S;
+  /**
+   * The typing state for a text put in from outside: Neem over of the calculator (calculator
+   * spec §5.4). Only `number` has it.
+   */
+  fromText?(text: string): S;
 }
 
 /** Ja/Nee and multiple choice have no keypad: QuestionView shows buttons instead. */
@@ -188,7 +193,10 @@ function viewFraction({ negative, whole, template }: FractionInput): FieldSegmen
 }
 
 export const INPUT_MODELS: { readonly [K in KeypadKind]: InputModel<KeypadStates[K]> } = {
-  number: textModel(NUMBER_KEYS, applyKey, validateNumber('number'), formatInput),
+  number: {
+    ...textModel(NUMBER_KEYS, applyKey, validateNumber('number'), formatInput),
+    fromText: (text) => text,
+  },
   fraction: {
     keys: FRACTION_KEYS,
     empty: EMPTY_FRACTION_INPUT,

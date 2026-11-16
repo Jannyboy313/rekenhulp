@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/svelte';
+import { fireEvent, render, screen, within } from '@testing-library/svelte';
 import { tick } from 'svelte';
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
@@ -8,6 +8,7 @@ import { isCorrect, type QuestionRecord } from '../lib/results';
 import { NUMBERS_SET, TABLES_SET } from '../lib/sets';
 import { SLOT } from '../lib/slot';
 import { booleanStep, choiceStep, numberStep } from '../lib/steps';
+import { circumferenceQuestion } from '../lib/topics/calcCircle';
 import { propertyQuestion } from '../lib/topics/properties';
 import type { Question } from '../lib/types';
 import { viewport } from './layout.svelte';
@@ -686,5 +687,147 @@ describe('PlayScreen physical keyboard, review fixes (v4 spec §3.3, §6)', () =
     await tick();
     await fireEvent.keyDown(document.body, { key: 'Enter' });
     expect(screen.getByText('Niet goed')).toBeTruthy();
+  });
+});
+
+describe('PlayScreen calculator (calculator spec §4–§5)', () => {
+  // jsdom has no modal dialogs.
+  beforeAll(() => {
+    HTMLDialogElement.prototype.showModal = function (this: HTMLDialogElement) {
+      this.setAttribute('open', '');
+    };
+  });
+  afterEach(() => {
+    viewport.layout = 'phone';
+  });
+
+  const plain = question('2 × 3 = ?', 6);
+  // 3,14 × 7,5 = 23,55, rounded 23,6.
+  const circle = circumferenceQuestion(75, 'diameter', 'cm');
+  const other = circumferenceQuestion(35, 'diameter', 'm');
+
+  const button = () => document.querySelector<HTMLButtonElement>('.calculator-button');
+  const overlay = () => document.querySelector<HTMLDialogElement>('dialog.calculator');
+  const display = () => overlay()?.querySelector('.calculation')?.textContent;
+  // The field ends on the unit of the exercise.
+  const answerField = () =>
+    screen.getByLabelText('Jouw antwoord').textContent?.trim().replace(/cm$/, '');
+
+  function play(...questions: Question[]) {
+    render(PlayScreen, { props: { name: 'Meetkunde', questions, onfinish: vi.fn() } });
+  }
+
+  async function open() {
+    await fireEvent.click(button()!);
+  }
+
+  /** Keys of the calculator by accessible name; the answer keypad behind it has the same names. */
+  async function calc(...names: string[]) {
+    for (const name of names) {
+      await fireEvent.click(within(overlay()!).getByRole('button', { name }));
+    }
+  }
+
+  it('has no button in a session without calculator exercises', () => {
+    play(plain);
+    expect(button()).toBeNull();
+  });
+
+  it('keeps the space of the button, hidden and inert, on an exercise without the calculator', async () => {
+    play(plain, circle);
+    expect(button()!.classList.contains('reserved')).toBe(true);
+    expect(button()!.inert).toBe(true);
+    expect(button()!.getAttribute('aria-hidden')).toBe('true');
+    await press('6', 'OK');
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
+    expect(button()!.classList.contains('reserved')).toBe(false);
+    expect(button()!.inert).toBe(false);
+    expect(button()!.disabled).toBe(false);
+    expect(screen.getByRole('button', { name: 'Rekenmachine' })).toBe(button());
+  });
+
+  it('keeps the calculation while the overlay is closed and gives the focus back', async () => {
+    play(circle);
+    expect(overlay()).toBeNull();
+    await open();
+    expect(display()).toBe('0');
+    await calc('2', 'plus', '3', 'is');
+    expect(display()).toBe('2 + 3 = 5');
+    await calc('Sluiten');
+    await tick();
+    expect(overlay()).toBeNull();
+    expect(document.activeElement).toBe(button());
+    await open();
+    expect(display()).toBe('2 + 3 = 5');
+  });
+
+  it('puts the result in the answer field with Neem over, unrounded', async () => {
+    play(circle);
+    await press('1');
+    await open();
+    await calc('3', 'komma', '1', '4', 'keer', '7', 'komma', '5', 'is', 'Neem over');
+    expect(overlay()).toBeNull();
+    expect(answerField()).toBe('23,55');
+    // Rounding is the user's work: the field is typed on as usual.
+    await press('wissen', 'wissen', '6');
+    expect(answerField()).toBe('23,6');
+  });
+
+  it('sends the physical keys to the calculator while it is open', async () => {
+    play(circle);
+    await open();
+    await fireEvent.keyDown(window, { key: '7' });
+    await fireEvent.keyDown(window, { key: 'Enter' });
+    expect(display()).toBe('7 = 7');
+    await calc('Sluiten');
+    expect(answerField()).toBe('');
+    await fireEvent.keyDown(window, { key: '7' });
+    expect(answerField()).toBe('7');
+  });
+
+  it('disables the button on the wrong panel', async () => {
+    play(circle);
+    await press('1', 'OK');
+    expect(screen.getByText('Niet goed')).toBeTruthy();
+    expect(button()!.disabled).toBe(true);
+  });
+
+  it('starts the next question with an empty calculator', async () => {
+    play(circle, other);
+    await open();
+    await calc('2', 'plus', '3', 'is', 'Sluiten');
+    await press('2', '3', 'komma', '6', 'OK');
+    await vi.advanceTimersByTimeAsync(CORRECT_FEEDBACK_MS);
+    expect(screen.getByText('2 / 2')).toBeTruthy();
+    expect(overlay()).toBeNull();
+    await open();
+    expect(display()).toBe('0');
+  });
+
+  it('has no Neem over on a multiple-choice step, whose options the digits do not choose', async () => {
+    const choice: Question = {
+      key: 'choice',
+      topic: 'calcCircle',
+      steps: [choiceStep({ prompt: 'Welke?', options: ['1', '2', '3', '4'], answer: '2' })],
+    };
+    const onfinish = vi.fn();
+    render(PlayScreen, { props: { name: 'Meetkunde', questions: [choice], onfinish } });
+    await open();
+    expect(within(overlay()!).queryByRole('button', { name: 'Neem over' })).toBeNull();
+    await fireEvent.keyDown(window, { key: '1' });
+    expect(display()).toBe('1');
+    expect(screen.queryByText('Niet goed')).toBeNull();
+  });
+
+  it('hides the overlay under the "too low" notice and shows it again with its calculation', async () => {
+    play(circle);
+    await open();
+    await calc('7');
+    viewport.layout = 'too-low';
+    await tick();
+    expect(overlay()).toBeNull();
+    viewport.layout = 'phone';
+    await tick();
+    expect(display()).toBe('7');
   });
 });

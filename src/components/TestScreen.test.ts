@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from '@testing-library/svelte';
+import { fireEvent, render, screen, within } from '@testing-library/svelte';
 import { tick } from 'svelte';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { fromInteger } from '../lib/rational';
 import { isCorrect, type QuestionRecord } from '../lib/results';
 import { numberStep } from '../lib/steps';
+import { circumferenceQuestion } from '../lib/topics/calcCircle';
 import type { Question } from '../lib/types';
 import { viewport } from './layout.svelte';
 import TestScreen from './TestScreen.svelte';
@@ -187,5 +188,54 @@ describe('TestScreen stop dialog (test spec §5.4)', () => {
     viewport.layout = 'phone';
     await tick();
     expect(dialog()).toBeTruthy();
+  });
+});
+
+describe('TestScreen calculator (calculator spec §8)', () => {
+  // jsdom has no modal dialogs.
+  beforeAll(() => {
+    HTMLDialogElement.prototype.showModal = function (this: HTMLDialogElement) {
+      this.setAttribute('open', '');
+    };
+  });
+
+  const circle = circumferenceQuestion(75, 'diameter', 'cm');
+  const button = () => document.querySelector<HTMLButtonElement>('.calculator-button');
+  const overlay = () => document.querySelector<HTMLDialogElement>('dialog.calculator');
+  const display = () => overlay()?.querySelector('.calculation')?.textContent;
+
+  async function calc(...names: string[]) {
+    for (const name of names) {
+      await fireEvent.click(within(overlay()!).getByRole('button', { name }));
+    }
+  }
+
+  it('has no button in a test without calculator exercises', () => {
+    renderTest();
+    expect(button()).toBeNull();
+  });
+
+  it('takes a result over and starts the next question with an empty calculator', async () => {
+    const onfinish = renderTest([circle, question('4 × 5', 20), circle]);
+    await fireEvent.click(button()!);
+    await calc('2', '3', 'komma', '6', 'is', 'Neem over');
+    expect(overlay()).toBeNull();
+    expect(screen.getByLabelText('Jouw antwoord').textContent?.trim()).toBe('23,6cm');
+    await press('OK');
+    // The second question has no calculator: only the space of the button.
+    expect(button()!.inert).toBe(true);
+    await press('2', '0', 'OK');
+    expect(button()!.inert).toBe(false);
+    await fireEvent.click(button()!);
+    expect(display()).toBe('0');
+    expect(onfinish).not.toHaveBeenCalled();
+  });
+
+  it('ends at the deadline with the calculator open', async () => {
+    const onfinish = renderTest([circle]);
+    await fireEvent.click(button()!);
+    await vi.advanceTimersByTimeAsync(LIMIT);
+    expect(onfinish).toHaveBeenCalledOnce();
+    expect(onfinish.mock.calls[0]![2]).toBe(true);
   });
 });

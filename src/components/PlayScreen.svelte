@@ -1,5 +1,6 @@
 <script lang="ts">
   import { tick, untrack } from 'svelte';
+  import { applyCalculatorKey, EMPTY_CALCULATOR } from '../lib/calculator';
   import { CORRECT_FEEDBACK_MS } from '../lib/feedback';
   import { formatDuration } from '../lib/format';
   import { LESSONS } from '../lib/lessons';
@@ -19,8 +20,12 @@
   } from '../lib/play';
   import type { QuestionRecord } from '../lib/results';
   import { EMPTY_NOTES, sessionUsesScratchpad, showsScratchpad } from '../lib/scratchpad';
+  import { sessionUsesCalculator } from '../lib/session';
+  import { allowsCalculator } from '../lib/topics';
   import { keepScreenAwake } from '../lib/wakeLock';
   import type { CheckResult, Question } from '../lib/types';
+  import Calculator from './Calculator.svelte';
+  import CalculatorButton from './CalculatorButton.svelte';
   import Feedback from './Feedback.svelte';
   import Icon from './Icon.svelte';
   import { viewport } from './layout.svelte';
@@ -91,6 +96,29 @@
   // dead buttons. It comes back, on the same lesson, when the notice goes (v4 spec §3.3).
   const tooLow = $derived(viewport.layout === 'too-low');
 
+  // The calculator (calculator spec §4–§5). Its calculation belongs to the question, as the
+  // kladblok notes; a session without calculator exercises has no button and no reserved space.
+  const usesCalculator = untrack(() => sessionUsesCalculator(questions));
+  let calculation = $state.raw(EMPTY_CALCULATOR);
+  let calculatorOpen = $state(false);
+  let calculatorButton: HTMLButtonElement | undefined = $state();
+  // A result on its way to the answer field of the current step (Neem over).
+  let taken = $state.raw<{ text: string } | null>(null);
+  const calculatorMode = $derived(
+    !allowsCalculator(question.topic) ? 'reserved' : feedback ? 'disabled' : 'active',
+  );
+
+  function closeCalculator() {
+    calculatorOpen = false;
+    // After the update: behind the open modal overlay the button cannot take the focus.
+    void tick().then(() => calculatorButton?.focus());
+  }
+
+  function takeOver(text: string) {
+    taken = { text };
+    closeCalculator();
+  }
+
   const announcement = $derived(
     feedback === null
       ? ''
@@ -113,7 +141,14 @@
   function apply(next: PlayState) {
     const previous = play;
     play = next;
-    if (next.questionIndex !== previous.questionIndex) notes = EMPTY_NOTES;
+    if (next.questionIndex !== previous.questionIndex) {
+      notes = EMPTY_NOTES;
+      calculation = EMPTY_CALCULATOR;
+      calculatorOpen = false;
+    }
+    if (next.questionIndex !== previous.questionIndex || next.stepIndex !== previous.stepIndex) {
+      taken = null;
+    }
     if (next.finished && !previous.finished) {
       clearTimeout(advanceTimer);
       onfinish([...next.records], Date.now() - sessionStart);
@@ -167,7 +202,21 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<PlayShell {name} onstop={finish} progress={firstAttempts} max={questions.length}>
+{#snippet calculatorAction()}
+  <CalculatorButton
+    mode={calculatorMode}
+    onopen={() => (calculatorOpen = true)}
+    bind:ref={calculatorButton}
+  />
+{/snippet}
+
+<PlayShell
+  {name}
+  onstop={finish}
+  progress={firstAttempts}
+  max={questions.length}
+  action={usesCalculator ? calculatorAction : undefined}
+>
   {#snippet meta()}
     {#if entry.repeat}
       <span class="repeat-label"><Icon name="repeat" size={12} stroke={2.4} />Herhaling</span>
@@ -198,8 +247,18 @@
     />
   {:else}
     {#key `${questionIndex}-${stepIndex}`}
-      <QuestionView {step} {scratchpad} {reserved} bind:notes onanswer={handleAnswer} />
+      <QuestionView {step} {scratchpad} {reserved} {taken} bind:notes onanswer={handleAnswer} />
     {/key}
+  {/if}
+
+  <!-- As the lesson sheet: a modal dialog must not lie over the "too low" notice. -->
+  {#if calculatorOpen && !tooLow}
+    <Calculator
+      {calculation}
+      onkey={(key) => (calculation = applyCalculatorKey(calculation, key))}
+      onclose={closeCalculator}
+      ontake={step.kind === 'number' ? takeOver : undefined}
+    />
   {/if}
 
   {#if openLesson && !landscape && !tooLow}

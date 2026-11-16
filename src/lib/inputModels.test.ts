@@ -249,3 +249,20 @@ describe('letter input models', () => {
     expect(model.canSubmit('')).toBe(false);
   });
 });
+
+describe('fromText (calculator spec §5.4)', () => {
+  it('puts a taken-over result in a number field as it was typed', () => {
+    const model = INPUT_MODELS.number;
+    const state = model.fromText!('132,665');
+    expect(model.toInput(state)).toBe('132,665');
+    expect(model.view(state)).toEqual([{ type: 'text', text: '132,665' }]);
+    expect(model.view(model.fromText!('-3'))).toEqual([{ type: 'text', text: '−3' }]);
+    // Typing goes on from it.
+    expect(model.apply(state, 'backspace')).toBe('132,66');
+  });
+
+  it('exists for the number field only', () => {
+    const others = Object.entries(INPUT_MODELS).filter(([kind]) => kind !== 'number');
+    for (const [kind, model] of others) expect(model.fromText, kind).toBeUndefined();
+  });
+});
