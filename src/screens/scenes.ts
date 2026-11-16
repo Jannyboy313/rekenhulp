@@ -2,6 +2,7 @@
 // Add a scene (and a shot in screenshots/screens.spec.ts) for every new screen or state.
 import { mount } from 'svelte';
 import App from '../App.svelte';
+import Calculator from '../components/Calculator.svelte';
 import ErrorScreen from '../components/ErrorScreen.svelte';
 import LessonTopicList from '../components/LessonTopicList.svelte';
 import LessonView from '../components/LessonView.svelte';
@@ -11,6 +12,7 @@ import RotateNotice from '../components/RotateNotice.svelte';
 import SetupScreen from '../components/SetupScreen.svelte';
 import TestScreen from '../components/TestScreen.svelte';
 import TestSetupScreen from '../components/TestSetupScreen.svelte';
+import { applyCalculatorKey, EMPTY_CALCULATOR, type CalculatorKey } from '../lib/calculator';
 import { LESSONS, lessonFor } from '../lib/lessons';
 import { createVolatileMemory } from '../lib/memory';
 import { blueprintFor, TEST_ROW } from '../lib/practiceTest';
@@ -124,6 +126,22 @@ export const SCENES: Record<string, Scene> = {
     ANSWER_KINDS.map((kind) => [`question-${kind}`, play(measuring, questionOfKind(kind))]),
   ),
   'question-percent': play(proportions, PERCENT_QUESTION),
+  // The calculator overlay with a result, over a question (calculator spec §5).
+  calculator: (target) => {
+    play(proportions, PERCENT_QUESTION)(target);
+    mount(Calculator, {
+      target,
+      props: {
+        calculation: [...'3,14×6,5^2='].reduce(
+          (state, key) => applyCalculatorKey(state, key as CalculatorKey),
+          EMPTY_CALCULATOR,
+        ),
+        onkey: noop,
+        onclose: noop,
+        ontake: noop,
+      },
+    });
+  },
   app: (target) => mount(App, { target }),
   // Mistakes of an earlier day in three topics: the row Fouten van eerder (review spec §4).
   'app-review': (target) => {

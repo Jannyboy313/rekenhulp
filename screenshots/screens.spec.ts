@@ -100,6 +100,7 @@ const SHOTS: readonly Shot[] = [
       await page.getByRole('button', { name: /^Les/ }).first().click();
     },
   },
+  { id: 'question-calculator-open', scene: 'calculator' },
   { id: 'results-perfect', scene: 'results-perfect' },
   { id: 'results-mistakes', scene: 'results-mistakes' },
   { id: 'test-setup', scene: 'test-setup' },

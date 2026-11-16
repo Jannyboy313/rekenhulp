@@ -1,3 +1,4 @@
+import { CALCULATOR_KEYS, type CalculatorKey } from './calculator';
 import type { KeypadKey } from './keypadInput';
 
 /** What a physical key does on the play screen: a keypad key, or OK (v4 spec §6). */
@@ -54,4 +55,17 @@ export function choiceFor(key: string, kind: 'boolean' | 'choice', count: number
   if (!/^[1-9]$/.test(key)) return null;
   const index = Number(key) - 1;
   return index < count ? index : null;
+}
+
+const CALCULATOR_KEYPAD: readonly KeypadKey[] = CALCULATOR_KEYS.map((def) => def.key);
+
+/**
+ * The calculator key of a physical key (calculator spec §5.5), or null: the keys of its keypad,
+ * Enter and `=` for `=`, Delete for C.
+ */
+export function calculatorKeyFor(key: string): CalculatorKey | null {
+  if (key === 'Enter' || key === '=') return '=';
+  if (key === 'Delete') return 'clear';
+  // Every key of the calculator keypad is a calculator key.
+  return keyFor(key, CALCULATOR_KEYPAD, false) as CalculatorKey | null;
 }

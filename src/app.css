@@ -73,6 +73,9 @@
   --play-track: 6px;
   --play-keypad-height: 292px;
   --play-keypad-height-tall: 312px;
+  /* The four key rows of the calculator: with its header, display and Neem over it stays under
+     the answer field plus the keypad (calculator spec §5.1). */
+  --play-calc-height: 232px;
   --play-key-gap: 8px;
   --play-key-label: 24px;
   --play-tray-key: 48px;
@@ -108,6 +111,7 @@
   --play-track: 8px;
   --play-keypad-height: 360px;
   --play-keypad-height-tall: 360px;
+  --play-calc-height: 316px;
   --play-key-gap: 10px;
   --play-key-label: 28px;
   --play-tray-key: 60px;

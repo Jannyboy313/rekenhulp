@@ -110,3 +110,27 @@ describe('Keypad with a spanning key', () => {
     expect(screen.getByRole('button', { name: 'OK' }).style.gridColumn).toBe('span 3');
   });
 });
+
+describe('Keypad for the calculator', () => {
+  it('labels the OK key and disables single keys', async () => {
+    const onkey = vi.fn();
+    render(Keypad, {
+      props: {
+        keys,
+        canSubmit: true,
+        okLabel: '=',
+        okAriaLabel: 'is',
+        disabledKeys: new Set(['7'] as const),
+        onkey,
+        onsubmit: vi.fn(),
+      },
+    });
+    expect(screen.getByRole('button', { name: 'is' }).textContent?.trim()).toBe('=');
+    expect(screen.queryByRole('button', { name: 'OK' })).toBeNull();
+    const seven = screen.getByRole<HTMLButtonElement>('button', { name: '7' });
+    expect(seven.disabled).toBe(true);
+    await fireEvent.pointerDown(seven, { button: 0 });
+    expect(onkey).not.toHaveBeenCalled();
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: '8' }).disabled).toBe(false);
+  });
+});

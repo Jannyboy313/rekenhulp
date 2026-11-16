@@ -20,6 +20,11 @@
     onkey: (key: KeypadKey) => void;
     /** Without it there is no OK: the kladblok has no submit (spec §3.6). */
     onsubmit?: () => void;
+    /** The text of the OK key and its name for a screen reader: `=` on the calculator. */
+    okLabel?: string;
+    okAriaLabel?: string;
+    /** Keys that do nothing right now (calculator spec §5.2). */
+    disabledKeys?: ReadonlySet<KeypadKey>;
   }
 
   let {
@@ -32,6 +37,9 @@
     pressed = null,
     onkey,
     onsubmit,
+    okLabel = 'OK',
+    okAriaLabel,
+    disabledKeys,
   }: Props = $props();
 </script>
 
@@ -52,7 +60,7 @@
       data-key={key}
       style:grid-column={span === undefined ? undefined : `span ${span}`}
       aria-label={ariaLabel ?? label}
-      {disabled}
+      disabled={disabled || disabledKeys?.has(key) === true}
       use:press={() => onkey(key)}
     >
       {#if icon === 'fraction'}<Fraction
@@ -72,8 +80,9 @@
       class:pressed={pressed === 'ok'}
       data-key="ok"
       style:grid-column="span {okSpan(keys, columns)}"
+      aria-label={okAriaLabel}
       disabled={disabled || !canSubmit}
-      onclick={onsubmit}>OK</button
+      onclick={onsubmit}>{okLabel}</button
     >
   {/if}
 </div>

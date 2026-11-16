@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { INPUT_MODELS } from './inputModels';
 import type { KeypadKey } from './keypadInput';
-import { choiceFor, keyFor, type PhysicalAction } from './physicalKeys';
+import type { CalculatorKey } from './calculator';
+import { calculatorKeyFor, choiceFor, keyFor, type PhysicalAction } from './physicalKeys';
 import { NOTE_KEYS } from './scratchpad';
 
 type Pad = keyof typeof INPUT_MODELS | 'kladblok';
@@ -68,5 +69,35 @@ describe('choiceFor (v4 spec §6)', () => {
     ['j', 'choice', null],
   ])('%j on a %s step gives %j', (key, kind, expected) => {
     expect(choiceFor(key, kind, kind === 'boolean' ? 2 : 4)).toBe(expected);
+  });
+});
+
+describe('calculatorKeyFor (calculator spec §5.5)', () => {
+  it.each<[string, CalculatorKey | null]>([
+    ['0', '0'],
+    ['9', '9'],
+    [',', ','],
+    ['.', ','],
+    ['+', '+'],
+    ['-', '-'],
+    ['*', '×'],
+    ['x', '×'],
+    ['X', '×'],
+    [':', ':'],
+    ['/', ':'],
+    ['(', '('],
+    [')', ')'],
+    ['^', '^'],
+    ['Backspace', 'backspace'],
+    ['Enter', '='],
+    ['=', '='],
+    ['Delete', 'clear'],
+    ['a', null],
+    ['c', null],
+    ['Escape', null],
+    ['F1', null],
+    [' ', null],
+  ])('%s is %s', (key, expected) => {
+    expect(calculatorKeyFor(key)).toBe(expected);
   });
 });
